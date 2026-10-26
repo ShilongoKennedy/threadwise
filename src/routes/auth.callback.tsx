@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { getSupabaseClient } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth/callback")({ component: AuthCallback });
 
@@ -12,6 +12,9 @@ function AuthCallback() {
   useEffect(() => {
     let active = true;
     const finish = async () => {
+      // This runs only after hydration and initializes from Vite's browser-side
+      // VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY values.
+      const supabase = getSupabaseClient();
       const current = new URL(window.location.href);
       const providerError = current.searchParams.get("error_description") || current.searchParams.get("error");
       if (providerError) throw new Error(providerError);
