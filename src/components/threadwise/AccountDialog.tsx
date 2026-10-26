@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { syncWorkspaces, useAccount } from "@/lib/threadwise/cloud-sync";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
 import { cloudDocument } from "@/lib/threadwise/workspace-model";
@@ -32,9 +31,14 @@ export function AccountDialog({ onClose }: { onClose: () => void }) {
     });
     return () => { active = false; };
   }, [user?.id]);
-  const oauth = async (provider: "google" | "lovable") => {
+  const hasSupabase = Boolean(import.meta.env["VITE_SUPABASE_URL"] && import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]);
+  const oauth = async () => {
     setBusy(true); setMessage("");
-    try { const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin }); if (result.error) throw result.error; onClose(); }
+    try {
+      if (!hasSupabase) throw new Error("Google sign-in needs a Supabase project. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to .env.local, then enable Google in Supabase Authentication → Providers.");
+      const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin } });
+      if (error) throw error;
+    }
     catch (error) { setMessage(error instanceof Error ? error.message : "Sign-in did not finish."); }
     finally { setBusy(false); }
   };
@@ -74,8 +78,8 @@ export function AccountDialog({ onClose }: { onClose: () => void }) {
         </div>
       </div>
     </> : <><DialogHeader><DialogTitle className="font-display text-2xl">Keep your thinking connected</DialogTitle><DialogDescription>Sign in to sync canvases across devices. Inquiries stay in this browser.</DialogDescription></DialogHeader>
-      <Button disabled={busy} variant="outline" onClick={() => void oauth("google")}>Continue with Google</Button>
-      <Button disabled={busy} variant="outline" onClick={() => void oauth("lovable")}>Sign in with Lovable</Button>
+      <Button disabled={busy} variant="outline" onClick={() => void oauth()}>Continue with Google</Button>
+      {!hasSupabase && <p className="-mt-1 text-xs leading-relaxed text-muted-foreground">Google sign-in will activate after you connect a Supabase project. Local DeepSeek testing can work without it.</p>}
       <form className="space-y-3 border-t pt-4" onSubmit={async (e) => { e.preventDefault(); setBusy(true); setMessage(""); try {
         const result = signup ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } }) : await supabase.auth.signInWithPassword({ email, password });
         if (result.error) throw result.error;

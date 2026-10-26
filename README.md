@@ -6,8 +6,10 @@ accounts and cloud sync; DeepSeek powers all AI features.
 ## Start locally
 
 1. Install [Bun](https://bun.sh), then run `bun install` in this folder.
-2. Copy `.env.example` to `.env` and fill in its values. Existing Supabase
-   values can be retained; add your server-only `DEEPSEEK_API_KEY`.
+2. Copy `.env.example` to `.env.local` and fill in its values. Add your
+   server-only `DEEPSEEK_API_KEY`. To test AI before setting up accounts, set
+   `ALLOW_LOCAL_AI_UNAUTHENTICATED=true`; it works only on localhost and must
+   never be deployed.
 3. Run `bun run dev` and open the local URL Vite prints (usually
    `http://localhost:3000`).
 
@@ -19,3 +21,13 @@ locally. Never use `VITE_DEEPSEEK_API_KEY`: browser variables are public.
 The default is `deepseek-chat`. Set `DEEPSEEK_MODEL` to choose a different
 DeepSeek chat model. The app calls DeepSeek's OpenAI-compatible
 `https://api.deepseek.com/v1` endpoint from server routes only.
+
+## Google sign-in and cloud sync
+
+Threadwise uses Supabase for accounts and cloud sync. Create a Supabase project,
+then add its Project URL and publishable key to both the `VITE_` and server-side
+variables in `.env.local`. In Supabase, enable **Authentication → Providers →
+Google**, supply Google OAuth client credentials, and add
+`http://127.0.0.1:3000` (and `http://localhost:3000`) to the allowed redirect
+URLs. The app now uses Supabase's Google OAuth directly; it does not require
+Lovable, GitHub, or Vercel to run locally.

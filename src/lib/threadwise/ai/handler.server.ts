@@ -22,15 +22,18 @@ export async function handleThreadwise(request: Request) {
   try {
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
     const url = process.env["SUPABASE_URL"];
-    if (!key || !url || !process.env["DEEPSEEK_API_KEY"])
+    const host = new URL(request.url).hostname;
+    const isLoopback = host === "localhost" || host === "127.0.0.1" || host === "::1";
+    const allowLocalTest = process.env["ALLOW_LOCAL_AI_UNAUTHENTICATED"] === "true" && isLoopback;
+    if (!process.env["DEEPSEEK_API_KEY"])
       return Response.json(
-        { message: "The thinking tools are not configured yet." },
+        { message: "DeepSeek is not configured yet. Add DEEPSEEK_API_KEY to .env.local and restart the local server." },
         { status: 401 },
       );
     const token = request.headers.get("Authorization")?.replace(/^Bearer /, "");
-    if (!token || token.split(".").length !== 3)
-      return Response.json({ message: "Sign in to use the thinking tools." }, { status: 401 });
-    const client = createClient<Database>(url, key, {
+    let userId: string | undefined;
+    if (key && url && token && token.split(".").length === 3) {
+      const client = createClient<Database>(url, key, {
       auth: { persistSession: false, autoRefreshToken: false },
       global: {
         headers: { Authorization: `Bearer ${token}` },
@@ -40,21 +43,23 @@ export async function handleThreadwise(request: Request) {
           return fetch(input, { ...init, headers: h });
         },
       },
-    });
-    const { data: claims, error: authError } = await client.auth.getClaims(token);
-    const userId = claims?.claims.sub;
-    if (authError || !userId)
+      });
+      const { data: claims, error: authError } = await client.auth.getClaims(token);
+      userId = claims?.claims.sub;
+      if (authError || !userId) return Response.json({ message: "Sign in again to use the thinking tools." }, { status: 401 });
+      const { data: paused, error: pauseError } = await client
+        .from("ai_access_state")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (pauseError) throw new Error("Could not check access to the thinking tools.");
+      if (paused) return Response.json({ message: paused.reason }, { status: paused.status });
+    } else if (!allowLocalTest) {
       return Response.json(
-        { message: "Sign in again to use the thinking tools." },
+        { message: !key || !url ? "Accounts are not configured. Add Supabase settings to enable Google sign-in and cloud sync." : "Sign in to use the thinking tools." },
         { status: 401 },
       );
-    const { data: paused, error: pauseError } = await client
-      .from("ai_access_state")
-      .select("*")
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (pauseError) throw new Error("Could not check access to the thinking tools.");
-    if (paused) return Response.json({ message: paused.reason }, { status: paused.status });
+    }
     const raw = await request.text();
     if (raw.length > 1_000_000)
       return Response.json({ message: "Select a smaller set of cards." }, { status: 400 });

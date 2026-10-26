@@ -1,8 +1,13 @@
 import { supabase } from "@/integrations/supabase/client";
 export async function authHeaders() {
-  const { data } = await supabase.auth.getSession();
-  if (!data.session) throw new Error("Sign in to use the thinking tools.");
-  return { Authorization: `Bearer ${data.session.access_token}` };
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data.session ? { Authorization: `Bearer ${data.session.access_token}` } : {};
+  } catch {
+    // The local development route may explicitly permit an unauthenticated DeepSeek
+    // test. Production always validates this on the server.
+    return {};
+  }
 }
 export async function streamTask(body: unknown, onText: (text: string) => void, signal: AbortSignal) {
   const response = await fetch("/api/threadwise", { method: "POST", headers: { "Content-Type": "application/json", ...await authHeaders() }, body: JSON.stringify(body), signal });
