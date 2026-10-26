@@ -25,9 +25,13 @@ DeepSeek chat model. The app calls DeepSeek's OpenAI-compatible
 ## Google sign-in and cloud sync
 
 Threadwise uses Supabase for accounts and cloud sync. Create a Supabase project,
-then add its Project URL and publishable key to both the `VITE_` and server-side
-variables in `.env.local`. In Supabase, enable **Authentication → Providers →
+then add its Project URL and legacy anon key (`VITE_SUPABASE_URL` and
+`VITE_SUPABASE_ANON_KEY`) to Vercel and `.env.local`. The newer publishable-key
+names are supported too. In Supabase, enable **Authentication → Providers →
 Google**, supply Google OAuth client credentials, and add
-`http://127.0.0.1:3000` (and `http://localhost:3000`) to the allowed redirect
-URLs. The app now uses Supabase's Google OAuth directly; it does not require
+`http://127.0.0.1:3000/auth/callback` (and
+`http://localhost:3000/auth/callback`) to the allowed redirect URLs. Add your
+production callback too, for example
+`https://threadwise-beta.vercel.app/auth/callback`. The app now uses Supabase's
+Google OAuth directly; it does not require
 Lovable, GitHub, or Vercel to run locally.

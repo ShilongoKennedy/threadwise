@@ -31,12 +31,13 @@ export function AccountDialog({ onClose }: { onClose: () => void }) {
     });
     return () => { active = false; };
   }, [user?.id]);
-  const hasSupabase = Boolean(import.meta.env["VITE_SUPABASE_URL"] && import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]);
+  const hasSupabase = Boolean(import.meta.env["VITE_SUPABASE_URL"] && (import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || import.meta.env["VITE_SUPABASE_ANON_KEY"]));
   const oauth = async () => {
     setBusy(true); setMessage("");
     try {
-      if (!hasSupabase) throw new Error("Google sign-in needs a Supabase project. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to .env.local, then enable Google in Supabase Authentication → Providers.");
-      const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin } });
+      if (!hasSupabase) throw new Error("Google sign-in needs a Supabase project. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY), then enable Google in Supabase Authentication → Providers.");
+      const redirectTo = new URL("/auth/callback", window.location.origin).toString();
+      const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
       if (error) throw error;
     }
     catch (error) { setMessage(error instanceof Error ? error.message : "Sign-in did not finish."); }
@@ -81,7 +82,8 @@ export function AccountDialog({ onClose }: { onClose: () => void }) {
       <Button disabled={busy} variant="outline" onClick={() => void oauth()}>Continue with Google</Button>
       {!hasSupabase && <p className="-mt-1 text-xs leading-relaxed text-muted-foreground">Google sign-in will activate after you connect a Supabase project. Local DeepSeek testing can work without it.</p>}
       <form className="space-y-3 border-t pt-4" onSubmit={async (e) => { e.preventDefault(); setBusy(true); setMessage(""); try {
-        const result = signup ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } }) : await supabase.auth.signInWithPassword({ email, password });
+        const callback = new URL("/auth/callback", window.location.origin).toString();
+        const result = signup ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo: callback } }) : await supabase.auth.signInWithPassword({ email, password });
         if (result.error) throw result.error;
         if (signup && !result.data.session) setMessage("Check your email to confirm your account."); else onClose();
       } catch (error) { setMessage(error instanceof Error ? error.message : "Sign-in did not finish."); } finally { setBusy(false); } }}>

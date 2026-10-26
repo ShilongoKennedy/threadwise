@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as SocraticThreadIdRouteImport } from './routes/socratic.$threadId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const ApiThreadwiseRoute = ApiThreadwiseRouteImport.update({
   path: '/api/threadwise',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SocraticThreadIdRoute = SocraticThreadIdRouteImport.update({
   id: '/socratic/$threadId',
   path: '/socratic/$threadId',
@@ -32,30 +38,39 @@ const SocraticThreadIdRoute = SocraticThreadIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/socratic/$threadId': typeof SocraticThreadIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/socratic/$threadId': typeof SocraticThreadIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/socratic/$threadId': typeof SocraticThreadIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/threadwise' | '/socratic/$threadId'
+  fullPaths: '/' | '/api/threadwise' | '/auth/callback' | '/socratic/$threadId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/threadwise' | '/socratic/$threadId'
-  id: '__root__' | '/' | '/api/threadwise' | '/socratic/$threadId'
+  to: '/' | '/api/threadwise' | '/auth/callback' | '/socratic/$threadId'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/threadwise'
+    | '/auth/callback'
+    | '/socratic/$threadId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   SocraticThreadIdRoute: typeof SocraticThreadIdRoute
 }
 
@@ -75,6 +90,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiThreadwiseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/socratic/$threadId': {
       id: '/socratic/$threadId'
       path: '/socratic/$threadId'
@@ -88,6 +110,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   SocraticThreadIdRoute: SocraticThreadIdRoute,
 }
 export const routeTree = rootRouteImport
