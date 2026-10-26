@@ -1,0 +1,1 @@
+ALTER POLICY workshop_read ON public.workshop_sessions USING(host_id=auth.uid() OR public.workshop_access(id));

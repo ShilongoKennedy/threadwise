@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792570345096,
+      "tag": "0000_threadwise_cloud_workspaces",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792571030726,
+      "tag": "0001_protect_ai_access_pauses",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792690118906,
+      "tag": "0002_reliable_workspace_saves_and_workshops",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792690501023,
+      "tag": "0003_workshop_host_returning_policy",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792691687841,
+      "tag": "0004_workshop_live_presence_and_audio_signaling",
+      "breakpoints": true
+    }
+  ]
+}

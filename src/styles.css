@@ -1,0 +1,541 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system definition.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ */
+
+@theme inline {
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --color-dock: var(--dock);
+  --color-dock-foreground: var(--dock-foreground);
+  --color-accent-ink: var(--accent-ink);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.7rem;
+  --background: oklch(0.962 0.011 82);
+  --foreground: oklch(0.215 0.012 55);
+  --card: oklch(0.988 0.006 85);
+  --card-foreground: oklch(0.215 0.012 55);
+  --popover: oklch(0.988 0.006 85);
+  --popover-foreground: oklch(0.215 0.012 55);
+  --primary: oklch(0.215 0.012 55);
+  --primary-foreground: oklch(0.97 0.008 85);
+  --secondary: oklch(0.935 0.012 80);
+  --secondary-foreground: oklch(0.25 0.012 55);
+  --muted: oklch(0.935 0.012 80);
+  --muted-foreground: oklch(0.5 0.014 60);
+  --accent: oklch(0.935 0.012 80);
+  --accent-foreground: oklch(0.25 0.012 55);
+  --destructive: oklch(0.55 0.17 30);
+  --destructive-foreground: oklch(0.98 0.005 85);
+  --border: oklch(0.885 0.012 78);
+  --border-strong: oklch(0.82 0.014 75);
+  --input: oklch(0.885 0.012 78);
+  --ring: oklch(0.55 0.02 60);
+  --accent-ink: oklch(0.6 0.18 36);
+  --brass: oklch(0.68 0.11 78);
+  --edge: oklch(0.58 0.014 60);
+  --grid-minor: oklch(0.915 0.012 80);
+  --grid-major: oklch(0.88 0.014 78);
+  --dock: oklch(0.2 0.012 55);
+  --dock-foreground: oklch(0.96 0.01 85);
+  --type-idea: oklch(0.66 0.13 72);
+  --type-note: oklch(0.52 0.06 240);
+  --type-question: oklch(0.52 0.1 330);
+  --type-experiment: oklch(0.52 0.08 160);
+  --type-action: oklch(0.6 0.18 36);
+  --shadow-card: 0 0 0 1px oklch(0.25 0.02 60 / 7%), 0 1px 1px oklch(0.25 0.02 60 / 4%), 0 6px 16px -8px oklch(0.25 0.02 60 / 14%);
+  --shadow-lift: 0 0 0 1px oklch(0.25 0.02 60 / 8%), 0 2px 4px oklch(0.25 0.02 60 / 5%), 0 24px 48px -16px oklch(0.25 0.02 60 / 26%);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.984 0.003 247.858);
+  --sidebar-foreground: oklch(0.129 0.042 264.695);
+  --sidebar-primary: oklch(0.208 0.042 265.755);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.968 0.007 247.896);
+  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
+  --sidebar-border: oklch(0.929 0.013 255.508);
+  --sidebar-ring: oklch(0.704 0.04 256.788);
+}
+
+.dark {
+  --brass: oklch(0.76 0.11 80);
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.929 0.013 255.508);
+  --primary-foreground: oklch(0.208 0.042 265.755);
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.551 0.027 264.364);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.208 0.042 265.755);
+  --sidebar-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.279 0.041 260.031);
+  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.551 0.027 264.364);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
+
+body { font-feature-settings: "ss01", "cv11"; -webkit-font-smoothing: antialiased; }
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100; opacity: 0.35; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::selection { background: color-mix(in oklab, var(--accent-ink) 25%, transparent); }
+
+.react-flow { position: relative; z-index: 1; --xy-background-color: transparent; --xy-edge-stroke: var(--edge); }
+.tw-spatial-atmosphere { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: radial-gradient(ellipse 60% 44% at 54% 46%, color-mix(in oklab, var(--brass) 10%, transparent), transparent 72%); }
+.tw-spatial-atmosphere canvas { display: block; width: 100% !important; height: 100% !important; opacity: .9; mix-blend-mode: multiply; }
+@media (prefers-reduced-motion: reduce) { .tw-spatial-atmosphere canvas { opacity: .46; } }
+.tw-spatial-atmosphere { background: radial-gradient(ellipse 50% 47% at 52% 48%, color-mix(in oklab, #a879ff 15%, transparent), transparent 72%), radial-gradient(ellipse 35% 32% at 72% 28%, color-mix(in oklab, var(--accent-ink) 14%, transparent), transparent 70%); }
+.tw-spatial-atmosphere canvas { filter: saturate(1.35) hue-rotate(8deg); }
+.react-flow__edge path.react-flow__edge-path { filter: drop-shadow(0 0 4px color-mix(in oklab, var(--accent-ink) 22%, transparent)); }
+
+/* Thought portal: a temporary close reading of one idea, never a second document. */
+.tw-thought-portal { position: absolute; z-index: 30; top: 50%; left: 50%; width: min(620px, calc(100vw - 32px)); max-height: min(720px, calc(100dvh - 48px)); overflow: auto; border: 1px solid color-mix(in oklab, var(--border-strong) 85%, white); border-radius: 24px; background: color-mix(in oklab, var(--card) 94%, white); box-shadow: 0 40px 110px -44px oklch(.18 .03 45 / .72), 0 0 0 9999px oklch(.12 .02 45 / .34); backdrop-filter: blur(18px); transform: translate(-50%, -50%); animation: tw-portal-in .32s cubic-bezier(.2,.9,.2,1); }
+.tw-thought-portal header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 17px 20px 10px; background: linear-gradient(var(--card) 75%, transparent); }.tw-thought-portal header button { border-radius: 999px; }.tw-portal-kicker { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted-foreground); }.tw-portal-kicker svg { width: 16px; height: 16px; color: var(--accent-ink); }.tw-portal-kicker span { display: grid; width: 18px; height: 18px; place-items: center; border: 1px solid var(--border); border-radius: 5px; font-size: 9px; }
+.tw-portal-core { position: relative; margin: 4px 20px 15px; padding: 25px 28px 27px; overflow: hidden; border: 1px solid color-mix(in oklab, var(--portal-tone) 38%, var(--border)); border-radius: 17px; background: linear-gradient(135deg, color-mix(in oklab, var(--portal-tone) 12%, var(--card)), var(--card) 68%); }.tw-portal-core::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--portal-tone); }.tw-portal-type, .tw-portal-section-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: color-mix(in oklab, var(--portal-tone) 72%, var(--foreground)); }.tw-portal-core h2 { max-width: 15ch; margin: 10px 0 12px; font-family: var(--font-display); font-size: clamp(29px, 4.2vw, 46px); line-height: .98; letter-spacing: -.045em; }.tw-portal-core p { max-width: 58ch; margin: 0; color: var(--muted-foreground); font-size: 15px; line-height: 1.58; }
+.tw-portal-metrics { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0 20px 18px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }.tw-portal-metrics span { padding: 13px 10px; color: var(--muted-foreground); font-size: 11px; text-align: center; }.tw-portal-metrics span + span { border-left: 1px solid var(--border); }.tw-portal-metrics b { display: block; margin-bottom: 2px; color: var(--foreground); font-family: var(--font-display); font-size: 20px; font-weight: 500; }
+.tw-thought-portal section { padding: 0 20px 16px; }.tw-portal-section-title { margin: 0 0 8px; color: var(--muted-foreground); }.tw-portal-links { display: grid; gap: 7px; }.tw-portal-links button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 11px; border: 1px solid var(--border); border-radius: 11px; color: var(--foreground); text-align: left; transition: transform .18s, border-color .18s, background .18s; }.tw-portal-links button:hover { border-color: var(--border-strong); background: var(--muted); transform: translateX(3px); }.tw-portal-links i { width: 7px; height: 32px; border-radius: 999px; }.tw-portal-links span { display: grid; gap: 2px; font-family: var(--font-display); font-size: 15px; }.tw-portal-links small { color: var(--muted-foreground); font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }.tw-portal-empty { margin: 0; padding: 13px; border: 1px dashed var(--border-strong); border-radius: 11px; color: var(--muted-foreground); font-size: 13px; line-height: 1.45; }
+.tw-portal-next { padding-bottom: 20px !important; }.tw-portal-next > div:last-child { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }.tw-portal-next button { display: grid; justify-items: start; gap: 7px; min-height: 104px; padding: 12px; border: 1px solid var(--border); border-radius: 13px; color: var(--foreground); text-align: left; transition: transform .2s, background .2s, border-color .2s, box-shadow .2s; }.tw-portal-next button:hover { border-color: color-mix(in oklab, var(--accent-ink) 55%, var(--border)); background: color-mix(in oklab, var(--accent-ink) 8%, var(--card)); box-shadow: 0 12px 22px -19px oklch(.22 .02 45 / .7); transform: translateY(-3px); }.tw-portal-next b { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 8px; background: color-mix(in oklab, var(--accent-ink) 14%, var(--card)); color: var(--accent-ink); font-family: var(--font-display); font-size: 17px; font-weight: 500; }.tw-portal-next span { display: grid; gap: 3px; font-family: var(--font-display); font-size: 14px; line-height: 1; }.tw-portal-next small { color: var(--muted-foreground); font-family: var(--font-sans); font-size: 10px; line-height: 1.25; }
+.tw-thought-portal footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px 19px; border-top: 1px solid var(--border); }.tw-thought-portal footer button { border-radius: 10px; }.tw-thought-portal footer span { color: var(--muted-foreground); font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; text-align: right; }.tw-thought-portal-glow { position: absolute; width: 280px; height: 280px; top: -140px; right: -70px; border-radius: 999px; background: color-mix(in oklab, var(--accent-ink) 16%, transparent); filter: blur(34px); pointer-events: none; }
+@keyframes tw-portal-in { from { opacity: 0; transform: translate(-50%, -48%) scale(.97); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@media (max-width: 540px) { .tw-thought-portal { max-height: calc(100dvh - 24px); width: calc(100vw - 20px); border-radius: 19px; }.tw-portal-core { margin-inline: 13px; padding: 21px; }.tw-portal-metrics, .tw-thought-portal section { margin-inline: 13px; padding-inline: 0; }.tw-portal-next > div:last-child { grid-template-columns: 1fr; }.tw-portal-next button { grid-template-columns: 25px 1fr; align-items: center; min-height: 0; }.tw-thought-portal footer { padding-inline: 14px; }.tw-thought-portal footer span { display: none; } }
+
+/* Shared product language: every major switch is a physical, numbered choice rail. */
+.tw-choice-rail { display: inline-flex; border: 1px solid var(--border-strong) !important; border-radius: 15px !important; background: color-mix(in oklab, var(--muted) 50%, var(--card)) !important; box-shadow: inset 0 1px 0 oklch(1 0 0 / 30%), 0 10px 25px -23px oklch(.2 .02 50 / 70%); }
+.tw-choice-tab { position: relative; min-height: 42px; padding: 0 14px !important; border: 1px solid transparent !important; border-radius: 11px !important; background: transparent !important; color: var(--muted-foreground) !important; font-family: var(--font-display) !important; font-size: 15px !important; transition: background .2s, color .2s, border .2s, transform .2s, box-shadow .2s !important; }.tw-choice-tab:hover { color: var(--foreground) !important; }.tw-choice-tab[data-state="active"] { border-color: var(--foreground) !important; background: color-mix(in oklab, var(--card) 96%, white) !important; color: var(--foreground) !important; box-shadow: 0 2px 0 var(--foreground), 0 7px 18px -15px oklch(.2 .02 50 / .8) !important; transform: translateY(-1px); }
+.tw-workflow-card { position: relative; overflow: hidden; border-radius: 16px !important; background: linear-gradient(145deg, color-mix(in oklab, var(--card) 96%, white), var(--card)) !important; box-shadow: 0 12px 26px -24px oklch(.2 .02 50 / .7); transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s, border-color .25s; }.tw-workflow-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent-ink); opacity: .7; }.tw-workflow-card:hover { border-color: color-mix(in oklab, var(--accent-ink) 55%, var(--border)) !important; box-shadow: 0 20px 38px -26px oklch(.2 .02 50 / .7); transform: translateY(-4px); }.tw-workflow-card button { border-radius: 10px; box-shadow: 0 4px 11px -10px currentColor; }
+.tw-planning, .tw-library, .tw-account { border-radius: 22px !important; border-color: var(--border-strong) !important; background: color-mix(in oklab, var(--card) 96%, white) !important; box-shadow: 0 32px 80px -42px oklch(.18 .02 45 / .75) !important; }.tw-planning [role="dialog"] > button, .tw-library [role="dialog"] > button { border-radius: 999px; }.tw-studio-nav { gap: 4px; }.tw-studio-nav button { border-radius: 10px; }.tw-studio-nav button[data-state="active"], .tw-studio-nav button[aria-pressed="true"] { box-shadow: 0 2px 0 var(--foreground); }
+.react-flow__controls { box-shadow: var(--shadow-card); border-radius: 12px; overflow: hidden; background: var(--card); }
+.react-flow__controls-button { background: var(--card); border-color: var(--border) !important; color: var(--muted-foreground); width: 30px; height: 30px; }
+.react-flow__controls-button:hover { background: var(--muted); color: var(--foreground); }
+.react-flow__minimap { background: var(--card); box-shadow: var(--shadow-card); border-radius: 12px; overflow: hidden; }
+.react-flow__connectionline path { stroke: var(--accent-ink); stroke-width: 1.5; stroke-dasharray: 4 4; }
+
+.tw-card { box-shadow: var(--shadow-card); transition: box-shadow .25s ease, transform .25s cubic-bezier(.2,.8,.2,1); }
+.tw-card::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--card-tint); }
+.react-flow__node:hover .tw-card { box-shadow: var(--shadow-lift); }
+.tw-card.is-selected { box-shadow: 0 0 0 1.5px var(--foreground), 0 0 0 5px color-mix(in oklab, var(--card-tint) 18%, transparent), var(--shadow-lift); }
+.react-flow__node.dragging .tw-card { transform: rotate(-0.6deg) scale(1.015); box-shadow: var(--shadow-lift); }
+.tw-card { animation: tw-in .35s cubic-bezier(.2,.8,.2,1) both; }
+
+.tw-ghost { background: repeating-linear-gradient(135deg, color-mix(in oklab, var(--card) 70%, transparent) 0 8px, color-mix(in oklab, var(--card) 45%, transparent) 8px 16px); opacity: .8; backdrop-filter: blur(2px); animation: tw-breathe 3.2s ease-in-out infinite; }
+.tw-ghost:hover { opacity: 1; animation: none; }
+
+.tw-handle { width: 9px !important; height: 9px !important; background: var(--card) !important; border: 1.25px solid var(--edge) !important; opacity: 0; transition: opacity .2s, transform .2s, background .2s; }
+.react-flow__node:hover .tw-handle, .is-selected .tw-handle, .react-flow__handle.connectingfrom { opacity: 1; }
+.tw-handle:hover { background: var(--accent-ink) !important; border-color: var(--accent-ink) !important; transform: translateY(-50%) scale(1.35) !important; }
+
+.dock { background: var(--dock); color: var(--dock-foreground); box-shadow: 0 1px 0 oklch(1 0 0 / 8%) inset, 0 20px 40px -12px oklch(0.2 0.02 55 / 45%), 0 0 0 1px oklch(0.2 0.02 55 / 30%); }
+.tw-sheet { animation: tw-sheet .35s cubic-bezier(.2,.8,.2,1) both; }
+.tw-pop { animation: tw-in .2s cubic-bezier(.2,.8,.2,1) both; }
+.tw-rise { animation: tw-rise .45s cubic-bezier(.2,.8,.2,1) both; }
+
+@keyframes tw-in { from { opacity: 0; transform: scale(.96); } }
+@keyframes tw-rise { from { opacity: 0; transform: translateY(6px); } }
+@keyframes tw-sheet { from { opacity: 0; transform: translateY(8px) scale(.99); } }
+@keyframes tw-breathe { 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
+
+/* ---- Tactile interactions ---- */
+.react-flow__node { cursor: grab; }
+.react-flow__node.dragging { cursor: grabbing; }
+.tw-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: 0 0 0 0 var(--card-tint); opacity: 0; }
+.react-flow__node.dragging .tw-card { transform: rotate(-0.5deg) translateY(-2px) scale(1.012); box-shadow: 0 0 0 1px oklch(0.25 0.02 60 / 8%), 0 30px 50px -18px oklch(0.25 0.02 60 / 32%); }
+.tw-card.is-selected { transition: box-shadow .18s ease; }
+.tw-card.is-landed { animation: tw-land .6s cubic-bezier(.2,.9,.25,1.2) both; }
+.tw-card.is-landed::after { animation: tw-ring .9s ease-out; }
+.tw-ghost.is-accept { animation: tw-solidify .24s cubic-bezier(.4,0,.2,1) forwards; border-style: solid; }
+.tw-ghost.is-dismiss, .is-dismiss { animation: tw-dismiss .24s cubic-bezier(.4,0,1,1) forwards; }
+.tw-rise.is-accept { animation: tw-accept-row .24s ease forwards; }
+.tw-press { transition: transform .12s ease, background-color .15s, color .15s; -webkit-tap-highlight-color: transparent; }
+.tw-press:active { transform: scale(.94); }
+.tw-draw { stroke-dasharray: 80; stroke-dashoffset: 80; animation: tw-draw 1s .2s ease forwards; }
+.react-flow__edge:hover path.react-flow__edge-path { stroke: var(--foreground); }
+.react-flow__edge path.react-flow__edge-path { transition: stroke .15s, stroke-width .15s; }
+
+@keyframes tw-land { 0% { transform: scale(.97); } 60% { transform: scale(1.01); } }
+@keyframes tw-ring { 0% { opacity: .9; box-shadow: 0 0 0 0 var(--card-tint); } 100% { opacity: 0; box-shadow: 0 0 0 14px var(--card-tint); } }
+@keyframes tw-solidify { to { opacity: 1; background: var(--card); transform: scale(1.02); } }
+@keyframes tw-dismiss { to { opacity: 0; transform: scale(.94) translateY(4px); filter: blur(2px); } }
+@keyframes tw-accept-row { to { opacity: 0; transform: translateX(-12px); } }
+@keyframes tw-draw { to { stroke-dashoffset: 0; } }
+
+/* Touch: always-visible, larger handles; no hover-dependent affordances */
+@media (pointer: coarse) {
+  .tw-handle { opacity: 1; width: 18px !important; height: 18px !important; }
+  .tw-handle::after { content: ""; position: absolute; inset: -10px; }
+  .tw-ghost { animation: none; opacity: .9; }
+}
+.dock { scrollbar-width: none; }
+.dock::-webkit-scrollbar { display: none; }
+
+/* Semantic focus: translucent paper, never a dark spotlight. */
+.react-flow__node { transition: opacity .25s ease; }
+.react-flow__node.tw-fog { opacity: .16; }
+.react-flow__node.tw-fog:hover { opacity: .65; }
+.tw-focus-field .react-flow__node.tw-fog { opacity: .055; filter: blur(1.5px) saturate(.35); pointer-events: none; }.tw-focus-field .react-flow__edge:not(:has(.tw-thread-traced)) { opacity: .1; }.tw-focus-field .tw-desk-chrome, .tw-focus-field .tw-studio-launch, .tw-focus-field .tw-planning-launch, .tw-focus-field .dock, .tw-focus-field .react-flow__controls, .tw-focus-field .react-flow__minimap { opacity: 0; pointer-events: none; transition: opacity .25s; }.tw-focus-field:hover .tw-desk-chrome, .tw-focus-field:hover .tw-studio-launch, .tw-focus-field:hover .tw-planning-launch { opacity: .2; pointer-events: auto; }
+.tw-focus-field-bar { position: absolute; z-index: 24; top: 20px; left: 50%; display: flex; align-items: center; gap: 20px; max-width: calc(100vw - 32px); padding: 5px 7px 5px 14px; border: 1px solid color-mix(in oklab, var(--border-strong) 72%, white); border-radius: 999px; background: color-mix(in oklab, var(--card) 90%, transparent); box-shadow: 0 14px 36px -26px oklch(.2 .02 50 / .65); backdrop-filter: blur(16px); transform: translateX(-50%); animation: tw-focus-bar .28s cubic-bezier(.2,.9,.2,1); }.tw-focus-field-bar > span { display: flex; align-items: center; min-width: 0; gap: 8px; color: var(--muted-foreground); font-family: var(--font-mono); font-size: 10px; letter-spacing: .11em; text-transform: uppercase; white-space: nowrap; }.tw-focus-field-bar i { width: 7px; height: 7px; border-radius: 99px; background: var(--accent-ink); box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent-ink) 15%, transparent); }.tw-focus-field-bar b { overflow: hidden; max-width: min(310px, 30vw); color: var(--foreground); font-family: var(--font-display); font-size: 13px; font-weight: 500; letter-spacing: 0; text-overflow: ellipsis; text-transform: none; }.tw-focus-field-bar button { border-radius: 999px; }.tw-focus-field-bar kbd { margin-left: 3px; color: var(--muted-foreground); font-family: var(--font-mono); font-size: 9px; } @keyframes tw-focus-bar { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* Discourse Lab — a calm qualitative reading room that can plant cited evidence on the canvas. */
+.tw-lab { position: absolute; inset: 18px; z-index: 60; display: grid; grid-template-rows: auto minmax(0,1fr); overflow: hidden; border: 1px solid var(--border-strong); border-radius: 20px; background: color-mix(in oklab, var(--background) 96%, white); box-shadow: 0 35px 90px -40px oklch(.18 .02 45 / .9); }.tw-lab-head { display: flex; align-items: center; gap: 16px; padding: 17px 20px; border-bottom: 1px solid var(--border); }.tw-lab-head > div { margin-right: auto; }.tw-lab-head h2 { margin-top: 4px; font-family: var(--font-display); font-size: 26px; line-height: 1; }.tw-lab-head nav { display: flex; gap: 3px; }.tw-lab-head nav button { border-radius: 8px; }.tw-lab-body { display: grid; grid-template-columns: 280px minmax(0,1fr); min-height: 0; }.tw-lab-ledger { display: grid; align-content: start; gap: 14px; overflow-y: auto; padding: 17px; border-right: 1px solid var(--border); background: color-mix(in oklab, var(--muted) 28%, var(--card)); }.tw-lab-add { display: grid; gap: 7px; padding: 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }.tw-lab-add button { justify-self: start; }.tw-lab-ledger ol { display: grid; gap: 3px; }.tw-lab-ledger li { display: flex; align-items: center; gap: 3px; padding: 8px; border-left: 2px solid transparent; }.tw-lab-ledger li[data-active="true"] { border-color: var(--accent-ink); background: color-mix(in oklab, var(--accent-ink) 8%, transparent); }.tw-lab-ledger li > button:first-child { display: grid; min-width: 0; flex: 1; gap: 2px; text-align: left; }.tw-lab-ledger li small { color: var(--muted-foreground); font-family: var(--font-mono); font-size: 9px; }.tw-lab-ledger li b { overflow: hidden; font-family: var(--font-display); font-size: 15px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }.tw-lab-ledger li span { overflow: hidden; color: var(--muted-foreground); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }.tw-lab-ledger li > button:last-child { width: 27px; height: 27px; padding: 0; }.tw-lab-ledger li svg { width: 13px; }.tw-lab-main { overflow-y: auto; padding: clamp(22px,4vw,54px); }.tw-lab-empty { max-width: 540px; margin: 10vh auto; text-align: center; }.tw-lab-empty svg { width: 34px; height: 34px; color: var(--accent-ink); }.tw-lab-empty h3 { margin-top: 16px; font-family: var(--font-display); font-size: 34px; }.tw-lab-empty p { margin-top: 9px; color: var(--muted-foreground); line-height: 1.55; }.tw-lab-read { display: grid; grid-template-columns: minmax(0,1fr) 230px; gap: clamp(24px,5vw,64px); max-width: 1120px; margin: 0 auto; }.tw-lab-doc h3,.tw-lab-count h3 { margin: 7px 0 5px; font-family: var(--font-display); font-size: clamp(25px,3vw,38px); line-height: 1.04; }.tw-lab-audience { color: var(--muted-foreground); font-size: 12px; }.tw-lab-text { margin-top: 24px; white-space: pre-wrap; color: color-mix(in oklab,var(--foreground) 86%,transparent); font-family: var(--font-display); font-size: 19px; line-height: 1.62; }.tw-lab-margin { display: grid; align-content: start; gap: 10px; padding-top: 5px; }.tw-lab-margin > p:not(.tw-kicker) { color: var(--muted-foreground); font-size: 12px; line-height: 1.45; }.tw-lab-note { padding: 10px; border-left: 2px solid var(--accent-ink); background: color-mix(in oklab,var(--accent-ink) 5%,transparent); }.tw-lab-note small { color: var(--accent-ink); font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; }.tw-lab-note blockquote { margin: 7px 0; font-family: var(--font-display); font-size: 14px; font-style: italic; line-height: 1.2; }.tw-lab-note button { height: 27px; padding: 0 8px; font-size: 11px; }.tw-lab-compare { max-width: 1200px; margin: auto; }.tw-lab-compare-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0 20px; }.tw-lab-compare-pick select { width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--foreground); }.tw-lab-split { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }.tw-lab-split > article + article { padding-left: 34px; border-left: 1px solid var(--border); }.tw-lab-split .tw-lab-text { font-size: 16px; }.tw-lab-count { max-width: 820px; margin: auto; }.tw-lab-count > p { color: var(--muted-foreground); font-size: 14px; }.tw-lab-count form { display: flex; gap: 7px; max-width: 440px; margin-top: 18px; }.tw-lab-terms { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }.tw-lab-terms button { padding: 5px 8px; border: 1px solid var(--border-strong); border-radius: 99px; color: var(--foreground); font-family: var(--font-mono); font-size: 10px; }.tw-lab-table { display: grid; gap: 8px; margin: 20px 0 36px; }.tw-lab-table > div { display: grid; grid-template-columns: minmax(160px,1fr) repeat(3,minmax(100px,.5fr)); gap: 9px; padding: 12px; border-top: 1px solid var(--border); font-size: 12px; }.tw-lab-table strong { color: var(--accent-ink); }.tw-lab-terms-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--border); }.tw-lab-terms-list b { width: 100%; font-family: var(--font-display); }.tw-lab-terms-list button { padding: 4px 7px; border-radius: 5px; background: var(--muted); font-size: 12px; }.tw-lab-terms-list small { color: var(--muted-foreground); }.tw-lab-coder { position: fixed; z-index: 70; left: 50%; bottom: 26px; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; max-width: min(720px,calc(100vw - 32px)); padding: 8px; border: 1px solid var(--border-strong); border-radius: 13px; background: var(--card); box-shadow: var(--shadow-lift); transform: translateX(-50%); }.tw-lab-coder button { padding: 7px 9px; border: 1px solid var(--border); border-radius: 7px; font-size: 11px; }.tw-lab-coder button:last-child { border-color: var(--accent-ink); color: var(--accent-ink); }
+@media (max-width: 800px) { .tw-lab { inset: 8px; }.tw-lab-body { grid-template-columns: 1fr; }.tw-lab-ledger { max-height: 240px; border-right: 0; border-bottom: 1px solid var(--border); }.tw-lab-read,.tw-lab-split { grid-template-columns: 1fr; }.tw-lab-split > article + article { padding-left: 0; border-left: 0; border-top: 1px solid var(--border); }.tw-lab-margin { display:none; }.tw-lab-table > div { grid-template-columns: 1fr; }.tw-lab-head nav button { padding: 7px; }.tw-lab-head nav button svg { margin: 0; } }
+.tw-card.is-fault, .tw-fault .tw-card { box-shadow: 0 0 0 1.5px var(--accent-ink), var(--shadow-card); }
+.tw-thread-traced { filter: drop-shadow(0 0 3px color-mix(in oklab, var(--foreground) 35%, transparent)); }
+.tw-provenance { stroke-dasharray: 8 12 !important; animation: tw-pulse-path 1.8s linear infinite; filter: drop-shadow(0 0 4px var(--accent-ink)); }
+@keyframes tw-pulse-path { to { stroke-dashoffset: -60; } }
+/* Continuous semantic zoom: layers cross-fade and spring, driven by --z/--full/--label/--unfold. */
+.tw-card { display: grid; --spring: cubic-bezier(.34,1.32,.5,1); }
+.tw-full, .tw-compact { grid-area: 1 / 1; transition: opacity .32s ease, transform .45s var(--spring), filter .32s ease; }
+.tw-full { opacity: var(--full); transform: scale(calc(0.96 + var(--full) * 0.04)); filter: blur(calc((1 - var(--full)) * 2px)); }
+.tw-compact { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; pointer-events: none; opacity: calc(1 - var(--full)); transform: scale(calc(1.04 - var(--full) * 0.04)); }
+.tw-seal { flex-shrink: 0; width: calc(24px + (1 - var(--label)) * 36px); height: calc(24px + (1 - var(--label)) * 36px); transition: width .4s var(--spring), height .4s var(--spring); }
+.tw-compact-text { min-width: 0; flex: 1; opacity: var(--label); max-width: calc(var(--label) * 200px); overflow: hidden; transition: opacity .3s ease, max-width .45s var(--spring); }
+.tw-compact-text .font-display { font-size: clamp(20px, calc(12px / var(--z)), 44px); }
+.tw-pill { display: inline-block; margin-top: 4px; border: 1px solid currentColor; border-radius: 999px; padding: 1px 8px; color: var(--muted-foreground); font-size: clamp(10px, calc(7px / var(--z)), 22px); }
+.tw-body { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.tw-unfold { overflow: hidden; max-height: calc(var(--unfold) * 320px); opacity: var(--unfold); transform: translateY(calc((1 - var(--unfold)) * -6px)); transition: max-height .5s var(--spring), opacity .35s ease, transform .5s var(--spring); }
+
+/* Volumetric paper: lift encodes how ungrounded a belief is; the light follows the cursor. */
+.tw-card {
+  --lift: 0; --near: 0;
+  --off: calc(1px + var(--lift) * 12px + var(--near) * var(--lift) * 6px);
+  isolation: isolate;
+  box-shadow:
+    0 0 0 1px oklch(0.25 0.02 60 / calc(7% + (1 - var(--lift)) * 6%)),
+    calc(var(--lx, 0) * -1 * var(--off) * 0.6) calc(var(--off) * 0.5 + var(--ly, 0) * -1 * var(--off) * 0.4) calc(var(--off) * 1.6) calc(var(--off) * -0.6) oklch(0.25 0.02 60 / calc(6% + var(--lift) * 14%)),
+    calc(var(--lx, 0) * -1 * var(--off) * 1.4) calc(var(--off) * 1.5 + var(--ly, 0) * -1 * var(--off)) calc(var(--off) * 3.4) calc(var(--off) * -1.6) oklch(0.25 0.02 60 / calc(var(--lift) * 18%));
+  transform: translateY(calc(var(--lift) * -3px - var(--near) * var(--lift) * 2px));
+  transition: box-shadow .35s ease, transform .4s cubic-bezier(.2,.8,.2,1);
+  background-image: radial-gradient(circle at var(--hx, 50%) var(--hy, 0%), color-mix(in oklab, var(--card) 70%, white) 0%, transparent 55%);
+  background-blend-mode: normal;
+}
+.tw-card:not(:hover) { background-image: none; }
+.tw-card.is-grounded { outline: 1px solid var(--border-strong); outline-offset: 3px; }
+.tw-card.is-floating { background-color: transparent; }
+.tw-deckle { position: absolute; inset: -1px; z-index: -1; border-radius: inherit; background: var(--card); filter: url(#tw-deckle); }
+.react-flow__node:hover .tw-card { box-shadow:
+    0 0 0 1px oklch(0.25 0.02 60 / 9%),
+    calc(var(--lx, 0) * -1 * var(--off) * 1.4) calc(var(--off) * 1.6) calc(var(--off) * 3.6) calc(var(--off) * -1.4) oklch(0.25 0.02 60 / calc(10% + var(--lift) * 18%)); }
+.tw-card.is-selected { box-shadow: 0 0 0 1.5px var(--foreground), 0 0 0 5px color-mix(in oklab, var(--card-tint) 18%, transparent), var(--shadow-lift); }
+.tw-kbd .tw-card.is-focus-ring { box-shadow: 0 0 0 2px var(--brass), 0 0 0 6px color-mix(in oklab, var(--brass) 22%, transparent), 0 0 24px color-mix(in oklab, var(--brass) 30%, transparent), var(--shadow-lift); transition: box-shadow .22s cubic-bezier(.2,.8,.2,1); }
+.tw-card.is-link-anchor { box-shadow: 0 0 0 2px var(--brass), 0 0 0 2px var(--card), 0 0 0 4px var(--brass); }
+.tw-card.is-link-anchor { animation: tw-anchor 1.4s ease-in-out infinite; }
+@keyframes tw-anchor { 50% { box-shadow: 0 0 0 2px var(--brass), 0 0 0 6px var(--card), 0 0 0 8px color-mix(in oklab, var(--brass) 50%, transparent); } }
+/* The graph quietly communicates its epistemic state without turning into a dashboard. */
+.tw-card.is-grounded-evidence::after { content: ""; position: absolute; inset: 7px; border: 1px solid color-mix(in oklab, var(--card-tint) 28%, transparent); border-radius: 9px; pointer-events: none; opacity: .65; }
+.tw-card.is-uncertain { animation: tw-uncertain-drift 7s ease-in-out infinite; }
+.tw-card.is-risk-pulse { box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent-ink) 45%, transparent), var(--shadow-card); animation: tw-risk-breath 3.8s ease-in-out infinite; }
+@keyframes tw-uncertain-drift { 50% { transform: translateY(calc(var(--lift) * -3px - var(--near) * var(--lift) * 2px - 2px)) rotate(.18deg); } }
+@keyframes tw-risk-breath { 50% { box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent-ink) 75%, transparent), 0 0 28px color-mix(in oklab, var(--accent-ink) 20%, transparent), var(--shadow-card); } }
+
+/* Elastic cords and the ink-snap when one latches into a port. */
+.tw-cord { stroke-linecap: round; }
+.tw-ink-snap { animation: tw-ink-draw .55s cubic-bezier(.2,.9,.3,1) both; stroke-dasharray: 1200; }
+@keyframes tw-ink-draw { from { stroke-dashoffset: 1200; } to { stroke-dashoffset: 0; } }
+.tw-ink-bleed { fill: var(--foreground); transform-box: fill-box; transform-origin: center; animation: tw-bleed .8s ease-out .35s both; pointer-events: none; }
+@keyframes tw-bleed { 0% { opacity: .55; transform: scale(.4); } 60% { opacity: .18; transform: scale(3.2); } 100% { opacity: 0; transform: scale(4); } }
+.react-flow__node.tw-recoil .tw-card { animation: tw-recoil .32s cubic-bezier(.3,1.6,.5,1); }
+@keyframes tw-recoil { 30% { transform: translateX(-3px) scale(.99); } 100% { transform: none; } }
+.tw-transclude-target { outline: 2px dashed var(--brass); outline-offset: -6px; }
+@media (prefers-reduced-motion: reduce) { .tw-ink-snap, .tw-ink-bleed, .tw-card.is-link-anchor, .tw-card.is-uncertain, .tw-card.is-risk-pulse, .react-flow__node.tw-recoil .tw-card { animation: none; } .tw-full, .tw-compact, .tw-unfold, .tw-seal, .tw-compact-text { transition: none; } }
+.tw-timeline input[type="range"] { height: 36px; cursor: ew-resize; }
+.tw-replay .react-flow__node { cursor: default; }
+.tw-toolstrip { scrollbar-width: none; }
+.tw-toolstrip::-webkit-scrollbar { display: none; }
+
+/* Organizing papers retain the same ink and epistemic spine. */
+:root {
+  --paper-paper: var(--card);
+  --paper-butter: oklch(0.955 0.075 96);
+  --paper-rose: oklch(0.944 0.045 15);
+  --paper-sage: oklch(0.932 0.045 153);
+  --paper-sky: oklch(0.943 0.035 235);
+  --paper-lilac: oklch(0.937 0.038 305);
+}
+.dark {
+  --paper-paper: var(--card);
+  --paper-butter: oklch(0.32 0.05 96);
+  --paper-rose: oklch(0.32 0.04 15);
+  --paper-sage: oklch(0.32 0.04 153);
+  --paper-sky: oklch(0.32 0.04 235);
+  --paper-lilac: oklch(0.32 0.04 305);
+}
+[data-paper="paper"], [data-canvas-paper="paper"] { --paper-tone: var(--paper-paper); }
+[data-paper="butter"], [data-canvas-paper="butter"] { --paper-tone: var(--paper-butter); }
+[data-paper="rose"], [data-canvas-paper="rose"] { --paper-tone: var(--paper-rose); }
+[data-paper="sage"], [data-canvas-paper="sage"] { --paper-tone: var(--paper-sage); }
+[data-paper="sky"], [data-canvas-paper="sky"] { --paper-tone: var(--paper-sky); }
+[data-paper="lilac"], [data-canvas-paper="lilac"] { --paper-tone: var(--paper-lilac); }
+.tw-card[data-paper] { background-color: var(--paper-tone); background-image: none; }
+.tw-card[data-paper] .tw-deckle { background: var(--paper-tone); }
+/* Custom card colors: labels switch to a contrast-safe ink picked from the tone. */
+.tw-card[data-paper="custom"] { color: var(--paper-ink); }
+.tw-card[data-paper="custom"] .text-muted-foreground { color: var(--paper-muted); }
+.tw-card[data-paper="custom"] .border-dashed { border-color: var(--paper-muted); }
+.tw-swatch-custom { background-image: conic-gradient(var(--paper-butter), var(--paper-rose), var(--paper-lilac), var(--paper-sky), var(--paper-sage), var(--paper-butter)); }
+.tw-swatch-custom[data-disabled] { opacity: .5; pointer-events: none; }
+/* Tall notes: the body fills the resized height instead of clamping to 3 lines. */
+.tw-card.tw-tall { height: var(--note-height, 260px); grid-template-rows: minmax(0, 1fr); }
+.tw-card.tw-tall .tw-full { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; }
+.tw-card.tw-tall .tw-full > * { flex-shrink: 0; min-width: 0; overflow-wrap: anywhere; }
+.tw-card.tw-tall .tw-body { display: block; flex: 1 1 auto; min-height: 40px; overflow-y: auto; overflow-x: hidden; white-space: pre-wrap; overflow-wrap: anywhere; scrollbar-width: thin; scrollbar-color: var(--paper-muted, var(--border-strong)) transparent; overscroll-behavior: contain; cursor: text; touch-action: pan-y; padding-right: 6px; }
+.tw-card.tw-tall .tw-body:focus-visible { outline: 1px solid currentColor; outline-offset: 2px; }
+.tw-card.tw-tall .tw-compact { position: absolute; inset: 12px 0 auto; grid-area: auto; }
+/* Note resize grip: a small paper tab under hovered or selected notes. */
+.tw-note-grip { position: absolute; left: 50%; bottom: -11px; z-index: 2; width: 64px; height: 22px; padding: 0; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; cursor: ns-resize; touch-action: none; opacity: 0.6; transition: opacity .2s ease; }
+.react-flow__node:hover .tw-note-grip, .react-flow__node.selected .tw-note-grip, .tw-note-grip:focus-visible { opacity: 1; }
+.tw-note-grip-pill { display: block; width: 44px; height: 6px; border-radius: 3px; background: var(--border-strong); }
+.tw-note-grip:hover .tw-note-grip-pill { background: var(--foreground); }
+.tw-swatch, .tw-file-preview { background-color: var(--paper-tone); color: var(--foreground); }
+.tw-swatch:hover, .tw-file-preview:hover { background-color: var(--paper-tone); }
+.tw-swatch[aria-pressed="true"] { outline: 1px solid var(--foreground); outline-offset: 2px; }
+[data-canvas-paper]:not([data-canvas-paper="paper"]) .react-flow { --xy-background-color: color-mix(in oklab, var(--paper-tone) 55%, var(--background)); }
+.tw-file-preview { background-image: linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px); background-size: 24px 24px; }
+.tw-file-mark { display: grid; place-items: center; width: 52px; height: 52px; background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow-card); transform: rotate(-5deg); }
+.tw-library { max-height: 90dvh; overflow-y: auto; }
+.tw-library { grid-template-columns: minmax(0, 1fr); }
+.tw-library > *, .tw-library section, .tw-library aside { min-width: 0; }
+.tw-library h2 { overflow-wrap: anywhere; text-align: left; }
+.tw-account { grid-template-columns: minmax(0, 1fr); }
+.tw-planning { grid-template-columns: minmax(0, 1fr); }
+.tw-planning > *, .tw-planning section, .tw-planning aside { min-width: 0; }
+.tw-planning h2, .tw-planning h3, .tw-planning p { overflow-wrap: anywhere; }
+.tw-gantt-track { background-image: linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: calc(100% / 31) 100%; }
+@media (max-width: 767px) { .tw-planning h2 { font-size: 24px; } }
+.tw-studio-launch { position: absolute; left: 24px; top: 184px; z-index: 15; gap: 7px; box-shadow: var(--shadow-card); }
+.tw-chrome-quiet .tw-studio-launch { top: 78px; left: 20px; }
+.tw-chrome-quiet .tw-planning-launch { top: 126px !important; left: 20px !important; }
+.tw-planning-launch { min-width: 120px; justify-content: flex-start; border-radius: 11px; box-shadow: var(--shadow-card); }
+.tw-canvas-toggle { backdrop-filter: blur(12px); }
+.tw-chrome-quiet .react-flow__controls { margin-bottom: 86px !important; }
+.tw-chrome-quiet .react-flow__minimap { margin-bottom: 86px !important; opacity: .76; }
+.tw-studio-panel { position: absolute; z-index: 30; right: 24px; top: 140px; bottom: 92px; width: min(760px, calc(100% - 48px)); background: var(--card); color: var(--foreground); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: var(--shadow-lift); display: flex; flex-direction: column; overflow: hidden; }
+.tw-studio-body { display: grid; grid-template-columns: 210px minmax(0,1fr); flex: 1; min-height: 0; }
+.tw-studio-nav { overflow-y: auto; border-right: 1px solid var(--border); padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; }
+.tw-studio-nav button { flex-shrink: 0; }
+.tw-studio-content { min-width: 0; overflow-y: auto; padding: 24px; }
+.tw-studio-content * { overflow-wrap: anywhere; }
+.tw-studio-content progress { accent-color: var(--brass); }
+.tw-frame-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+.tw-frame-paper { fill: none; stroke: var(--border-strong); stroke-width: 2; stroke-dasharray: 12 6; }
+.tw-lane-paper { fill: color-mix(in oklab, var(--paper-sage) 12%, transparent); stroke: var(--border-strong); stroke-width: 2; }
+.tw-frame-label { font-family: var(--font-mono); font-size: 16px; fill: var(--muted-foreground); }
+.tw-ink-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 16; }
+.tw-ink-layer.is-drawing { pointer-events: auto; touch-action: none; cursor: crosshair; }
+.tw-ink-stroke { stroke: var(--accent-ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.tw-laser-dot { fill: var(--accent-ink); filter: drop-shadow(0 0 4px var(--accent-ink)); }
+.tw-ink-controls { position: absolute; z-index: 35; left: 50%; transform: translateX(-50%); bottom: 92px; display: flex; gap: 8px; }
+.tw-live-strip { position: absolute; z-index: 15; left: 76px; top: 184px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 4px 8px; background: var(--card); border: 1px solid var(--border); max-width: calc(100% - 100px); font-size: 12px; border-radius: 6px; }
+.tw-presence-cursor { position: absolute; color: var(--accent-ink); display: flex; gap: 4px; align-items: flex-start; transition: left .12s linear, top .12s linear; }
+.tw-presence-cursor span { background: var(--card); color: var(--foreground); border: 1px solid var(--border); padding: 3px 6px; font-family: var(--font-mono); font-size: 10px; white-space: nowrap; }
+.tw-reaction-stamps { position: absolute; right: -8px; bottom: -10px; z-index: 4; display: flex; gap: 4px; pointer-events: none; }
+.tw-reaction-stamps span { display: grid; place-items: center; min-width: 28px; height: 28px; padding: 0 5px; border-radius: 50%; background: var(--accent-ink); color: var(--dock-foreground); font-family: var(--font-mono); font-size: 11px; box-shadow: var(--shadow-card); }
+.tw-decision-seal { display: flex; gap: 16px; border-top: 1px solid var(--brass); padding-top: 16px; color: var(--foreground); }
+.tw-decision-seal > svg { color: var(--brass); flex-shrink: 0; }
+.tw-presenting .tw-desk-chrome, .tw-presenting .react-flow__controls, .tw-presenting .react-flow__minimap, .tw-presenting .tw-note-grip, .tw-presenting .tw-live-strip { display: none !important; }
+.tw-presenting .react-flow__node { pointer-events: none; }
+@media(max-width:767px) { .tw-studio-launch {left:16px;top:276px;} .tw-live-strip {left:104px;top:276px;} .tw-studio-panel {inset:330px 8px 8px; width:auto;} .tw-studio-body {grid-template-columns:52px minmax(0,1fr);} .tw-studio-nav {padding:8px 4px;} .tw-studio-nav button {width:40px;padding:0;justify-content:center;} .tw-studio-nav span {display:none;} .tw-studio-content {padding:16px;} .tw-presentation-caption {left:16px;right:16px;} .tw-presentation-caption h2 {font-size:24px;} }
+@media(prefers-reduced-motion:reduce) { .tw-presence-cursor {transition:none;} }
+
+/* ---------- Strategy tools ---------- */
+.tw-kicker { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-foreground); }
+.tw-figure { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; background: var(--card); min-width: 0; }
+.tw-figure strong { font-weight: 500; overflow-wrap: anywhere; }
+.tw-matrix { border-top: 1px solid var(--border); }
+.tw-matrix-head, .tw-matrix-row { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 0.8fr) 36px; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.tw-matrix-head { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-foreground); }
+.tw-matrix-row--budget { grid-template-columns: minmax(0, 1fr) 112px; padding: 8px 0; }
+.tw-load { height: 6px; background: var(--muted); border-radius: 1px; overflow: hidden; }
+.tw-load span { display: block; height: 100%; background: var(--foreground); transition: width 300ms ease; }
+.tw-load span[data-over] { background: var(--accent-ink); }
+.tw-milestones { position: relative; display: grid; gap: 14px; padding-left: 20px; border-left: 1px solid var(--border-strong); margin-left: 4px; }
+.tw-milestones li { position: relative; display: grid; gap: 1px; }
+.tw-milestones li::before { content: ""; position: absolute; left: -25px; top: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--background); border: 1.5px solid var(--foreground); }
+.tw-milestones li[data-risk]::before { border-color: var(--accent-ink); background: var(--accent-ink); }
+.tw-empty-note { display: grid; gap: 8px; justify-items: start; padding: 28px; border: 1px dashed var(--border-strong); }
+.tw-dossier-head { display: grid; gap: 8px; justify-items: start; padding-bottom: 16px; border-bottom: 2px solid var(--foreground); }
+.tw-score { display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid var(--foreground); }
+.tw-audit-list { display: grid; }
+.tw-audit-list > div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.tw-audit-list dt { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-foreground); padding-top: 2px; }
+.tw-certificate { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; padding: 20px; margin-bottom: 12px; border: 1px solid var(--foreground); outline: 1px solid var(--foreground); outline-offset: 3px; background: var(--card); }
+.tw-certificate[data-broken] { border-color: var(--accent-ink); outline-color: var(--accent-ink); color: var(--accent-ink); }
+
+/* ---------- Presentation stage ---------- */
+.tw-stage { --stage-accent: var(--accent-ink); position: fixed; isolation: isolate; inset: 0; z-index: 80; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; color: var(--foreground); background: color-mix(in oklab, var(--foreground) 68%, transparent); backdrop-filter: blur(10px) saturate(70%); outline: none; overflow: hidden; animation: tw-stage-in 360ms ease both; }
+.tw-stage[data-atmosphere="quiet"] { --stage-accent: var(--brass); background: color-mix(in oklab, var(--foreground) 78%, transparent); }
+.tw-stage[data-atmosphere="electric"] { --stage-accent: #a879ff; background: color-mix(in oklab, #100725 72%, transparent); }
+.tw-stage-orbit { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; opacity: .45; }
+.tw-stage-orbit i { position: absolute; width: 52vw; aspect-ratio: 1; border: 1px solid color-mix(in oklab, var(--stage-accent) 30%, transparent); border-radius: 50%; filter: blur(.1px); animation: tw-orbit 22s linear infinite; }
+.tw-stage-orbit i:nth-child(1) { top: -34vw; left: -12vw; } .tw-stage-orbit i:nth-child(2) { right: -22vw; bottom: -38vw; width: 68vw; animation-direction: reverse; animation-duration: 30s; } .tw-stage-orbit i:nth-child(3) { top: 22%; right: 7%; width: 10vw; border-width: 2px; animation-duration: 12s; }
+.tw-stage-constellation { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.tw-stage-constellation > button { --orbit-angle: calc(var(--orbit-index) * 60deg); position: absolute; left: 50%; top: 50%; width: min(170px, 19vw); padding: 11px 13px; border: 1px solid color-mix(in oklab, var(--stage-accent) 52%, transparent); border-radius: 999px; background: color-mix(in oklab, var(--card) 84%, transparent); color: var(--primary-foreground); font-family: var(--font-display); font-size: 13px; line-height: 1.08; text-align: left; box-shadow: 0 10px 35px color-mix(in oklab, var(--stage-accent) 16%, transparent); pointer-events: auto; transform: rotate(var(--orbit-angle)) translateX(min(37vw, 490px)) rotate(calc(-1 * var(--orbit-angle))); animation: tw-constellation-float calc(8s + var(--orbit-index) * 1s) ease-in-out infinite alternate; }
+.tw-stage-constellation > button span { display: block; margin-bottom: 4px; font-family: var(--font-mono); font-size: 8px; letter-spacing: .14em; color: var(--stage-accent); }.tw-stage-constellation > button:hover { border-color: var(--primary-foreground); transform: rotate(var(--orbit-angle)) translateX(min(39vw, 510px)) rotate(calc(-1 * var(--orbit-angle))) scale(1.05); }.tw-stage-constellation > p { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); color: color-mix(in oklab, var(--primary-foreground) 60%, transparent); font-family: var(--font-display); font-style: italic; }
+.tw-stage-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; padding: 12px 20px; color: var(--primary-foreground); }
+.tw-stage-bar .tw-kicker { color: color-mix(in oklab, var(--primary-foreground) 70%, transparent); }
+.tw-stage-bar button, .tw-stage-bar button:hover { color: var(--primary-foreground); }
+.tw-stage-bar button:hover { background: color-mix(in oklab, var(--primary-foreground) 12%, transparent); }
+.tw-stage-main { display: grid; place-items: center; padding: 12px 24px 20px; min-height: 0; overflow: hidden; }
+.tw-slide { position: relative; width: min(780px, 100%); max-height: 100%; overflow-y: auto; padding: clamp(26px, 3.4vw, 48px); background: color-mix(in oklab, var(--card) 98%, transparent); border: 1px solid color-mix(in oklab, var(--stage-accent) 32%, var(--border-strong)); border-radius: 14px; box-shadow: 0 32px 70px -34px color-mix(in oklab, var(--foreground) 65%, transparent), 0 2px 0 var(--border); animation: tw-slide-in 580ms cubic-bezier(.15,.8,.2,1) both; }
+.tw-stage[data-scene="constellation"] .tw-slide { background: color-mix(in oklab, var(--card) 91%, transparent); backdrop-filter: blur(12px); }.tw-stage[data-scene="signal"] .tw-slide { width: min(1080px, 100%); border-radius: 2px 34px 2px 34px; background: color-mix(in oklab, var(--card) 92%, transparent); }.tw-signal-echo { position: absolute; left: -2%; right: -2%; top: 35%; z-index: -1; overflow: hidden; color: color-mix(in oklab, var(--stage-accent) 12%, transparent); font-family: var(--font-display); font-size: clamp(80px, 15vw, 230px); font-weight: 800; line-height: .72; letter-spacing: -.08em; text-align: center; white-space: nowrap; user-select: none; animation: tw-signal-drift 18s ease-in-out infinite alternate; }
+.tw-slide-halo { position: absolute; right: clamp(24px, 6vw, 74px); top: clamp(20px, 5vw, 58px); width: 90px; aspect-ratio: 1; border: 1px solid color-mix(in oklab, var(--stage-accent) 58%, transparent); border-radius: 50%; box-shadow: 0 0 0 14px color-mix(in oklab, var(--stage-accent) 7%, transparent), 0 0 46px color-mix(in oklab, var(--stage-accent) 24%, transparent); animation: tw-breathe 5s ease-in-out infinite; pointer-events: none; }
+.tw-slide-meta { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+.tw-slide-title { margin-top: 14px; font-family: var(--font-display); font-weight: 400; font-size: clamp(30px, 3.6vw, 52px); line-height: 1.06; letter-spacing: -0.02em; overflow-wrap: anywhere; text-wrap: balance; }
+.tw-slide-chapter { margin-top: 20px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--stage-accent); }
+.tw-story-spine { display: grid; grid-template-columns: minmax(0, 1fr) 82px minmax(0, 1fr); align-items: center; gap: 12px; margin: 8px 0 18px; padding-bottom: 13px; border-bottom: 1px solid color-mix(in oklab, var(--stage-accent) 20%, var(--border)); }
+.tw-story-spine > button { min-width: 0; text-align: left; font-family: var(--font-display); font-size: 14px; line-height: 1.15; color: color-mix(in oklab, var(--foreground) 70%, transparent); transition: color .2s ease, transform .2s ease; } .tw-story-spine > button:last-child { text-align: right; } .tw-story-spine > button:not(:disabled):hover { color: var(--stage-accent); transform: translateX(-3px); } .tw-story-spine > button:last-child:not(:disabled):hover { transform: translateX(3px); } .tw-story-spine > button:disabled { opacity: .36; cursor: default; }
+.tw-story-spine button span { display: block; margin-bottom: 4px; font-family: var(--font-mono); font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted-foreground); } .tw-story-spine > div { display: flex; align-items: center; gap: 5px; color: var(--stage-accent); } .tw-story-spine i { height: 1px; flex: 1; background: currentColor; opacity: .6; } .tw-story-spine strong { font-family: var(--font-mono); font-size: 12px; }
+.tw-reveal { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; margin-top: 24px; padding: 15px 17px; border-radius: 12px; animation: tw-reveal-in .5s cubic-bezier(.15,.8,.2,1) both; }
+.tw-reveal > span { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-family: var(--font-display); font-size: 22px; } .tw-reveal svg { width: 16px; } .tw-reveal p:not(.tw-kicker) { margin-top: 4px; line-height: 1.45; } .tw-reveal-question h3 { margin-top: 5px; font-family: var(--font-display); font-size: clamp(20px, 2.4vw, 29px); font-style: italic; line-height: 1.12; }
+.tw-reveal-context { color: color-mix(in oklab, var(--foreground) 90%, var(--stage-accent)); background: color-mix(in oklab, var(--stage-accent) 9%, transparent); border: 1px solid color-mix(in oklab, var(--stage-accent) 25%, transparent); } .tw-reveal-question { color: var(--foreground); background: color-mix(in oklab, var(--brass) 15%, transparent); border: 1px solid color-mix(in oklab, var(--brass) 45%, transparent); } .tw-reveal-question > span { color: var(--brass); }
+.tw-audience-fork { margin-top: 22px; padding: 17px; border: 1px dashed color-mix(in oklab, var(--stage-accent) 70%, var(--border)); border-radius: 14px; background: color-mix(in oklab, var(--stage-accent) 6%, transparent); animation: tw-reveal-in .5s cubic-bezier(.15,.8,.2,1) both; }.tw-audience-fork > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 11px; }.tw-audience-fork button { display: grid; gap: 6px; min-height: 70px; padding: 12px; border: 1px solid color-mix(in oklab, var(--stage-accent) 38%, var(--border)); border-radius: 9px; color: var(--foreground); font-family: var(--font-display); font-size: 17px; line-height: 1.05; text-align: left; transition: transform .2s ease, background .2s ease; }.tw-audience-fork button span { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--stage-accent); }.tw-audience-fork button:hover { transform: translateY(-3px); background: color-mix(in oklab, var(--stage-accent) 14%, transparent); }
+.tw-slide-body { margin-top: 16px; max-width: 62ch; font-size: clamp(15px, 1.3vw, 18px); line-height: 1.55; color: color-mix(in oklab, var(--foreground) 80%, transparent); white-space: pre-wrap; overflow-wrap: anywhere; }
+.tw-slide-facts { margin-top: 28px; display: grid; gap: 14px; padding-left: 18px; border-left: 2px solid var(--accent-ink); }
+.tw-slide-facts dt { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-foreground); }
+.tw-slide-facts dd { margin-top: 4px; font-size: 16px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tw-slide-links { margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.tw-slide-links ul { margin-top: 10px; display: grid; gap: 10px; }
+.tw-slide-links li { font-family: var(--font-display); font-size: 17px; line-height: 1.3; overflow-wrap: anywhere; }
+.tw-slide-links button { display: block; width: 100%; text-align: left; color: inherit; transition: transform 180ms ease, color 180ms ease; } .tw-slide-links button:not(:disabled):hover { color: var(--stage-accent); transform: translateX(4px); } .tw-slide-links button:disabled { cursor: default; }
+.tw-slide-rel { display: block; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 2px; }
+.tw-slide-focus { margin-top: 28px; padding: 18px 20px; border-radius: 12px; background: color-mix(in oklab, var(--stage-accent) 9%, transparent); border: 1px solid color-mix(in oklab, var(--stage-accent) 25%, transparent); } .tw-slide-focus h3 { font-family: var(--font-display); font-size: 22px; font-style: italic; } .tw-slide-focus p { margin-top: 6px; line-height: 1.5; color: color-mix(in oklab, var(--foreground) 82%, transparent); }
+.tw-slide-detour { margin-top: 22px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; color: var(--muted-foreground); }
+.tw-stage-controls { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px 22px; color: var(--primary-foreground); }
+.tw-stage-controls > button, .tw-stage-controls > button:hover { color: var(--primary-foreground); }
+.tw-stage-controls > button:hover { background: color-mix(in oklab, var(--primary-foreground) 12%, transparent); }
+.tw-scrubber { display: flex; gap: 4px; width: min(420px, 50vw); }
+.tw-scrubber button { flex: 1; height: 20px; position: relative; cursor: pointer; background: none; border: 0; padding: 0; }
+.tw-scrubber button::after { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 2px; background: color-mix(in oklab, var(--primary-foreground) 30%, transparent); transition: background 200ms, height 200ms, top 200ms; }
+.tw-scrubber button[data-state="past"]::after { background: color-mix(in oklab, var(--primary-foreground) 75%, transparent); }
+.tw-scrubber button[data-state="now"]::after { background: var(--accent-ink); height: 4px; top: 8px; }
+.tw-scrubber button:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.tw-stage-hint { position: absolute; right: 20px; bottom: 26px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; color: color-mix(in oklab, var(--primary-foreground) 55%, transparent); }
+.tw-stage-lens { color: color-mix(in oklab, var(--primary-foreground) 48%, transparent); }
+.tw-director, .tw-story-map { position: absolute; z-index: 3; top: 64px; right: 20px; width: min(330px, calc(100vw - 40px)); padding: 18px; border: 1px solid color-mix(in oklab, var(--stage-accent) 45%, var(--border-strong)); border-radius: 14px; color: var(--foreground); background: color-mix(in oklab, var(--card) 94%, transparent); box-shadow: 0 24px 56px -25px #000; backdrop-filter: blur(18px); animation: tw-pop .28s cubic-bezier(.2,.8,.2,1) both; }
+.tw-presenter-notes { position: absolute; z-index: 4; top: 64px; left: 20px; width: min(330px, calc(100vw - 40px)); overflow: hidden; border: 1px solid color-mix(in oklab, var(--brass) 56%, var(--border-strong)); border-radius: 14px; color: var(--foreground); background: color-mix(in oklab, var(--card) 96%, transparent); box-shadow: 0 24px 56px -25px #000; backdrop-filter: blur(18px); animation: tw-pop .28s cubic-bezier(.2,.8,.2,1) both; }.tw-presenter-notes header { display: flex; align-items: center; justify-content: space-between; padding: 14px 15px 10px; border-bottom: 1px solid color-mix(in oklab, var(--brass) 24%, var(--border)); }.tw-presenter-notes header button { color: var(--foreground); }.tw-presenter-notes header svg { width: 16px; }.tw-presenter-notes section { padding: 12px 15px; border-bottom: 1px solid var(--border); }.tw-presenter-notes section small { font-family: var(--font-mono); font-size: 9px; letter-spacing: .13em; text-transform: uppercase; color: var(--stage-accent); }.tw-presenter-notes section p { margin-top: 5px; font-family: var(--font-display); font-size: 16px; line-height: 1.2; }.tw-presenter-notes footer { display: flex; gap: 8px; padding: 12px 15px; }.tw-presenter-notes footer span { padding: 5px 7px; border: 1px solid var(--border); border-radius: 6px; color: var(--muted-foreground); font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; }
+.tw-director { display: grid; gap: 16px; } .tw-director > div p { margin-top: 5px; font-family: var(--font-display); font-size: 18px; font-style: italic; } .tw-director label { display: grid; gap: 7px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted-foreground); }
+.tw-arc-strip { position: absolute; z-index: 4; top: 64px; left: 20px; display: flex; align-items: center; gap: 4px; max-width: min(590px, calc(100vw - 400px)); padding: 7px; border: 1px solid color-mix(in oklab, var(--stage-accent) 42%, var(--border)); border-radius: 13px; background: color-mix(in oklab, var(--card) 94%, transparent); box-shadow: 0 20px 44px -28px #000; backdrop-filter: blur(16px); animation: tw-pop .28s cubic-bezier(.2,.8,.2,1) both; }.tw-arc-strip > span { padding: 0 5px; white-space: nowrap; color: var(--muted-foreground); }.tw-arc-strip button { border: 1px solid transparent; border-radius: 8px; padding: 7px 9px; color: var(--muted-foreground); font-family: var(--font-display); font-size: 13px; text-transform: capitalize; transition: transform .18s, color .18s, background .18s, border-color .18s; }.tw-arc-strip button:hover { color: var(--foreground); transform: translateY(-1px); }.tw-arc-strip button[data-active="true"] { border-color: var(--stage-accent); background: color-mix(in oklab, var(--stage-accent) 12%, transparent); color: var(--stage-accent); }
+.tw-choice-row { display: flex; gap: 5px; } .tw-choice-row button { flex: 1; border: 1px solid var(--border); border-radius: 7px; padding: 7px 4px; text-transform: capitalize; color: var(--foreground); transition: all 180ms ease; } .tw-choice-row button[data-active="true"] { border-color: var(--stage-accent); color: var(--stage-accent); background: color-mix(in oklab, var(--stage-accent) 10%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--stage-accent) 35%, transparent); }
+.tw-director-note { display: flex; align-items: center; gap: 6px; font-size: 11px; line-height: 1.4; color: var(--muted-foreground); } .tw-director-note svg { width: 14px; color: var(--stage-accent); }
+.tw-story-map { left: 20px; right: auto; max-height: min(62vh, 540px); overflow-y: auto; } .tw-story-map > div:first-child button { color: var(--foreground); } .tw-map-line { display: grid; gap: 2px; margin-top: 14px; border-left: 1px solid color-mix(in oklab, var(--stage-accent) 40%, var(--border)); } .tw-map-line button { position: relative; padding: 9px 10px 9px 18px; text-align: left; font-family: var(--font-display); line-height: 1.15; color: var(--foreground); } .tw-map-line button::before { content: ""; position: absolute; left: -5px; top: 50%; width: 9px; height: 9px; border: 1px solid var(--stage-accent); border-radius: 50%; background: var(--card); transform: translateY(-50%); } .tw-map-line button[data-active="true"] { color: var(--stage-accent); font-style: italic; } .tw-map-line button[data-active="true"]::before { background: var(--stage-accent); box-shadow: 0 0 14px var(--stage-accent); } .tw-map-line button > span { display: block; margin-bottom: 2px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; color: var(--muted-foreground); }
+.tw-stage-bar, .tw-stage-controls { position: relative; z-index: 5; }
+.tw-sketch-toolbar { position: absolute; z-index: 6; left: 50%; top: 68px; display: flex; align-items: center; gap: 4px; padding: 6px; border: 1px solid color-mix(in oklab, var(--stage-accent) 40%, var(--border)); border-radius: 13px; color: var(--foreground); background: color-mix(in oklab, var(--card) 94%, transparent); box-shadow: 0 18px 42px -22px #000; backdrop-filter: blur(16px); transform: translateX(-50%); animation: tw-pop .25s ease both; }
+.tw-sketch-toolbar .tw-kicker { margin: 0 5px 0 4px; white-space: nowrap; color: var(--muted-foreground); }
+.tw-sketch-toolbar button { color: var(--foreground); }.tw-sketch-toolbar svg { width: 16px; }
+.tw-stage-ink { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; touch-action: none; }
+.tw-stage-ink.is-active { pointer-events: auto; cursor: crosshair; }.tw-stage-stroke { fill: none; stroke: var(--stage-accent); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; filter: drop-shadow(0 1px 2px color-mix(in oklab, var(--foreground) 22%, transparent)); }.tw-stage-stroke.is-highlight { stroke: color-mix(in oklab, var(--brass) 78%, #ffe784); stroke-width: 18; opacity: .44; }.tw-stage-laser { fill: var(--stage-accent); stroke: color-mix(in oklab, white 70%, var(--stage-accent)); stroke-width: 2; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 8px var(--stage-accent)); }
+.tw-stage-note { position: absolute; z-index: 3; width: min(190px, 28vw); min-height: 74px; padding: 12px; resize: both; border: 1px solid color-mix(in oklab, var(--brass) 65%, var(--border)); border-radius: 3px 16px 3px 16px; outline: none; background: color-mix(in oklab, #fff0a1 82%, var(--card)); box-shadow: 0 14px 34px -20px #000; color: #46391b; font-family: var(--font-display); font-size: 16px; line-height: 1.2; transform: translate(-8%, -12%) rotate(-1deg); }.tw-stage-note:focus { box-shadow: 0 0 0 2px var(--stage-accent), 0 14px 34px -20px #000; }
+@keyframes tw-stage-in { from { opacity: 0; } }
+@keyframes tw-slide-in { from { opacity: 0; transform: translateY(14px) scale(0.985); } }
+@keyframes tw-orbit { to { transform: rotate(360deg); } } @keyframes tw-breathe { 50% { transform: scale(1.12); opacity: .55; } } @keyframes tw-pop { from { opacity: 0; transform: translateY(-8px) scale(.98); } } @keyframes tw-reveal-in { from { opacity: 0; transform: translateY(12px) scale(.98); } }
+@keyframes tw-constellation-float { from { margin-top: -8px; } to { margin-top: 12px; } } @keyframes tw-signal-drift { from { transform: translateX(-4%); } to { transform: translateX(4%); } }
+@media (prefers-reduced-motion: reduce) { .tw-stage, .tw-slide, .tw-stage-orbit i, .tw-stage-constellation > button, .tw-slide-halo, .tw-signal-echo, .tw-director, .tw-story-map, .tw-reveal, .tw-audience-fork { animation: none; } }
+@media (max-width: 900px) { .tw-stage-hint { display: none; } .tw-sketch-toolbar .tw-kicker { display: none; } }
+@media (max-width: 900px) { .tw-arc-strip { top: auto; bottom: 68px; left: 50%; max-width: calc(100vw - 24px); overflow-x: auto; transform: translateX(-50%); } .tw-arc-strip > span { display: none; } .tw-arc-strip button { white-space: nowrap; } }
+@media (max-width: 640px) { .tw-slide-links, .tw-audience-fork > div { grid-template-columns: 1fr; } .tw-stage-main { padding: 4px 12px; } .tw-slide { padding: 24px; } .tw-scrubber { width: 40vw; } .tw-story-spine { grid-template-columns: 1fr 42px 1fr; gap: 5px; } .tw-story-spine > button { font-size: 12px; } .tw-stage-constellation > button { width: 122px; font-size: 11px; transform: rotate(var(--orbit-angle)) translateX(36vw) rotate(calc(-1 * var(--orbit-angle))); } }
+
+/* ---------- Thought playback & decision theatre ---------- */
+.tw-consequence { position: fixed; inset: 0; z-index: 82; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: auto; color: var(--foreground); background: color-mix(in oklab, var(--foreground) 78%, transparent); backdrop-filter: blur(14px); animation: tw-stage-in .35s ease both; }.tw-consequence > header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; color: var(--primary-foreground); }.tw-consequence > header h2 { margin-top: 2px; font-family: var(--font-display); font-size: clamp(22px, 3vw, 34px); font-style: italic; }.tw-consequence > header button { color: var(--primary-foreground); }.tw-consequence main { display: grid; grid-template-columns: 210px minmax(0, 1fr); min-height: 0; width: min(1250px, calc(100% - 36px)); margin: 0 auto 28px; border: 1px solid color-mix(in oklab, var(--brass) 30%, transparent); border-radius: 20px; overflow: hidden; background: color-mix(in oklab, var(--card) 94%, transparent); }.tw-consequence main > aside { display: grid; align-content: start; gap: 7px; padding: 24px 15px; border-right: 1px solid var(--border); }.tw-consequence main > aside > button { padding: 11px 12px; border-left: 2px solid transparent; text-align: left; font-family: var(--font-display); font-size: 17px; color: var(--muted-foreground); }.tw-consequence main > aside > button[data-active="true"] { border-color: var(--accent-ink); color: var(--foreground); background: color-mix(in oklab, var(--accent-ink) 8%, transparent); }.tw-consequence-note { margin-top: 18px; font-size: 11px; line-height: 1.45; color: var(--muted-foreground); }.tw-consequence-world { position: relative; display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.1fr); gap: clamp(20px, 5vw, 74px); align-items: center; min-height: 500px; padding: clamp(28px, 5vw, 70px); overflow: hidden; }.tw-consequence-world::before { content: ""; position: absolute; inset: 10%; background: radial-gradient(ellipse at 35% 50%, color-mix(in oklab, var(--brass) 17%, transparent), transparent 54%); pointer-events: none; }.tw-consequence-origin,.tw-consequence-outcomes { position: relative; z-index: 1; }.tw-consequence-origin { padding: clamp(24px, 4vw, 48px); border: 1px solid var(--brass); border-radius: 45% 45% 16px 16px; background: color-mix(in oklab, var(--card) 93%, transparent); box-shadow: 0 20px 70px color-mix(in oklab, var(--brass) 21%, transparent); }.tw-consequence-origin > span,.tw-consequence-card span { font-family: var(--font-mono); font-size: 9px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent-ink); }.tw-consequence-origin h3 { margin-top: 13px; font-family: var(--font-display); font-size: clamp(27px, 3.8vw, 48px); line-height: 1.02; }.tw-consequence-origin p { margin-top: 14px; line-height: 1.5; color: var(--muted-foreground); }.tw-consequence-origin button { display: flex; align-items: center; gap: 5px; margin-top: 20px; color: var(--accent-ink); font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }.tw-consequence-origin button svg { width: 15px; }.tw-consequence-beam { position: absolute; left: 35%; right: 31%; top: 50%; z-index: 0; height: 1px; background: color-mix(in oklab, var(--brass) 60%, transparent); }.tw-consequence-beam::before { content: ""; position: absolute; right: 0; top: -4px; width: 9px; height: 9px; border-top: 1px solid var(--brass); border-right: 1px solid var(--brass); transform: rotate(45deg); }.tw-consequence-beam i { position: absolute; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-ink); animation: tw-consequence-pulse 2.5s ease-in-out infinite; }.tw-consequence-beam i:nth-child(1) { left: 20%; }.tw-consequence-beam i:nth-child(2) { left: 47%; animation-delay: .5s; }.tw-consequence-beam i:nth-child(3) { left: 75%; animation-delay: 1s; }.tw-consequence-outcomes { display: grid; align-content: center; gap: 10px; }.tw-consequence-card { display: grid; gap: 5px; padding: 14px 16px; border: 1px solid color-mix(in oklab, var(--foreground) 17%, var(--border)); border-radius: 11px; text-align: left; background: color-mix(in oklab, var(--card) 94%, transparent); transition: transform .2s ease, border-color .2s ease; }.tw-consequence-card:hover { transform: translateX(5px); border-color: var(--brass); }.tw-consequence-card strong { font-family: var(--font-display); font-size: 20px; line-height: 1.05; }.tw-consequence-card small { overflow: hidden; color: var(--muted-foreground); font-size: 12px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }.tw-consequence-empty { display: grid; gap: 8px; padding: 30px 0; color: var(--muted-foreground); }.tw-consequence-empty svg { color: var(--brass); }.tw-consequence-empty p { font-family: var(--font-display); font-size: 22px; }.tw-consequence-empty small { font-size: 12px; }
+@keyframes tw-consequence-pulse { 50% { transform: scale(1.8); opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .tw-consequence, .tw-consequence-beam i { animation: none; } }
+@media (max-width: 720px) { .tw-consequence main { grid-template-columns: 1fr; }.tw-consequence main > aside { grid-template-columns: repeat(3, 1fr); border-right: 0; border-bottom: 1px solid var(--border); }.tw-consequence main > aside .tw-kicker,.tw-consequence-note { grid-column: 1 / -1; }.tw-consequence-world { grid-template-columns: 1fr; min-height: 0; }.tw-consequence-beam { display: none; } }
+.tw-playback, .tw-theatre { position: fixed; inset: 0; z-index: 82; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; color: var(--foreground); background: color-mix(in oklab, var(--foreground) 74%, transparent); backdrop-filter: blur(12px); animation: tw-stage-in .35s ease both; }
+.tw-playback > header, .tw-theatre > header { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; color: var(--primary-foreground); }.tw-playback h2 { margin-top: 2px; font-family: var(--font-display); font-size: 24px; font-style: italic; }.tw-theatre > header p { margin-top: 3px; font-family: var(--font-display); font-size: 21px; font-style: italic; }.tw-playback header button, .tw-theatre header button { color: var(--primary-foreground); }
+.tw-playback-stage { position: relative; min-height: 0; margin: 0 clamp(12px, 4vw, 54px); overflow: hidden; border: 1px solid color-mix(in oklab, var(--brass) 30%, transparent); border-radius: 18px; background: radial-gradient(circle at 50% 48%, color-mix(in oklab, var(--brass) 12%, transparent), transparent 44%), color-mix(in oklab, var(--card) 94%, transparent); }
+.tw-playback-stage svg { width: 100%; height: 100%; }.tw-playback-thread { fill: none; stroke: color-mix(in oklab, var(--foreground) 35%, transparent); stroke-width: 2; stroke-dasharray: 8 8; animation: tw-playback-line 2.2s linear infinite; }.tw-playback-node { animation: tw-playback-node .6s cubic-bezier(.2,.8,.2,1) both; }.tw-playback-node rect:first-child { fill: var(--card); stroke: color-mix(in oklab, currentColor 52%, var(--border)); stroke-width: 1.2; }.tw-playback-node .kind,.tw-playback-node .meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.3px; text-transform: uppercase; fill: currentColor; }.tw-playback-node .title { font-family: var(--font-display); font-size: 19px; fill: var(--foreground); }.tw-playback-caption { position: absolute; left: 24px; bottom: 22px; display: flex; align-items: center; gap: 12px; max-width: min(440px, calc(100% - 48px)); padding: 10px 14px; border-radius: 10px; background: color-mix(in oklab, var(--card) 92%, transparent); box-shadow: var(--shadow-card); animation: tw-pop .35s ease both; }.tw-playback-caption > span { font-family: var(--font-mono); color: var(--accent-ink); }.tw-playback-caption p { font-family: var(--font-display); font-size: 17px; }.tw-playback-caption small { display: block; margin-top: 2px; font-family: var(--font-mono); font-size: 9px; color: var(--muted-foreground); }.tw-playback footer { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 17px 22px; color: var(--primary-foreground); }.tw-playback footer button { color: inherit; }.tw-playback footer input { width: min(480px, 54vw); accent-color: var(--brass); }
+.tw-theatre { overflow: auto; }.tw-theatre main { position: relative; display: grid; grid-template-columns: minmax(180px, 1fr) minmax(260px, 1.4fr) minmax(180px, 1fr); grid-template-rows: 1fr auto; align-items: center; gap: clamp(16px, 3vw, 44px); width: min(1120px, calc(100% - 32px)); margin: auto; padding: 28px 0 48px; }.tw-theatre main::before { content: ""; position: absolute; inset: 8% 20%; border: 1px solid color-mix(in oklab, var(--brass) 26%, transparent); border-radius: 50%; box-shadow: 0 0 0 72px color-mix(in oklab, var(--brass) 4%, transparent), 0 0 90px color-mix(in oklab, var(--brass) 16%, transparent); pointer-events: none; animation: tw-theatre-orbit 20s linear infinite; }.tw-theatre-core,.tw-theatre-ring,.tw-theatre-path { position: relative; z-index: 1; }.tw-theatre-core { padding: clamp(27px, 5vw, 60px); text-align: center; border: 1px solid var(--brass); border-radius: 50% 50% 38% 38%; background: color-mix(in oklab, var(--card) 94%, transparent); box-shadow: 0 18px 70px color-mix(in oklab, var(--brass) 24%, transparent); }.tw-theatre-core > span,.tw-theatre-card > span { display: block; font-family: var(--font-mono); font-size: 9px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent-ink); }.tw-theatre-core h2 { margin-top: 15px; font-family: var(--font-display); font-size: clamp(30px, 4vw, 54px); line-height: 1.03; }.tw-theatre-core p { margin: 16px auto 0; max-width: 43ch; line-height: 1.55; color: var(--muted-foreground); }.tw-theatre-ring { display: grid; gap: 10px; }.tw-theatre-ring h3,.tw-theatre-path h3 { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: color-mix(in oklab, var(--primary-foreground) 66%, transparent); }.tw-theatre-ring > p,.tw-theatre-path > p { margin-top: 8px; color: color-mix(in oklab, var(--primary-foreground) 64%, transparent); font-size: 14px; }.tw-theatre-card { padding: 13px 15px; text-align: left; border: 1px solid color-mix(in oklab, var(--primary-foreground) 23%, transparent); border-radius: 11px; background: color-mix(in oklab, var(--card) 94%, transparent); font-family: var(--font-display); font-size: 17px; line-height: 1.18; color: var(--foreground); transition: transform .2s ease, border-color .2s ease; }.tw-theatre-card:hover { transform: translateY(-3px); border-color: var(--brass); }.tw-theatre-card > span { margin-bottom: 6px; }.tw-theatre-path { grid-column: 1 / -1; justify-self: center; display: grid; grid-template-columns: repeat(3, minmax(160px, 1fr)); gap: 10px; width: min(780px, 100%); }.tw-theatre-path h3,.tw-theatre-path > p { grid-column: 1 / -1; text-align: center; }
+@keyframes tw-playback-line { to { stroke-dashoffset: -32; } } @keyframes tw-playback-node { from { opacity: 0; transform: translateY(16px) scale(.94); } } @keyframes tw-theatre-orbit { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .tw-playback, .tw-theatre, .tw-playback-thread, .tw-playback-node, .tw-theatre main::before { animation: none; } }
+@media (max-width: 720px) { .tw-theatre main { grid-template-columns: 1fr; grid-template-rows: auto; padding-bottom: 28px; }.tw-theatre-core { grid-row: 1; }.tw-theatre-path { grid-column: 1; grid-template-columns: 1fr; }.tw-theatre main::before { inset: 19% 5%; }.tw-theatre-ring { grid-template-columns: repeat(2, minmax(0, 1fr)); }.tw-theatre-ring h3,.tw-theatre-ring > p { grid-column: 1 / -1; } }

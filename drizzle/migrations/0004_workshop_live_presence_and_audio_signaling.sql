@@ -1,0 +1,13 @@
+CREATE TABLE public.workshop_presence(session_id uuid NOT NULL REFERENCES public.workshop_sessions(id) ON DELETE CASCADE,user_id uuid NOT NULL,client_id uuid NOT NULL,display_name text NOT NULL DEFAULT 'Participant',x double precision NOT NULL DEFAULT 0,y double precision NOT NULL DEFAULT 0,audio boolean NOT NULL DEFAULT false,updated_at timestamptz NOT NULL DEFAULT now(),PRIMARY KEY(session_id,user_id,client_id));
+GRANT SELECT,INSERT,UPDATE,DELETE ON public.workshop_presence TO authenticated; GRANT ALL ON public.workshop_presence TO service_role;
+ALTER TABLE public.workshop_presence ENABLE ROW LEVEL SECURITY;
+CREATE POLICY presence_read ON public.workshop_presence FOR SELECT TO authenticated USING(public.workshop_access(session_id));
+CREATE POLICY presence_write ON public.workshop_presence FOR ALL TO authenticated USING(user_id=auth.uid() AND public.workshop_access(session_id)) WITH CHECK(user_id=auth.uid() AND public.workshop_access(session_id));
+CREATE TABLE public.workshop_signals(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),session_id uuid NOT NULL REFERENCES public.workshop_sessions(id) ON DELETE CASCADE,sender_id uuid NOT NULL,sender_client uuid NOT NULL,recipient_id uuid NOT NULL,recipient_client uuid NOT NULL,kind text NOT NULL CHECK(kind IN ('offer','answer','ice')),payload jsonb NOT NULL,created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,INSERT,DELETE ON public.workshop_signals TO authenticated; GRANT ALL ON public.workshop_signals TO service_role;
+ALTER TABLE public.workshop_signals ENABLE ROW LEVEL SECURITY;
+CREATE POLICY signal_read ON public.workshop_signals FOR SELECT TO authenticated USING(recipient_id=auth.uid() AND public.workshop_access(session_id) AND created_at>now()-interval '2 minutes');
+CREATE POLICY signal_create ON public.workshop_signals FOR INSERT TO authenticated WITH CHECK(sender_id=auth.uid() AND public.workshop_access(session_id) AND EXISTS(SELECT 1 FROM public.workshop_presence p WHERE p.session_id=workshop_signals.session_id AND p.user_id=workshop_signals.recipient_id AND p.client_id=workshop_signals.recipient_client AND p.audio=true) AND octet_length(payload::text)<65536);
+CREATE POLICY signal_delete ON public.workshop_signals FOR DELETE TO authenticated USING((sender_id=auth.uid() OR recipient_id=auth.uid()) AND public.workshop_access(session_id));
+ALTER PUBLICATION supabase_realtime ADD TABLE public.workshop_presence, public.workshop_signals;
+CREATE INDEX workshop_signals_recipient ON public.workshop_signals(session_id,recipient_id,created_at);
