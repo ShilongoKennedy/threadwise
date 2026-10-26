@@ -10,8 +10,7 @@ import { brokeredPreviewStorage } from "./previewAuthStorage";
  * a server-created singleton could otherwise be reused during hydration.
  */
 const browserUrl = import.meta.env.VITE_SUPABASE_URL;
-const browserKey =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+const browserKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 let browserClient: SupabaseClient<Database> | undefined;
 
@@ -21,7 +20,7 @@ export function getSupabaseClient(): SupabaseClient<Database> {
   }
   if (!browserUrl || !browserKey) {
     throw new Error(
-      "Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY (VITE_SUPABASE_PUBLISHABLE_KEY also works).",
+      "Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY.",
     );
   }
   if (!browserClient) {

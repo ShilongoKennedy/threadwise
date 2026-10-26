@@ -13,7 +13,7 @@ function AuthCallback() {
     let active = true;
     const finish = async () => {
       // This runs only after hydration and initializes from Vite's browser-side
-      // VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY values.
+      // VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY values.
       const supabase = getSupabaseClient();
       const current = new URL(window.location.href);
       const providerError = current.searchParams.get("error_description") || current.searchParams.get("error");

@@ -31,11 +31,11 @@ export function AccountDialog({ onClose }: { onClose: () => void }) {
     });
     return () => { active = false; };
   }, [user?.id]);
-  const hasSupabase = Boolean(import.meta.env["VITE_SUPABASE_URL"] && (import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || import.meta.env["VITE_SUPABASE_ANON_KEY"]));
+  const hasSupabase = Boolean(import.meta.env["VITE_SUPABASE_URL"] && import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]);
   const oauth = async () => {
     setBusy(true); setMessage("");
     try {
-      if (!hasSupabase) throw new Error("Google sign-in needs a Supabase project. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY), then enable Google in Supabase Authentication → Providers.");
+      if (!hasSupabase) throw new Error("Google sign-in needs a Supabase project. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY, then enable Google in Supabase Authentication → Providers.");
       const redirectTo = new URL("/auth/callback", window.location.origin).toString();
       const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
       if (error) throw error;
