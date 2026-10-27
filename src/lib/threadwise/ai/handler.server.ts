@@ -106,16 +106,18 @@ export async function handleThreadwise(request: Request) {
       const combinedText = scrapedDocs.join("\n\n---\n\n");
 
       const systemPrompt = `You are an investigative intelligence analyst. The user has provided several news articles or documents. 
-Your goal is to map the "bigger picture" by cross-referencing them.
+Your goal is to map the "bigger picture" by cross-referencing them and drawing a conclusion.
 
 Analyze the text and extract:
-1. "entities": A list of the key actors (countries, organizations, people) involved.
-2. "evidence": The literal facts explicitly stated in the text. Do not guess.
-3. "hypotheses": Connections, strategic motives, or "bigger picture" theories that explain WHY these events are happening. (e.g., "El Salvador is deploying troops to secure US economic aid").
-4. "questions": The "Dog That Didn't Bark" — what critical context is missing, or what unanswered questions remain?
+1. "conclusion": A 2-3 sentence executive summary explaining the BIGGER PICTURE. How do these events connect? What is the overarching strategic narrative?
+2. "entities": A list of the key actors (countries, organizations, people) involved.
+3. "evidence": The literal facts explicitly stated in the text. Do not guess.
+4. "hypotheses": Connections, strategic motives, or "bigger picture" theories that explain WHY these events are happening. (e.g., "El Salvador is deploying troops to secure US economic aid").
+5. "questions": The "Dog That Didn't Bark" — what critical context is missing, or what unanswered questions remain?
 
 Return ONLY a valid JSON object matching this exact schema:
 {
+  "conclusion": string,
   "entities": string[],
   "evidence": { "title": string, "body": string, "source": string }[],
   "hypotheses": { "title": string, "body": string }[],

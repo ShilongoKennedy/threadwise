@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, Trash2, X, Globe, Loader2, Search } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, Trash2, X, Globe, Loader2, Search, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useThread } from "@/lib/threadwise/store";
 import { streamTask } from "@/lib/threadwise/ai-client";
 import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type CodeId, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
+import { toast } from "sonner";
 
 type View = "read" | "compare" | "count" | "investigate";
 const uid = () => crypto.randomUUID();
@@ -26,6 +27,9 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState("");
   const [analysis, setAnalysis] = useState<any>(null);
+  
+  // Feedback state for planting
+  const [plantedIds, setPlantedIds] = useState<Record<string, boolean>>({});
 
   const docs = [...corpus.docs].sort((a, b) => a.date.localeCompare(b.date));
   const active = docs.find((doc) => doc.id === activeId) ?? docs[0];
@@ -36,16 +40,20 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     s.updateNode(id, (data) => ({ ...data, title: `“${clip(quote, 82)}”`, body: `“${quote}”\n\n— ${doc.title}${doc.speaker ? ` · ${doc.speaker}` : ""}${doc.date ? ` · ${doc.date}` : ""}\n\n${label}`, epistemic: "evidence", meta: { ...data.meta, source: doc.title } }));
   };
 
-  const plantAnalysis = (kind: "evidence" | "hypothesis" | "question", title: string, body: string, source?: string) => {
+  const plantAnalysis = (id: string, kind: "evidence" | "hypothesis" | "question", title: string, body: string, source?: string) => {
     const nodeKind = kind === "evidence" ? "note" : kind === "hypothesis" ? "idea" : "question";
-    const id = s.addNode(nodeKind, { x: 80 + s.nodes.length * 14, y: 90 + s.nodes.length * 12 });
-    s.updateNode(id, (data) => ({ 
+    const nodeId = s.addNode(nodeKind, { x: 80 + s.nodes.length * 14, y: 90 + s.nodes.length * 12 });
+    s.updateNode(nodeId, (data) => ({ 
       ...data, 
       title, 
       body, 
       epistemic: kind === "evidence" ? "evidence" : kind === "hypothesis" ? "hypothesis" : "unknown",
       meta: { ...data.meta, source: source || "Cross-Source Investigation" }
     }));
+    
+    // Give visual feedback
+    setPlantedIds(prev => ({ ...prev, [id]: true }));
+    toast.success("Planted on canvas", { description: "Switch to the canvas to view." });
   };
 
   const addDoc = () => { if (!draft.title.trim() || !draft.text.trim()) return; const doc = { id: uid(), ...draft, title: draft.title.trim(), text: draft.text.trim() }; save({ docs: [...corpus.docs, doc] }); setActiveId(doc.id); setDraft({ title: "", speaker: "", date: "", occasion: "", audience: "", text: "" }); };
@@ -61,6 +69,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     setIsAnalyzing(true);
     setAnalysisError("");
     setAnalysis(null);
+    setPlantedIds({});
 
     try {
       const output = await streamTask({
@@ -127,21 +136,23 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
         
         {view === "count" && <div className="tw-lab-count"><h3>Language trajectory</h3><p>Track a phrase across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p><form onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}><Input value={term} placeholder="Track a word or phrase" onChange={(e) => setTerm(e.target.value)}/><Button>Track</Button></form><div className="tw-lab-terms">{terms.map((item) => <button key={item} onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>{item} ×</button>)}</div><div className="tw-lab-table">{termCounts.map(({ doc, values }) => <div key={doc.id}><b>{doc.date || "—"} · {doc.title}</b>{values.map((value) => <span key={value.phrase}>{value.phrase}: <strong>{value.rate}</strong> / 1k</span>)}</div>)}</div><section><h3>Most used words</h3>{docs.map((doc) => <div className="tw-lab-terms-list" key={doc.id}><b>{doc.title}</b>{topTerms(doc.text, 9).map(([word, count]) => <button key={word} onClick={() => setTerm(word)}>{word} <small>{count}</small></button>)}</div>)}</section></div>}
 
-        {/* NEW INVESTIGATE VIEW */}
+        {/* NEW INVESTIGATE VIEW (THE DOSSIER) */}
         {view === "investigate" && (
-          <div className="p-8 max-w-4xl mx-auto h-full overflow-y-auto">
-            <div className="mb-6">
-              <h3 className="font-display text-2xl mb-2">Cross-Source Investigation</h3>
-              <p className="text-muted-foreground text-sm">Paste multiple article links (news, press releases, reports). The AI will read them all and map the bigger picture—separating hard evidence from strategic hypotheses and unanswered questions.</p>
+          <div className="p-8 max-w-5xl mx-auto h-full overflow-y-auto bg-background/50 border-l">
+            <div className="mb-8 border-b pb-6">
+              <h3 className="font-display text-3xl mb-2 flex items-center gap-2"><Globe className="text-primary"/> Intelligence Dossier</h3>
+              <p className="text-muted-foreground text-sm max-w-2xl">Cross-reference multiple sources to reveal hidden connections, strategic motives, and unanswered questions. The AI acts as your intelligence analyst.</p>
             </div>
 
-            <div className="space-y-3 mb-6">
+            <div className="space-y-3 mb-8 bg-muted/20 p-6 rounded-xl border">
+              <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4">Source Ingestion</h4>
               {urls.map((url, i) => (
                 <div key={i} className="flex gap-2 items-center">
-                  <Globe className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-mono text-muted-foreground w-6">0{i+1}</span>
                   <Input 
                     value={url} 
                     placeholder="https://..." 
+                    className="bg-background"
                     onChange={(e) => {
                       const newUrls = [...urls];
                       newUrls[i] = e.target.value;
@@ -150,83 +161,105 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   />
                   {urls.length > 1 && (
                     <Button variant="ghost" size="icon" onClick={() => setUrls(urls.filter((_, idx) => idx !== i))}>
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4 text-muted-foreground" />
                     </Button>
                   )}
                 </div>
               ))}
-              <Button variant="outline" size="sm" onClick={() => setUrls([...urls, ""])}>
-                <Plus className="mr-2 h-4 w-4" /> Add another link
-              </Button>
+              <div className="flex gap-4 pt-2">
+                <Button variant="outline" size="sm" onClick={() => setUrls([...urls, ""])}>
+                  <Plus className="mr-2 h-4 w-4" /> Add source
+                </Button>
+                <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="flex-1 max-w-xs">
+                  {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...</> : <><Search className="mr-2 h-4 w-4" /> Run Investigation</>}
+                </Button>
+              </div>
+              {analysisError && <p className="text-destructive text-sm mt-2">{analysisError}</p>}
             </div>
 
-            <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="w-full mb-8">
-              {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Reading and analyzing sources...</> : <><Search className="mr-2 h-4 w-4" /> Run AI Investigation</>}
-            </Button>
-
-            {analysisError && <p className="text-destructive text-sm mb-4">{analysisError}</p>}
-
             {analysis && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 
-                {/* Entities */}
-                <div className="bg-muted/30 p-4 rounded-xl border">
-                  <h4 className="font-display text-lg mb-3 text-foreground">Key Entities</h4>
-                  <div className="flex flex-wrap gap-2">
+                {/* Executive Summary */}
+                <section className="bg-primary/5 border-l-4 border-primary p-6 rounded-r-xl">
+                  <h4 className="font-mono text-xs uppercase tracking-widest text-primary mb-3">The Big Picture (Executive Summary)</h4>
+                  <p className="font-display text-lg leading-relaxed text-foreground/90">{analysis.conclusion}</p>
+                  
+                  <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-primary/10">
+                    <span className="text-xs font-mono text-muted-foreground py-1 mr-2">Key Actors:</span>
                     {analysis.entities?.map((entity: string, i: number) => (
-                      <span key={i} className="px-3 py-1 bg-background border rounded-full text-sm">{entity}</span>
+                      <span key={i} className="px-2.5 py-0.5 bg-background border rounded text-xs font-medium">{entity}</span>
                     ))}
                   </div>
-                </div>
+                </section>
 
-                {/* Evidence */}
-                <div className="bg-muted/30 p-4 rounded-xl border">
-                  <h4 className="font-display text-lg mb-3 text-emerald-600">Documented Evidence</h4>
+                {/* Evidence Trail */}
+                <section>
+                  <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Documented Evidence</h4>
                   <div className="space-y-3">
                     {analysis.evidence?.map((item: any, i: number) => (
-                      <div key={i} className="bg-background p-3 rounded border text-sm">
-                        <b className="block mb-1">{item.title}</b>
-                        <p className="text-muted-foreground mb-2">{item.body}</p>
-                        <div className="flex justify-between items-center mt-2">
-                          <span className="text-xs text-muted-foreground">{item.source}</span>
-                          <Button size="sm" variant="secondary" onClick={() => plantAnalysis("evidence", item.title, item.body, item.source)}><MapPin className="mr-1 h-3 w-3" /> Plant</Button>
+                      <div key={i} className="group flex gap-4 p-4 bg-background border rounded-lg hover:border-emerald-600/50 transition-colors">
+                        <div className="flex-1">
+                          <b className="block mb-1 text-sm">{item.title}</b>
+                          <p className="text-muted-foreground text-sm leading-relaxed mb-2">{item.body}</p>
+                          <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded">{item.source}</span>
                         </div>
+                        <Button 
+                          size="sm" 
+                          variant={plantedIds[`ev-${i}`] ? "secondary" : "outline"}
+                          className={`self-start ${plantedIds[`ev-${i}`] ? "text-emerald-600" : ""}`}
+                          onClick={() => plantAnalysis(`ev-${i}`, "evidence", item.title, item.body, item.source)}
+                        >
+                          {plantedIds[`ev-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
+                        </Button>
                       </div>
                     ))}
                   </div>
-                </div>
+                </section>
 
                 {/* Hypotheses */}
-                <div className="bg-muted/30 p-4 rounded-xl border">
-                  <h4 className="font-display text-lg mb-3 text-purple-600">Strategic Hypotheses</h4>
-                  <div className="space-y-3">
+                <section>
+                  <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2"><Search className="h-4 w-4 text-purple-600" /> Strategic Motives & Hypotheses</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {analysis.hypotheses?.map((item: any, i: number) => (
-                      <div key={i} className="bg-background p-3 rounded border text-sm">
-                        <b className="block mb-1">{item.title}</b>
-                        <p className="text-muted-foreground">{item.body}</p>
-                        <div className="flex justify-end mt-2">
-                          <Button size="sm" variant="secondary" onClick={() => plantAnalysis("hypothesis", item.title, item.body)}><MapPin className="mr-1 h-3 w-3" /> Plant</Button>
-                        </div>
+                      <div key={i} className="flex flex-col p-5 bg-purple-50/50 border border-purple-100 rounded-lg">
+                        <b className="block mb-2 text-sm text-purple-900">{item.title}</b>
+                        <p className="text-sm text-purple-800/80 leading-relaxed mb-4 flex-1">{item.body}</p>
+                        <Button 
+                          size="sm" 
+                          variant={plantedIds[`hyp-${i}`] ? "secondary" : "outline"}
+                          className={`self-start ${plantedIds[`hyp-${i}`] ? "text-purple-600" : ""}`}
+                          onClick={() => plantAnalysis(`hyp-${i}`, "hypothesis", item.title, item.body)}
+                        >
+                          {plantedIds[`hyp-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
+                        </Button>
                       </div>
                     ))}
                   </div>
-                </div>
+                </section>
 
                 {/* Questions */}
-                <div className="bg-muted/30 p-4 rounded-xl border">
-                  <h4 className="font-display text-lg mb-3 text-orange-600">Unanswered Questions</h4>
+                <section>
+                  <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2"><Search className="h-4 w-4 text-orange-600" /> The Blind Spots (Unanswered Questions)</h4>
                   <div className="space-y-3">
                     {analysis.questions?.map((item: any, i: number) => (
-                      <div key={i} className="bg-background p-3 rounded border text-sm">
-                        <b className="block mb-1">{item.title}</b>
-                        <p className="text-muted-foreground">{item.body}</p>
-                        <div className="flex justify-end mt-2">
-                          <Button size="sm" variant="secondary" onClick={() => plantAnalysis("question", item.title, item.body)}><MapPin className="mr-1 h-3 w-3" /> Plant</Button>
+                      <div key={i} className="flex gap-4 p-4 bg-orange-50/50 border border-orange-100 rounded-lg">
+                        <div className="flex-1">
+                          <b className="block mb-1 text-sm text-orange-900">{item.title}</b>
+                          <p className="text-sm text-orange-800/80 leading-relaxed">{item.body}</p>
                         </div>
+                        <Button 
+                          size="sm" 
+                          variant={plantedIds[`q-${i}`] ? "secondary" : "outline"}
+                          className={`self-start ${plantedIds[`q-${i}`] ? "text-orange-600" : ""}`}
+                          onClick={() => plantAnalysis(`q-${i}`, "question", item.title, item.body)}
+                        >
+                          {plantedIds[`q-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
+                        </Button>
                       </div>
                     ))}
                   </div>
-                </div>
+                </section>
 
               </div>
             )}
