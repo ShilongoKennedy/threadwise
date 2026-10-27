@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { useReactFlow } from "@xyflow/react";
 import { Check, Link2, Loader2, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { relationLabel, type Relation, type ThreadNodeType } from "@/lib/threadwise/model";
-// FIXED: Changed from @/ to ../../ to fix Vercel build error
-import { exploreGraph } from "../../lib/threadwise/explore.functions";
 import { useThread } from "@/lib/threadwise/store";
 import { TYPE_COLOR, TYPE_ICON } from "./ThreadNode";
+import { streamTask } from "@/lib/threadwise/ai-client";
 
 export function ExplorePanel({ onClose }: { onClose: () => void }) {
   const s = useThread();
-  const run = useServerFn(exploreGraph);
   const rf = useReactFlow();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +26,7 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
         title: n.data?.title || "",
         body: n.data?.body || "",
         epistemic: n.data?.epistemic || "UNKNOWN",
-        lenses: n.data?.lenses || {}, // Fixed: should be {} not []
+        lenses: n.data?.lenses || {},
         meta: n.data?.meta || {},
       }));
 
@@ -39,13 +36,18 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
         relation: relationLabel(e.data?.relation ?? "leads_to", e.data?.customLabel),
       }));
 
-      const res = await run({
-        data: {
+      // Use the same API route that Socratic and Evidence Clipper use
+      const output = await streamTask(
+        {
+          mode: "explore",
           focusId: focus?.id ?? null,
           nodes: payloadNodes,
           edges: payloadEdges,
         },
-      });
+        () => {},
+      );
+
+      const res = JSON.parse(output);
 
       if (res.error) {
         setError(res.error);

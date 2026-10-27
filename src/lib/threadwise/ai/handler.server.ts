@@ -8,7 +8,7 @@ import { RELATIONS } from "../model";
 import { createDeepSeekProvider, deepSeekModelName } from "./deepseek.server";
 
 const inputSchema = z.object({
-  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake"]),
+  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore"]), // ADDED "explore"
   threadId: z.string().optional(),
   messages: z.array(z.unknown()).max(200).optional(),
   graph: z.unknown().optional(),
@@ -17,6 +17,9 @@ const inputSchema = z.object({
   source: z.string().max(2000).optional(),
   format: z.enum(["brief", "memo"]).optional(),
   persona: z.string().max(80).optional(),
+  nodes: z.array(z.any()).optional(), // ADDED
+  edges: z.array(z.any()).optional(), // ADDED
+  focusId: z.string().nullable().optional(), // ADDED
 });
 
 export async function handleThreadwise(request: Request) {
@@ -70,13 +73,27 @@ export async function handleThreadwise(request: Request) {
     if (raw.length > 1_000_000)
       return Response.json({ message: "Select a smaller set of cards." }, { status: 400 });
 
-    // Safely parse the input to avoid generic 400 errors
     let input;
     try {
       input = inputSchema.parse(JSON.parse(raw));
     } catch (zodError) {
       console.error("Validation Error:", zodError);
       return Response.json({ message: "The data sent was in the wrong format." }, { status: 400 });
+    }
+
+    // NEW: Handle explore mode directly
+    if (input.mode === "explore") {
+      const { runExplore } = await import("../explore.server");
+      try {
+        const suggestions = await runExplore({
+          focusId: input.focusId ?? null,
+          nodes: input.nodes ?? [],
+          edges: input.edges ?? [],
+        });
+        return Response.json({ suggestions, error: null });
+      } catch (e) {
+        return Response.json({ suggestions: [], error: (e as Error).message }, { status: 500 });
+      }
     }
 
     const graph = JSON.stringify(input.graph ?? {});
@@ -133,7 +150,7 @@ export async function handleThreadwise(request: Request) {
     const result = streamText({
       model: provider.chat(deepSeekModelName()),
       messages,
-      system: instructions, // FIXED: Changed from 'instructions' to 'system'
+      system: instructions,
       abortSignal: request.signal,
       maxRetries: 0,
       ...(input.mode === "clip"
@@ -175,9 +192,7 @@ export async function handleThreadwise(request: Request) {
       input.mode === "socratic"
         ? result.toUIMessageStreamResponse({
             originalMessages,
-            onFinish: () => {
-              /* Browser transport persists completed UIMessage[]; no transcripts on server. */
-            },
+            onFinish: () => {},
             onError: () => safeError,
           })
         : null;
