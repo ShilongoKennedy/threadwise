@@ -1,4 +1,4 @@
-import { NoObjectGeneratedError, Output, streamText } from "ai";
+import { generateObject } from "ai";
 import { z } from "zod";
 import { EPISTEMIC, RELATIONS } from "./model";
 import type { ExploreInput, RawSuggestion } from "./explore.types";
@@ -31,29 +31,31 @@ Use only node ids that appear in the graph. Pay attention to epistemic status (c
 export async function runExplore(input: ExploreInput): Promise<RawSuggestion[]> {
   const provider = createDeepSeekProvider();
   const focus = input.focusId ? `\nFocus especially on node ${input.focusId} and its neighbourhood.` : "";
-  let streamError: unknown;
-  const result = streamText({
-    model: provider.chat(deepSeekModelName()),
-    instructions: SYSTEM,
-    messages: [
-      { role: "user", content: `Graph:\n${JSON.stringify({ nodes: input.nodes, edges: input.edges })}${focus}` },
-    ],
-    output: Output.object({ schema }),
-    onError: ({ error }) => { streamError = error; },
-  });
+  
   try {
-    const out = await result.output;
+    const { object } = await generateObject({
+      model: provider.chat(deepSeekModelName()),
+      schema: schema,
+      system: SYSTEM, // <--- FIXED: changed from 'instructions' to 'system'
+      prompt: `Graph:\n${JSON.stringify({ nodes: input.nodes, edges: input.edges })}${focus}`,
+    });
+
     const ids = new Set(input.nodes.map((n) => n.id));
-    return (out.suggestions as RawSuggestion[]).filter(
+    return (object.suggestions as RawSuggestion[]).filter(
       (s) => ids.has(s.anchorId) && (s.kind !== "connection" || (s.targetId && ids.has(s.targetId) && s.targetId !== s.anchorId)),
     );
-  } catch (e) {
-    if (NoObjectGeneratedError.isInstance(e)) throw new Error("The AI returned an unreadable answer. Please try again.");
-    const status = ((streamError ?? e) as { statusCode?: number }).statusCode;
-    if (status === 402) throw new Error("DeepSeek API balance is unavailable. Check your DeepSeek account.");
+  } catch (e: any) {
+    console.error("explore failed:", e);
+    
+    const status = e?.statusCode || e?.status;
+    if (status === 402) throw new Error("DeepSeek API balance is unavailable. Check your account.");
     if (status === 429) throw new Error("Too many requests right now — wait a moment and try again.");
     if (status === 403) throw new Error("AI access is currently blocked for this workspace.");
-    console.error("explore failed", streamError ?? e);
-    throw new Error("Couldn't get suggestions right now.");
+    
+    if (e.name === "AI_NoObjectGeneratedError" || e.name === "AI_TypeValidationError") {
+      throw new Error("The AI returned an unreadable answer. Please try again.");
+    }
+    
+    throw new Error(e.message || "Couldn't get suggestions right now.");
   }
 }
