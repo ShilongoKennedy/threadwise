@@ -4,7 +4,8 @@ import { useReactFlow } from "@xyflow/react";
 import { Check, Link2, Loader2, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { relationLabel, type Relation, type ThreadNodeType } from "@/lib/threadwise/model";
-import { exploreGraph } from "@/lib/threadwise/explore.functions";
+// FIXED: Changed from @/ to ../../ to fix Vercel build error
+import { exploreGraph } from "../../lib/threadwise/explore.functions";
 import { useThread } from "@/lib/threadwise/store";
 import { TYPE_COLOR, TYPE_ICON } from "./ThreadNode";
 

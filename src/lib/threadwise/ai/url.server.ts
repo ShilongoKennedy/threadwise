@@ -4,6 +4,7 @@ function publicAddress(value: string) {
   const a = parts[0] ?? 0, b = parts[1] ?? 0;
   return !(a === 0 || a === 10 || a === 127 || a >= 224 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127) || (a === 198 && (b === 18 || b === 19)));
 }
+
 async function validate(url: URL, signal: AbortSignal) {
   if (url.protocol !== "https:" || url.username || url.password || (url.port && url.port !== "443") || !url.hostname.includes(".") || /^(localhost|.*\.local|.*\.internal)$/.test(url.hostname) || /^\[|^\d+\.\d+\.\d+\.\d+$/.test(url.hostname)) throw new Error("Paste a public HTTPS web address.");
   for (const type of ["A", "AAAA"]) {
@@ -13,11 +14,22 @@ async function validate(url: URL, signal: AbortSignal) {
     if (dns.Answer?.some((a) => [1, 28].includes(a.type) && !publicAddress(a.data))) throw new Error("That web address is not public.");
   }
 }
+
 export async function readWeb(urlText: string, signal: AbortSignal) {
   let url = new URL(urlText);
   for (let step = 0; step < 4; step++) {
     await validate(url, signal);
-    const response = await fetch(url, { redirect: "manual", headers: { Accept: "text/html,text/plain" }, signal });
+    
+    // FIXED: Added User-Agent to bypass 403 Forbidden blocks
+    const response = await fetch(url, { 
+      redirect: "manual", 
+      headers: { 
+        Accept: "text/html,text/plain",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      }, 
+      signal 
+    });
+
     if (response.status >= 300 && response.status < 400) { const location = response.headers.get("location"); if (!location) throw new Error("The site redirected without an address."); url = new URL(location, url); continue; }
     if (!response.ok) throw new Error(`The site could not be read (${response.status}). Paste its text instead.`);
     if (!/text\/html|text\/plain/.test(response.headers.get("content-type") ?? "")) throw new Error("Download the document and add it as a file instead.");
