@@ -21,21 +21,43 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
     setLoading(true);
     setError(null);
     try {
+      // We add safe fallbacks here so missing data doesn't crash the server function validation
+      const payloadNodes = s.nodes.map((n) => ({
+        id: n.id,
+        kind: n.data?.kind || "idea",
+        title: n.data?.title || "",
+        body: n.data?.body || "",
+        epistemic: n.data?.epistemic || "UNKNOWN",
+        lenses: n.data?.lenses || [],
+        meta: n.data?.meta || {},
+      }));
+
+      const payloadEdges = s.edges.map((e) => ({
+        source: e.source,
+        target: e.target,
+        relation: relationLabel(e.data?.relation ?? "leads_to", e.data?.customLabel),
+      }));
+
       const res = await run({
         data: {
           focusId: focus?.id ?? null,
-          nodes: s.nodes.map((n) => ({ id: n.id, kind: n.data.kind, title: n.data.title, body: n.data.body, epistemic: n.data.epistemic, lenses: n.data.lenses, meta: n.data.meta })),
-          edges: s.edges.map((e) => ({ source: e.source, target: e.target, relation: relationLabel(e.data?.relation ?? "leads_to", e.data?.customLabel) })),
+          nodes: payloadNodes,
+          edges: payloadEdges,
         },
       });
-      if (res.error) setError(res.error);
-      else if (res.suggestions.length === 0) setError("No suggestions this time — try adding more detail.");
-      else {
+
+      if (res.error) {
+        setError(res.error);
+      } else if (!res.suggestions || res.suggestions.length === 0) {
+        setError("No suggestions this time — try adding more detail.");
+      } else {
         s.setGhosts(res.suggestions);
         setTimeout(() => rf.fitView({ padding: 0.2, duration: 500 }), 50);
       }
-    } catch (e) {
-      setError((e as Error).message || "Couldn't get suggestions right now.");
+    } catch (e: any) {
+      // This will print the EXACT validation error to your browser console (F12)
+      console.error("EXPLORE ERROR DETAILS:", e);
+      setError(e?.message || String(e) || "Couldn't get suggestions right now.");
     } finally {
       setLoading(false);
     }
@@ -58,7 +80,7 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
         <Button className="w-full" onClick={explore} disabled={loading}>
           {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Reading your canvas…</> : <><Sparkles className="mr-2 h-4 w-4" /> Find questions, tests & links</>}
         </Button>
-        {error && <p className="text-xs text-destructive">{error}</p>}
+        {error && <p className="text-xs text-destructive whitespace-pre-wrap">{error}</p>}
       </div>
       <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
         {s.ghosts.length === 0 && !loading && (
