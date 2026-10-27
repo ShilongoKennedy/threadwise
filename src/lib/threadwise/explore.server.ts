@@ -57,25 +57,77 @@ export async function runExplore(input: ExploreInput): Promise<RawSuggestion[]> 
       prompt: `Graph:\n${JSON.stringify({ nodes: input.nodes, edges: input.edges })}${focus}\n\nReturn the JSON now.`,
     });
 
-    const cleaned = text.replace(/^```(?:json)?\s*|\s*```$/g, "").trim();
-    const parsed = JSON.parse(cleaned);
-    const result = schema.parse(parsed);
+    // 1. Extract JSON by finding the first '{' and last '}'
+    const firstBrace = text.indexOf('{');
+    const lastBrace = text.lastIndexOf('}');
+    if (firstBrace === -1 || lastBrace === -1) {
+      console.error("No JSON braces found in output:", text);
+      throw new Error("The AI did not return a JSON object.");
+    }
 
+    const jsonString = text.substring(firstBrace, lastBrace + 1);
+    
+    // 2. Parse JSON safely
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonString);
+    } catch (e) {
+      console.error("JSON Parse Error. Raw string:", jsonString);
+      throw new Error("The AI returned invalid JSON syntax.");
+    }
+
+    // 3. Sanitize the AI's output (fix common mistakes like spaces in enums)
+    if (parsed && Array.isArray(parsed.suggestions)) {
+      parsed.suggestions = parsed.suggestions.map((s: any) => {
+        // Fix relation (e.g., "needs evidence from" -> "needs_evidence_from")
+        let rel = String(s.relation || "").toLowerCase().replace(/ /g, "_");
+        if (!RELATIONS.includes(rel as any) || rel === "custom") rel = "leads_to";
+
+        // Fix epistemic
+        const ep = String(s.epistemic || "").toLowerCase();
+        const validEp = EPISTEMIC.includes(ep as any) ? ep : "unknown";
+
+        return {
+          ...s,
+          relation: rel,
+          epistemic: validEp,
+          targetId: s.targetId || null,
+          hypothesis: s.hypothesis || null,
+          successCriteria: s.successCriteria || null,
+          anchorId: String(s.anchorId || ""),
+          title: String(s.title || ""),
+          body: String(s.body || ""),
+          rationale: String(s.rationale || ""),
+        };
+      });
+    }
+
+    // 4. Validate with Zod
+    const result = schema.safeParse(parsed);
+    if (!result.success) {
+      console.error("Zod Validation Error:", result.error.format(), "Raw JSON:", jsonString);
+      throw new Error("The AI returned JSON, but it was missing required fields.");
+    }
+
+    // 5. Filter out hallucinated IDs
     const ids = new Set(input.nodes.map((n) => n.id));
-    return (result.suggestions as RawSuggestion[]).filter(
+    const finalSuggestions = (result.data.suggestions as RawSuggestion[]).filter(
       (s) => ids.has(s.anchorId) && (s.kind !== "connection" || (s.targetId && ids.has(s.targetId) && s.targetId !== s.anchorId)),
     );
+
+    if (finalSuggestions.length === 0) {
+        console.warn("AI returned suggestions, but they referenced fake IDs.", result.data.suggestions);
+    }
+
+    return finalSuggestions;
+
   } catch (e: any) {
-    console.error("explore failed:", e);
+    console.error("explore failed:", e.message);
     
     const status = e?.statusCode || e?.status;
     if (status === 402) throw new Error("DeepSeek API balance is unavailable. Check your account.");
     if (status === 429) throw new Error("Too many requests right now — wait a moment and try again.");
     if (status === 403) throw new Error("AI access is currently blocked for this workspace.");
-    
-    if (e instanceof SyntaxError || e.name === "ZodError") {
-      throw new Error("The AI returned an unreadable answer. Please try again.");
-    }
     
     throw new Error(e.message || "Couldn't get suggestions right now.");
   }
