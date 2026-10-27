@@ -21,14 +21,14 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
     setLoading(true);
     setError(null);
     try {
-      // We add safe fallbacks here so missing data doesn't crash the server function validation
+      // Safe fallbacks to prevent validation crashes
       const payloadNodes = s.nodes.map((n) => ({
         id: n.id,
         kind: n.data?.kind || "idea",
         title: n.data?.title || "",
         body: n.data?.body || "",
         epistemic: n.data?.epistemic || "UNKNOWN",
-        lenses: n.data?.lenses || [],
+        lenses: n.data?.lenses || {}, // Fixed: should be {} not []
         meta: n.data?.meta || {},
       }));
 
@@ -55,7 +55,6 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
         setTimeout(() => rf.fitView({ padding: 0.2, duration: 500 }), 50);
       }
     } catch (e: any) {
-      // This will print the EXACT validation error to your browser console (F12)
       console.error("EXPLORE ERROR DETAILS:", e);
       setError(e?.message || String(e) || "Couldn't get suggestions right now.");
     } finally {
