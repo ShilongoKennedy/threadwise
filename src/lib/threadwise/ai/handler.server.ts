@@ -81,7 +81,7 @@ export async function handleThreadwise(request: Request) {
       return Response.json({ message: "The data sent was in the wrong format." }, { status: 400 });
     }
 
-    // NEW: Handle explore mode directly
+       // NEW: Handle explore mode directly
     if (input.mode === "explore") {
       const { runExplore } = await import("../explore.server");
       try {
@@ -90,9 +90,11 @@ export async function handleThreadwise(request: Request) {
           nodes: input.nodes ?? [],
           edges: input.edges ?? [],
         });
-        return Response.json({ suggestions, error: null });
+        return Response.json({ suggestions, error: null }, { status: 200 });
       } catch (e) {
-        return Response.json({ suggestions: [], error: (e as Error).message }, { status: 500 });
+        console.error("EXPLORE SERVER ERROR:", e);
+        // Return 200 so the client doesn't throw a generic "Request failed" error
+        return Response.json({ suggestions: [], error: (e as Error).message }, { status: 200 });
       }
     }
 
