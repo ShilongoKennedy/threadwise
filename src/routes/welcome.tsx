@@ -1,119 +1,145 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Network } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, Network, ShieldAlert, Sparkles, FileText } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/welcome")({
   component: WelcomePage,
 });
 
 function WelcomePage() {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   return (
-    <div className="relative min-h-screen bg-[#faf8f2] overflow-hidden flex flex-col items-center justify-center selection:bg-primary/20">
+    <div className="relative min-h-screen bg-[#FAF9F5] overflow-hidden flex flex-col items-center justify-center selection:bg-black/10">
       
-      {/* CSS Animations for the floating background */}
+      {/* Dynamic Spotlight that follows the mouse */}
+      <div 
+        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(800px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.8), transparent 40%)`,
+        }}
+      />
+
+      {/* The Grid Canvas Background */}
+      <div 
+        className="absolute inset-0 z-0 pointer-events-none opacity-[0.4]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+        }}
+      />
+
+      {/* CSS Animations */}
       <style>{`
-        @keyframes float-slow {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(2deg); }
+        @keyframes float-1 {
+          0%, 100% { transform: translateY(0px) rotate(-2deg); }
+          50% { transform: translateY(-15px) rotate(0deg); }
         }
-        @keyframes float-medium {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-30px) rotate(-2deg); }
+        @keyframes float-2 {
+          0%, 100% { transform: translateY(0px) rotate(1deg); }
+          50% { transform: translateY(-20px) rotate(-1deg); }
         }
-        @keyframes draw-line {
-          0% { stroke-dashoffset: 1000; opacity: 0; }
-          50% { opacity: 0.5; }
-          100% { stroke-dashoffset: 0; opacity: 0.2; }
+        @keyframes float-3 {
+          0%, 100% { transform: translateY(0px) rotate(3deg); }
+          50% { transform: translateY(-10px) rotate(1deg); }
         }
-        .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
-        .animate-float-medium { animation: float-medium 10s ease-in-out infinite; }
-        .animate-draw-line { stroke-dasharray: 1000; animation: draw-line 4s ease-out forwards; }
-        .bg-grid { 
-          background-image: 
-            linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
-          background-size: 40px 40px;
+        @keyframes draw {
+          from { stroke-dashoffset: 1000; }
+          to { stroke-dashoffset: 0; }
+        }
+        .node-1 { animation: float-1 8s ease-in-out infinite; }
+        .node-2 { animation: float-2 10s ease-in-out infinite; }
+        .node-3 { animation: float-3 9s ease-in-out infinite; }
+        .connect-line {
+          stroke-dasharray: 6 6;
+          animation: draw 5s linear infinite;
         }
       `}</style>
 
-      {/* Background Grid */}
-      <div className="absolute inset-0 bg-grid pointer-events-none" />
-
-      {/* Floating Visual Elements (Abstract Nodes) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Top Left Card */}
-        <div className="absolute top-[15%] left-[10%] w-64 p-4 bg-white/60 backdrop-blur-sm border border-black/5 rounded-xl shadow-xl animate-float-slow opacity-60">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-orange-400" />
-            <span className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase">Hypothesis</span>
+      {/* THE SPATIAL CANVAS NODES */}
+      <div className="absolute inset-0 z-10 pointer-events-none hidden md:block">
+        
+        {/* Node 1: The Question (Top Left) */}
+        <div className="node-1 absolute top-[20%] left-[12%] w-64 bg-white border border-black/10 rounded-lg shadow-2xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-black/5 bg-black/[0.02]">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-purple-700 flex items-center gap-1"><Sparkles className="w-3 h-3"/> Question</span>
+            <span className="text-[10px] font-mono text-muted-foreground">UNKNOWN</span>
           </div>
-          <div className="h-4 bg-black/5 rounded w-3/4 mb-2" />
-          <div className="h-3 bg-black/5 rounded w-full mb-1" />
-          <div className="h-3 bg-black/5 rounded w-5/6" />
+          <div className="p-4">
+            <h4 className="font-display text-lg leading-tight text-black mb-2">What is the real motive?</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">If the deployment is about security, why send special forces to find four soldiers instead of humanitarian aid?</p>
+          </div>
         </div>
 
-        {/* Bottom Right Card */}
-        <div className="absolute bottom-[20%] right-[12%] w-72 p-4 bg-white/60 backdrop-blur-sm border border-black/5 rounded-xl shadow-xl animate-float-medium opacity-60">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase">Evidence</span>
+        {/* Node 2: The Evidence (Bottom Right) */}
+        <div className="node-2 absolute bottom-[25%] right-[15%] w-72 bg-white border border-black/10 rounded-lg shadow-2xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-black/5 bg-black/[0.02]">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-700 flex items-center gap-1"><FileText className="w-3 h-3"/> Evidence</span>
+            <span className="text-[10px] font-mono text-muted-foreground">FACT</span>
           </div>
-          <div className="h-4 bg-black/5 rounded w-1/2 mb-3" />
-          <div className="h-3 bg-black/5 rounded w-full mb-1" />
-          <div className="h-3 bg-black/5 rounded w-4/5 mb-1" />
-          <div className="h-3 bg-black/5 rounded w-full" />
+          <div className="p-4">
+            <h4 className="font-display text-lg leading-tight text-black mb-2">El Salvador sends troops</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">Salvadoran troops land in Haiti aboard a Pentagon plane amid crisis over ambushed soldiers.</p>
+            <div className="mt-3 pt-3 border-t border-black/5">
+              <span className="text-[10px] font-mono bg-black/5 px-2 py-1 rounded">Miami Herald</span>
+            </div>
+          </div>
         </div>
 
-        {/* Connecting SVG Line */}
-        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <path 
-            d="M 300 200 Q 500 300 800 600" 
-            fill="none" 
-            stroke="rgba(0,0,0,0.2)" 
-            strokeWidth="2" 
-            strokeDasharray="8 8"
-            className="animate-draw-line"
-          />
+        {/* Node 3: The Hypothesis (Top Right) */}
+        <div className="node-3 absolute top-[25%] right-[18%] w-56 bg-white border border-black/10 rounded-lg shadow-2xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-black/5 bg-black/[0.02]">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-orange-600 flex items-center gap-1"><ShieldAlert className="w-3 h-3"/> Hypothesis</span>
+          </div>
+          <div className="p-4">
+            <h4 className="font-display text-lg leading-tight text-black mb-2">Securing US Favor</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">Bukele is using the Haiti deployment as a bargaining chip for US economic aid.</p>
+          </div>
+        </div>
+
+        {/* SVG Connections */}
+        <svg className="absolute inset-0 w-full h-full z-0" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 350 300 Q 600 400 850 350" fill="none" stroke="rgba(0,0,0,0.15)" strokeWidth="2" className="connect-line" />
+          <path d="M 850 350 Q 1000 600 1100 600" fill="none" stroke="rgba(0,0,0,0.15)" strokeWidth="2" className="connect-line" />
+          <path d="M 350 300 Q 300 500 400 600" fill="none" stroke="rgba(0,0,0,0.15)" strokeWidth="2" className="connect-line" />
         </svg>
       </div>
 
-      {/* Main Content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center flex flex-col items-center">
+      {/* HERO TEXT CONTENT */}
+      <div className="relative z-20 max-w-4xl mx-auto px-6 text-center flex flex-col items-center mt-[-5vh]">
         
-        {/* Top Badge */}
-        <div className="mb-8 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/50 border border-black/5 shadow-sm backdrop-blur-md">
-          <Network className="w-4 h-4 text-primary" />
-          <span className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">The Spatial Workbench</span>
+        <div className="mb-10 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-black/10 shadow-sm">
+          <Network className="w-4 h-4 text-black" />
+          <span className="text-xs font-mono uppercase tracking-[0.2em] text-black">The Spatial Workbench</span>
         </div>
 
-        {/* Kicker */}
-        <p className="text-sm font-medium tracking-wide text-muted-foreground mb-4">
-          Stop summarizing. Start investigating.
-        </p>
-
-        {/* Huge Headline */}
-        <h1 className="font-display text-5xl md:text-7xl lg:text-[80px] leading-[1.1] text-[#1a1a1a] mb-6 tracking-tight">
-          The canvas for <br className="hidden md:block" />
-          <span className="italic text-primary/90">complex thinkers.</span>
+        <h1 className="font-display text-[64px] md:text-[90px] lg:text-[110px] leading-[0.9] text-[#111] mb-8 tracking-tighter mix-blend-multiply">
+          Map the <br />
+          <span className="italic text-black/80">unseen.</span>
         </h1>
 
-        {/* Subheadline */}
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-          Threadwise is a spatial intelligence workbench. Connect the dots, separate hard evidence from strategic hypotheses, and map the bigger picture.
+        <p className="text-xl md:text-2xl text-black/60 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+          Stop summarizing. Start investigating. Connect the dots, separate hard evidence from strategic hypotheses, and map the bigger picture.
         </p>
 
-        {/* Call to Action */}
-        <Link to="/" className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#1a1a1a] text-[#faf8f2] rounded-full font-medium text-lg transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(0,0,0,0.2)]">
+        <Link to="/" className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#111] text-[#FAF9F5] rounded-full font-medium text-lg transition-all hover:scale-105 hover:bg-black hover:shadow-2xl">
           Enter the Workspace
           <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
         </Link>
 
       </div>
 
-      {/* Footer Note */}
-      <div className="absolute bottom-8 text-xs font-mono text-muted-foreground/50 tracking-widest uppercase">
-        Built for researchers, strategists & analysts
-      </div>
     </div>
   );
 }
