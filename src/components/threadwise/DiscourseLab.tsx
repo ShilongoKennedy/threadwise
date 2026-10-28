@@ -81,7 +81,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const termCounts = useMemo(() => docs.map((doc) => ({ doc, values: terms.map((phrase) => ({ phrase, n: countPhrase(doc.text, phrase), rate: words(doc.text).length ? Math.round(countPhrase(doc.text, phrase) / words(doc.text).length * 10000) / 10 : 0 })) })), [docs, terms]);
 
   const ContradictionGauge = ({ score }: { score: number }) => {
-    const radius = 50, cx = 60, cy = 60, startAngle = -210, endAngle = 30;
+    const radius = 60, cx = 80, cy = 80, startAngle = -210, endAngle = 30;
     const angle = startAngle + (endAngle - startAngle) * (score / 100);
     const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
       const angleInRadians = (angleInDegrees * Math.PI) / 180.0;
@@ -93,18 +93,18 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       const largeArcFlag = end - start <= 180 ? "0" : "1";
       return ["M", startPt.x, startPt.y, "A", r, r, 0, largeArcFlag, 0, endPt.x, endPt.y].join(" ");
     };
-    const needle = polarToCartesian(cx, cy, radius - 10, angle);
+    const needle = polarToCartesian(cx, cy, radius - 15, angle);
     return (
-      <div className="relative flex flex-col items-center justify-center w-full h-full min-h-[140px]">
-        <svg width="120" height="100" viewBox="0 0 120 100" className="overflow-visible">
-          <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="var(--border)" strokeWidth="8" strokeLinecap="round" />
-          <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#C24A35" strokeWidth="8" strokeLinecap="round" />
-          <circle cx={cx} cy={cy} r="4" fill="var(--foreground)" />
-          <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="var(--foreground)" strokeWidth="2" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
+      <div className="relative flex flex-col items-center justify-center w-full h-full">
+        <svg width="160" height="130" viewBox="0 0 160 130" className="overflow-visible">
+          <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="var(--muted)" strokeWidth="12" strokeLinecap="round" />
+          <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#C24A35" strokeWidth="12" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
+          <circle cx={cx} cy={cy} r="6" fill="var(--foreground)" />
+          <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="var(--foreground)" strokeWidth="3" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
         </svg>
         <div className="absolute bottom-0 text-center">
-          <span className="font-display text-4xl text-[#C24A35]">{score}</span>
-          <span className="text-sm text-muted-foreground">/100</span>
+          <span className="font-display text-6xl text-[#C24A35] tracking-tighter">{score}</span>
+          <span className="text-lg text-muted-foreground">/100</span>
         </div>
       </div>
     );
@@ -112,7 +112,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
   return (
     <div className="tw-lab fixed inset-0 z-50 flex flex-col bg-background font-sans" role="dialog" aria-modal="true">
-      {/* BACKGROUND - Aligned with Canvas */}
+      {/* BACKGROUND */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
 
       <header className="relative z-10 flex items-center justify-between border-b px-6 py-4 bg-card">
@@ -205,66 +205,70 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
               {analysis && !isAnalyzing && (
                 <div className="animate-in fade-in slide-in-from-bottom-8 space-y-6 duration-700">
                   
-                  {/* QUANT DASHBOARD ROW */}
-                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 items-start">
+                  {/* THE BIG PICTURE - Hero Headline */}
+                  <section className="relative rounded-xl border bg-card p-10 shadow-sm overflow-hidden">
+                    <div className="absolute left-0 top-0 h-full w-1 bg-[#C24A35]" />
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="bg-muted p-2 rounded-lg"><FileWarning className="h-5 w-5 text-foreground" /></div>
+                      <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">The Big Picture</h4>
+                    </div>
+                    <p className="font-display text-2xl md:text-3xl leading-relaxed text-foreground first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:mt-1">{analysis.conclusion}</p>
+                  </section>
+
+                  {/* QUANT DASHBOARD ROW - DENSE & PROPORTIONAL */}
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-12 items-stretch mt-8">
                     
                     {/* Narrative Radar */}
-                    <div className="flex flex-col rounded-xl border bg-card p-6 shadow-sm relative overflow-hidden h-auto">
-                      <div className="mb-2 flex items-center gap-2 relative z-10">
+                    <div className="md:col-span-4 flex flex-col rounded-xl border bg-card p-5 shadow-sm h-[320px]">
+                      <div className="mb-2 flex items-center justify-between relative z-10">
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Narrative Profile</h4>
+                        <Activity className="h-3 w-3 text-[#C24A35]" />
                       </div>
-                      <div className="h-64 w-full relative z-10">
+                      <div className="flex-1 w-full relative z-10 min-h-0">
                         <ResponsiveContainer width="100%" height="100%">
-                          <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
+                          <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData} margin={{ top: 10, right: 20, bottom: 10, left: 20 }}>
                             <PolarGrid stroke="var(--border)" strokeDasharray="3 3" />
                             <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: 'var(--font-mono)' }} />
                             <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                            <Radar name="Analysis" dataKey="A" stroke="#C24A35" strokeWidth={2} fill="#C24A35" fillOpacity={0.1} />
+                            <Radar name="Analysis" dataKey="A" stroke="#C24A35" strokeWidth={2} fill="#C24A35" fillOpacity={0.15} />
                           </RadarChart>
                         </ResponsiveContainer>
                       </div>
                     </div>
 
-                    {/* Entity Network */}
-                    <div className="flex flex-col rounded-xl border bg-card p-6 shadow-sm relative overflow-hidden h-auto">
-                      <div className="mb-6 flex items-center gap-2 relative z-10">
+                    {/* Key Actors (Grid Layout to avoid massive voids) */}
+                    <div className="md:col-span-4 flex flex-col rounded-xl border bg-card p-5 shadow-sm h-[320px]">
+                      <div className="mb-4 flex items-center justify-between relative z-10">
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Key Actors</h4>
+                        <Globe className="h-3 w-3 text-muted-foreground" />
                       </div>
-                      <div className="flex flex-1 flex-wrap content-start gap-2 relative z-10">
-                        {analysis.entities?.map((entity: string, i: number) => {
-                          const isCentral = i < 2;
-                          const color = isCentral ? "bg-foreground text-background border-transparent" : "bg-muted/50 text-foreground border-border";
-                          return (
-                            <span key={i} className={`px-3 py-1.5 ${color} border rounded-md text-xs font-medium hover:-translate-y-0.5 transition-transform cursor-default`}>
-                              {entity}
-                            </span>
-                          );
-                        })}
+                      <div className="flex-1 overflow-y-auto pr-2 relative z-10">
+                        <div className="flex flex-col gap-2">
+                          {analysis.entities?.map((entity: string, i: number) => {
+                            const isCentral = i < 2;
+                            const color = isCentral ? "bg-foreground text-background border-transparent" : "bg-muted/40 text-foreground border-border";
+                            return (
+                              <span key={i} className={`w-full px-3 py-2 ${color} border rounded-md text-xs font-medium truncate`} title={entity}>
+                                {entity}
+                              </span>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
 
                     {/* Contradiction Gauge */}
-                    <div className="flex flex-col rounded-xl border bg-card p-6 shadow-sm relative overflow-hidden h-auto">
-                      <div className="mb-2 flex items-center gap-2 relative z-10">
-                        <ShieldAlert className="h-4 w-4 text-[#C24A35]" />
+                    <div className="md:col-span-4 flex flex-col rounded-xl border bg-card p-5 shadow-sm h-[320px]">
+                      <div className="mb-2 flex items-center justify-between relative z-10">
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Contradiction Index</h4>
+                        <ShieldAlert className="h-3 w-3 text-[#C24A35]" />
                       </div>
-                      <div className="flex-1 flex flex-col items-center justify-center py-4">
+                      <div className="flex-1 flex flex-col items-center justify-center min-h-0">
                         <ContradictionGauge score={analysis.quantData?.contradictionIndex || 50} />
-                        <p className="text-[10px] text-center font-mono uppercase tracking-widest text-muted-foreground mt-2">High friction detected</p>
+                        <p className="text-[10px] text-center font-mono uppercase tracking-widest text-muted-foreground mt-4 border border-border px-3 py-1 rounded-full bg-muted/30">High friction detected</p>
                       </div>
                     </div>
                   </div>
-
-                  {/* THE BIG PICTURE - Editorial Block */}
-                  <section className="relative rounded-xl border bg-card p-10 shadow-sm mt-8 overflow-hidden">
-                    <div className="absolute left-0 top-0 h-full w-1 bg-[#C24A35]" />
-                    <div className="mb-6 flex items-center gap-3">
-                      <div className="bg-muted p-2 rounded-lg"><FileWarning className="h-5 w-5 text-foreground" /></div>
-                      <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">The Big Picture</h4>
-                    </div>
-                    <p className="font-display text-2xl leading-relaxed text-foreground first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:mt-1">{analysis.conclusion}</p>
-                  </section>
 
                   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 mt-8">
                     {/* Evidence Trail */}
@@ -323,7 +327,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
             </div>
           )}
 
-          {/* READ VIEW */}
+          {/* READ VIEW, COMPARE VIEW, METRICS VIEW KEPT IDENTICAL */}
           {view === "read" && active && (
             <div className="mx-auto flex max-w-6xl gap-8 p-8 pb-24">
               <article className="flex-1 rounded-xl border bg-card p-12 shadow-sm relative">
@@ -350,7 +354,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
             </div>
           )}
 
-          {/* COMPARE VIEW */}
           {view === "compare" && (
             <div className="mx-auto max-w-7xl p-8 pb-24">
               <div className="mb-8">
@@ -380,7 +383,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
             </div>
           )}
 
-          {/* METRICS VIEW */}
           {view === "count" && (
             <div className="mx-auto max-w-5xl p-8 pb-24">
               <div className="mb-10">
@@ -445,7 +447,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
         </main>
       </div>
       
-      {/* SELECTION TOOLBAR */}
       {selection && (
         <div className="fixed bottom-10 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border bg-card p-2 shadow-lg animate-in slide-in-from-bottom-8">
           <span className="px-4 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Code as:</span>
