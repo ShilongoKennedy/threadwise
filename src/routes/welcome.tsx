@@ -40,7 +40,7 @@ function WelcomePage() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
-      {/* CSS for Interactions, Glasses, and the Flipping Book */}
+      {/* CSS for Interactions & Glasses */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -60,112 +60,20 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* 3D Flipping Book */
-        .book-perspective {
-          perspective: 2500px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 600px;
-          width: 100%;
+        /* Interactive Desk Overlays */
+        @keyframes float-dot {
+          0%, 100% { transform: translateY(0px) scale(1); box-shadow: 0 0 10px 0px currentColor; }
+          50% { transform: translateY(-8px) scale(1.15); box-shadow: 0 0 25px 5px currentColor; }
         }
-
-        .book-container {
-          position: relative;
-          width: 700px;
-          height: 450px;
-          transform-style: preserve-3d;
-          transform: rotateX(20deg) rotateY(0deg);
-          box-shadow: 0 40px 100px -20px rgba(0,0,0,0.2);
-          border-radius: 10px;
+        .desk-dot {
+          animation: float-dot 4s ease-in-out infinite;
+          cursor: pointer;
+          transition: opacity 0.3s ease;
         }
-
-        /* Stop animation on hover */
-        .book-container:hover .flipping-page {
-          animation-play-state: paused !important;
-        }
-
-        /* The Covers */
-        .book-cover {
-          position: absolute;
-          top: 0;
-          width: 50%;
-          height: 100%;
-          background: #2C2A28;
-          border-radius: 10px;
-          box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        }
-        .book-cover.left { left: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; transform-origin: right; transform: rotateY(10deg); }
-        .book-cover.right { right: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; transform-origin: left; transform: rotateY(-10deg); }
-
-        /* The Page Base */
-        .page-base {
-          position: absolute;
-          top: 5px;
-          bottom: 5px;
-          width: 49.5%;
-          background: #FFFCF5;
-          border-radius: 4px;
-          box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-          background-image: radial-gradient(#E5E5E5 1px, transparent 1px);
-          background-size: 20px 20px;
-          overflow: hidden;
-        }
-        .page-base.left { left: 0; border-radius: 4px 0 0 4px; border-right: 1px solid rgba(0,0,0,0.05); }
-        .page-base.right { right: 0; border-radius: 0 4px 4px 0; border-left: 1px solid rgba(0,0,0,0.05); }
-
-        /* The Flipping Pages */
-        .flipping-page {
-          position: absolute;
-          top: 5px;
-          bottom: 5px;
-          right: 0;
-          width: 49.5%;
-          background: #FFFCF5;
-          transform-origin: left center;
-          transform-style: preserve-3d;
-          animation: flip-page 8s infinite linear;
-          border-radius: 0 4px 4px 0;
-          box-shadow: inset 0 0 20px rgba(0,0,0,0.05), 5px 0 15px rgba(0,0,0,0.1);
-          border: 1px solid rgba(0,0,0,0.05);
-          display: flex;
-          flex-direction: column;
-          padding: 30px;
-        }
-        
-        /* Page content that shows on the back of the flipping page */
-        .flipping-page::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: #FFFCF5;
-          transform: rotateY(180deg);
-          backface-visibility: hidden;
-          border-radius: 4px 0 0 4px;
-        }
-
-        .flipping-page:nth-child(1) { animation-delay: 0s; }
-        .flipping-page:nth-child(2) { animation-delay: 2s; }
-        .flipping-page:nth-child(3) { animation-delay: 4s; }
-        .flipping-page:nth-child(4) { animation-delay: 6s; }
-
-        @keyframes flip-page {
-          0% { transform: rotateY(0deg); z-index: 10; }
-          50% { transform: rotateY(-180deg); z-index: 10; }
-          100% { transform: rotateY(-180deg); z-index: 0; }
-        }
-
-        /* Spine Crease */
-        .spine-crease {
-          position: absolute;
-          top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 20px;
-          height: 100%;
-          background: linear-gradient(to right, rgba(0,0,0,0.1), rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.1));
-          z-index: 20;
-          pointer-events: none;
+        .desk-dot:hover {
+          opacity: 1 !important;
+          animation-play-state: paused;
+          transform: scale(1.3) !important;
         }
       `}</style>
 
@@ -405,89 +313,45 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE INTERACTIVE 3D FLIPPING BOOK */}
-        <section className="w-full mt-32 mb-16 relative">
-          <div className="text-center mb-16 relative z-30">
-            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">A book for your thoughts.</h2>
-            <p className="text-[#1A1A1A]/50 text-lg">Hover to pause. Read the intelligence.</p>
+        {/* THE PHOTOREALISTIC TRANSPARENT DESK SECTION */}
+        <section className="w-full max-w-[1200px] mt-32 mb-16 relative flex flex-col items-center">
+          
+          <div className="text-center mb-12 relative z-30">
+            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">A desk for your thoughts.</h2>
+            <p className="text-[#1A1A1A]/50 text-lg">Organize your research. Connect the dots.</p>
           </div>
 
-          <div className="book-perspective">
-            <div className="book-container group">
+          {/* The Desk Container */}
+          <div className="relative w-full max-w-[900px] group cursor-default">
+            
+            {/* The Image with drop shadow to blend into the background */}
+            <img 
+              src="/desk-bg.png" 
+              alt="A desk with books, glasses, and a notebook" 
+              className="w-full h-auto object-contain transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+              style={{ filter: 'drop-shadow(0 30px 40px rgba(0,0,0,0.15))' }}
+            />
+
+            {/* Interactive Dots Overlay */}
+            <div className="absolute inset-0 z-30 pointer-events-none">
               
-              {/* Book Covers (Background) */}
-              <div className="book-cover left" />
-              <div className="book-cover right" />
+              {/* Idea Dot (Over the yellow book) */}
+              <div className="absolute top-[48%] left-[35%] w-6 h-6 rounded-full bg-[#FDF0B6] opacity-60 desk-dot pointer-events-auto border-2 border-white shadow-lg" style={{ color: '#FDF0B6' }} title="Ideas" />
+              
+              {/* Evidence Dot (Over the pink book) */}
+              <div className="absolute top-[42%] left-[35%] w-6 h-6 rounded-full bg-[#F8C8DC] opacity-60 desk-dot pointer-events-auto border-2 border-white shadow-lg" style={{ color: '#F8C8DC', animationDelay: '0.5s' }} title="Evidence" />
+              
+              {/* Connections Dot (Over the green book) */}
+              <div className="absolute top-[36%] left-[35%] w-6 h-6 rounded-full bg-[#C1E1C1] opacity-60 desk-dot pointer-events-auto border-2 border-white shadow-lg" style={{ color: '#C1E1C1', animationDelay: '1s' }} title="Connections" />
 
-              {/* Static Left Page */}
-              <div className="page-base left">
-                <div className="absolute top-10 left-10 flex flex-col gap-2 font-display italic text-black/40 text-lg">
-                  <span>Ideas</span>
-                  <span>Questions</span>
-                  <span>Sources</span>
-                  <span>Connections</span>
-                </div>
-                
-                {/* Hand drawn nodes */}
-                <div className="absolute top-[40%] left-[20%] w-8 h-8 rounded-full bg-[#FDF0B6] shadow-sm" />
-                <div className="absolute top-[30%] left-[50%] w-10 h-10 rounded-full bg-[#F8C8DC] shadow-sm" />
-                <div className="absolute top-[60%] left-[30%] w-8 h-8 rounded-full bg-[#B3DDF2] shadow-sm" />
-                <div className="absolute top-[50%] left-[70%] w-9 h-9 rounded-full bg-[#D8B4E2] shadow-sm" />
-                
-                <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30">
-                  <path d="M 100 250 Q 180 150 220 180" fill="none" stroke="#1A1A1A" strokeWidth="2" />
-                  <path d="M 220 180 Q 150 280 120 300" fill="none" stroke="#1A1A1A" strokeWidth="2" />
-                  <path d="M 220 180 Q 280 280 300 250" fill="none" stroke="#1A1A1A" strokeWidth="2" />
-                </svg>
-              </div>
+              {/* Insights Dot (Over the blue book) */}
+              <div className="absolute top-[30%] left-[35%] w-6 h-6 rounded-full bg-[#B3DDF2] opacity-60 desk-dot pointer-events-auto border-2 border-white shadow-lg" style={{ color: '#B3DDF2', animationDelay: '1.5s' }} title="Insights" />
+              
+              {/* Action Dot (Over the purple book) */}
+              <div className="absolute top-[24%] left-[35%] w-6 h-6 rounded-full bg-[#D8B4E2] opacity-60 desk-dot pointer-events-auto border-2 border-white shadow-lg" style={{ color: '#D8B4E2', animationDelay: '2s' }} title="Action" />
 
-              {/* Static Right Page */}
-              <div className="page-base right">
-                <div className="flex flex-col gap-6 font-display text-black/60 text-lg mt-12 px-8">
-                  <div className="flex items-center gap-4"><div className="w-3 h-3 rounded-full bg-[#F8C8DC]" /> Explore further</div>
-                  <div className="flex items-center gap-4"><div className="w-3 h-3 rounded-full bg-[#B3DDF2]" /> Find evidence</div>
-                  <div className="flex items-center gap-4"><div className="w-3 h-3 rounded-full bg-[#C1E1C1]" /> Connect ideas</div>
-                  <div className="flex items-center gap-4"><div className="w-3 h-3 rounded-full bg-[#D8B4E2]" /> New perspective</div>
-                  <div className="flex items-center gap-4"><div className="w-3 h-3 rounded-full bg-[#FDF0B6]" /> Take action</div>
-                </div>
-              </div>
-
-              {/* Flipping Pages */}
-              <div className="flipping-page">
-                 <h3 className="font-display text-2xl mb-4 text-[#1A1A1A]">Intelligence Brief</h3>
-                 <p className="text-sm text-black/60 leading-relaxed mb-4">Cross-referencing 3 sources on the El Salvador deployment reveals a strategic motive tied to US economic aid.</p>
-                 <div className="mt-auto">
-                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#D96C39]">Hypothesis Found</span>
-                 </div>
-              </div>
-
-              <div className="flipping-page">
-                 <h3 className="font-display text-2xl mb-4 text-[#1A1A1A]">Discourse Lab</h3>
-                 <p className="text-sm text-black/60 leading-relaxed mb-4">The speech to investors focused entirely on ROI and did not mention the worker pledge.</p>
-                 <div className="mt-auto">
-                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#8B5CF6]">Contradiction</span>
-                 </div>
-              </div>
-
-              <div className="flipping-page">
-                 <h3 className="font-display text-2xl mb-4 text-[#1A1A1A]">Executive Dossier</h3>
-                 <p className="text-sm text-black/60 leading-relaxed mb-4">A public deadline, with workers placed at the centre of the promise. 84% confidence score.</p>
-                 <div className="mt-auto">
-                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#2D6A65]">Verified</span>
-                 </div>
-              </div>
-
-              <div className="flipping-page">
-                 <h3 className="font-display text-2xl mb-4 text-[#1A1A1A]">Canvas Studio</h3>
-                 <p className="text-sm text-black/60 leading-relaxed mb-4">Ten tools to map the bigger picture. Built for researchers, strategists, and complex thinkers.</p>
-                 <div className="mt-auto">
-                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#1A1A1A]">Threadwise</span>
-                 </div>
-              </div>
-
-              {/* Spine Crease Shadow */}
-              <div className="spine-crease" />
             </div>
+
           </div>
         </section>
 
