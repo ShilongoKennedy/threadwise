@@ -5,7 +5,7 @@ import {
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  Paperclip, CheckCircle2, Bot, Terminal
+  Paperclip, CheckCircle2, Bot, Terminal, ShieldAlert
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -45,7 +45,7 @@ function WelcomePage() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
-      {/* CSS for Interactions, Glasses, and Investigation Board */}
+      {/* CSS for Interactions, Glasses, and Holographic Board */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -65,120 +65,101 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* --- THE AI DETECTIVE BOARD --- */
+        /* --- THE HOLOGRAPHIC INTELLIGENCE BOARD --- */
         
         .board-container {
+          background-color: #1a1c1d; /* Dark metallic base */
+          border: 16px solid ${laptopYellow};
+          border-radius: 12px;
+          box-shadow: 
+            inset 0 0 0 2px rgba(255,255,255,0.1),
+            0 40px 80px -20px rgba(0,0,0,0.4),
+            0 0 0 1px rgba(0,0,0,0.1);
+          position: relative;
+        }
+
+        .board-screen {
           background-color: ${boardMint};
           background-image: 
-            url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E"),
-            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 80%);
-          box-shadow: 
-            inset 0 0 60px rgba(0,0,0,0.15),
-            0 30px 60px -15px rgba(0,0,0,0.3);
-          border: 16px solid ${laptopYellow};
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6) 0%, transparent 70%),
+            linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+          background-size: 100% 100%, 30px 30px, 30px 30px;
+          box-shadow: inset 0 0 80px rgba(0,0,0,0.15);
           border-radius: 4px;
+          position: relative;
+          overflow: hidden;
         }
-        
-        /* The String Path Base */
-        .string-base {
+
+        /* Glowing Data Streams */
+        .data-stream-base {
           fill: none;
-          stroke: #C22B2B;
-          stroke-width: 3;
-          filter: drop-shadow(3px 6px 4px rgba(0,0,0,0.3));
+          stroke: rgba(255,255,255,0.6);
+          stroke-width: 2;
+          filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));
         }
-        
-        /* The Animated Data Pulse traveling down the string */
-        .string-pulse {
+        .data-stream-pulse {
           fill: none;
-          stroke: #FF6B6B;
+          stroke: #fff;
           stroke-width: 3;
-          stroke-dasharray: 15 150;
-          animation: flow-pulse 3s linear infinite;
-          filter: drop-shadow(0px 0px 4px rgba(255,107,107,0.8));
+          stroke-dasharray: 10 200;
+          animation: flow-data 2s linear infinite;
+          filter: drop-shadow(0 0 12px #fff);
         }
-        
-        @keyframes flow-pulse {
-          0% { stroke-dashoffset: 165; }
+        @keyframes flow-data {
+          0% { stroke-dashoffset: 210; }
           100% { stroke-dashoffset: 0; }
         }
 
-        /* Floating Paper Cards */
-        @keyframes float-1 {
-          0%, 100% { transform: translateY(0) rotate(-3deg); }
-          50% { transform: translateY(-8px) rotate(-2deg); }
-        }
-        @keyframes float-2 {
-          0%, 100% { transform: translateY(0) rotate(4deg); }
-          50% { transform: translateY(-12px) rotate(5deg); }
-        }
-        @keyframes float-3 {
-          0%, 100% { transform: translateY(0) rotate(2deg); }
-          50% { transform: translateY(-6px) rotate(1deg); }
-        }
-        @keyframes float-4 {
+        /* Floating Glass Panels */
+        @keyframes float-glass-1 {
           0%, 100% { transform: translateY(0) rotate(-2deg); }
-          50% { transform: translateY(-10px) rotate(-1deg); }
+          50% { transform: translateY(-6px) rotate(-1deg); }
+        }
+        @keyframes float-glass-2 {
+          0%, 100% { transform: translateY(0) rotate(3deg); }
+          50% { transform: translateY(-10px) rotate(4deg); }
+        }
+        @keyframes float-glass-3 {
+          0%, 100% { transform: translateY(0) rotate(1deg); }
+          50% { transform: translateY(-8px) rotate(2deg); }
+        }
+        @keyframes float-glass-4 {
+          0%, 100% { transform: translateY(0) rotate(-3deg); }
+          50% { transform: translateY(-12px) rotate(-2deg); }
         }
 
-        .animate-float-1 { animation: float-1 8s ease-in-out infinite; }
-        .animate-float-2 { animation: float-2 10s ease-in-out infinite; }
-        .animate-float-3 { animation: float-3 7s ease-in-out infinite; }
-        .animate-float-4 { animation: float-4 9s ease-in-out infinite; }
+        .animate-float-glass-1 { animation: float-glass-1 7s ease-in-out infinite; }
+        .animate-float-glass-2 { animation: float-glass-2 9s ease-in-out infinite; }
+        .animate-float-glass-3 { animation: float-glass-3 8s ease-in-out infinite; }
+        .animate-float-glass-4 { animation: float-glass-4 10s ease-in-out infinite; }
 
-        .paper-card {
-          background-color: #FCFAF8;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+        .glass-card {
+          background: rgba(255, 255, 255, 0.4);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.8);
           box-shadow: 
-            0 15px 30px -5px rgba(0,0,0,0.3),
-            0 5px 15px -2px rgba(0,0,0,0.15),
+            0 20px 40px -10px rgba(0,0,0,0.15),
             inset 0 0 20px rgba(255,255,255,0.5);
-          border: 1px solid rgba(0,0,0,0.08);
           transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
           cursor: crosshair;
+          border-radius: 12px;
         }
         
-        .paper-card:hover {
+        .glass-card:hover {
           animation-play-state: paused;
           transform: scale(1.05) rotate(0deg) !important;
-          box-shadow: 0 25px 50px -10px rgba(0,0,0,0.5), 0 0 0 2px #75F09A;
+          background: rgba(255, 255, 255, 0.7);
+          box-shadow: 0 30px 60px -15px rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,0.8);
           z-index: 50 !important;
         }
 
-        /* 3D Realistic Map Pin */
-        .map-pin {
-          position: absolute;
-          top: -12px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 20;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.3));
-        }
-        .pin-head {
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          background: radial-gradient(circle at 30% 30%, #ff7b7b, #b30000);
-          box-shadow: 
-            inset -2px -2px 4px rgba(0,0,0,0.6),
-            inset 2px 2px 4px rgba(255,255,255,0.7);
-          position: relative;
-        }
-        .pin-needle {
-          width: 2px;
-          height: 12px;
-          background: linear-gradient(to right, #999, #fff, #777);
-          box-shadow: 1px 2px 2px rgba(0,0,0,0.3);
-          margin-top: -2px;
-        }
-
-        /* AI Detective Hologram */
+        /* AI Core (Geometric Neural Processor) */
         .ai-core {
           position: relative;
-          width: 160px;
-          height: 160px;
+          width: 140px;
+          height: 140px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -188,30 +169,33 @@ function WelcomePage() {
           position: absolute;
           inset: 0;
           border-radius: 50%;
-          border: 2px dashed rgba(26, 26, 26, 0.3);
-          animation: spin 10s linear infinite;
+          border: 2px solid rgba(255,255,255,0.8);
+          border-left-color: transparent;
+          border-right-color: transparent;
+          animation: spin 8s linear infinite;
+          box-shadow: 0 0 20px rgba(255,255,255,0.5);
         }
         
         .ai-ring-inner {
           position: absolute;
           inset: 15px;
           border-radius: 50%;
-          border: 3px solid rgba(26, 26, 26, 0.8);
+          border: 4px solid rgba(26, 26, 26, 0.8);
           border-top-color: transparent;
           border-bottom-color: transparent;
-          animation: spin 4s linear infinite reverse;
-          box-shadow: 0 0 20px rgba(117, 240, 154, 0.5);
+          animation: spin 5s linear infinite reverse;
+          box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
         }
         
-        .ai-eye {
+        .ai-sphere {
           width: 80px;
           height: 80px;
-          background: radial-gradient(circle at 40% 40%, #75F09A, #1A1A1A);
+          background: radial-gradient(circle at 30% 30%, #ffffff, #a3d9b5, #1a1c1d);
           border-radius: 50%;
           box-shadow: 
-            inset 0 0 20px rgba(0,0,0,0.8),
-            0 0 40px rgba(117, 240, 154, 0.6),
-            0 0 10px rgba(255,255,255,0.8);
+            inset -10px -10px 20px rgba(0,0,0,0.8),
+            inset 10px 10px 20px rgba(255,255,255,0.9),
+            0 20px 40px rgba(0,0,0,0.3);
           position: relative;
           display: flex;
           align-items: center;
@@ -219,25 +203,30 @@ function WelcomePage() {
           z-index: 10;
         }
         
-        .ai-lens {
+        .ai-glowing-lens {
           width: 30px;
           height: 30px;
           background: #1A1A1A;
           border-radius: 50%;
-          border: 2px solid rgba(255,255,255,0.4);
-          box-shadow: inset 0 0 10px #000;
+          border: 2px solid rgba(255,255,255,0.8);
+          box-shadow: 0 0 20px #75F09A, inset 0 0 10px #000;
         }
 
         @keyframes spin {
           100% { transform: rotate(360deg); }
         }
 
-        /* AI Terminal */
-        .ai-terminal {
-          background: #1A1817;
-          border: 1px solid rgba(255,255,255,0.1);
-          box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5), 0 0 0 4px rgba(117, 240, 154, 0.2);
+        /* Holographic Terminal */
+        .hologram-terminal {
+          background: rgba(26, 24, 23, 0.85);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(117, 240, 154, 0.3);
+          box-shadow: 
+            0 20px 40px -10px rgba(0,0,0,0.5), 
+            0 0 30px rgba(117, 240, 154, 0.2),
+            inset 0 0 20px rgba(117, 240, 154, 0.05);
           font-family: 'Courier New', Courier, monospace;
+          transform: perspective(1000px) rotateX(5deg);
         }
         
         .terminal-cursor {
@@ -248,27 +237,12 @@ function WelcomePage() {
           animation: blink 1s step-end infinite;
           vertical-align: middle;
           margin-left: 4px;
+          box-shadow: 0 0 8px #75F09A;
         }
         
         @keyframes blink {
           0%, 100% { opacity: 1; }
           50% { opacity: 0; }
-        }
-
-        /* Tape Effect */
-        .tape {
-          position: absolute;
-          top: -10px;
-          left: 50%;
-          transform: translateX(-50%) rotate(2deg);
-          width: 80px;
-          height: 25px;
-          background-color: rgba(255, 255, 255, 0.4);
-          backdrop-filter: blur(2px);
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          border-left: 1px solid rgba(255,255,255,0.5);
-          border-right: 1px solid rgba(255,255,255,0.5);
-          z-index: 30;
         }
       `}</style>
 
@@ -508,119 +482,111 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE AI DETECTIVE BOARD */}
+        {/* THE HOLOGRAPHIC INTELLIGENCE BOARD */}
         <section className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center">
           <div className="text-center mb-16 relative z-30">
             <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">Every story has a thread.</h2>
             <p className="text-[#1A1A1A]/50 text-lg">Connect the evidence. Find the hidden motive.</p>
           </div>
 
-          <div className="board-container relative w-full rounded-sm overflow-hidden h-[700px] flex items-center justify-center p-8">
-            
-            {/* The Animated Red Strings (Connecting to AI Core) */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-              {/* Top Left to Center */}
-              <path d="M 250 200 Q 400 150 600 300" className="string-base" />
-              <path d="M 250 200 Q 400 150 600 300" className="string-pulse" />
+          <div className="board-container w-full h-[650px] p-4">
+            <div className="board-screen w-full h-full">
               
-              {/* Top Right to Center */}
-              <path d="M 950 200 Q 800 150 600 300" className="string-base" />
-              <path d="M 950 200 Q 800 150 600 300" className="string-pulse" style={{ animationDelay: '0.5s' }} />
+              {/* The Animated Data Streams */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                <path d="M 250 200 Q 400 150 600 300" className="data-stream-base" />
+                <path d="M 250 200 Q 400 150 600 300" className="data-stream-pulse" />
+                
+                <path d="M 950 200 Q 800 150 600 300" className="data-stream-base" />
+                <path d="M 950 200 Q 800 150 600 300" className="data-stream-pulse" style={{ animationDelay: '0.5s' }} />
+                
+                <path d="M 250 500 Q 400 550 600 450" className="data-stream-base" />
+                <path d="M 250 500 Q 400 550 600 450" className="data-stream-pulse" style={{ animationDelay: '1s' }} />
+                
+                <path d="M 950 500 Q 800 550 600 450" className="data-stream-base" />
+                <path d="M 950 500 Q 800 550 600 450" className="data-stream-pulse" style={{ animationDelay: '1.5s' }} />
+              </svg>
+
+              {/* Glass Panels */}
               
-              {/* Bottom Left to Center */}
-              <path d="M 250 500 Q 400 550 600 450" className="string-base" />
-              <path d="M 250 500 Q 400 550 600 450" className="string-pulse" style={{ animationDelay: '1s' }} />
-              
-              {/* Bottom Right to Center */}
-              <path d="M 950 500 Q 800 550 600 450" className="string-base" />
-              <path d="M 950 500 Q 800 550 600 450" className="string-pulse" style={{ animationDelay: '1.5s' }} />
-            </svg>
-
-            {/* Evidence Cards - Interactive on Hover */}
-            
-            {/* Card 1: Top Left (Article) */}
-            <div 
-              className="paper-card animate-float-1 absolute top-[10%] left-[8%] w-60 p-5 rounded-sm z-10"
-              onMouseEnter={() => setAiMessage("> INGESTING MIAMI HERALD...\n> EXTRACTING KEY ENTITIES...\n> DEPLOYMENT DETECTED.")}
-              onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
-            >
-              <div className="tape" />
-              <div className="map-pin"><div className="pin-head" /><div className="pin-needle" /></div>
-              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#C22B2B] uppercase tracking-widest border-b border-black/10 pb-2">
-                <Network className="w-3 h-3" /> Article Source
-              </div>
-              <p className="text-[15px] font-display leading-tight text-black mb-3">"El Salvador sends special forces to Haiti."</p>
-              <p className="text-[10px] font-mono text-black/50">Miami Herald · 2026</p>
-            </div>
-
-            {/* Card 2: Top Right (Quote) */}
-            <div 
-              className="paper-card animate-float-2 absolute top-[15%] right-[8%] w-64 p-5 rounded-sm z-10"
-              onMouseEnter={() => setAiMessage("> ANALYZING PENTAGON BRIEFING...\n> DETECTING SEMANTIC OMISSIONS...\n> MOTIVE SUSPECTED.")}
-              onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
-            >
-              <div className="map-pin"><div className="pin-head" /><div className="pin-needle" /></div>
-              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#5B456B] uppercase tracking-widest border-b border-black/10 pb-2">
-                <MessageSquare className="w-3 h-3" /> Official Statement
-              </div>
-              <p className="text-sm font-sans italic text-black/80 leading-relaxed mb-3">"We are there to support our allies and maintain regional <span className="bg-black text-black selection:bg-white">stability</span>."</p>
-              <p className="text-[10px] font-mono text-black/50">Pentagon Briefing</p>
-            </div>
-
-            {/* Card 3: Bottom Left (Map/Image) */}
-            <div 
-              className="paper-card animate-float-3 absolute bottom-[10%] left-[12%] w-56 p-4 rounded-sm z-10"
-              onMouseEnter={() => setAiMessage("> GEOGRAPHIC CROSS-REFERENCE...\n> LOCATION: PORT-AU-PRINCE\n> STRATEGIC VALUE: HIGH.")}
-              onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
-            >
-              <div className="map-pin"><div className="pin-head" /><div className="pin-needle" /></div>
-              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#2D6A65] uppercase tracking-widest border-b border-black/10 pb-2">
-                <Map className="w-3 h-3" /> Location
-              </div>
-              <div className="w-full h-28 bg-[#E5E5E5] rounded mb-3 flex items-center justify-center relative overflow-hidden border border-black/5">
-                <Map className="w-10 h-10 text-black/20" />
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30 mix-blend-multiply" />
-              </div>
-              <p className="text-[10px] font-mono text-black/50 text-center uppercase tracking-widest">Port-au-Prince</p>
-            </div>
-
-            {/* Card 4: Bottom Right (Question) */}
-            <div 
-              className="paper-card animate-float-4 absolute bottom-[15%] right-[12%] w-60 p-5 rounded-sm z-10 bg-[#FBD0D4]/40"
-              onMouseEnter={() => setAiMessage("> TESTING HYPOTHESIS...\n> CONFIDENCE SCORE: 89%\n> MOTIVE: ECONOMIC LEVERAGE.")}
-              onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
-            >
-              <div className="tape" style={{ transform: 'translateX(-50%) rotate(-3deg)' }} />
-              <div className="map-pin"><div className="pin-head" /><div className="pin-needle" /></div>
-              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-bold text-[#C22B2B] uppercase tracking-widest border-b border-[#C22B2B]/20 pb-2">
-                <Sparkles className="w-3 h-3" /> Hypothesis
-              </div>
-              <p className="text-[15px] font-display leading-tight text-black">Is this actually about securing US economic aid?</p>
-            </div>
-
-            {/* Center: The AI Detective */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
-              
-              {/* AI Orb */}
-              <div className="ai-core mb-6">
-                <div className="ai-ring-outer" />
-                <div className="ai-ring-inner" />
-                <div className="ai-eye">
-                  <div className="ai-lens" />
+              {/* Panel 1: Top Left */}
+              <div 
+                className="glass-card animate-float-glass-1 absolute top-[10%] left-[8%] w-64 p-6 z-10"
+                onMouseEnter={() => setAiMessage("> INGESTING MIAMI HERALD...\n> EXTRACTING KEY ENTITIES...\n> DEPLOYMENT DETECTED.")}
+                onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
+              >
+                <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#C22B2B] uppercase tracking-widest border-b border-black/10 pb-2">
+                  <Network className="w-3 h-3" /> Article Source
                 </div>
+                <p className="text-[16px] font-display leading-tight text-black mb-3">"El Salvador sends special forces to Haiti."</p>
+                <p className="text-[10px] font-mono text-black/50">Miami Herald · 2026</p>
               </div>
 
-              {/* AI Terminal */}
-              <div className="ai-terminal w-[320px] p-4 rounded text-xs text-[#75F09A] whitespace-pre-wrap leading-relaxed relative">
-                <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10 text-white/50 uppercase tracking-widest text-[9px]">
-                  <Terminal className="w-3 h-3" /> AI Detective Log
+              {/* Panel 2: Top Right */}
+              <div 
+                className="glass-card animate-float-glass-2 absolute top-[15%] right-[8%] w-72 p-6 z-10"
+                onMouseEnter={() => setAiMessage("> ANALYZING PENTAGON BRIEFING...\n> DETECTING SEMANTIC OMISSIONS...\n> MOTIVE SUSPECTED.")}
+                onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
+              >
+                <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#5B456B] uppercase tracking-widest border-b border-black/10 pb-2">
+                  <MessageSquare className="w-3 h-3" /> Official Statement
                 </div>
-                {aiMessage}
-                <span className="terminal-cursor" />
+                <p className="text-sm font-sans italic text-black/80 leading-relaxed mb-3">"We are there to support our allies and maintain regional <span className="bg-black text-black selection:bg-white px-1">stability</span>."</p>
+                <p className="text-[10px] font-mono text-black/50">Pentagon Briefing</p>
+              </div>
+
+              {/* Panel 3: Bottom Left */}
+              <div 
+                className="glass-card animate-float-glass-3 absolute bottom-[10%] left-[12%] w-60 p-5 z-10"
+                onMouseEnter={() => setAiMessage("> GEOGRAPHIC CROSS-REFERENCE...\n> LOCATION: PORT-AU-PRINCE\n> STRATEGIC VALUE: HIGH.")}
+                onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
+              >
+                <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#2D6A65] uppercase tracking-widest border-b border-black/10 pb-2">
+                  <Map className="w-3 h-3" /> Location
+                </div>
+                <div className="w-full h-32 bg-black/5 rounded-lg mb-3 flex items-center justify-center relative overflow-hidden border border-white/50">
+                  <Map className="w-12 h-12 text-black/20" />
+                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-multiply" />
+                </div>
+                <p className="text-[10px] font-mono text-black/50 text-center uppercase tracking-widest">Port-au-Prince</p>
+              </div>
+
+              {/* Panel 4: Bottom Right */}
+              <div 
+                className="glass-card animate-float-glass-4 absolute bottom-[15%] right-[12%] w-64 p-6 z-10 bg-white/60"
+                onMouseEnter={() => setAiMessage("> TESTING HYPOTHESIS...\n> CONFIDENCE SCORE: 89%\n> MOTIVE: ECONOMIC LEVERAGE.")}
+                onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
+              >
+                <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-bold text-[#C22B2B] uppercase tracking-widest border-b border-[#C22B2B]/20 pb-2">
+                  <Sparkles className="w-3 h-3" /> Hypothesis
+                </div>
+                <p className="text-[16px] font-display leading-tight text-black">Is this actually about securing US economic aid?</p>
+              </div>
+
+              {/* Center: The AI Neural Core */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
+                
+                {/* AI Orb */}
+                <div className="ai-core mb-8">
+                  <div className="ai-ring-outer" />
+                  <div className="ai-ring-inner" />
+                  <div className="ai-sphere">
+                    <div className="ai-glowing-lens" />
+                  </div>
+                </div>
+
+                {/* AI Terminal */}
+                <div className="hologram-terminal w-[340px] p-5 rounded-xl text-xs text-[#75F09A] whitespace-pre-wrap leading-relaxed relative">
+                  <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/10 text-white/50 uppercase tracking-widest text-[9px]">
+                    <Terminal className="w-3.5 h-3.5" /> AI Detective Log
+                  </div>
+                  {aiMessage}
+                  <span className="terminal-cursor" />
+                </div>
+
               </div>
 
             </div>
-
           </div>
         </section>
 
