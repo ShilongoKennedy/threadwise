@@ -65,101 +65,106 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* --- THE HOLOGRAPHIC INTELLIGENCE BOARD --- */
+        /* --- THE PREMIUM HOLOGRAPHIC BOARD --- */
         
         .board-container {
           background-color: #1a1c1d; /* Dark metallic base */
           border: 16px solid ${laptopYellow};
-          border-radius: 12px;
+          border-radius: 24px;
           box-shadow: 
             inset 0 0 0 2px rgba(255,255,255,0.1),
             0 40px 80px -20px rgba(0,0,0,0.4),
             0 0 0 1px rgba(0,0,0,0.1);
           position: relative;
+          padding: 8px;
         }
 
         .board-screen {
           background-color: ${boardMint};
+          /* Adding a heavy vignette and texture to make the mint green feel like a glowing screen */
           background-image: 
-            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6) 0%, transparent 70%),
-            linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
-          background-size: 100% 100%, 30px 30px, 30px 30px;
-          box-shadow: inset 0 0 80px rgba(0,0,0,0.15);
-          border-radius: 4px;
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 60%),
+            radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.2) 100%),
+            linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
+          background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+          box-shadow: inset 0 0 80px rgba(0,0,0,0.2);
+          border-radius: 16px;
           position: relative;
           overflow: hidden;
+          height: 100%;
         }
 
         /* Glowing Data Streams */
         .data-stream-base {
           fill: none;
-          stroke: rgba(255,255,255,0.6);
+          stroke: rgba(255,255,255,0.4);
           stroke-width: 2;
-          filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));
         }
         .data-stream-pulse {
           fill: none;
           stroke: #fff;
           stroke-width: 3;
-          stroke-dasharray: 10 200;
-          animation: flow-data 2s linear infinite;
-          filter: drop-shadow(0 0 12px #fff);
+          stroke-dasharray: 20 250;
+          animation: flow-data 3s linear infinite;
+          filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #75F09A);
         }
         @keyframes flow-data {
-          0% { stroke-dashoffset: 210; }
+          0% { stroke-dashoffset: 270; }
           100% { stroke-dashoffset: 0; }
         }
 
         /* Floating Glass Panels */
         @keyframes float-glass-1 {
           0%, 100% { transform: translateY(0) rotate(-2deg); }
-          50% { transform: translateY(-6px) rotate(-1deg); }
+          50% { transform: translateY(-8px) rotate(-1deg); }
         }
         @keyframes float-glass-2 {
           0%, 100% { transform: translateY(0) rotate(3deg); }
-          50% { transform: translateY(-10px) rotate(4deg); }
+          50% { transform: translateY(-12px) rotate(4deg); }
         }
         @keyframes float-glass-3 {
           0%, 100% { transform: translateY(0) rotate(1deg); }
-          50% { transform: translateY(-8px) rotate(2deg); }
+          50% { transform: translateY(-10px) rotate(2deg); }
         }
         @keyframes float-glass-4 {
           0%, 100% { transform: translateY(0) rotate(-3deg); }
-          50% { transform: translateY(-12px) rotate(-2deg); }
+          50% { transform: translateY(-14px) rotate(-2deg); }
         }
 
-        .animate-float-glass-1 { animation: float-glass-1 7s ease-in-out infinite; }
-        .animate-float-glass-2 { animation: float-glass-2 9s ease-in-out infinite; }
-        .animate-float-glass-3 { animation: float-glass-3 8s ease-in-out infinite; }
-        .animate-float-glass-4 { animation: float-glass-4 10s ease-in-out infinite; }
+        .animate-float-glass-1 { animation: float-glass-1 8s ease-in-out infinite; }
+        .animate-float-glass-2 { animation: float-glass-2 10s ease-in-out infinite; }
+        .animate-float-glass-3 { animation: float-glass-3 9s ease-in-out infinite; }
+        .animate-float-glass-4 { animation: float-glass-4 11s ease-in-out infinite; }
 
         .glass-card {
-          background: rgba(255, 255, 255, 0.4);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.8);
+          /* Much higher opacity for readability */
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 1);
           box-shadow: 
-            0 20px 40px -10px rgba(0,0,0,0.15),
-            inset 0 0 20px rgba(255,255,255,0.5);
+            0 20px 40px -10px rgba(0,0,0,0.2),
+            inset 0 0 20px rgba(255,255,255,0.8),
+            0 0 0 1px rgba(0,0,0,0.05);
           transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
           cursor: crosshair;
-          border-radius: 12px;
+          border-radius: 16px;
         }
         
         .glass-card:hover {
           animation-play-state: paused;
           transform: scale(1.05) rotate(0deg) !important;
-          background: rgba(255, 255, 255, 0.7);
-          box-shadow: 0 30px 60px -15px rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,0.8);
+          background: rgba(255, 255, 255, 1);
+          box-shadow: 0 30px 60px -15px rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,1), 0 0 0 2px #75F09A;
           z-index: 50 !important;
         }
 
         /* AI Core (Geometric Neural Processor) */
         .ai-core {
           position: relative;
-          width: 140px;
-          height: 140px;
+          width: 160px;
+          height: 160px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -169,11 +174,10 @@ function WelcomePage() {
           position: absolute;
           inset: 0;
           border-radius: 50%;
-          border: 2px solid rgba(255,255,255,0.8);
+          border: 2px solid rgba(26, 26, 26, 0.2);
           border-left-color: transparent;
           border-right-color: transparent;
           animation: spin 8s linear infinite;
-          box-shadow: 0 0 20px rgba(255,255,255,0.5);
         }
         
         .ai-ring-inner {
@@ -184,12 +188,12 @@ function WelcomePage() {
           border-top-color: transparent;
           border-bottom-color: transparent;
           animation: spin 5s linear infinite reverse;
-          box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+          box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
         }
         
         .ai-sphere {
-          width: 80px;
-          height: 80px;
+          width: 90px;
+          height: 90px;
           background: radial-gradient(circle at 30% 30%, #ffffff, #a3d9b5, #1a1c1d);
           border-radius: 50%;
           box-shadow: 
@@ -204,29 +208,30 @@ function WelcomePage() {
         }
         
         .ai-glowing-lens {
-          width: 30px;
-          height: 30px;
+          width: 35px;
+          height: 35px;
           background: #1A1A1A;
           border-radius: 50%;
           border: 2px solid rgba(255,255,255,0.8);
-          box-shadow: 0 0 20px #75F09A, inset 0 0 10px #000;
+          box-shadow: 0 0 25px #75F09A, inset 0 0 10px #000;
         }
 
         @keyframes spin {
           100% { transform: rotate(360deg); }
         }
 
-        /* Holographic Terminal */
+        /* Holographic Terminal - Floating over the core */
         .hologram-terminal {
-          background: rgba(26, 24, 23, 0.85);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(117, 240, 154, 0.3);
+          background: rgba(26, 28, 29, 0.9);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
           box-shadow: 
-            0 20px 40px -10px rgba(0,0,0,0.5), 
-            0 0 30px rgba(117, 240, 154, 0.2),
-            inset 0 0 20px rgba(117, 240, 154, 0.05);
+            0 30px 60px -10px rgba(0,0,0,0.6), 
+            0 0 30px rgba(117, 240, 154, 0.3),
+            inset 0 0 20px rgba(255, 255, 255, 0.1);
           font-family: 'Courier New', Courier, monospace;
-          transform: perspective(1000px) rotateX(5deg);
+          transform: perspective(1000px) rotateX(10deg) translateY(-10px);
         }
         
         .terminal-cursor {
@@ -489,7 +494,7 @@ function WelcomePage() {
             <p className="text-[#1A1A1A]/50 text-lg">Connect the evidence. Find the hidden motive.</p>
           </div>
 
-          <div className="board-container w-full h-[650px] p-4">
+          <div className="board-container w-full h-[650px] p-2">
             <div className="board-screen w-full h-full">
               
               {/* The Animated Data Streams */}
