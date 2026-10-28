@@ -55,12 +55,12 @@ function WelcomePage() {
 
   // Typewriter State for Dossier
   const [typedText, setTypedText] = useState("");
-  const [isHovered, setIsHovered] = useState(false);
   const dossierText = "> SYSTEM INITIALIZED...\n> AWAITING SOURCES...\n> READY FOR INVESTIGATION.";
 
   useEffect(() => {
     let i = 0;
-    let timeout: NodeJS.Timeout;
+    // FIXED: Used ReturnType instead of NodeJS.Timeout
+    let timeout: ReturnType<typeof setTimeout>;
     
     const type = () => {
       setTypedText(dossierText.slice(0, i));
@@ -382,10 +382,7 @@ function WelcomePage() {
             <p className="text-[#1A1A1A]/50 text-lg">Hover to declassify. Read the assets.</p>
           </div>
 
-          <div 
-            className="folder-container relative w-full max-w-[850px] h-[550px]"
-            onMouseEnter={() => setIsHovered(true)}
-          >
+          <div className="folder-container relative w-full max-w-[850px] h-[550px]">
             {/* The Manila Folder Background */}
             <div className="folder-back absolute inset-0 rounded-xl rounded-tl-none">
               {/* Folder Tab */}
@@ -421,7 +418,8 @@ function WelcomePage() {
                       <BookOpen className="w-4 h-4 text-[#2D6A65]" />
                     </div>
                     <div>
-                      <h5 className="font-display text-lg font-medium">Discourse Lab</h3>
+                      {/* FIXED: Closed h5 with h5 instead of h3 */}
+                      <h5 className="font-display text-lg font-medium">Discourse Lab</h5>
                       <p className="font-sans text-sm text-[#1A1A1A]/60">Cross-reference multiple news sources to map the bigger picture.</p>
                     </div>
                   </div>
@@ -431,7 +429,8 @@ function WelcomePage() {
                       <FileText className="w-4 h-4 text-[#5B456B]" />
                     </div>
                     <div>
-                      <h5 className="font-display text-lg font-medium">Evidence Clipper</h3>
+                      {/* FIXED: Closed h5 with h5 instead of h3 */}
+                      <h5 className="font-display text-lg font-medium">Evidence Clipper</h5>
                       <p className="font-sans text-sm text-[#1A1A1A]/60">Extract verbatim quotes and cited takeaways from any URL or document.</p>
                     </div>
                   </div>
@@ -441,7 +440,8 @@ function WelcomePage() {
                       <Sparkles className="w-4 h-4 text-[#C24A35]" />
                     </div>
                     <div>
-                      <h5 className="font-display text-lg font-medium">Socratic Inquiry</h3>
+                      {/* FIXED: Closed h5 with h5 instead of h3 */}
+                      <h5 className="font-display text-lg font-medium">Socratic Inquiry</h5>
                       <p className="font-sans text-sm text-[#1A1A1A]/60">Challenge assumptions and surface hidden tensions on your canvas.</p>
                     </div>
                   </div>
