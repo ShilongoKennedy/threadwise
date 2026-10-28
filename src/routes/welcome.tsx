@@ -4,7 +4,8 @@ import {
   Activity, Cpu, Network, Layers, Target, 
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
-  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate
+  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
+  Infinity as InfinityIcon
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -40,7 +41,7 @@ function WelcomePage() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
-      {/* CSS for Interactions & Glasses */}
+      {/* CSS for Interactions, Glasses, and Desk Diorama */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -60,20 +61,177 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* Interactive Desk Overlays */
-        @keyframes float-dot {
-          0%, 100% { transform: translateY(0px) scale(1); box-shadow: 0 0 10px 0px currentColor; }
-          50% { transform: translateY(-5px) scale(1.1); box-shadow: 0 0 20px 5px currentColor; }
+        /* Isometric Desk Diorama */
+        .diorama-container {
+          perspective: 2500px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 700px;
+          width: 100%;
+          position: relative;
         }
-        .desk-dot {
-          animation: float-dot 4s ease-in-out infinite;
-          cursor: pointer;
-          transition: opacity 0.3s ease;
+
+        .isometric-plane {
+          transform-style: preserve-3d;
+          transform: rotateX(55deg) rotateZ(-45deg);
+          position: relative;
+          width: 700px;
+          height: 700px;
         }
-        .desk-dot:hover {
-          opacity: 1 !important;
-          animation-play-state: paused;
-          transform: scale(1.3) !important;
+
+        .wood-surface {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, #F5E6D3 0%, #E8D4BB 100%);
+          border-radius: 20px;
+          box-shadow: 
+            -20px 20px 60px rgba(0,0,0,0.15),
+            inset 0 0 40px rgba(255,255,255,0.6);
+          background-image: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(160, 120, 80, 0.03) 40px, rgba(160, 120, 80, 0.03) 41px);
+        }
+
+        /* 3D Books */
+        .book-stack {
+          position: absolute;
+          top: 35%;
+          left: 25%;
+          transform-style: preserve-3d;
+          z-index: 20;
+        }
+        .book-item {
+          position: relative;
+          width: 280px;
+          height: 40px;
+          transform-style: preserve-3d;
+          transition: transform 0.3s ease;
+          margin-bottom: -2px;
+        }
+        .book-item:hover {
+          transform: translateZ(20px) translateX(-10px) translateY(-10px) !important;
+        }
+        
+        /* The Book Faces */
+        .book-front {
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          border-radius: 0 4px 4px 0;
+          display: flex;
+          align-items: center;
+          padding: 0 20px;
+          box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+        }
+        .book-spine {
+          position: absolute;
+          top: 0; left: 0; width: 40px; height: 100%;
+          transform-origin: left;
+          transform: rotateY(-90deg);
+          border-radius: 4px 0 0 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: inset -5px 0 10px rgba(0,0,0,0.1);
+        }
+        .book-pages {
+          position: absolute;
+          top: 2px; bottom: 2px; right: 0; width: 15px;
+          transform-origin: right;
+          transform: rotateY(90deg);
+          background: #FFF;
+          border-radius: 0 4px 4px 0;
+          box-shadow: inset 2px 0 5px rgba(0,0,0,0.1);
+          background-image: repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 3px);
+        }
+
+        /* Pen Cup */
+        .pen-cup-wrapper {
+          position: absolute;
+          top: 25%;
+          right: 25%;
+          transform-style: preserve-3d;
+          transform: translateZ(30px);
+          z-index: 15;
+        }
+        .pen-cup-body {
+          width: 120px;
+          height: 160px;
+          background: #F9F7F1;
+          border-radius: 10px 10px 40px 40px;
+          box-shadow: 
+            -15px 15px 30px rgba(0,0,0,0.1),
+            inset -10px 0 20px rgba(0,0,0,0.03),
+            inset 10px 0 20px rgba(255,255,255,1);
+          position: relative;
+          background-image: repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.02) 8px, rgba(0,0,0,0.02) 10px);
+        }
+        .pen-cup-rim {
+          position: absolute;
+          top: -10px; left: 0; width: 100%; height: 20px;
+          background: #FDFBF7;
+          border-radius: 50%;
+          box-shadow: inset 0 4px 8px rgba(0,0,0,0.1);
+          z-index: 3;
+        }
+        .pen-cup-opening {
+          position: absolute;
+          top: 0; left: 5%; width: 90%; height: 10px;
+          background: #E5E0D5;
+          border-radius: 50%;
+          z-index: 2;
+        }
+
+        /* Pens */
+        .pen {
+          position: absolute;
+          width: 10px;
+          border-radius: 5px 5px 0 0;
+          box-shadow: -5px 5px 10px rgba(0,0,0,0.15);
+          transform-origin: bottom;
+        }
+        .pen-tip {
+          position: absolute;
+          top: -15px; left: 0; width: 100%; height: 15px;
+          clip-path: polygon(50% 0, 100% 100%, 0 100%);
+        }
+
+        /* Notebook */
+        .notebook-wrapper {
+          position: absolute;
+          bottom: 10%;
+          left: 10%;
+          transform-style: preserve-3d;
+          transform: translateZ(10px);
+          z-index: 25;
+          display: flex;
+        }
+        .page {
+          width: 300px;
+          height: 400px;
+          background: #FFFCF5;
+          border: 1px solid rgba(0,0,0,0.05);
+          position: relative;
+          box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .page-left {
+          border-radius: 10px 0 0 10px;
+          transform-origin: right;
+          transform: rotateY(15deg);
+          background-image: radial-gradient(#E5E5E5 1px, transparent 1px);
+          background-size: 20px 20px;
+        }
+        .page-right {
+          border-radius: 0 10px 10px 0;
+          transform-origin: left;
+          transform: rotateY(-15deg);
+          box-shadow: inset 20px 0 30px rgba(0,0,0,0.03);
+          padding: 30px;
+        }
+        .book-spine-crease {
+          width: 4px;
+          height: 100%;
+          background: #E5E0D5;
+          box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+          z-index: 2;
         }
       `}</style>
 
@@ -313,46 +471,141 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE PHOTOREALISTIC DESK SECTION */}
-        <section className="w-full max-w-[1200px] mt-32 mb-16 relative rounded-3xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-black/5 group">
-          
-          {/* The Image */}
-          <img 
-            src="/desk.jpg" 
-            alt="A physical desk with books, glasses, and a notebook" 
-            className="w-full h-auto object-cover transform transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-          />
-
-          {/* Subtle dark gradient overlay so text is readable */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none" />
-
-          {/* Text Overlay */}
-          <div className="absolute bottom-12 left-12 text-left z-20">
-            <h2 className="font-display text-4xl md:text-5xl text-white mb-2 drop-shadow-lg">A desk for your thoughts.</h2>
-            <p className="text-white/80 text-lg drop-shadow-md">Organize your research. Connect the dots.</p>
+        {/* THE ISOMETRIC CSS DESK DIORAMA */}
+        <section className="w-full mt-32 mb-16 relative">
+          <div className="text-center mb-12 relative z-30">
+            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">A desk for your thoughts.</h2>
+            <p className="text-[#1A1A1A]/50 text-lg">Organize your research. Connect the dots.</p>
           </div>
 
-          {/* Interactive Dots Overlay (Positioned perfectly over the image's elements) */}
-          <div className="absolute inset-0 z-30 pointer-events-none">
-             {/* We will create interactive hotspots on top of the image. 
-                 These coordinates are estimated based on the inspiration image proportions. */}
-             
-             {/* Idea Dot (Over the yellow book) */}
-             <div className="absolute top-[48%] left-[35%] w-6 h-6 rounded-full bg-[#FDF0B6] opacity-60 desk-dot pointer-events-auto border-2 border-white shadow-lg" style={{ color: '#FDF0B6' }} title="Ideas" />
-             
-             {/* Evidence Dot (Over the pink book) */}
-             <div className="absolute top-[42%] left-[35%] w-6 h-6 rounded-full bg-[#F8C8DC] opacity-60 desk-dot pointer-events-auto border-2 border-white shadow-lg" style={{ color: '#F8C8DC', animationDelay: '0.5s' }} title="Evidence" />
-             
-             {/* Connections Dot (Over the green book) */}
-             <div className="absolute top-[36%] left-[35%] w-6 h-6 rounded-full bg-[#C1E1C1] opacity-60 desk-dot pointer-events-auto border-2 border-white shadow-lg" style={{ color: '#C1E1C1', animationDelay: '1s' }} title="Connections" />
+          <div className="diorama-container">
+            <div className="isometric-plane">
+              
+              {/* The Wooden Desk Surface */}
+              <div className="wood-surface" />
 
-             {/* Insights Dot (Over the blue book) */}
-             <div className="absolute top-[30%] left-[35%] w-6 h-6 rounded-full bg-[#B3DDF2] opacity-60 desk-dot pointer-events-auto border-2 border-white shadow-lg" style={{ color: '#B3DDF2', animationDelay: '1.5s' }} title="Insights" />
-             
-             {/* Action Dot (Over the purple book) */}
-             <div className="absolute top-[24%] left-[35%] w-6 h-6 rounded-full bg-[#D8B4E2] opacity-60 desk-dot pointer-events-auto border-2 border-white shadow-lg" style={{ color: '#D8B4E2', animationDelay: '2s' }} title="Action" />
+              {/* The Book Stack (Center Left) */}
+              <div className="book-stack">
+                {/* Book 1: Ideas */}
+                <div className="book-item bg-[#FDF0B6]">
+                  <div className="book-front">
+                    <div className="w-4 h-4 rounded-full bg-[#FDF0B6] border border-black/10 mr-4" />
+                    <span className="font-display text-lg text-[#1A1A1A]">Ideas</span>
+                    <InfinityIcon className="w-5 h-5 text-[#1A1A1A]/20 ml-auto" />
+                  </div>
+                  <div className="book-spine bg-[#FDF0B6]"><span className="font-display text-sm text-[#1A1A1A] whitespace-nowrap transform -rotate-90">Ideas</span></div>
+                  <div className="book-pages" />
+                </div>
+
+                {/* Book 2: Evidence */}
+                <div className="book-item bg-[#F8C8DC]">
+                  <div className="book-front">
+                    <div className="w-4 h-4 rounded-full bg-[#F8C8DC] border border-black/10 mr-4" />
+                    <span className="font-display text-lg text-[#1A1A1A]">Evidence</span>
+                    <InfinityIcon className="w-5 h-5 text-[#1A1A1A]/20 ml-auto" />
+                  </div>
+                  <div className="book-spine bg-[#F8C8DC]"><span className="font-display text-sm text-[#1A1A1A] whitespace-nowrap transform -rotate-90">Evidence</span></div>
+                  <div className="book-pages" />
+                </div>
+
+                {/* Book 3: Connections */}
+                <div className="book-item bg-[#C1E1C1]">
+                  <div className="book-front">
+                    <div className="w-4 h-4 rounded-full bg-[#C1E1C1] border border-black/10 mr-4" />
+                    <span className="font-display text-lg text-[#1A1A1A]">Connections</span>
+                    <InfinityIcon className="w-5 h-5 text-[#1A1A1A]/20 ml-auto" />
+                  </div>
+                  <div className="book-spine bg-[#C1E1C1]"><span className="font-display text-sm text-[#1A1A1A] whitespace-nowrap transform -rotate-90">Connections</span></div>
+                  <div className="book-pages" />
+                </div>
+
+                {/* Book 4: Insights */}
+                <div className="book-item bg-[#B3DDF2]">
+                  <div className="book-front">
+                    <div className="w-4 h-4 rounded-full bg-[#B3DDF2] border border-black/10 mr-4" />
+                    <span className="font-display text-lg text-[#1A1A1A]">Insights</span>
+                    <InfinityIcon className="w-5 h-5 text-[#1A1A1A]/20 ml-auto" />
+                  </div>
+                  <div className="book-spine bg-[#B3DDF2]"><span className="font-display text-sm text-[#1A1A1A] whitespace-nowrap transform -rotate-90">Insights</span></div>
+                  <div className="book-pages" />
+                </div>
+
+                {/* Book 5: Action */}
+                <div className="book-item bg-[#D8B4E2]">
+                  <div className="book-front">
+                    <div className="w-4 h-4 rounded-full bg-[#D8B4E2] border border-black/10 mr-4" />
+                    <span className="font-display text-lg text-[#1A1A1A]">Action</span>
+                    <InfinityIcon className="w-5 h-5 text-[#1A1A1A]/20 ml-auto" />
+                  </div>
+                  <div className="book-spine bg-[#D8B4E2]"><span className="font-display text-sm text-[#1A1A1A] whitespace-nowrap transform -rotate-90">Action</span></div>
+                  <div className="book-pages" />
+                </div>
+              </div>
+
+              {/* The Pen Cup (Right) */}
+              <div className="pen-cup-wrapper">
+                <div className="pen-cup-body">
+                  
+                  {/* Pens sticking out */}
+                  <div className="absolute bottom-[140px] left-[20px] pen h-[120px] bg-[#FDF0B6] transform -rotate-12 z-0">
+                    <div className="pen-tip bg-[#E3D398]" />
+                    <div className="absolute top-[15px] left-0 w-full h-[2px] bg-[#333]" />
+                  </div>
+                  <div className="absolute bottom-[130px] left-[50px] pen h-[110px] bg-[#F8C8DC] transform rotate-6 z-10">
+                    <div className="pen-tip bg-[#E5B3B8]" />
+                    <div className="absolute top-[15px] left-0 w-full h-[2px] bg-[#333]" />
+                  </div>
+                  <div className="absolute bottom-[150px] left-[80px] pen h-[130px] bg-[#B3DDF2] transform rotate-12 z-0">
+                    <div className="pen-tip bg-[#8BBBD6]" />
+                    <div className="absolute top-[15px] left-0 w-full h-[2px] bg-[#333]" />
+                  </div>
+                  <div className="absolute bottom-[120px] left-[100px] pen h-[100px] bg-[#1A1A1A] transform rotate-[25deg] z-0">
+                    <div className="pen-tip bg-[#333]" />
+                  </div>
+
+                  <div className="pen-cup-opening" />
+                  <div className="pen-cup-rim" />
+                </div>
+              </div>
+
+              {/* The Open Notebook (Bottom Left) */}
+              <div className="notebook-wrapper">
+                <div className="page page-left">
+                  <div className="absolute top-10 left-10 flex flex-col gap-2 font-display italic text-black/40 text-sm">
+                    <span>Ideas</span>
+                    <span>Questions</span>
+                    <span>Sources</span>
+                    <span>Connections</span>
+                  </div>
+                  
+                  {/* Hand drawn nodes */}
+                  <div className="absolute top-[40%] left-[20%] w-6 h-6 rounded-full bg-[#FDF0B6] shadow-sm" />
+                  <div className="absolute top-[30%] left-[50%] w-8 h-8 rounded-full bg-[#F8C8DC] shadow-sm" />
+                  <div className="absolute top-[60%] left-[30%] w-6 h-6 rounded-full bg-[#B3DDF2] shadow-sm" />
+                  <div className="absolute top-[50%] left-[70%] w-7 h-7 rounded-full bg-[#D8B4E2] shadow-sm" />
+                  
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30">
+                    <path d="M 80 180 Q 150 120 180 150" fill="none" stroke="#1A1A1A" strokeWidth="2" />
+                    <path d="M 180 150 Q 120 220 100 250" fill="none" stroke="#1A1A1A" strokeWidth="2" />
+                    <path d="M 180 150 Q 220 220 240 200" fill="none" stroke="#1A1A1A" strokeWidth="2" />
+                  </svg>
+                </div>
+                
+                <div className="book-spine-crease" />
+                
+                <div className="page page-right">
+                  <div className="flex flex-col gap-4 font-display text-black/60 text-sm mt-10">
+                    <div className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-[#F8C8DC]" /> Explore further</div>
+                    <div className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-[#B3DDF2]" /> Find evidence</div>
+                    <div className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-[#C1E1C1]" /> Connect ideas</div>
+                    <div className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-[#D8B4E2]" /> New perspective</div>
+                    <div className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-[#FDF0B6]" /> Take action</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
-
         </section>
 
       </main>
