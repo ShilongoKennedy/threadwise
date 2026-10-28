@@ -4,7 +4,8 @@ import {
   Activity, Cpu, Network, Layers, Target, 
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
-  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate
+  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
+  Paperclip, CheckCircle2
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -60,96 +61,133 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* REALISTIC INVESTIGATION BOARD */
+        /* --- THE PREMIUM INVESTIGATION BOARD --- */
+        
         .board-container {
-          background-color: #E6DFD3; /* Corkboard/Manila color */
+          background-color: #1C1E21; /* Deep charcoal/blue felt */
           background-image: 
-            url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E"),
-            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 70%);
+            url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 80%);
           box-shadow: 
-            inset 0 0 60px rgba(0,0,0,0.1),
-            inset 0 0 20px rgba(0,0,0,0.05),
-            0 30px 60px -15px rgba(0,0,0,0.2);
-          border: 12px solid #D1C7B7; /* Wooden/Frame border */
-          border-radius: 4px;
+            inset 0 0 80px rgba(0,0,0,0.8),
+            0 30px 60px -15px rgba(0,0,0,0.3);
+          border: 4px solid #2A2C30;
+          border-radius: 8px;
         }
         
-        /* Continuous Flowing Strings with physical shadow */
-        @keyframes flow-string {
-          to { stroke-dashoffset: -24; }
+        /* The String Path Base */
+        .string-base {
+          fill: none;
+          stroke: #8C2B2B; /* Deep blood red */
+          stroke-width: 2.5;
+          filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.6));
         }
-        .red-string {
-          stroke-dasharray: 8 6;
-          animation: flow-string 2s linear infinite;
-          filter: drop-shadow(0px 4px 2px rgba(0,0,0,0.3));
+        
+        /* The Animated Data Pulse traveling down the string */
+        .string-pulse {
+          fill: none;
+          stroke: #FF5A5A;
+          stroke-width: 2.5;
+          stroke-dasharray: 20 200;
+          animation: flow-pulse 3s linear infinite;
+          filter: drop-shadow(0px 0px 4px rgba(255,90,90,0.8));
+        }
+        
+        @keyframes flow-pulse {
+          0% { stroke-dashoffset: 220; }
+          100% { stroke-dashoffset: 0; }
         }
 
         /* Floating Paper Cards */
-        @keyframes float-card-1 {
+        @keyframes float-1 {
           0%, 100% { transform: translateY(0) rotate(-4deg); }
-          50% { transform: translateY(-8px) rotate(-3deg); }
+          50% { transform: translateY(-10px) rotate(-3deg); }
         }
-        @keyframes float-card-2 {
+        @keyframes float-2 {
           0%, 100% { transform: translateY(0) rotate(3deg); }
-          50% { transform: translateY(-12px) rotate(4deg); }
+          50% { transform: translateY(-14px) rotate(4deg); }
         }
-        @keyframes float-card-3 {
+        @keyframes float-3 {
           0%, 100% { transform: translateY(0) rotate(2deg); }
-          50% { transform: translateY(-6px) rotate(1deg); }
+          50% { transform: translateY(-8px) rotate(1deg); }
         }
-        @keyframes float-card-4 {
+        @keyframes float-4 {
           0%, 100% { transform: translateY(0) rotate(-3deg); }
-          50% { transform: translateY(-10px) rotate(-2deg); }
+          50% { transform: translateY(-12px) rotate(-2deg); }
         }
 
-        .card-float-1 { animation: float-card-1 7s ease-in-out infinite; }
-        .card-float-2 { animation: float-card-2 8s ease-in-out infinite; }
-        .card-float-3 { animation: float-card-3 6s ease-in-out infinite; }
-        .card-float-4 { animation: float-card-4 9s ease-in-out infinite; }
+        .animate-float-1 { animation: float-1 7s ease-in-out infinite; }
+        .animate-float-2 { animation: float-2 9s ease-in-out infinite; }
+        .animate-float-3 { animation: float-3 6s ease-in-out infinite; }
+        .animate-float-4 { animation: float-4 8s ease-in-out infinite; }
 
         .paper-card {
           background-color: #FCFAF8;
           box-shadow: 
-            0 15px 30px -5px rgba(0,0,0,0.15),
-            0 5px 10px -2px rgba(0,0,0,0.1),
+            0 15px 30px -5px rgba(0,0,0,0.4),
+            0 5px 15px -2px rgba(0,0,0,0.2),
             inset 0 0 20px rgba(255,255,255,0.5);
           border: 1px solid rgba(0,0,0,0.05);
-          transition: all 0.3s ease;
+          transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         
         .paper-card:hover {
           animation-play-state: paused;
           transform: scale(1.05) rotate(0deg) !important;
-          box-shadow: 0 25px 50px -10px rgba(0,0,0,0.2);
+          box-shadow: 0 25px 50px -10px rgba(0,0,0,0.6);
           z-index: 50 !important;
         }
 
-        /* 3D Realistic Pin */
-        .pin {
+        /* 3D Realistic Map Pin */
+        .map-pin {
+          position: absolute;
+          top: -12px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 20;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .pin-head {
           width: 16px;
           height: 16px;
           border-radius: 50%;
-          background: radial-gradient(circle at 30% 30%, #ff4b4b, #990000);
+          background: radial-gradient(circle at 35% 35%, #ff6b6b, #b30000);
           box-shadow: 
-            inset -2px -2px 6px rgba(0,0,0,0.5),
+            inset -2px -2px 4px rgba(0,0,0,0.5),
             inset 2px 2px 4px rgba(255,255,255,0.6),
-            0 6px 8px rgba(0,0,0,0.4);
-          position: absolute;
-          top: -8px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 10;
+            0 4px 6px rgba(0,0,0,0.4);
+          position: relative;
         }
-        
-        /* Center Dossier Card */
-        .dossier-card {
-          background-color: #1A1817;
-          background-image: linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.02) 75%, transparent 75%, transparent);
-          background-size: 20px 20px;
+        .pin-needle {
+          width: 2px;
+          height: 12px;
+          background: linear-gradient(to right, #888, #fff, #666);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+          margin-top: -2px;
+        }
+
+        /* Center Dossier Styling */
+        .dossier-paper {
+          background-color: #F2EFE9;
+          background-image: repeating-linear-gradient(to bottom, transparent, transparent 28px, rgba(0,0,0,0.03) 28px, rgba(0,0,0,0.03) 29px);
           box-shadow: 
-            0 30px 60px -10px rgba(0,0,0,0.4),
-            0 0 40px rgba(194, 74, 53, 0.2);
-          border: 1px solid rgba(255,255,255,0.1);
+            0 30px 60px -10px rgba(0,0,0,0.5),
+            inset 0 0 40px rgba(0,0,0,0.05);
+          border-radius: 2px;
+        }
+        .stamp {
+          border: 3px solid #C24A35;
+          color: #C24A35;
+          opacity: 0.8;
+          transform: rotate(-15deg);
+          mix-blend-mode: multiply;
+          font-family: monospace;
+          font-weight: bold;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          box-shadow: inset 0 0 0 1px rgba(194, 74, 53, 0.2);
         }
       `}</style>
 
@@ -389,84 +427,103 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE LIVING INVESTIGATION BOARD (Improved) */}
+        {/* THE PREMIUM LIVING INVESTIGATION BOARD */}
         <section className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center">
           <div className="text-center mb-16 relative z-30">
             <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">Every story has a thread.</h2>
             <p className="text-[#1A1A1A]/50 text-lg">Connect the evidence. Find the hidden motive.</p>
           </div>
 
-          <div className="board-container relative w-full rounded-xl overflow-hidden h-[600px] flex items-center justify-center p-8">
+          <div className="board-container relative w-full rounded-lg overflow-hidden h-[650px] flex items-center justify-center p-8">
             
-            {/* The Animated Red Strings (SVG) */}
+            {/* The Animated Red Strings */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-              {/* Center to Top Left */}
-              <path d="M 600 300 Q 400 150 250 200" fill="none" stroke="#A82E20" strokeWidth="3" className="red-string" />
-              {/* Center to Top Right */}
-              <path d="M 600 300 Q 800 150 950 200" fill="none" stroke="#A82E20" strokeWidth="3" className="red-string" />
-              {/* Center to Bottom Left */}
-              <path d="M 600 300 Q 400 450 250 400" fill="none" stroke="#A82E20" strokeWidth="3" className="red-string" />
-              {/* Center to Bottom Right */}
-              <path d="M 600 300 Q 800 450 950 400" fill="none" stroke="#A82E20" strokeWidth="3" className="red-string" />
+              {/* Top Left Connection */}
+              <path d="M 600 325 Q 400 150 250 200" className="string-base" />
+              <path d="M 600 325 Q 400 150 250 200" className="string-pulse" />
+              
+              {/* Top Right Connection */}
+              <path d="M 600 325 Q 800 150 950 200" className="string-base" />
+              <path d="M 600 325 Q 800 150 950 200" className="string-pulse" style={{ animationDelay: '0.5s' }} />
+              
+              {/* Bottom Left Connection */}
+              <path d="M 600 325 Q 400 500 250 450" className="string-base" />
+              <path d="M 600 325 Q 400 500 250 450" className="string-pulse" style={{ animationDelay: '1s' }} />
+              
+              {/* Bottom Right Connection */}
+              <path d="M 600 325 Q 800 500 950 450" className="string-base" />
+              <path d="M 600 325 Q 800 500 950 450" className="string-pulse" style={{ animationDelay: '1.5s' }} />
             </svg>
 
-            {/* Evidence Cards - Floating Continuously */}
+            {/* Evidence Cards */}
             
-            {/* Card 1: Top Left (URL) */}
-            <div className="paper-card card-float-1 absolute top-[15%] left-[10%] w-56 p-4 rounded-sm z-10">
-              <div className="pin" />
-              <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-black/50 uppercase tracking-widest border-b border-black/10 pb-2">
+            {/* Card 1: Top Left (Article) */}
+            <div className="paper-card animate-float-1 absolute top-[15%] left-[8%] w-60 p-5 rounded-sm z-10">
+              <div className="map-pin"><div className="pin-head" /><div className="pin-needle" /></div>
+              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#C24A35] uppercase tracking-widest border-b border-black/10 pb-2">
                 <Network className="w-3 h-3" /> Article Source
               </div>
-              <p className="text-sm font-sans font-medium text-black leading-tight">"El Salvador sends special forces to Haiti."</p>
-              <p className="text-[10px] font-mono text-black/40 mt-2">Miami Herald</p>
+              <p className="text-[15px] font-display leading-tight text-black mb-3">"El Salvador sends special forces to Haiti."</p>
+              <p className="text-[10px] font-mono text-black/50">Miami Herald · 2026</p>
             </div>
 
             {/* Card 2: Top Right (Quote) */}
-            <div className="paper-card card-float-2 absolute top-[20%] right-[10%] w-60 p-4 rounded-sm z-10">
-              <div className="pin" />
-              <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-[#D96C39] uppercase tracking-widest border-b border-black/10 pb-2">
+            <div className="paper-card animate-float-2 absolute top-[20%] right-[8%] w-64 p-5 rounded-sm z-10">
+              <div className="map-pin"><div className="pin-head" /><div className="pin-needle" /></div>
+              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#5B456B] uppercase tracking-widest border-b border-black/10 pb-2">
                 <MessageSquare className="w-3 h-3" /> Official Statement
               </div>
-              <p className="text-sm font-sans italic text-black/80">"We are there to support our allies and maintain regional stability."</p>
-              <p className="text-[10px] font-mono text-black/40 mt-2">Pentagon Briefing</p>
+              <p className="text-sm font-sans italic text-black/80 leading-relaxed mb-3">"We are there to support our allies and maintain regional stability."</p>
+              <p className="text-[10px] font-mono text-black/50">Pentagon Briefing</p>
             </div>
 
             {/* Card 3: Bottom Left (Map/Image) */}
-            <div className="paper-card card-float-3 absolute bottom-[15%] left-[15%] w-52 p-3 rounded-sm z-10">
-              <div className="pin" />
-              <div className="w-full h-24 bg-[#E5E5E5] rounded mb-2 flex items-center justify-center relative overflow-hidden">
-                <Map className="w-8 h-8 text-black/20" />
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20" />
+            <div className="paper-card animate-float-3 absolute bottom-[12%] left-[12%] w-56 p-4 rounded-sm z-10">
+              <div className="map-pin"><div className="pin-head" /><div className="pin-needle" /></div>
+              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#2D6A65] uppercase tracking-widest border-b border-black/10 pb-2">
+                <Map className="w-3 h-3" /> Location
               </div>
-              <p className="text-xs font-mono text-black/60 text-center">Location: Port-au-Prince</p>
+              <div className="w-full h-28 bg-[#E5E5E5] rounded mb-3 flex items-center justify-center relative overflow-hidden border border-black/5">
+                <Map className="w-10 h-10 text-black/20" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30 mix-blend-multiply" />
+              </div>
+              <p className="text-[10px] font-mono text-black/50 text-center uppercase tracking-widest">Port-au-Prince</p>
             </div>
 
             {/* Card 4: Bottom Right (Question) */}
-            <div className="paper-card card-float-4 absolute bottom-[20%] right-[15%] w-56 p-4 rounded-sm z-10 bg-[#FBD0D4]">
-              <div className="pin" />
-              <div className="flex items-center gap-2 mb-2 text-[10px] font-mono font-bold text-black/60 uppercase tracking-widest border-b border-black/10 pb-2">
+            <div className="paper-card animate-float-4 absolute bottom-[18%] right-[12%] w-60 p-5 rounded-sm z-10 bg-[#FBD0D4]/40">
+              <div className="map-pin"><div className="pin-head" /><div className="pin-needle" /></div>
+              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-bold text-[#C24A35] uppercase tracking-widest border-b border-[#C24A35]/20 pb-2">
                 <Sparkles className="w-3 h-3" /> Hypothesis
               </div>
-              <p className="text-sm font-sans font-medium text-black leading-tight">Is this actually about securing US economic aid?</p>
+              <p className="text-[15px] font-display leading-tight text-black">Is this actually about securing US economic aid?</p>
             </div>
 
-            {/* Center Card: The Big Conclusion */}
-            <div className="dossier-card absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 p-6 rounded-sm z-20">
-              <div className="pin bg-gradient-to-br from-yellow-400 to-orange-500" />
+            {/* Center Dossier */}
+            <div className="dossier-paper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] p-8 rounded-sm z-20">
+              <div className="map-pin" style={{ top: '-10px' }}><div className="pin-head bg-gradient-to-br from-yellow-400 to-orange-500" /><div className="pin-needle" /></div>
               
-              {/* Redacted Stamp */}
-              <div className="absolute top-4 right-4 border border-[#C24A35] text-[#C24A35] text-[8px] font-mono px-2 py-0.5 rotate-12 opacity-50 uppercase tracking-widest">
-                Classified
+              {/* Paperclip */}
+              <div className="absolute top-4 right-6 text-black/20 rotate-12">
+                <Paperclip className="w-8 h-8" />
               </div>
 
-              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono uppercase tracking-widest text-[#D96C39]">
+              {/* Top Secret Stamp */}
+              <div className="stamp absolute top-8 right-8 text-[12px] px-3 py-1 rotate-12">
+                Declassified
+              </div>
+
+              <div className="flex items-center gap-2 mb-4 text-[10px] font-mono uppercase tracking-widest text-[#C24A35] border-b border-black/10 pb-3">
                 <Target className="w-4 h-4" /> The Bigger Picture
               </div>
-              <h3 className="font-display text-2xl leading-tight mb-2 text-white">Strategic Bargaining Chip</h3>
-              <p className="text-sm font-sans text-white/60 leading-relaxed">
+              <h3 className="font-display text-3xl leading-tight mb-4 text-[#1A1A1A]">Strategic Bargaining Chip</h3>
+              <p className="text-sm font-sans text-black/60 leading-relaxed mb-6">
                 The disproportionate military response reveals a deeper motive: El Salvador is leveraging the deployment to secure diplomatic favor and financial backing from the United States.
               </p>
+              
+              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-[#2D6A65] bg-[#C9E8C7]/40 p-2 rounded">
+                <CheckCircle2 className="w-4 h-4" /> Conclusion Verified
+              </div>
             </div>
 
           </div>
