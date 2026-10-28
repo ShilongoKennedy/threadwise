@@ -114,6 +114,14 @@ Analyze the text and extract:
 3. "evidence": The literal facts explicitly stated in the text. Do not guess.
 4. "hypotheses": Connections, strategic motives, or "bigger picture" theories that explain WHY these events are happening. (e.g., "El Salvador is deploying troops to secure US economic aid").
 5. "questions": The "Dog That Didn't Bark" — what critical context is missing, or what unanswered questions remain?
+6. "quantData": A quantitative analysis of the narrative.
+   - "contradictionIndex": A score from 0 to 100 indicating how much the sources contradict each other or hide underlying tensions (0 = total alignment, 100 = total contradiction).
+   - "radar": Scores from 0 to 100 for narrative signals across five dimensions:
+     - "bias": How one-sided is the reporting?
+     - "omission": How much critical context is missing?
+     - "urgency": How time-sensitive or panicked is the tone?
+     - "motive": How strongly are hidden strategic motives implied?
+     - "evidence": How well-sourced and grounded are the claims?
 
 Return ONLY a valid JSON object matching this exact schema:
 {
@@ -121,7 +129,17 @@ Return ONLY a valid JSON object matching this exact schema:
   "entities": string[],
   "evidence": { "title": string, "body": string, "source": string }[],
   "hypotheses": { "title": string, "body": string }[],
-  "questions": { "title": string, "body": string }[]
+  "questions": { "title": string, "body": string }[],
+  "quantData": {
+    "contradictionIndex": number,
+    "radar": {
+      "bias": number,
+      "omission": number,
+      "urgency": number,
+      "motive": number,
+      "evidence": number
+    }
+  }
 }`;
 
       try {

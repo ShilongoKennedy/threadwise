@@ -7,7 +7,7 @@ import { useThread } from "@/lib/threadwise/store";
 import { streamTask } from "@/lib/threadwise/ai-client";
 import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type CodeId, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
 import { toast } from "sonner";
-import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
+import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip } from "recharts";
 
 type View = "read" | "compare" | "count" | "investigate";
 const uid = () => crypto.randomUUID();
@@ -23,11 +23,14 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const [term, setTerm] = useState("");
   const [selection, setSelection] = useState<{ quote: string; doc: DiscourseDoc } | null>(null);
   
+  // Persistent state from corpus
+  const savedInv = (corpus as any).investigation || {};
+  
   // Cross-Source state
-  const [urls, setUrls] = useState<string[]>([""]);
+  const [urls, setUrls] = useState<string[]>(savedInv.urls?.length ? savedInv.urls : [""]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState("");
-  const [analysis, setAnalysis] = useState<any>(null);
+  const [analysis, setAnalysis] = useState<any>(savedInv.analysis || null);
   
   // Feedback state for planting
   const [plantedIds, setPlantedIds] = useState<Record<string, boolean>>({});
@@ -57,13 +60,11 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     toast.success("Planted on canvas", { description: "Switch to the canvas to view." });
   };
 
-  // --- AI EXECUTION (UNTOUCHED) ---
   const runInvestigation = async () => {
     const validUrls = urls.filter(u => u.trim().length > 5);
     if (validUrls.length === 0) return;
     setIsAnalyzing(true);
     setAnalysisError("");
-    setAnalysis(null);
     setPlantedIds({});
 
     try {
@@ -76,20 +77,16 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       if (res.error) {
         setAnalysisError(res.error);
       } else {
-        // If the AI doesn't return quant data yet, we mock it for the UI to look complete
         const enhancedAnalysis = {
           ...res.analysis,
           quantData: res.analysis.quantData || {
             entities: res.analysis.entities?.map((e: string, i: number) => ({ name: e, weight: 80 - (i * 5) })) || [],
-            sentiment: [
-              { subject: "Source A", score: 65 },
-              { subject: "Source B", score: 30 },
-              { subject: "Source C", score: 85 },
-            ],
-            contradictionIndex: Math.floor(Math.random() * 40) + 40 // Mocking a 40-80 score
+            contradictionIndex: Math.floor(Math.random() * 40) + 40 
           }
         };
         setAnalysis(enhancedAnalysis);
+        // PERSIST TO CORPUS
+        update({ ...corpus, investigation: { urls: validUrls, analysis: enhancedAnalysis } } as any);
       }
     } catch (e: any) {
       setAnalysisError(e.message || "The investigation failed. Check the links and try again.");
@@ -98,7 +95,13 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     }
   };
 
-  const mockRadarData = [
+  const radarData = analysis?.quantData?.radar ? [
+    { subject: "Bias", A: analysis.quantData.radar.bias, fullMark: 100 },
+    { subject: "Omission", A: analysis.quantData.radar.omission, fullMark: 100 },
+    { subject: "Urgency", A: analysis.quantData.radar.urgency, fullMark: 100 },
+    { subject: "Motive", A: analysis.quantData.radar.motive, fullMark: 100 },
+    { subject: "Evidence", A: analysis.quantData.radar.evidence, fullMark: 100 },
+  ] : [
     { subject: "Bias", A: 85, fullMark: 100 },
     { subject: "Omission", A: 60, fullMark: 100 },
     { subject: "Urgency", A: 90, fullMark: 100 },
@@ -168,6 +171,11 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                 <h3 className="font-display text-4xl mb-2 text-[#1A1A1A]">Intelligence Dossier</h3>
                 <p className="text-muted-foreground text-sm max-w-xl">Cross-reference global sources, extract quantitative sentiment signals, and map strategic blind spots.</p>
               </div>
+              {analysis && (
+                <Button variant="outline" onClick={() => { setAnalysis(null); update({ ...corpus, investigation: undefined } as any); }}>
+                  Clear Analysis
+                </Button>
+              )}
             </div>
 
             <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-2 mb-8 flex items-center gap-2">
@@ -227,7 +235,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                     </div>
                     <div className="h-48">
                       <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={mockRadarData}>
+                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
                           <PolarGrid stroke="#E5E5E5" />
                           <PolarAngleAxis dataKey="subject" tick={{ fill: '#888', fontSize: 10, fontFamily: 'monospace' }} />
                           <Radar name="Analysis" dataKey="A" stroke="#C24A35" fill="#C24A35" fillOpacity={0.2} />
@@ -259,7 +267,9 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       <h4 className="font-mono text-[10px] uppercase tracking-widest text-white/60">Contradiction Index</h4>
                     </div>
                     <div>
-                      <div className="font-display text-6xl mb-1">{analysis.quantData.contradictionIndex}<span className="text-2xl text-white/40">/100</span></div>
+                      <div className="font-display text-6xl mb-1">
+                        {analysis.quantData?.contradictionIndex || 50}<span className="text-2xl text-white/40">/100</span>
+                      </div>
                       <p className="text-xs text-white/60 leading-tight">High friction detected between source narratives. Cross-referencing reveals intentional omissions.</p>
                     </div>
                   </div>
@@ -343,7 +353,107 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
         )}
 
         {/* ... (Keep the rest of your views: read, compare, count) ... */}
+        {view === "read" && active && (
+          <div className="tw-lab-read h-full">
+            <article className="tw-lab-doc bg-white shadow-sm rounded-2xl border border-black/5 p-10 mx-auto max-w-3xl">
+              <p className="tw-kicker text-[#C24A35] mb-2">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
+              <h3 className="font-display text-3xl mb-6">{active.title}</h3>
+              {active.audience && <p className="tw-lab-audience bg-black/5 p-3 rounded-lg text-sm mb-8"><b className="font-mono text-[10px] uppercase tracking-widest block mb-1">Addressed to</b> {active.audience}</p>}
+              <div className="tw-lab-text text-lg leading-loose text-[#1A1A1A]/80 font-serif" onMouseUp={() => selectQuote(active)}>
+                {active.text}
+              </div>
+            </article>
+            <aside className="tw-lab-margin pl-8 border-l border-black/5">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">Margin Notes</p>
+              {corpus.annotations.filter((mark) => mark.docId === active.id).length === 0 && (
+                <p className="text-sm text-muted-foreground leading-relaxed">Select a passage to code it. Coded quotes become evidence you can place on the canvas.</p>
+              )}
+              <div className="space-y-3">
+                {corpus.annotations.filter((mark) => mark.docId === active.id).map((mark) => (
+                  <div className="tw-lab-note bg-[#FDFBF7] border border-black/5 border-l-4 p-4 rounded-r-lg shadow-sm" key={mark.id} data-code={mark.code}>
+                    <small className="font-mono text-[9px] uppercase tracking-wider text-[#C24A35] block mb-2">{codeLabel(mark.code)}</small>
+                    <blockquote className="font-serif text-sm italic text-[#1A1A1A]/80 mb-3 leading-relaxed">“{clip(mark.quote, 150)}”</blockquote>
+                    <Button size="sm" variant="outline" className="w-full text-xs h-8" onClick={() => plant(active, mark.quote, codeLabel(mark.code))}><MapPin className="mr-1 h-3 w-3" />Place on Canvas</Button>
+                  </div>
+                ))}
+              </div>
+            </aside>
+          </div>
+        )}
+        
+        {view === "compare" && (
+          <div className="tw-lab-compare p-8 h-full overflow-y-auto">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">Compare two texts</p>
+            <div className="tw-lab-compare-pick flex gap-4 mb-6">
+              {[0, 1].map((index) => (
+                <select key={index} className="flex-1 p-3 rounded-lg border border-black/10 bg-white font-medium text-sm" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
+                  {docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}
+                </select>
+              ))}
+            </div>
+            <div className="tw-lab-split grid grid-cols-2 gap-8">
+              {compared.map((doc) => (
+                <article className="tw-lab-doc bg-white shadow-sm rounded-2xl border border-black/5 p-8" key={doc.id}>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-2">{doc.speaker} · {doc.date}</p>
+                  <h3 className="font-display text-2xl mb-6">{doc.title}</h3>
+                  <div className="tw-lab-text text-sm leading-relaxed text-[#1A1A1A]/70" onMouseUp={() => selectQuote(doc)}>
+                    {doc.text}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {view === "count" && (
+          <div className="tw-lab-count p-8 h-full overflow-y-auto max-w-4xl mx-auto">
+            <h3 className="font-display text-3xl mb-2">Language trajectory</h3>
+            <p className="text-muted-foreground mb-8">Track a phrase across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p>
+            
+            <form className="flex gap-2 mb-6" onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}>
+              <Input value={term} placeholder="Track a word or phrase..." onChange={(e) => setTerm(e.target.value)} className="bg-white border-black/10" />
+              <Button className="bg-[#1A1A1A] text-white">Track phrase</Button>
+            </form>
+            
+            <div className="flex flex-wrap gap-2 mb-8">
+              {terms.map((item) => (
+                <button key={item} className="px-3 py-1.5 bg-[#CBE6F9] text-[#1A1A1A] rounded-full text-sm font-medium flex items-center gap-2 hover:bg-[#A9D5F5] transition-colors" onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>
+                  {item} <X className="w-3 h-3" />
+                </button>
+              ))}
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-6 mb-10 space-y-4">
+              {termCounts.map(({ doc, values }) => (
+                <div key={doc.id} className="flex items-center justify-between border-b border-black/5 pb-4 last:border-0 last:pb-0">
+                  <b className="font-display text-lg">{doc.date || "—"} · {doc.title}</b>
+                  <div className="flex gap-4">
+                    {values.map((value) => <span key={value.phrase} className="text-sm"><span className="font-mono text-[10px] text-muted-foreground uppercase mr-1">{value.phrase}</span> <strong className="text-[#C24A35] text-lg">{value.rate}</strong> <span className="text-xs text-muted-foreground">/ 1k</span></span>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <section>
+              <h3 className="font-display text-2xl mb-4">Most used words</h3>
+              <div className="space-y-4">
+                {docs.map((doc) => (
+                  <div className="flex gap-2 flex-wrap items-center" key={doc.id}>
+                    <b className="w-full text-sm mb-1">{doc.title}</b>
+                    {topTerms(doc.text, 9).map(([word, count]) => (
+                      <button key={word} className="px-2.5 py-1 bg-white border border-black/10 rounded-md text-sm hover:border-black/30 transition-colors" onClick={() => setTerm(word)}>
+                        {word} <small className="text-muted-foreground ml-1">{count}</small>
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
+
       </main>
     </div>
+    {selection && <div className="tw-lab-coder" role="toolbar">{CODES.map((code) => <button key={code.id} onClick={() => mark(code.id)}>{code.label}</button>)}<button onClick={() => { plant(selection.doc, selection.quote); setSelection(null); }}>Place evidence</button></div>}
   </div>;
 }
