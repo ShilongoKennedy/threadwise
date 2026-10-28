@@ -37,6 +37,7 @@ import {
   VolumeX,
   Wand2,
   X,
+  Search
 } from "lucide-react";
 import { createPhysics } from "@/lib/threadwise/physics";
 import { auditGraph, neighborhood, raycast, type Direction } from "@/lib/threadwise/graph";
@@ -85,7 +86,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
   // The board is the product. Controls stay available, but do not permanently consume it.
   const [chromeOpen, setChromeOpen] = useState(false);
   const [dockOpen, setDockOpen] = useState(false);
-  const [spatial, setSpatial] = useState(true);
+  const [spatial, setSpatial] = useState(false); // TURNED OFF BY DEFAULT
   const [thoughtPortal, setThoughtPortal] = useState<string | null>(null);
   const [focusField, setFocusField] = useState(false);
   const onboarding = useOnboarding();
@@ -881,31 +882,32 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
         </div>
         {onboarding.open && <Onboarding onClose={onboarding.close} />}
         
-        {/* NEW PREMIUM EMPTY STATE */}
+        {/* NEW PREMIUM EMPTY STATE - DISCOURSE LAB FOCUS */}
         {s.nodes.length === 0 && (
           <div className="absolute inset-0 z-40 flex flex-col items-center justify-center pointer-events-none p-4">
-            <div className="pointer-events-auto bg-card/85 backdrop-blur-2xl border border-white/20 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] rounded-3xl p-10 max-w-md w-full text-center animate-in fade-in zoom-in-95 duration-500">
-              <div className="mx-auto w-16 h-16 bg-[#FDF0B6] rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-black/5">
-                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1A1A1A]">
-                    <circle cx="6" cy="18" r="2.5" fill="currentColor"/>
-                    <path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2"/>
-                    <circle cx="18" cy="6" r="2.5" fill="currentColor"/>
-                    <path d="M18 6L12 12" stroke="currentColor" strokeWidth="1.5"/>
-                    <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
-                 </svg>
+            <div className="pointer-events-auto bg-[#FDFBF7]/90 backdrop-blur-2xl border border-white/40 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] rounded-3xl p-10 max-w-lg w-full text-center animate-in fade-in zoom-in-95 duration-500">
+              
+              <div className="mx-auto w-16 h-16 bg-[#CBE6F9] rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-black/5">
+                 <Search className="w-8 h-8 text-[#1A1A1A]" />
               </div>
-              <h2 className="font-display text-3xl mb-2 text-foreground">Welcome to your desk.</h2>
-              <p className="text-sm text-muted-foreground mb-8">A blank canvas awaits. Start by adding a thought, loading an example, or taking the tour.</p>
+              
+              <h2 className="font-display text-4xl mb-3 text-foreground tracking-tight">Uncover the bigger picture.</h2>
+              <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto leading-relaxed">
+                Paste speeches, news articles, or transcripts. Threadwise helps you find hidden motives, contradictions, and the truth.
+              </p>
               
               <div className="flex flex-col gap-3">
-                <Button onClick={() => create("idea")} className="w-full h-12 text-base bg-[#1A1A1A] hover:bg-[#333] text-white">
-                  <Plus className="mr-2 h-5 w-5" /> Add your first idea
+                <Button 
+                  onClick={() => window.dispatchEvent(new CustomEvent("threadwise:open-lab"))} 
+                  className="w-full h-12 text-base bg-[#1A1A1A] hover:bg-[#333] text-white shadow-lg"
+                >
+                  <Search className="mr-2 h-5 w-5" /> Start a Discourse Analysis
                 </Button>
-                <Button variant="outline" onClick={() => s.reset()} className="w-full h-12 bg-white/50">
+                <Button variant="outline" onClick={() => create("idea")} className="w-full h-12 bg-white/50 border-black/10">
+                  <Plus className="mr-2 h-4 w-4" /> Start a blank canvas
+                </Button>
+                <Button variant="ghost" onClick={() => s.reset()} className="w-full h-12 text-muted-foreground hover:text-foreground">
                   Load an example canvas
-                </Button>
-                <Button variant="ghost" onClick={onboarding.show} className="w-full h-12 text-muted-foreground hover:text-foreground">
-                  Replay the tutorial
                 </Button>
               </div>
 
