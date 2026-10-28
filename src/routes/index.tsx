@@ -8,12 +8,12 @@ import {
   Mic, Terminal, Github, Twitter
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 
-// --- CUSTOM HOOKS ---
 function useMousePosition() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   useEffect(() => {
@@ -46,10 +46,24 @@ function useScrollReveal() {
   return { ref, isVisible };
 }
 
-// --- MAIN COMPONENT ---
 function LandingPage() {
   const mouse = useMousePosition();
   
+  // Auth State
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   // Disable tilt on small screens
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const tiltX = isMobile ? 0 : (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 6;
@@ -73,7 +87,6 @@ function LandingPage() {
   const currentMonth = monthNames[time.getMonth()];
   const currentDate = time.getDate();
 
-  // Section Reveal Hooks
   const heroReveal = useScrollReveal();
   const laptopReveal = useScrollReveal();
   const commandCenterReveal = useScrollReveal();
@@ -82,7 +95,6 @@ function LandingPage() {
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
       <style>{`
-        /* Scroll Reveal Utilities */
         .reveal-hidden { opacity: 0; transform: translateY(40px); }
         .reveal-visible { opacity: 1; transform: translateY(0); transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
@@ -194,12 +206,20 @@ function LandingPage() {
         </nav>
 
         <div className="flex items-center gap-3 md:gap-6">
-          <Link to="/login" className="hidden sm:block text-sm font-medium text-[#1A1A1A]/70 hover:text-[#1A1A1A] transition-colors">
-            Sign in
-          </Link>
-          <Link to="/app" className="group flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 bg-[#1A1A1A] text-white hover:bg-[#333] transition-colors duration-300 font-mono text-[10px] md:text-[11px] uppercase tracking-widest shadow-lg rounded-full">
-            Start Free <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </Link>
+          {session ? (
+            <Link to="/app" className="group flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 bg-[#1A1A1A] text-white hover:bg-[#333] transition-colors duration-300 font-mono text-[10px] md:text-[11px] uppercase tracking-widest shadow-lg rounded-full">
+              Go to Workspace <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="hidden sm:block text-sm font-medium text-[#1A1A1A]/70 hover:text-[#1A1A1A] transition-colors">
+                Sign in
+              </Link>
+              <Link to="/login" className="group flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 bg-[#1A1A1A] text-white hover:bg-[#333] transition-colors duration-300 font-mono text-[10px] md:text-[11px] uppercase tracking-widest shadow-lg rounded-full">
+                Start Free <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+            </>
+          )}
         </div>
       </header>
 
