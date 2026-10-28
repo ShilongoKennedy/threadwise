@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
   ArrowUpRight, Sparkles, FileText, Lightbulb, 
   Activity, Cpu, Network, Layers, Target, 
-  Zap, X, Users, TrendingUp, BookOpen, Sliders, 
+  X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate
 } from "lucide-react";
@@ -33,46 +33,23 @@ function WelcomePage() {
   const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 6;
   const tiltY = (mouse.x / (typeof window !== 'undefined' ? window.innerWidth : 1200) - 0.5) * -6;
 
-  // LED Glow colors
-  const ledColor = "#D96C39";
-  const laptopYellow = "#FDF0B6"; // The pastel yellow from your palette
+  // Colors from your palette
+  const laptopYellow = "#FDF0B6"; 
   const laptopYellowDark = "#E3D398";
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
-      {/* CSS for the LED/Neon effect */}
+      {/* CSS for Interactions */}
       <style>{`
-        @keyframes pulse-glow {
-          0%, 100% { text-shadow: 0 0 10px ${ledColor}40, 0 0 20px ${ledColor}20, 0 0 30px ${ledColor}10; }
-          50% { text-shadow: 0 0 15px ${ledColor}60, 0 0 25px ${ledColor}40, 0 0 40px ${ledColor}20; }
-        }
-        .led-text {
-          color: ${ledColor};
-          -webkit-text-stroke: 1px ${ledColor};
-          animation: pulse-glow 3s infinite alternate;
-        }
-        .led-text-outline {
-          color: transparent;
-          -webkit-text-stroke: 1px #1A1A1A;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(0,0,0,0.1);
-          border-radius: 4px;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
       `}</style>
 
       {/* ARTISTIC AMBIENT BACKGROUND */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {/* Yellow glow from the laptop */}
-        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 w-[80vw] h-[60vh] rounded-full opacity-20 blur-[150px]" style={{ backgroundColor: laptopYellow }} />
-        {/* Pink/Blue subtle accents */}
+        <div className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[80vw] h-[60vh] rounded-full opacity-20 blur-[150px]" style={{ backgroundColor: laptopYellow }} />
         <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#FBD0D4] opacity-10 blur-[100px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#CBE6F9] opacity-10 blur-[100px]" />
       </div>
@@ -92,54 +69,70 @@ function WelcomePage() {
       {/* HEADER */}
       <header className="relative z-30 flex justify-between items-center px-6 md:px-12 py-6 max-w-[1400px] mx-auto w-full">
         <div className="flex items-center gap-3">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#D96C39]">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1A1A1A]">
             <circle cx="6" cy="18" r="2.5" fill="currentColor"/>
             <path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2"/>
             <circle cx="18" cy="6" r="2.5" fill="currentColor"/>
             <path d="M18 6L12 12" stroke="currentColor" strokeWidth="1.5"/>
             <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
           </svg>
-          <span className="font-display italic text-2xl tracking-tight font-medium">threadwise</span>
+          <span className="font-display italic text-2xl tracking-tight font-medium text-[#1A1A1A]">threadwise</span>
         </div>
         
         <div className="flex items-center gap-6">
           <div className="hidden md:flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/50 mr-4">
-            <span className="flex items-center gap-2"><Activity className="w-3 h-3 text-[#D96C39]"/> System Online</span>
-            <span className="flex items-center gap-2"><Cpu className="w-3 h-3"/> DeepSeek v3</span>
+            <span className="flex items-center gap-2"><Activity className="w-3 h-3 text-[#1A1A1A]"/> System Online</span>
+            <span className="flex items-center gap-2"><Cpu className="w-3 h-3 text-[#1A1A1A]"/> DeepSeek v3</span>
           </div>
           
           <Link to="/login" className="hidden sm:block text-sm font-medium text-[#1A1A1A]/70 hover:text-[#1A1A1A] transition-colors">
             Sign in
           </Link>
-          <Link to="/" className="group flex items-center gap-2 px-6 py-2.5 bg-[#1A1A1A] text-white hover:bg-[#D96C39] transition-colors duration-300 font-mono text-xs uppercase tracking-widest shadow-xl rounded-full">
+          <Link to="/" className="group flex items-center gap-2 px-6 py-2.5 bg-[#1A1A1A] text-white hover:bg-[#333] transition-colors duration-300 font-mono text-xs uppercase tracking-widest shadow-xl rounded-full">
             Start Free <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
         </div>
       </header>
 
-      {/* HERO SECTION - LED TEXT & YELLOW LAPTOP */}
+      {/* HERO SECTION - BINOCULARS */}
       <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-12 pb-24 flex flex-col items-center text-center flex-1">
         
-        {/* The "LED Light" Typography */}
-        <div className="relative z-20 flex flex-col items-center mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="h-px w-8 bg-[#D96C39]/50" />
-            <span className="text-[11px] font-mono uppercase tracking-[0.4em] text-[#D96C39] font-bold">The Spatial Workbench</span>
-            <span className="h-px w-8 bg-[#D96C39]/50" />
+        {/* The Binoculars Graphic */}
+        <div className="relative z-20 flex flex-col items-center mb-16 w-full max-w-4xl">
+          
+          <div className="relative w-full flex items-center justify-center">
+            {/* Custom SVG Binoculars */}
+            <svg viewBox="0 0 800 300" className="w-full h-auto max-h-[300px] drop-shadow-sm overflow-visible">
+              {/* Left Lens */}
+              <circle cx="250" cy="150" r="140" fill="#FDFBF7" stroke="#1A1A1A" strokeWidth="4" />
+              <circle cx="250" cy="150" r="120" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
+              
+              {/* Right Lens */}
+              <circle cx="550" cy="150" r="140" fill="#FDFBF7" stroke="#1A1A1A" strokeWidth="4" />
+              <circle cx="550" cy="150" r="120" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
+              
+              {/* Bridge */}
+              <path d="M 370 100 Q 400 80 430 100 L 430 200 Q 400 220 370 200 Z" fill="#1A1A1A" />
+              
+              {/* Left Text */}
+              <text x="250" y="145" textAnchor="middle" dominantBaseline="middle" className="font-display text-[70px] font-medium fill-[#1A1A1A]">
+                See what
+              </text>
+              
+              {/* Right Text (Pink Accent) */}
+              <text x="550" y="145" textAnchor="middle" dominantBaseline="middle" className="font-display text-[70px] italic font-medium fill-[#D96C39]">
+                connects.
+              </text>
+
+              {/* Decorative pastel dots inside lenses */}
+              <circle cx="160" cy="80" r="8" fill="#FDF0B6" />
+              <circle cx="640" cy="220" r="8" fill="#CBE6F9" />
+              <circle cx="180" cy="220" r="6" fill="#E8DAFB" />
+              <circle cx="620" cy="80" r="6" fill="#FBD0D4" />
+            </svg>
           </div>
 
-          {/* Massive Glowing Text */}
-          <h1 className="font-display text-[60px] md:text-[100px] lg:text-[130px] leading-[0.9] tracking-tighter mb-4 text-[#1A1A1A]">
-            See what <span className="italic led-text relative inline-block">
-              connects.
-              {/* Inner glow effect */}
-              <span className="absolute inset-0 blur-md opacity-50 bg-clip-text text-transparent bg-gradient-to-r from-[#D96C39] to-[#E88B5C] pointer-events-none">
-                connects.
-              </span>
-            </span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-[#1A1A1A]/50 leading-relaxed max-w-xl font-light mt-4">
+          <p className="text-lg md:text-xl text-[#1A1A1A]/50 leading-relaxed max-w-xl font-light mt-8">
             Bring your sources, questions, and ideas together.
           </p>
         </div>
@@ -325,6 +318,61 @@ function WelcomePage() {
           </div>
         </div>
 
+        {/* THE WORK TABLE SECTION */}
+        <section className="w-full max-w-[900px] mt-32 mb-16 relative">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-4xl text-[#1A1A1A] mb-4">A desk for your thoughts.</h2>
+            <p className="text-[#1A1A1A]/50">Organize your research. Connect the dots.</p>
+          </div>
+
+          <div className="relative flex justify-center items-end h-[300px]">
+            {/* The Book Stack */}
+            <div className="relative flex flex-col items-center justify-end w-[400px] group perspective-[1000px]">
+              
+              {/* Book 5 (Bottom) - Action */}
+              <div className="relative w-[90%] h-[45px] bg-white border border-black/10 rounded-sm shadow-md transform transition-transform duration-300 group-hover:-translate-y-1 z-10 flex items-center px-4 cursor-default">
+                <div className="w-3 h-3 rounded-full bg-[#D8B4E2] mr-3" />
+                <span className="font-sans font-medium text-[#1A1A1A]/70 text-sm">Action</span>
+              </div>
+              
+              {/* Book 4 - Insights */}
+              <div className="relative w-[92%] h-[45px] bg-white border border-black/10 rounded-sm shadow-md transform transition-transform duration-300 group-hover:-translate-y-2 -mt-[1px] z-20 flex items-center px-4 cursor-default">
+                <div className="w-3 h-3 rounded-full bg-[#B3DDF2] mr-3" />
+                <span className="font-sans font-medium text-[#1A1A1A]/70 text-sm">Insights</span>
+              </div>
+
+              {/* Book 3 - Connections */}
+              <div className="relative w-[94%] h-[45px] bg-white border border-black/10 rounded-sm shadow-md transform transition-transform duration-300 group-hover:-translate-y-3 -mt-[1px] z-30 flex items-center px-4 cursor-default">
+                <div className="w-3 h-3 rounded-full bg-[#C1E1C1] mr-3" />
+                <span className="font-sans font-medium text-[#1A1A1A]/70 text-sm">Connections</span>
+              </div>
+
+              {/* Book 2 - Evidence */}
+              <div className="relative w-[96%] h-[45px] bg-white border border-black/10 rounded-sm shadow-md transform transition-transform duration-300 group-hover:-translate-y-4 -mt-[1px] z-40 flex items-center px-4 cursor-default">
+                <div className="w-3 h-3 rounded-full bg-[#F8C8DC] mr-3" />
+                <span className="font-sans font-medium text-[#1A1A1A]/70 text-sm">Evidence</span>
+              </div>
+
+              {/* Book 1 (Top) - Ideas */}
+              <div className="relative w-[98%] h-[45px] bg-white border border-black/10 rounded-sm shadow-lg transform transition-transform duration-300 group-hover:-translate-y-5 -mt-[1px] z-50 flex items-center px-4 cursor-default">
+                <div className="w-3 h-3 rounded-full bg-[#FDF0B6] mr-3" />
+                <span className="font-sans font-medium text-[#1A1A1A]/70 text-sm">Ideas</span>
+              </div>
+            </div>
+
+            {/* The Pencil Cup */}
+            <div className="relative ml-16 w-[100px] h-[160px] bg-[#F8F6F0] rounded-b-xl border border-black/10 shadow-lg flex justify-center items-end pb-4 z-20">
+              {/* Pencils */}
+              <div className="absolute bottom-[140px] left-[30px] w-[8px] h-[80px] bg-[#FDF0B6] rounded-t-sm transform -rotate-12 shadow-sm border border-black/10" />
+              <div className="absolute bottom-[150px] left-[50px] w-[8px] h-[90px] bg-[#FBD0D4] rounded-t-sm transform rotate-6 shadow-sm border border-black/10" />
+              <div className="absolute bottom-[120px] left-[65px] w-[8px] h-[70px] bg-[#1A1A1A] rounded-t-sm transform rotate-12 shadow-sm border border-black/10" />
+              
+              {/* Cup lip */}
+              <div className="absolute top-0 w-full h-[15px] border-b border-black/5 bg-[#FDFBF7] rounded-t-xl" />
+            </div>
+          </div>
+        </section>
+
       </main>
 
       {/* MINIMAL FOOTER */}
@@ -332,9 +380,9 @@ function WelcomePage() {
         <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <span className="text-[10px] font-mono text-[#1A1A1A]/40">© 2026 Threadwise Inc.</span>
           <div className="flex gap-8 font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50">
-             <Link to="/" className="hover:text-[#D96C39] transition-colors">Workspace</Link>
-             <a href="#" className="hover:text-[#D96C39] transition-colors">Privacy</a>
-             <a href="#" className="hover:text-[#D96C39] transition-colors">Terms</a>
+             <Link to="/" className="hover:text-[#1A1A1A] transition-colors">Workspace</Link>
+             <a href="#" className="hover:text-[#1A1A1A] transition-colors">Privacy</a>
+             <a href="#" className="hover:text-[#1A1A1A] transition-colors">Terms</a>
           </div>
         </div>
       </footer>
