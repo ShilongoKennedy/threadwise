@@ -95,11 +95,11 @@ function WelcomePage() {
           background-color: ${boardMint};
           background-image: 
             radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 60%),
-            radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.2) 100%),
+            radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.1) 100%),
             linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
           background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
-          box-shadow: inset 0 0 80px rgba(0,0,0,0.2);
+          box-shadow: inset 0 0 80px rgba(0,0,0,0.1);
           border-radius: 16px;
           position: relative;
           overflow: hidden;
@@ -109,51 +109,45 @@ function WelcomePage() {
         /* Glowing Data Streams */
         .data-stream-base {
           fill: none;
-          stroke: rgba(255,255,255,0.3);
+          stroke: rgba(255,255,255,0.4);
           stroke-width: 2;
         }
         .data-stream-pulse {
           fill: none;
-          stroke: #00f0ff;
+          stroke: #ffffff;
           stroke-width: 3;
           stroke-dasharray: 20 250;
           animation: flow-data 3s linear infinite;
-          filter: drop-shadow(0 0 10px #00f0ff);
+          filter: drop-shadow(0 0 10px #ffffff);
         }
         @keyframes flow-data {
           0% { stroke-dashoffset: 270; }
           100% { stroke-dashoffset: 0; }
         }
 
-        /* Floating Widgets */
+        /* Projector Widgets (No more floating, heavy hover effect) */
         .widget {
-          background: rgba(26, 28, 29, 0.85);
-          backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.15);
+          background: rgba(253, 251, 247, 0.85);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(255, 255, 255, 0.8);
           box-shadow: 
-            0 20px 40px -10px rgba(0,0,0,0.4),
-            inset 0 0 20px rgba(255,255,255,0.05);
-          border-radius: 16px;
-          transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            0 15px 30px -10px rgba(0,0,0,0.15),
+            inset 0 0 20px rgba(255,255,255,0.5);
+          border-radius: 20px;
+          transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
           cursor: pointer;
         }
         
         .widget:hover {
-          transform: scale(1.05) translateY(-5px) !important;
-          border-color: rgba(0, 240, 255, 0.5);
-          box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6), 0 0 30px rgba(0, 240, 255, 0.2);
-          z-index: 50 !important;
+          transform: scale(1.15) translateY(-10px) !important;
+          box-shadow: 
+            0 40px 80px -20px rgba(0,0,0,0.3),
+            0 0 50px rgba(117, 240, 154, 0.4),
+            inset 0 0 30px rgba(255,255,255,0.8);
+          border-color: #ffffff;
+          z-index: 100 !important;
         }
-
-        @keyframes float-1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        @keyframes float-2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-        @keyframes float-3 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes float-4 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
-
-        .animate-float-1 { animation: float-1 8s ease-in-out infinite; }
-        .animate-float-2 { animation: float-2 10s ease-in-out infinite; }
-        .animate-float-3 { animation: float-3 9s ease-in-out infinite; }
-        .animate-float-4 { animation: float-4 11s ease-in-out infinite; }
 
         /* Blue AI Core */
         .ai-core-container {
@@ -170,19 +164,19 @@ function WelcomePage() {
           position: absolute;
           inset: 0;
           border-radius: 50%;
-          background: linear-gradient(135deg, #1a1c1d, #0a0b0c, #2a2e33, #000);
+          background: linear-gradient(135deg, #2a2e33, #111, #333, #000);
           box-shadow: 
             inset -8px -8px 20px rgba(0,0,0,0.9),
             inset 8px 8px 20px rgba(255,255,255,0.1),
             0 15px 30px rgba(0,0,0,0.6);
-          border: 2px solid #333;
+          border: 2px solid #444;
         }
         
         .ai-mech-ring {
           position: absolute;
           inset: 25px;
           border-radius: 50%;
-          border: 3px dashed rgba(0, 240, 255, 0.3);
+          border: 3px dashed rgba(0, 240, 255, 0.4);
           animation: spin 20s linear infinite;
         }
         
@@ -235,21 +229,20 @@ function WelcomePage() {
           100% { transform: rotate(360deg); }
         }
 
-        /* Digital Clock Glow */
+        /* Digital Clock */
         .digital-time {
           font-family: 'Courier New', Courier, monospace;
-          color: #00f0ff;
-          text-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3);
+          color: #1A1A1A;
           letter-spacing: 0.1em;
         }
 
         /* Waveform Animation */
         .wave-bar {
           width: 4px;
-          background-color: #00f0ff;
+          background-color: #C24A35;
           border-radius: 2px;
           animation: wave 1.2s ease-in-out infinite alternate;
-          box-shadow: 0 0 8px #00f0ff;
+          box-shadow: 0 0 8px rgba(194, 74, 53, 0.3);
         }
         @keyframes wave {
           0% { height: 10%; }
@@ -528,9 +521,9 @@ function WelcomePage() {
               </svg>
 
               {/* Widget 1: Digital Clock */}
-              <div className="widget animate-float-1 absolute top-[12%] left-[8%] w-64 h-36 p-6 flex flex-col items-center justify-center z-10">
-                <div className="text-[10px] font-mono text-white/40 uppercase tracking-widest mb-2 flex items-center gap-2">
-                  <Activity className="w-3 h-3 text-[#00f0ff]" /> Sys Time
+              <div className="widget absolute top-[12%] left-[8%] w-64 h-36 p-6 flex flex-col items-center justify-center z-10">
+                <div className="text-[10px] font-mono text-black/40 uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <Activity className="w-3 h-3 text-[#C24A35]" /> Sys Time
                 </div>
                 <div className="digital-time text-4xl font-bold">
                   {formatTime(time)}
@@ -538,14 +531,14 @@ function WelcomePage() {
               </div>
 
               {/* Widget 2: Desk Calendar */}
-              <div className="widget animate-float-2 absolute top-[15%] right-[8%] w-60 h-64 z-10 flex flex-col items-center pt-8 bg-[#F9F7F1] border border-black/10 rounded-b-xl shadow-2xl">
+              <div className="widget absolute top-[15%] right-[8%] w-60 h-64 z-10 flex flex-col items-center pt-8 rounded-b-xl">
                 {/* Metal Spirals */}
                 <div className="absolute top-0 left-1/4 -translate-y-1/2 w-4 h-8 rounded-full border-4 border-gray-400 bg-transparent" />
                 <div className="absolute top-0 right-1/4 -translate-y-1/2 w-4 h-8 rounded-full border-4 border-gray-400 bg-transparent" />
                 
                 {/* Calendar Body */}
                 <div className="w-48 h-52 bg-white shadow-lg border border-black/5 flex flex-col rounded-sm overflow-hidden">
-                  <div className="w-full h-12 bg-[#C22B2B] text-white flex items-center justify-center font-mono text-lg tracking-[0.3em] uppercase">
+                  <div className="w-full h-12 bg-[#C24A35] text-white flex items-center justify-center font-mono text-lg tracking-[0.3em] uppercase">
                     {currentMonth}
                   </div>
                   <div className="flex-1 flex items-center justify-center font-display text-7xl text-[#1A1A1A]">
@@ -555,11 +548,11 @@ function WelcomePage() {
               </div>
 
               {/* Widget 3: Live Terminal */}
-              <div className="widget animate-float-3 absolute bottom-[12%] left-[10%] w-72 h-56 p-4 flex flex-col z-10 overflow-hidden">
-                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/10 text-[10px] font-mono text-white/50 uppercase tracking-widest">
-                  <Terminal className="w-3 h-3 text-[#00f0ff]" /> Live Feed
+              <div className="widget absolute bottom-[12%] left-[10%] w-72 h-56 p-4 flex flex-col z-10 overflow-hidden">
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-black/10 text-[10px] font-mono text-black/50 uppercase tracking-widest">
+                  <Terminal className="w-3 h-3 text-[#2D6A65]" /> Live Feed
                 </div>
-                <div className="font-mono text-[10px] text-[#00f0ff] leading-relaxed overflow-hidden h-full relative">
+                <div className="font-mono text-[10px] text-[#1A1A1A] leading-relaxed overflow-hidden h-full relative">
                   <div className="terminal-scroll space-y-2">
                     <p>&gt; INGESTING MIAMI HERALD...</p>
                     <p>&gt; EXTRACTING KEY ENTITIES...</p>
@@ -568,7 +561,6 @@ function WelcomePage() {
                     <p>&gt; DETECTING SEMANTIC OMISSIONS...</p>
                     <p>&gt; MOTIVE SUSPECTED: ECONOMIC</p>
                     <p>&gt; CROSS-REFERENCING LOCATIONS...</p>
-                    {/* Duplicate for seamless scroll */}
                     <p>&gt; INGESTING MIAMI HERALD...</p>
                     <p>&gt; EXTRACTING KEY ENTITIES...</p>
                     <p>&gt; ENTITY MATCH: EL SALVADOR</p>
@@ -577,14 +569,14 @@ function WelcomePage() {
               </div>
 
               {/* Widget 4: Audio Signature */}
-              <div className="widget animate-float-4 absolute bottom-[15%] right-[10%] w-72 h-48 p-6 flex flex-col z-10">
-                <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-3">
-                  <div className="flex items-center gap-2 text-[10px] font-mono text-white/50 uppercase tracking-widest">
-                    <Mic className="w-4 h-4 text-[#00f0ff]" /> Audio Log 04
+              <div className="widget absolute bottom-[15%] right-[10%] w-72 h-48 p-6 flex flex-col z-10">
+                <div className="flex justify-between items-center mb-6 border-b border-black/10 pb-3">
+                  <div className="flex items-center gap-2 text-[10px] font-mono text-black/50 uppercase tracking-widest">
+                    <Mic className="w-4 h-4 text-[#6B4C7A]" /> Audio Log 04
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_#ff0000]" />
-                    <span className="text-[10px] font-mono text-red-500 tracking-widest">REC</span>
+                    <span className="text-[10px] font-mono text-red-500 tracking-widest font-bold">REC</span>
                   </div>
                 </div>
 
