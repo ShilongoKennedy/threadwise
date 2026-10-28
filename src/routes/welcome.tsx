@@ -46,25 +46,35 @@ function WelcomePage() {
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
         
-        /* Optical Glasses Styling */
-        .lens-glass {
+        /* Realistic Optical Glasses Styling */
+        .lens-frame {
+          border: 12px solid ${laptopYellowDark};
           box-shadow: 
-            inset 0 0 20px rgba(255,255,255,0.8),
-            inset 0 0 5px rgba(0,0,0,0.05),
-            0 15px 35px -5px rgba(0,0,0,0.1);
-          background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 80%);
+            inset 0 0 4px rgba(0,0,0,0.1), 
+            0 20px 40px -10px rgba(0,0,0,0.15),
+            0 0 0 1px rgba(0,0,0,0.05);
         }
-        .lens-rim {
-          border: 2px solid #8A8D91;
-          box-shadow: inset 0 0 2px rgba(255,255,255,0.5), 0 0 1px rgba(0,0,0,0.2);
+        .lens-glass {
+          background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 80%);
+          backdrop-filter: blur(2px);
+          box-shadow: 
+            inset 0 20px 40px rgba(0,0,0,0.05),
+            inset 0 -20px 40px rgba(255,255,255,0.6),
+            inset 0 0 10px rgba(0,0,0,0.05);
         }
-        .glass-reflection {
-          background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 60%);
+        .glass-reflection-1 {
+          background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 60%);
           border-radius: 50%;
-          filter: blur(2px);
+          filter: blur(1px);
         }
-        .metal-bridge {
-          background: linear-gradient(to bottom, #D1D5DB, #9CA3AF, #D1D5DB);
+        .glass-reflection-2 {
+          background: linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+          border-radius: 50%;
+          filter: blur(4px);
+        }
+        .hinge-piece {
+          background: linear-gradient(180deg, ${laptopYellow} 0%, ${laptopYellowDark} 100%);
+          box-shadow: inset 0 0 2px rgba(255,255,255,0.5), 0 4px 10px rgba(0,0,0,0.1);
         }
       `}</style>
 
@@ -115,66 +125,76 @@ function WelcomePage() {
         </div>
       </header>
 
-      {/* HERO SECTION - THE OPTICAL GLASSES */}
+      {/* HERO SECTION - THE REALISTIC OPTICAL GLASSES */}
       <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-12 pb-24 flex flex-col items-center text-center flex-1">
         
         <div className="relative z-20 flex flex-col items-center mb-16 w-full max-w-5xl">
           
-          <div className="relative flex justify-center items-center h-[400px] w-full">
+          <div className="relative flex justify-center items-center h-[450px] w-full">
             
             {/* The Glasses Frame Container */}
             <div className="relative flex items-center justify-center">
               
-              {/* Left Hinge */}
-              <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-8 h-6 metal-bridge rounded-l-md z-0 flex items-center justify-end pr-1 shadow-sm">
-                <div className="w-1 h-3 bg-black/20 rounded-full" />
+              {/* Left Hinge (Endpiece) */}
+              <div className="absolute -left-8 top-1/2 -translate-y-1/2 w-12 h-8 hinge-piece rounded-l-lg z-20 flex items-center justify-end pr-2 shadow-lg">
+                <div className="w-1.5 h-1.5 bg-black/20 rounded-full shadow-inner" />
               </div>
 
               {/* Left Lens */}
-              <div className="relative w-[280px] h-[280px] md:w-[320px] md:h-[320px] rounded-full lens-rim lens-glass z-10 flex items-center justify-center">
-                {/* Glass Reflection */}
-                <div className="absolute top-[10%] left-[15%] w-[120px] h-[70px] glass-reflection transform -rotate-[30deg]" />
-                {/* Pastel Dots */}
-                <div className="absolute top-[20%] left-[25%] w-4 h-4 rounded-full bg-[#FDF0B6] shadow-sm" />
-                <div className="absolute bottom-[25%] left-[30%] w-4 h-4 rounded-full bg-[#E8DAFB] shadow-sm" />
+              <div className="relative w-[300px] h-[300px] md:w-[350px] md:h-[350px] rounded-full lens-frame z-10 flex items-center justify-center overflow-hidden">
+                {/* Glass Base */}
+                <div className="absolute inset-0 rounded-full lens-glass" />
+                
+                {/* Glass Reflections */}
+                <div className="absolute top-[5%] left-[10%] w-[180px] h-[100px] glass-reflection-1 transform -rotate-[35deg]" />
+                <div className="absolute bottom-[10%] right-[10%] w-[200px] h-[80px] glass-reflection-2 transform rotate-[15deg]" />
+                
+                {/* Pastel Dots (with slight drop shadow to look like they are inside/under the glass) */}
+                <div className="absolute top-[20%] left-[25%] w-4 h-4 rounded-full bg-[#FDF0B6] shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-10" />
+                <div className="absolute bottom-[25%] left-[30%] w-4 h-4 rounded-full bg-[#E8DAFB] shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-10" />
                 
                 {/* Left Text */}
-                <h1 className="font-display text-[45px] md:text-[55px] lg:text-[65px] tracking-tight text-[#1A1A1A] z-20">
+                <h1 className="font-display text-[50px] md:text-[65px] tracking-tight text-[#1A1A1A] z-20 relative drop-shadow-sm">
                   See what
                 </h1>
               </div>
 
-              {/* The Bridge (SVG for perfect curve) */}
-              <div className="relative -mx-3 z-0">
-                <svg width="80" height="40" viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M 0 30 Q 40 10 80 30" stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round" />
-                  <path d="M 0 32 Q 40 12 80 32" stroke="#D1D5DB" strokeWidth="1" strokeLinecap="round" />
+              {/* The Bridge (SVG for perfect curve with realistic depth) */}
+              <div className="relative -mx-4 z-0 drop-shadow-md">
+                <svg width="100" height="50" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M 0 40 Q 50 10 100 40" stroke={laptopYellowDark} strokeWidth="12" strokeLinecap="round" />
+                  <path d="M 0 40 Q 50 10 100 40" stroke={laptopYellow} strokeWidth="4" strokeLinecap="round" opacity="0.5" />
                 </svg>
               </div>
 
               {/* Right Lens */}
-              <div className="relative w-[280px] h-[280px] md:w-[320px] md:h-[320px] rounded-full lens-rim lens-glass z-10 flex items-center justify-center">
-                {/* Glass Reflection */}
-                <div className="absolute top-[15%] right-[20%] w-[100px] h-[60px] glass-reflection transform rotate-[20deg]" />
+              <div className="relative w-[300px] h-[300px] md:w-[350px] md:h-[350px] rounded-full lens-frame z-10 flex items-center justify-center overflow-hidden">
+                {/* Glass Base */}
+                <div className="absolute inset-0 rounded-full lens-glass" />
+                
+                {/* Glass Reflections */}
+                <div className="absolute top-[10%] right-[10%] w-[150px] h-[90px] glass-reflection-1 transform rotate-[25deg]" />
+                <div className="absolute bottom-[15%] left-[10%] w-[180px] h-[70px] glass-reflection-2 transform -rotate-[10deg]" />
+
                 {/* Pastel Dots */}
-                <div className="absolute top-[25%] right-[30%] w-4 h-4 rounded-full bg-[#FBD0D4] shadow-sm" />
-                <div className="absolute bottom-[20%] right-[25%] w-4 h-4 rounded-full bg-[#CBE6F9] shadow-sm" />
+                <div className="absolute top-[25%] right-[30%] w-4 h-4 rounded-full bg-[#FBD0D4] shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-10" />
+                <div className="absolute bottom-[20%] right-[25%] w-4 h-4 rounded-full bg-[#CBE6F9] shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-10" />
 
                 {/* Right Text */}
-                <h1 className="font-display text-[45px] md:text-[55px] lg:text-[65px] tracking-tight text-[#8B5CF6] italic z-20">
+                <h1 className="font-display text-[50px] md:text-[65px] tracking-tight text-[#8B5CF6] italic z-20 relative drop-shadow-sm">
                   connects.
                 </h1>
               </div>
 
-              {/* Right Hinge */}
-              <div className="absolute -right-6 top-1/2 -translate-y-1/2 w-8 h-6 metal-bridge rounded-r-md z-0 flex items-center justify-start pl-1 shadow-sm">
-                <div className="w-1 h-3 bg-black/20 rounded-full" />
+              {/* Right Hinge (Endpiece) */}
+              <div className="absolute -right-8 top-1/2 -translate-y-1/2 w-12 h-8 hinge-piece rounded-r-lg z-20 flex items-center justify-start pl-2 shadow-lg">
+                <div className="w-1.5 h-1.5 bg-black/20 rounded-full shadow-inner" />
               </div>
 
             </div>
           </div>
 
-          <p className="text-lg md:text-xl text-[#1A1A1A]/50 leading-relaxed max-w-xl font-light mt-8">
+          <p className="text-lg md:text-xl text-[#1A1A1A]/50 leading-relaxed max-w-xl font-light mt-6">
             Bring your sources, questions, and ideas together.
           </p>
         </div>
