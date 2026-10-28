@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { safeStorage } from "./safe-storage";
 import { useThread } from "./store";
 import { createNodeData } from "./model";
 import { paperColor, type PaperColor } from "./paper";
@@ -562,6 +563,7 @@ export const useWorkspaces = create<State>()(
     }),
     {
       name: "threadwise-workspaces-v1",
+      storage: createJSONStorage(() => safeStorage),
       partialize: (s) => ({
         owner: s.owner,
         workspaces: s.workspaces.map((w) => ({ ...w, document: cloudDocument(w.document) })),
