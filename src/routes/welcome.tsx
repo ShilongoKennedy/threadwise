@@ -1,13 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, ArrowRight, Quote, MapPin, Edit3, Circle, Sparkles, FileText, Lightbulb, Terminal, CheckCircle2, ChevronRight, Activity, Cpu, Network, MousePointer2, Layers } from "lucide-react";
+import { 
+  ArrowUpRight, ArrowRight, Quote, MapPin, Edit3, Circle, Sparkles, 
+  FileText, Lightbulb, Terminal, CheckCircle2, ChevronRight, Activity, 
+  Cpu, Network, MousePointer2, Layers, Target, Shield, Zap
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/welcome")({
   component: WelcomePage,
 });
 
-// --- CUSTOM HOOKS FOR INTERACTIVITY ---
-
+// --- CUSTOM HOOKS ---
 function useScrollProgress() {
   const [progress, setProgress] = useState(0);
   useEffect(() => {
@@ -53,7 +56,6 @@ function useScrollReveal() {
 }
 
 // --- MAIN COMPONENT ---
-
 function WelcomePage() {
   const scrollProgress = useScrollProgress();
   const mouse = useMousePosition();
@@ -81,26 +83,36 @@ function WelcomePage() {
     return () => clearInterval(typingInterval);
   }, []);
 
+  // 3D Tilt calculations
+  const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 15;
+  const tiltY = (mouse.x / (typeof window !== 'undefined' ? window.innerWidth : 1200) - 0.5) * -15;
+
   return (
     <div className="min-h-screen bg-[#F6F5F2] text-[#1A1A1A] font-sans selection:bg-[#C24A35] selection:text-white overflow-hidden relative">
       
+      {/* Global CSS Animations */}
+      <style>{`
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .animate-marquee { animation: marquee 30s linear infinite; }
+        @keyframes scan { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        .animate-scan { animation: scan 3s linear infinite; }
+        .bg-noise { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+      `}</style>
+
       {/* Scroll Progress Bar */}
       <div 
-        className="fixed top-0 left-0 h-1 bg-[#C24A35] z-50 transition-all duration-75 ease-out"
+        className="fixed top-0 left-0 h-1 bg-[#C24A35] z-50 transition-all duration-75 ease-out shadow-[0_0_10px_#C24A35]"
         style={{ width: `${scrollProgress}%` }}
       />
 
       {/* Film Grain Overlay */}
-      <div 
-        className="pointer-events-none fixed inset-0 z-50 opacity-[0.04] mix-blend-multiply"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-      />
+      <div className="pointer-events-none fixed inset-0 z-50 opacity-[0.04] mix-blend-multiply bg-noise" />
 
       {/* Dynamic Cursor Spotlight */}
       <div 
         className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(600px circle at ${mouse.x}px ${mouse.y}px, rgba(255,255,255,0.6), transparent 40%)`,
+          background: `radial-gradient(600px circle at ${mouse.x}px ${mouse.y}px, rgba(255,255,255,0.7), transparent 40%)`,
         }}
       />
 
@@ -134,14 +146,14 @@ function WelcomePage() {
             <span className="flex items-center gap-2"><Activity className="w-3 h-3 text-[#C24A35]"/> System Online</span>
             <span className="flex items-center gap-2"><Cpu className="w-3 h-3"/> DeepSeek v3</span>
           </div>
-          <Link to="/" className="group flex items-center gap-2 px-6 py-2.5 bg-[#1A1A1A] text-[#F6F5F2] hover:bg-[#C24A35] transition-colors duration-300 font-mono text-xs uppercase tracking-widest">
+          <Link to="/" className="group flex items-center gap-2 px-6 py-2.5 bg-[#1A1A1A] text-[#F6F5F2] hover:bg-[#C24A35] transition-colors duration-300 font-mono text-xs uppercase tracking-widest shadow-lg hover:shadow-[#C24A35]/20">
             Open Workspace <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
         </div>
       </header>
 
       {/* HERO SECTION */}
-      <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-20 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+      <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-20 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[85vh]">
         
         {/* Left: Typography */}
         <div className="flex flex-col relative z-20">
@@ -170,29 +182,28 @@ function WelcomePage() {
             <Link to="/" className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-[#C24A35] text-white hover:bg-[#A33C2A] transition-all hover:scale-[1.02] shadow-xl shadow-[#C24A35]/20 text-sm font-medium tracking-wide">
               Start your canvas <ArrowUpRight className="w-4 h-4" />
             </Link>
-            <a href="#example" className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 text-[#1A1A1A] hover:bg-black/5 transition-colors text-sm font-medium tracking-wide">
+            <a href="#example" className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 text-[#1A1A1A] hover:bg-black/5 transition-colors text-sm font-medium tracking-wide border border-transparent hover:border-black/10">
               Explore an example <ArrowRight className="w-4 h-4" />
             </a>
           </div>
 
-          <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#1A1A1A]/40">
-            Your thinking. A little more connected.
+          <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#1A1A1A]/40 flex items-center gap-2">
+            <Shield className="w-3 h-3" /> Your thinking. A little more connected.
           </p>
         </div>
 
-        {/* Right: Interactive Parallax Canvas with Pins */}
-        <div className="relative h-[500px] lg:h-[600px] w-full flex items-center justify-center perspective-[1000px]">
+        {/* Right: Interactive 3D Parallax Canvas */}
+        <div className="relative h-[500px] lg:h-[650px] w-full flex items-center justify-center perspective-[1200px]">
           <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" style={{ transform: `translate(${mouse.x * 0.01}px, ${mouse.y * 0.01}px)` }}>
-            <path d="M 100 100 Q 300 200 400 400 T 600 500" fill="none" stroke="#C24A35" strokeWidth="2" strokeDasharray="8 8" opacity="0.4" />
-            <path d="M 200 500 Q 350 400 500 200 T 700 100" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="4 4" opacity="0.2" />
+            <path d="M 100 100 Q 300 200 400 400 T 600 500" fill="none" stroke="#C24A35" strokeWidth="2" strokeDasharray="8 8" opacity="0.3" />
+            <path d="M 200 500 Q 350 400 500 200 T 700 100" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="4 4" opacity="0.15" />
           </svg>
 
           {/* Evidence Node */}
           <div 
-            className="absolute top-[10%] left-[5%] w-[280px] bg-white border border-black/10 shadow-2xl p-5 rounded-xl z-20 transition-transform duration-300 hover:scale-105"
-            style={{ transform: `translate(${mouse.x * -0.02}px, ${mouse.y * -0.02}px)` }}
+            className="absolute top-[10%] left-[5%] w-[280px] bg-white border border-black/10 shadow-2xl p-5 rounded-xl z-20 transition-transform duration-100 ease-out"
+            style={{ transform: `translate(${mouse.x * -0.02}px, ${mouse.y * -0.02}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)` }}
           >
-            {/* Simulated Pin */}
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#C24A35] rounded-full shadow-inner border border-black/20 z-30" />
             <div className="flex justify-between items-center mb-3">
               <span className="text-[10px] font-mono text-[#2A6B65] flex items-center gap-1.5 uppercase tracking-widest"><FileText className="w-4 h-4"/> Evidence</span>
@@ -204,10 +215,9 @@ function WelcomePage() {
 
           {/* Hypothesis Node */}
           <div 
-            className="absolute bottom-[15%] right-[5%] w-[300px] bg-white border border-black/10 shadow-2xl p-5 rounded-xl z-20 transition-transform duration-300 hover:scale-105"
-            style={{ transform: `translate(${mouse.x * 0.03}px, ${mouse.y * 0.03}px)` }}
+            className="absolute bottom-[15%] right-[5%] w-[300px] bg-white border border-black/10 shadow-2xl p-5 rounded-xl z-20 transition-transform duration-100 ease-out"
+            style={{ transform: `translate(${mouse.x * 0.03}px, ${mouse.y * 0.03}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)` }}
           >
-            {/* Simulated Pin */}
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#C24A35] rounded-full shadow-inner border border-black/20 z-30" />
             <div className="flex justify-between items-center mb-3">
               <span className="text-[10px] font-mono text-[#5B456B] flex items-center gap-1.5 uppercase tracking-widest"><Lightbulb className="w-4 h-4"/> Hypothesis</span>
@@ -219,10 +229,9 @@ function WelcomePage() {
 
           {/* Anchor Node */}
           <div 
-            className="absolute top-[40%] left-[30%] w-[260px] bg-[#1A1A1A] text-white shadow-2xl p-5 rounded-xl z-30 transition-transform duration-300 hover:scale-105"
-            style={{ transform: `translate(${mouse.x * -0.01}px, ${mouse.y * -0.01}px)` }}
+            className="absolute top-[40%] left-[30%] w-[260px] bg-[#1A1A1A] text-white shadow-2xl p-5 rounded-xl z-30 transition-transform duration-100 ease-out"
+            style={{ transform: `translate(${mouse.x * -0.01}px, ${mouse.y * -0.01}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)` }}
           >
-            {/* Simulated Pin */}
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full shadow-inner border border-black/50 z-30" />
             <div className="flex justify-between items-center mb-3">
               <span className="text-[10px] font-mono text-[#C24A35] flex items-center gap-1.5 uppercase tracking-widest"><Sparkles className="w-4 h-4"/> Question</span>
@@ -236,10 +245,6 @@ function WelcomePage() {
 
       {/* INFINITE TICKER */}
       <div className="relative z-10 w-full overflow-hidden border-y border-[#1A1A1A]/10 bg-white/50 py-4 backdrop-blur-sm">
-        <style>{`
-          @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-          .animate-marquee { animation: marquee 30s linear infinite; }
-        `}</style>
         <div className="flex whitespace-nowrap animate-marquee w-max">
           {[...Array(2)].map((_, i) => (
             <div key={i} className="flex items-center gap-12 px-6 font-mono text-[10px] uppercase tracking-[0.3em] text-[#1A1A1A]/50">
@@ -268,28 +273,35 @@ function WelcomePage() {
 
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Chaos Side */}
-          <div className="relative h-[300px] border border-black/10 rounded-xl bg-white p-6 overflow-hidden flex flex-col items-center justify-center">
+          <div className="relative h-[350px] border border-black/10 rounded-xl bg-white p-8 overflow-hidden flex flex-col items-center justify-center shadow-inner">
             <div className="absolute inset-0 bg-[#f0f0f0] opacity-50" />
-            <div className="relative z-10 w-full max-w-sm space-y-3">
-              <div className="w-full h-12 bg-white border border-black/10 rounded shadow-sm flex items-center px-4 text-xs text-black/40"><Layers className="w-4 h-4 mr-2"/> A promise to the coast.pdf</div>
-              <div className="w-full h-12 bg-white border border-black/10 rounded shadow-sm flex items-center px-4 text-xs text-black/40 -ml-4"><Terminal className="w-4 h-4 mr-2"/> Investor Call Transcript.docx</div>
-              <div className="w-full h-12 bg-white border border-black/10 rounded shadow-sm flex items-center px-4 text-xs text-black/40 ml-6"><FileText className="w-4 h-4 mr-2"/> Local News Article.html</div>
+            <div className="relative z-10 w-full max-w-sm flex flex-col items-center">
+              <div className="w-[90%] h-14 bg-white border border-black/10 rounded shadow-md flex items-center px-4 text-xs text-black/50 transform -rotate-6 mb-[-10px]"><Layers className="w-4 h-4 mr-2"/> A promise to the coast.pdf</div>
+              <div className="w-[95%] h-14 bg-white border border-black/10 rounded shadow-lg flex items-center px-4 text-xs text-black/60 transform rotate-3 mb-[-10px] z-10"><Terminal className="w-4 h-4 mr-2 text-[#C24A35]"/> Investor Call Transcript.docx</div>
+              <div className="w-[85%] h-14 bg-white border border-black/10 rounded shadow-sm flex items-center px-4 text-xs text-black/40 transform -rotate-2"><FileText className="w-4 h-4 mr-2"/> Local News Article.html</div>
             </div>
-            <div className="absolute bottom-4 left-0 right-0 text-center font-mono text-[10px] uppercase tracking-widest text-black/30">Scattered Sources</div>
+            <div className="absolute bottom-4 left-0 right-0 text-center font-mono text-[10px] uppercase tracking-widest text-black/30 flex items-center justify-center gap-2">
+              <Layers className="w-3 h-3" /> Scattered Sources
+            </div>
           </div>
 
           {/* Order Side */}
-          <div className="relative h-[300px] border border-black/10 rounded-xl bg-[#FAF9F5] p-6 overflow-hidden">
+          <div className="relative h-[350px] border border-black/10 rounded-xl bg-[#FAF9F5] p-6 overflow-hidden shadow-inner">
              <div className="absolute inset-0 bg-[radial-gradient(#e5e5e5_1px,transparent_1px)] [background-size:20px_20px]" />
              <div className="relative z-10 w-full h-full flex items-center justify-center">
-                <div className="w-32 h-20 bg-white border border-[#C24A35] rounded shadow-lg flex items-center justify-center text-[10px] font-mono text-[#C24A35] uppercase tracking-widest z-20">Question</div>
-                <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                   <path d="M 160 150 L 300 100 L 440 150" fill="none" stroke="#C24A35" strokeWidth="2" strokeDasharray="4 4" />
+                {/* Glowing Path */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none drop-shadow-[0_0_8px_rgba(194,74,53,0.5)]">
+                   <path d="M 150 150 L 300 80 L 450 150" fill="none" stroke="#C24A35" strokeWidth="2" strokeDasharray="4 4" />
+                   <path d="M 300 80 L 350 250" fill="none" stroke="#C24A35" strokeWidth="2" strokeDasharray="4 4" opacity="0.5"/>
                 </svg>
-                <div className="absolute top-[20%] left-[20%] w-32 h-16 bg-white border border-[#2A6B65] rounded shadow-lg flex items-center justify-center text-[10px] font-mono text-[#2A6B65] uppercase tracking-widest z-20">Evidence</div>
-                <div className="absolute bottom-[20%] right-[20%] w-32 h-16 bg-white border border-[#5B456B] rounded shadow-lg flex items-center justify-center text-[10px] font-mono text-[#5B456B] uppercase tracking-widest z-20">Hypothesis</div>
+                
+                <div className="absolute top-[10%] left-[10%] w-28 h-16 bg-white border border-[#2A6B65] rounded shadow-lg flex items-center justify-center text-[10px] font-mono text-[#2A6B65] uppercase tracking-widest z-20">Evidence</div>
+                <div className="absolute top-[40%] left-[40%] w-32 h-20 bg-white border border-[#C24A35] rounded shadow-xl flex items-center justify-center text-[10px] font-mono text-[#C24A35] uppercase tracking-widest z-30">Question</div>
+                <div className="absolute bottom-[10%] right-[10%] w-28 h-16 bg-white border border-[#5B456B] rounded shadow-lg flex items-center justify-center text-[10px] font-mono text-[#5B456B] uppercase tracking-widest z-20">Hypothesis</div>
              </div>
-             <div className="absolute bottom-4 left-0 right-0 text-center font-mono text-[10px] uppercase tracking-widest text-[#C24A35]">Connected Canvas</div>
+             <div className="absolute bottom-4 left-0 right-0 text-center font-mono text-[10px] uppercase tracking-widest text-[#C24A35] flex items-center justify-center gap-2">
+                <Network className="w-3 h-3" /> Connected Canvas
+             </div>
           </div>
         </div>
       </section>
@@ -329,15 +341,22 @@ function WelcomePage() {
               {/* Simulated Custom Cursor */}
               <div 
                 className="absolute z-50 pointer-events-none transition-transform duration-100 ease-out"
-                style={{ left: `${mouse.x * 0.5}px`, top: `${mouse.y * 0.5}px` }}
+                style={{ left: `${mouse.x * 0.4}px`, top: `${mouse.y * 0.4}px` }}
               >
                  <MousePointer2 className="w-6 h-6 text-black fill-white drop-shadow-md" />
               </div>
 
+              {/* Scanning Line Effect */}
+              {activeNode && (
+                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                  <div className="w-full h-1 bg-[#C24A35]/30 shadow-[0_0_15px_#C24A35] animate-scan" />
+                </div>
+              )}
+
               {/* Dynamic SVG Lines */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-                <path d="M 250 200 Q 450 200 600 350" fill="none" stroke={activeNode ? "#C24A35" : "#1A1A1A"} strokeWidth={activeNode ? "2" : "1"} strokeDasharray="6 6" opacity={activeNode ? "0.8" : "0.2"} className="transition-all duration-500" />
-                <path d="M 600 350 Q 750 500 900 400" fill="none" stroke={activeNode ? "#C24A35" : "#1A1A1A"} strokeWidth={activeNode ? "2" : "1"} strokeDasharray="6 6" opacity={activeNode ? "0.8" : "0.2"} className="transition-all duration-500" />
+                <path d="M 250 200 Q 450 200 600 350" fill="none" stroke={activeNode ? "#C24A35" : "#1A1A1A"} strokeWidth={activeNode ? "2" : "1"} strokeDasharray="6 6" opacity={activeNode ? "0.8" : "0.15"} className="transition-all duration-500" />
+                <path d="M 600 350 Q 750 500 900 400" fill="none" stroke={activeNode ? "#C24A35" : "#1A1A1A"} strokeWidth={activeNode ? "2" : "1"} strokeDasharray="6 6" opacity={activeNode ? "0.8" : "0.15"} className="transition-all duration-500" />
               </svg>
 
               {/* Node A */}
@@ -346,6 +365,15 @@ function WelcomePage() {
                 onMouseLeave={() => setActiveNode(null)}
                 className={`absolute top-[15%] left-[10%] w-[300px] bg-white border ${activeNode === 'A' ? 'border-[#C24A35] shadow-[0_0_30px_rgba(194,74,53,0.15)] scale-105' : 'border-black/10 shadow-lg scale-100'} rounded-xl p-5 transition-all duration-300 cursor-crosshair z-10`}
               >
+                {/* Target Brackets */}
+                {activeNode === 'A' && (
+                  <>
+                    <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-[#C24A35]" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-[#C24A35]" />
+                    <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-[#C24A35]" />
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-[#C24A35]" />
+                  </>
+                )}
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-[10px] font-mono text-[#C24A35] flex items-center gap-1.5 uppercase tracking-widest"><Sparkles className="w-3 h-3"/> Question</span>
                   <span className="text-[10px] font-mono text-black/30">01</span>
@@ -360,6 +388,14 @@ function WelcomePage() {
                 onMouseLeave={() => setActiveNode(null)}
                 className={`absolute top-[35%] left-[45%] w-[320px] bg-white border ${activeNode === 'B' ? 'border-[#2A6B65] shadow-[0_0_30px_rgba(42,107,101,0.15)] scale-105' : 'border-black/10 shadow-lg scale-100'} rounded-xl p-5 transition-all duration-300 cursor-crosshair z-20`}
               >
+                {activeNode === 'B' && (
+                  <>
+                    <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-[#2A6B65]" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-[#2A6B65]" />
+                    <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-[#2A6B65]" />
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-[#2A6B65]" />
+                  </>
+                )}
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-[10px] font-mono text-[#2A6B65] flex items-center gap-1.5 uppercase tracking-widest"><FileText className="w-3 h-3"/> Evidence</span>
                   <span className="text-[10px] font-mono text-black/30">02</span>
@@ -378,6 +414,14 @@ function WelcomePage() {
                 onMouseLeave={() => setActiveNode(null)}
                 className={`absolute bottom-[15%] right-[10%] w-[300px] bg-white border ${activeNode === 'C' ? 'border-[#5B456B] shadow-[0_0_30px_rgba(91,69,107,0.15)] scale-105' : 'border-black/10 shadow-lg scale-100'} rounded-xl p-5 transition-all duration-300 cursor-crosshair z-10`}
               >
+                {activeNode === 'C' && (
+                  <>
+                    <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-[#5B456B]" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-[#5B456B]" />
+                    <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-[#5B456B]" />
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-[#5B456B]" />
+                  </>
+                )}
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-[10px] font-mono text-[#5B456B] flex items-center gap-1.5 uppercase tracking-widest"><Lightbulb className="w-3 h-3"/> Hypothesis</span>
                   <span className="text-[10px] font-mono text-black/30">03</span>
@@ -388,7 +432,7 @@ function WelcomePage() {
 
               {/* Floating Hover Prompt */}
               <div className="absolute top-6 right-6 flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-black/30 z-30">
-                <Activity className="w-3 h-3" /> Interactive Sandbox
+                <Target className="w-3 h-3" /> Interactive Sandbox
               </div>
             </div>
           </div>
@@ -420,9 +464,9 @@ function WelcomePage() {
           {/* Terminal Window */}
           <div className="bg-[#0D0D0D] border border-white/10 rounded-xl overflow-hidden shadow-2xl shadow-black/50">
             <div className="bg-white/5 border-b border-white/10 h-10 flex items-center px-4 gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
-              <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
-              <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
               <span className="ml-4 text-[10px] font-mono text-white/40">discourse-lab ~ /api/investigate</span>
             </div>
             
@@ -434,12 +478,13 @@ function WelcomePage() {
             {/* AI Results Preview */}
             {showResults && (
               <div className="px-6 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                 <div className="border border-white/10 bg-white/5 p-4 rounded-lg">
+                 <div className="border border-white/10 bg-white/5 p-4 rounded-lg relative overflow-hidden group cursor-pointer hover:bg-white/10 transition-colors">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-[#C24A35]" />
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-[10px] font-mono text-[#C24A35] uppercase tracking-widest">Hypothesis Found</span>
-                      <span className="text-[10px] font-mono text-white/40">Plant on Canvas →</span>
+                      <span className="text-[10px] font-mono text-[#C24A35] uppercase tracking-widest flex items-center gap-2"><Zap className="w-3 h-3"/> Hypothesis Found</span>
+                      <span className="text-[10px] font-mono text-white/40 flex items-center gap-1 group-hover:text-white transition-colors">Plant on Canvas <ArrowRight className="w-3 h-3"/></span>
                     </div>
-                    <p className="text-sm text-white/80 font-sans">El Salvador is deploying troops to secure US diplomatic favor, using the rescue mission as a justification.</p>
+                    <p className="text-sm text-white/80 font-sans leading-relaxed">El Salvador is deploying troops to secure US diplomatic favor, using the rescue mission as a justification.</p>
                  </div>
               </div>
             )}
@@ -474,7 +519,7 @@ function WelcomePage() {
           {/* Massive Footer Typographic Watermark */}
           <div className="w-full border-t border-black/10 pt-8 flex justify-between items-center">
             <span className="text-[10px] font-mono text-black/40">© 2026 Threadwise Inc.</span>
-            <span className="text-[10px] font-mono text-black/40 uppercase tracking-[0.2em]">See what connects.</span>
+            <span className="text-[10px] font-mono text-black/40 uppercase tracking-[0.2em] flex items-center gap-2"><Activity className="w-3 h-3"/> See what connects.</span>
           </div>
         </div>
       </footer>
