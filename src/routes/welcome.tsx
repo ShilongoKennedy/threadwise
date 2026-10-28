@@ -5,7 +5,7 @@ import {
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  Paperclip, CheckCircle2, Bot, Terminal, ShieldAlert
+  ShieldAlert, Play, Disc3, Mic
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -39,13 +39,25 @@ function WelcomePage() {
   const laptopYellowDark = "#E3D398";
   const boardMint = "#75F09A"; 
 
-  // AI State
-  const [aiMessage, setAiMessage] = useState("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...");
+  // Real-Time Clock State
+  const [time, setTime] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const secondsDegrees = time.getSeconds() * 6;
+  const minutesDegrees = time.getMinutes() * 6 + time.getSeconds() * 0.1;
+  const hoursDegrees = (time.getHours() % 12) * 30 + time.getMinutes() * 0.5;
+
+  const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const currentMonth = monthNames[time.getMonth()];
+  const currentDate = time.getDate();
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
-      {/* CSS for Interactions, Glasses, and Holographic Board */}
+      {/* CSS for Interactions, Glasses, and Command Center */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -65,10 +77,10 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* --- THE PREMIUM HOLOGRAPHIC BOARD --- */
+        /* --- THE COMMAND CENTER BOARD --- */
         
         .board-container {
-          background-color: #1a1c1d; /* Dark metallic base */
+          background-color: #1a1c1d;
           border: 16px solid ${laptopYellow};
           border-radius: 24px;
           box-shadow: 
@@ -81,7 +93,6 @@ function WelcomePage() {
 
         .board-screen {
           background-color: ${boardMint};
-          /* Adding a heavy vignette and texture to make the mint green feel like a glowing screen */
           background-image: 
             radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 60%),
             radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.2) 100%),
@@ -98,7 +109,7 @@ function WelcomePage() {
         /* Glowing Data Streams */
         .data-stream-base {
           fill: none;
-          stroke: rgba(255,255,255,0.4);
+          stroke: rgba(255,255,255,0.5);
           stroke-width: 2;
         }
         .data-stream-pulse {
@@ -114,140 +125,161 @@ function WelcomePage() {
           100% { stroke-dashoffset: 0; }
         }
 
-        /* Floating Glass Panels */
-        @keyframes float-glass-1 {
-          0%, 100% { transform: translateY(0) rotate(-2deg); }
-          50% { transform: translateY(-8px) rotate(-1deg); }
-        }
-        @keyframes float-glass-2 {
-          0%, 100% { transform: translateY(0) rotate(3deg); }
-          50% { transform: translateY(-12px) rotate(4deg); }
-        }
-        @keyframes float-glass-3 {
-          0%, 100% { transform: translateY(0) rotate(1deg); }
-          50% { transform: translateY(-10px) rotate(2deg); }
-        }
-        @keyframes float-glass-4 {
-          0%, 100% { transform: translateY(0) rotate(-3deg); }
-          50% { transform: translateY(-14px) rotate(-2deg); }
-        }
-
-        .animate-float-glass-1 { animation: float-glass-1 8s ease-in-out infinite; }
-        .animate-float-glass-2 { animation: float-glass-2 10s ease-in-out infinite; }
-        .animate-float-glass-3 { animation: float-glass-3 9s ease-in-out infinite; }
-        .animate-float-glass-4 { animation: float-glass-4 11s ease-in-out infinite; }
-
-        .glass-card {
-          /* Much higher opacity for readability */
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 1);
+        /* Floating Tools */
+        .tool-card {
+          background: #F9F7F1;
+          border: 1px solid rgba(0,0,0,0.1);
           box-shadow: 
-            0 20px 40px -10px rgba(0,0,0,0.2),
-            inset 0 0 20px rgba(255,255,255,0.8),
-            0 0 0 1px rgba(0,0,0,0.05);
+            0 20px 40px -10px rgba(0,0,0,0.25),
+            inset 0 0 10px rgba(255,255,255,0.8);
           transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-          cursor: crosshair;
-          border-radius: 16px;
+          cursor: pointer;
+          border-radius: 12px;
         }
         
-        .glass-card:hover {
-          animation-play-state: paused;
-          transform: scale(1.05) rotate(0deg) !important;
-          background: rgba(255, 255, 255, 1);
-          box-shadow: 0 30px 60px -15px rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,1), 0 0 0 2px #75F09A;
+        .tool-card:hover {
+          transform: scale(1.05) translateY(-5px) !important;
+          box-shadow: 0 30px 60px -15px rgba(0,0,0,0.4);
           z-index: 50 !important;
         }
 
-        /* AI Core (Geometric Neural Processor) */
-        .ai-core {
+        @keyframes float-1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes float-2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        @keyframes float-3 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes float-4 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+        .animate-float-1 { animation: float-1 8s ease-in-out infinite; }
+        .animate-float-2 { animation: float-2 10s ease-in-out infinite; }
+        .animate-float-3 { animation: float-3 9s ease-in-out infinite; }
+        .animate-float-4 { animation: float-4 11s ease-in-out infinite; }
+
+        /* Terminator AI Eye */
+        .terminator-eye {
           position: relative;
-          width: 160px;
-          height: 160px;
+          width: 180px;
+          height: 180px;
           display: flex;
           align-items: center;
           justify-content: center;
+          filter: drop-shadow(0 0 30px rgba(255, 0, 0, 0.4));
         }
         
-        .ai-ring-outer {
+        .eye-outer-metal {
           position: absolute;
           inset: 0;
           border-radius: 50%;
-          border: 2px solid rgba(26, 26, 26, 0.2);
-          border-left-color: transparent;
-          border-right-color: transparent;
-          animation: spin 8s linear infinite;
+          background: linear-gradient(135deg, #444, #111, #333, #000);
+          box-shadow: 
+            inset -5px -5px 15px rgba(0,0,0,0.9),
+            inset 5px 5px 15px rgba(255,255,255,0.2),
+            0 10px 20px rgba(0,0,0,0.6);
+          border: 2px solid #555;
         }
         
-        .ai-ring-inner {
+        .eye-inner-ring {
           position: absolute;
           inset: 15px;
           border-radius: 50%;
-          border: 4px solid rgba(26, 26, 26, 0.8);
-          border-top-color: transparent;
-          border-bottom-color: transparent;
-          animation: spin 5s linear infinite reverse;
-          box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+          border: 4px dashed #222;
+          animation: spin 12s linear infinite;
         }
         
-        .ai-sphere {
-          width: 90px;
-          height: 90px;
-          background: radial-gradient(circle at 30% 30%, #ffffff, #a3d9b5, #1a1c1d);
+        .eye-red-core {
+          position: absolute;
+          width: 80px;
+          height: 80px;
+          background: radial-gradient(circle at 40% 40%, #ff3b3b, #8a0000, #000);
           border-radius: 50%;
           box-shadow: 
-            inset -10px -10px 20px rgba(0,0,0,0.8),
-            inset 10px 10px 20px rgba(255,255,255,0.9),
-            0 20px 40px rgba(0,0,0,0.3);
-          position: relative;
+            0 0 40px #ff0000,
+            inset 0 0 20px #000;
           display: flex;
           align-items: center;
           justify-content: center;
+          animation: pulse-red 2s infinite alternate;
           z-index: 10;
         }
         
-        .ai-glowing-lens {
-          width: 35px;
-          height: 35px;
-          background: #1A1A1A;
+        .eye-lens {
+          width: 30px;
+          height: 30px;
+          background: #000;
           border-radius: 50%;
-          border: 2px solid rgba(255,255,255,0.8);
-          box-shadow: 0 0 25px #75F09A, inset 0 0 10px #000;
+          border: 2px solid rgba(255,255,255,0.2);
+          box-shadow: inset 0 0 10px #000;
+          position: relative;
+        }
+        
+        .eye-lens::after {
+          content: '';
+          position: absolute;
+          top: 5px; left: 5px;
+          width: 8px; height: 8px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.6);
+        }
+
+        @keyframes pulse-red {
+          0% { box-shadow: 0 0 30px #ff0000, inset 0 0 20px #000; }
+          100% { box-shadow: 0 0 60px #ff0000, inset 0 0 20px #000; }
         }
 
         @keyframes spin {
           100% { transform: rotate(360deg); }
         }
 
-        /* Holographic Terminal - Floating over the core */
-        .hologram-terminal {
-          background: rgba(26, 28, 29, 0.9);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+        /* Clock Hands */
+        .clock-hand {
+          position: absolute;
+          bottom: 50%;
+          left: 50%;
+          transform-origin: bottom center;
+          border-radius: 4px;
+          z-index: 10;
+        }
+
+        /* Magnifying Glass */
+        .magnifier {
+          position: absolute;
+          width: 120px;
+          height: 120px;
+          border-radius: 50%;
+          border: 6px solid #888;
+          background: rgba(255,255,255,0.1);
+          backdrop-filter: blur(2px);
           box-shadow: 
-            0 30px 60px -10px rgba(0,0,0,0.6), 
-            0 0 30px rgba(117, 240, 154, 0.3),
-            inset 0 0 20px rgba(255, 255, 255, 0.1);
-          font-family: 'Courier New', Courier, monospace;
-          transform: perspective(1000px) rotateX(10deg) translateY(-10px);
+            inset 0 0 20px rgba(255,255,255,0.5),
+            0 10px 20px rgba(0,0,0,0.3);
+          z-index: 20;
+          animation: scan-magnify 6s ease-in-out infinite alternate;
         }
-        
-        .terminal-cursor {
-          display: inline-block;
-          width: 8px;
-          height: 14px;
-          background-color: #75F09A;
-          animation: blink 1s step-end infinite;
-          vertical-align: middle;
-          margin-left: 4px;
-          box-shadow: 0 0 8px #75F09A;
+        .magnifier-handle {
+          position: absolute;
+          bottom: -40px;
+          right: -20px;
+          width: 16px;
+          height: 60px;
+          background: linear-gradient(to right, #5c3a21, #8b5a2b, #5c3a21);
+          border-radius: 8px;
+          transform: rotate(45deg);
+          z-index: 19;
         }
-        
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
+
+        @keyframes scan-magnify {
+          0% { transform: translate(-10px, 10px) rotate(-10deg); }
+          100% { transform: translate(30px, -10px) rotate(10deg); }
+        }
+
+        /* Waveform Animation */
+        .wave-bar {
+          width: 4px;
+          background-color: #4ade80;
+          border-radius: 2px;
+          animation: wave 1s ease-in-out infinite alternate;
+        }
+        @keyframes wave {
+          0% { height: 10%; }
+          100% { height: 100%; }
         }
       `}</style>
 
@@ -487,7 +519,7 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE HOLOGRAPHIC INTELLIGENCE BOARD */}
+        {/* THE DETECTIVE'S COMMAND CENTER */}
         <section className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center">
           <div className="text-center mb-16 relative z-30">
             <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">Every story has a thread.</h2>
@@ -512,83 +544,104 @@ function WelcomePage() {
                 <path d="M 950 500 Q 800 550 600 450" className="data-stream-pulse" style={{ animationDelay: '1.5s' }} />
               </svg>
 
-              {/* Glass Panels */}
-              
-              {/* Panel 1: Top Left */}
-              <div 
-                className="glass-card animate-float-glass-1 absolute top-[10%] left-[8%] w-64 p-6 z-10"
-                onMouseEnter={() => setAiMessage("> INGESTING MIAMI HERALD...\n> EXTRACTING KEY ENTITIES...\n> DEPLOYMENT DETECTED.")}
-                onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
-              >
-                <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#C22B2B] uppercase tracking-widest border-b border-black/10 pb-2">
-                  <Network className="w-3 h-3" /> Article Source
+              {/* Tool 1: Working Analog Clock */}
+              <div className="tool-card animate-float-1 absolute top-[10%] left-[8%] w-48 h-48 rounded-full z-10 flex items-center justify-center border-4 border-[#D1C7B7] bg-[#FDFBF7]">
+                {/* Clock Face */}
+                <div className="relative w-40 h-40 rounded-full bg-[#FCFAF8] shadow-inner flex items-center justify-center border border-black/10">
+                  {/* Tick Marks */}
+                  <div className="absolute inset-2 rounded-full border border-black/5" />
+                  <div className="absolute top-1 left-1/2 -translate-x-1/2 w-1 h-3 bg-black/40" />
+                  <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-3 bg-black/40" />
+                  <div className="absolute left-1 top-1/2 -translate-y-1/2 w-3 h-1 bg-black/40" />
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2 w-3 h-1 bg-black/40" />
+                  
+                  {/* Hour Hand */}
+                  <div className="clock-hand w-1.5 h-12 bg-black" style={{ transform: `rotate(${hoursDegrees}deg)` }} />
+                  {/* Minute Hand */}
+                  <div className="clock-hand w-1 h-16 bg-black/70" style={{ transform: `rotate(${minutesDegrees}deg)` }} />
+                  {/* Second Hand */}
+                  <div className="clock-hand w-0.5 h-16 bg-red-600" style={{ transform: `rotate(${secondsDegrees}deg)` }} />
+                  {/* Center Pin */}
+                  <div className="absolute w-3 h-3 bg-black rounded-full z-20 border border-white/50" />
                 </div>
-                <p className="text-[16px] font-display leading-tight text-black mb-3">"El Salvador sends special forces to Haiti."</p>
-                <p className="text-[10px] font-mono text-black/50">Miami Herald · 2026</p>
               </div>
 
-              {/* Panel 2: Top Right */}
-              <div 
-                className="glass-card animate-float-glass-2 absolute top-[15%] right-[8%] w-72 p-6 z-10"
-                onMouseEnter={() => setAiMessage("> ANALYZING PENTAGON BRIEFING...\n> DETECTING SEMANTIC OMISSIONS...\n> MOTIVE SUSPECTED.")}
-                onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
-              >
-                <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#5B456B] uppercase tracking-widest border-b border-black/10 pb-2">
-                  <MessageSquare className="w-3 h-3" /> Official Statement
-                </div>
-                <p className="text-sm font-sans italic text-black/80 leading-relaxed mb-3">"We are there to support our allies and maintain regional <span className="bg-black text-black selection:bg-white px-1">stability</span>."</p>
-                <p className="text-[10px] font-mono text-black/50">Pentagon Briefing</p>
-              </div>
-
-              {/* Panel 3: Bottom Left */}
-              <div 
-                className="glass-card animate-float-glass-3 absolute bottom-[10%] left-[12%] w-60 p-5 z-10"
-                onMouseEnter={() => setAiMessage("> GEOGRAPHIC CROSS-REFERENCE...\n> LOCATION: PORT-AU-PRINCE\n> STRATEGIC VALUE: HIGH.")}
-                onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
-              >
-                <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#2D6A65] uppercase tracking-widest border-b border-black/10 pb-2">
-                  <Map className="w-3 h-3" /> Location
-                </div>
-                <div className="w-full h-32 bg-black/5 rounded-lg mb-3 flex items-center justify-center relative overflow-hidden border border-white/50">
-                  <Map className="w-12 h-12 text-black/20" />
-                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-multiply" />
-                </div>
-                <p className="text-[10px] font-mono text-black/50 text-center uppercase tracking-widest">Port-au-Prince</p>
-              </div>
-
-              {/* Panel 4: Bottom Right */}
-              <div 
-                className="glass-card animate-float-glass-4 absolute bottom-[15%] right-[12%] w-64 p-6 z-10 bg-white/60"
-                onMouseEnter={() => setAiMessage("> TESTING HYPOTHESIS...\n> CONFIDENCE SCORE: 89%\n> MOTIVE: ECONOMIC LEVERAGE.")}
-                onMouseLeave={() => setAiMessage("> AWAITING TARGET...\n> CROSS-REFERENCING SOURCES...")}
-              >
-                <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-bold text-[#C22B2B] uppercase tracking-widest border-b border-[#C22B2B]/20 pb-2">
-                  <Sparkles className="w-3 h-3" /> Hypothesis
-                </div>
-                <p className="text-[16px] font-display leading-tight text-black">Is this actually about securing US economic aid?</p>
-              </div>
-
-              {/* Center: The AI Neural Core */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
+              {/* Tool 2: Desk Flip Calendar */}
+              <div className="tool-card animate-float-2 absolute top-[15%] right-[8%] w-56 h-64 z-10 flex flex-col items-center pt-6 bg-[#F9F7F1] border border-black/10 rounded-b-xl">
+                {/* Metal Rings */}
+                <div className="absolute top-2 left-1/4 w-3 h-8 rounded-full border-2 border-gray-400 bg-transparent -translate-y-1/2" />
+                <div className="absolute top-2 right-1/4 w-3 h-8 rounded-full border-2 border-gray-400 bg-transparent -translate-y-1/2" />
                 
-                {/* AI Orb */}
-                <div className="ai-core mb-8">
-                  <div className="ai-ring-outer" />
-                  <div className="ai-ring-inner" />
-                  <div className="ai-sphere">
-                    <div className="ai-glowing-lens" />
+                {/* Calendar Body */}
+                <div className="w-48 h-56 bg-white shadow-md border border-black/5 flex flex-col rounded-sm">
+                  <div className="w-full h-12 bg-[#C22B2B] text-white flex items-center justify-center font-mono text-xl tracking-[0.3em] uppercase">
+                    {currentMonth}
+                  </div>
+                  <div className="flex-1 flex items-center justify-center font-display text-8xl text-[#1A1A1A]">
+                    {currentDate}
+                  </div>
+                </div>
+              </div>
+
+              {/* Tool 3: Redacted Document & Magnifier */}
+              <div className="tool-card animate-float-3 absolute bottom-[10%] left-[12%] w-64 h-64 z-10 p-6 bg-[#F4EFE6] border border-[#D1C7B7] rotate-[-2deg]">
+                {/* Top Secret Stamp */}
+                <div className="absolute top-4 right-4 border-2 border-red-600 text-red-600 text-[10px] font-mono px-2 py-0.5 rotate-12 opacity-60 uppercase">
+                  Top Secret
+                </div>
+                
+                <div className="flex flex-col gap-2 mt-6">
+                  <div className="h-3 w-full bg-black/80 rounded-sm" />
+                  <div className="h-3 w-5/6 bg-black/80 rounded-sm" />
+                  <div className="h-3 w-full bg-black/80 rounded-sm" />
+                  <div className="h-3 w-3/4 bg-black/80 rounded-sm" />
+                  <div className="h-3 w-full bg-black/80 rounded-sm" />
+                  <div className="h-3 w-4/5 bg-black/80 rounded-sm" />
+                </div>
+
+                {/* Magnifying Glass overlay */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="magnifier">
+                    <div className="magnifier-handle" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Tool 4: Voice Recorder */}
+              <div className="tool-card animate-float-4 absolute bottom-[15%] right-[12%] w-64 h-48 z-10 p-4 bg-[#2C2A28] border border-[#444] rounded-xl flex flex-col">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-2 text-[10px] font-mono text-white/50 uppercase tracking-widest">
+                    <Mic className="w-3 h-3" /> Audio Log 04
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_#ff0000]" />
+                    <span className="text-[10px] font-mono text-red-500">REC</span>
                   </div>
                 </div>
 
-                {/* AI Terminal */}
-                <div className="hologram-terminal w-[340px] p-5 rounded-xl text-xs text-[#75F09A] whitespace-pre-wrap leading-relaxed relative">
-                  <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/10 text-white/50 uppercase tracking-widest text-[9px]">
-                    <Terminal className="w-3.5 h-3.5" /> AI Detective Log
+                {/* Tape Spools & Waveform */}
+                <div className="flex items-center gap-4 h-full">
+                  <div className="flex gap-2">
+                    <div className="w-12 h-12 rounded-full border-4 border-dashed border-gray-600 animate-spin" style={{ animationDuration: '4s' }} />
+                    <div className="w-12 h-12 rounded-full border-4 border-dashed border-gray-600 animate-spin" style={{ animationDuration: '4s' }} />
                   </div>
-                  {aiMessage}
-                  <span className="terminal-cursor" />
+                  <div className="flex-1 flex items-end justify-between gap-1 h-12">
+                    {[...Array(12)].map((_, i) => (
+                      <div key={i} className="wave-bar" style={{ animationDelay: `${i * 0.1}s` }} />
+                    ))}
+                  </div>
                 </div>
+              </div>
 
+              {/* Center: The Terminator AI Core */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
+                <div className="terminator-eye">
+                  <div className="eye-outer-metal" />
+                  <div className="eye-inner-ring" />
+                  <div className="eye-red-core">
+                    <div className="eye-lens" />
+                  </div>
+                </div>
               </div>
 
             </div>
