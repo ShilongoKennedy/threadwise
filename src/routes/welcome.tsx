@@ -6,7 +6,7 @@ import {
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate
 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/welcome")({
   component: WelcomePage,
@@ -60,71 +60,96 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* Living Investigation Board */
+        /* REALISTIC INVESTIGATION BOARD */
         .board-container {
-          background-color: #EFECE3;
+          background-color: #E6DFD3; /* Corkboard/Manila color */
           background-image: 
-            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6) 0%, transparent 70%),
-            linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
-          background-size: 100% 100%, 40px 40px, 40px 40px;
-          box-shadow: inset 0 0 80px rgba(0,0,0,0.05);
-          border: 1px solid rgba(0,0,0,0.05);
+            url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E"),
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 70%);
+          box-shadow: 
+            inset 0 0 60px rgba(0,0,0,0.1),
+            inset 0 0 20px rgba(0,0,0,0.05),
+            0 30px 60px -15px rgba(0,0,0,0.2);
+          border: 12px solid #D1C7B7; /* Wooden/Frame border */
+          border-radius: 4px;
         }
         
-        /* Continuous Flowing Strings */
+        /* Continuous Flowing Strings with physical shadow */
         @keyframes flow-string {
           to { stroke-dashoffset: -24; }
         }
         .red-string {
-          stroke-dasharray: 6 6;
-          animation: flow-string 1.5s linear infinite;
+          stroke-dasharray: 8 6;
+          animation: flow-string 2s linear infinite;
+          filter: drop-shadow(0px 4px 2px rgba(0,0,0,0.3));
         }
 
-        /* Floating Cards */
+        /* Floating Paper Cards */
         @keyframes float-card-1 {
-          0%, 100% { transform: translateY(0) rotate(-3deg); }
-          50% { transform: translateY(-8px) rotate(-2deg); }
+          0%, 100% { transform: translateY(0) rotate(-4deg); }
+          50% { transform: translateY(-8px) rotate(-3deg); }
         }
         @keyframes float-card-2 {
-          0%, 100% { transform: translateY(0) rotate(2deg); }
-          50% { transform: translateY(-12px) rotate(3deg); }
+          0%, 100% { transform: translateY(0) rotate(3deg); }
+          50% { transform: translateY(-12px) rotate(4deg); }
         }
         @keyframes float-card-3 {
-          0%, 100% { transform: translateY(0) rotate(1deg); }
-          50% { transform: translateY(-6px) rotate(0deg); }
+          0%, 100% { transform: translateY(0) rotate(2deg); }
+          50% { transform: translateY(-6px) rotate(1deg); }
         }
         @keyframes float-card-4 {
-          0%, 100% { transform: translateY(0) rotate(-2deg); }
-          50% { transform: translateY(-10px) rotate(-1deg); }
+          0%, 100% { transform: translateY(0) rotate(-3deg); }
+          50% { transform: translateY(-10px) rotate(-2deg); }
         }
 
-        .card-float-1 { animation: float-card-1 6s ease-in-out infinite; }
-        .card-float-2 { animation: float-card-2 7s ease-in-out infinite; }
-        .card-float-3 { animation: float-card-3 5s ease-in-out infinite; }
-        .card-float-4 { animation: float-card-4 8s ease-in-out infinite; }
+        .card-float-1 { animation: float-card-1 7s ease-in-out infinite; }
+        .card-float-2 { animation: float-card-2 8s ease-in-out infinite; }
+        .card-float-3 { animation: float-card-3 6s ease-in-out infinite; }
+        .card-float-4 { animation: float-card-4 9s ease-in-out infinite; }
 
-        .evidence-card {
+        .paper-card {
+          background-color: #FCFAF8;
+          box-shadow: 
+            0 15px 30px -5px rgba(0,0,0,0.15),
+            0 5px 10px -2px rgba(0,0,0,0.1),
+            inset 0 0 20px rgba(255,255,255,0.5);
+          border: 1px solid rgba(0,0,0,0.05);
           transition: all 0.3s ease;
         }
-        .evidence-card:hover {
+        
+        .paper-card:hover {
           animation-play-state: paused;
           transform: scale(1.05) rotate(0deg) !important;
-          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+          box-shadow: 0 25px 50px -10px rgba(0,0,0,0.2);
           z-index: 50 !important;
         }
 
+        /* 3D Realistic Pin */
         .pin {
-          width: 14px;
-          height: 14px;
+          width: 16px;
+          height: 16px;
           border-radius: 50%;
-          background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
-          box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset -2px -2px 4px rgba(0,0,0,0.2);
+          background: radial-gradient(circle at 30% 30%, #ff4b4b, #990000);
+          box-shadow: 
+            inset -2px -2px 6px rgba(0,0,0,0.5),
+            inset 2px 2px 4px rgba(255,255,255,0.6),
+            0 6px 8px rgba(0,0,0,0.4);
           position: absolute;
-          top: -7px;
+          top: -8px;
           left: 50%;
           transform: translateX(-50%);
           z-index: 10;
+        }
+        
+        /* Center Dossier Card */
+        .dossier-card {
+          background-color: #1A1817;
+          background-image: linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.02) 75%, transparent 75%, transparent);
+          background-size: 20px 20px;
+          box-shadow: 
+            0 30px 60px -10px rgba(0,0,0,0.4),
+            0 0 40px rgba(194, 74, 53, 0.2);
+          border: 1px solid rgba(255,255,255,0.1);
         }
       `}</style>
 
@@ -364,31 +389,31 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE LIVING INVESTIGATION BOARD (Option 5 Refined) */}
+        {/* THE LIVING INVESTIGATION BOARD (Improved) */}
         <section className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center">
           <div className="text-center mb-16 relative z-30">
             <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">Every story has a thread.</h2>
             <p className="text-[#1A1A1A]/50 text-lg">Connect the evidence. Find the hidden motive.</p>
           </div>
 
-          <div className="board-container relative w-full rounded-3xl overflow-hidden h-[600px] flex items-center justify-center p-8 shadow-2xl">
+          <div className="board-container relative w-full rounded-xl overflow-hidden h-[600px] flex items-center justify-center p-8">
             
             {/* The Animated Red Strings (SVG) */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
               {/* Center to Top Left */}
-              <path d="M 600 300 Q 400 150 250 200" fill="none" stroke="#C24A35" strokeWidth="2" className="red-string" />
+              <path d="M 600 300 Q 400 150 250 200" fill="none" stroke="#A82E20" strokeWidth="3" className="red-string" />
               {/* Center to Top Right */}
-              <path d="M 600 300 Q 800 150 950 200" fill="none" stroke="#C24A35" strokeWidth="2" className="red-string" />
+              <path d="M 600 300 Q 800 150 950 200" fill="none" stroke="#A82E20" strokeWidth="3" className="red-string" />
               {/* Center to Bottom Left */}
-              <path d="M 600 300 Q 400 450 250 400" fill="none" stroke="#C24A35" strokeWidth="2" className="red-string" />
+              <path d="M 600 300 Q 400 450 250 400" fill="none" stroke="#A82E20" strokeWidth="3" className="red-string" />
               {/* Center to Bottom Right */}
-              <path d="M 600 300 Q 800 450 950 400" fill="none" stroke="#C24A35" strokeWidth="2" className="red-string" />
+              <path d="M 600 300 Q 800 450 950 400" fill="none" stroke="#A82E20" strokeWidth="3" className="red-string" />
             </svg>
 
             {/* Evidence Cards - Floating Continuously */}
             
             {/* Card 1: Top Left (URL) */}
-            <div className="evidence-card card-float-1 absolute top-[15%] left-[10%] w-56 bg-white p-4 rounded-sm shadow-xl z-10">
+            <div className="paper-card card-float-1 absolute top-[15%] left-[10%] w-56 p-4 rounded-sm z-10">
               <div className="pin" />
               <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-black/50 uppercase tracking-widest border-b border-black/10 pb-2">
                 <Network className="w-3 h-3" /> Article Source
@@ -398,7 +423,7 @@ function WelcomePage() {
             </div>
 
             {/* Card 2: Top Right (Quote) */}
-            <div className="evidence-card card-float-2 absolute top-[20%] right-[10%] w-60 bg-white p-4 rounded-sm shadow-xl z-10">
+            <div className="paper-card card-float-2 absolute top-[20%] right-[10%] w-60 p-4 rounded-sm z-10">
               <div className="pin" />
               <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-[#D96C39] uppercase tracking-widest border-b border-black/10 pb-2">
                 <MessageSquare className="w-3 h-3" /> Official Statement
@@ -408,7 +433,7 @@ function WelcomePage() {
             </div>
 
             {/* Card 3: Bottom Left (Map/Image) */}
-            <div className="evidence-card card-float-3 absolute bottom-[15%] left-[15%] w-52 bg-white p-3 rounded-sm shadow-xl z-10">
+            <div className="paper-card card-float-3 absolute bottom-[15%] left-[15%] w-52 p-3 rounded-sm z-10">
               <div className="pin" />
               <div className="w-full h-24 bg-[#E5E5E5] rounded mb-2 flex items-center justify-center relative overflow-hidden">
                 <Map className="w-8 h-8 text-black/20" />
@@ -418,7 +443,7 @@ function WelcomePage() {
             </div>
 
             {/* Card 4: Bottom Right (Question) */}
-            <div className="evidence-card card-float-4 absolute bottom-[20%] right-[15%] w-56 bg-[#FBD0D4] p-4 rounded-sm shadow-xl z-10">
+            <div className="paper-card card-float-4 absolute bottom-[20%] right-[15%] w-56 p-4 rounded-sm z-10 bg-[#FBD0D4]">
               <div className="pin" />
               <div className="flex items-center gap-2 mb-2 text-[10px] font-mono font-bold text-black/60 uppercase tracking-widest border-b border-black/10 pb-2">
                 <Sparkles className="w-3 h-3" /> Hypothesis
@@ -427,12 +452,18 @@ function WelcomePage() {
             </div>
 
             {/* Center Card: The Big Conclusion */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 bg-[#1A1A1A] text-white p-6 rounded-lg shadow-2xl z-20 border border-white/20">
+            <div className="dossier-card absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 p-6 rounded-sm z-20">
               <div className="pin bg-gradient-to-br from-yellow-400 to-orange-500" />
+              
+              {/* Redacted Stamp */}
+              <div className="absolute top-4 right-4 border border-[#C24A35] text-[#C24A35] text-[8px] font-mono px-2 py-0.5 rotate-12 opacity-50 uppercase tracking-widest">
+                Classified
+              </div>
+
               <div className="flex items-center gap-2 mb-3 text-[10px] font-mono uppercase tracking-widest text-[#D96C39]">
                 <Target className="w-4 h-4" /> The Bigger Picture
               </div>
-              <h3 className="font-display text-2xl leading-tight mb-2">Strategic Bargaining Chip</h3>
+              <h3 className="font-display text-2xl leading-tight mb-2 text-white">Strategic Bargaining Chip</h3>
               <p className="text-sm font-sans text-white/60 leading-relaxed">
                 The disproportionate military response reveals a deeper motive: El Salvador is leveraging the deployment to secure diplomatic favor and financial backing from the United States.
               </p>
