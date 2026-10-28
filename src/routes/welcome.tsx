@@ -4,9 +4,10 @@ import {
   Activity, Cpu, Network, Layers, Target, 
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
-  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate
+  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
+  ShieldCheck
 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/welcome")({
   component: WelcomePage,
@@ -25,24 +26,9 @@ function useMousePosition() {
   return mousePosition;
 }
 
-function useScrollReveal() {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
-      { threshold: 0.1 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => { if (ref.current) observer.unobserve(ref.current); };
-  }, []);
-  return { ref, isVisible };
-}
-
 // --- MAIN COMPONENT ---
 function WelcomePage() {
   const mouse = useMousePosition();
-  const timelineReveal = useScrollReveal();
 
   // 3D Tilt for the MacBook
   const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 6;
@@ -52,10 +38,55 @@ function WelcomePage() {
   const laptopYellow = "#FDF0B6"; 
   const laptopYellowDark = "#E3D398";
 
+  const studioTools = [
+    {
+      title: "Discourse Lab",
+      desc: "Cross-reference multiple news sources to map the bigger picture.",
+      icon: BookOpen,
+      color: "#CBE6F9", // Blue
+      borderColor: "#93C5FD"
+    },
+    {
+      title: "Evidence Clipper",
+      desc: "Extract verbatim quotes and cited takeaways from any URL.",
+      icon: FileText,
+      color: "#FBD0D4", // Pink
+      borderColor: "#F9A8D4"
+    },
+    {
+      title: "Socratic Inquiry",
+      desc: "Challenge assumptions and surface hidden tensions on your canvas.",
+      icon: Sparkles,
+      color: "#E8DAFB", // Purple
+      borderColor: "#D8B4FE"
+    },
+    {
+      title: "Risk Simulation",
+      desc: "Run scenario stress-tests and calculate executive radar scores.",
+      icon: TrendingUp,
+      color: "#FDF0B6", // Yellow
+      borderColor: "#FDE047"
+    },
+    {
+      title: "Executive Dossier",
+      desc: "Generate a structured intelligence report from your findings.",
+      icon: FileCheck,
+      color: "#C9E8C7", // Green
+      borderColor: "#86EFAC"
+    },
+    {
+      title: "Live Room",
+      desc: "Collaborate in real-time with audio, cursors, and shared canvases.",
+      icon: Users,
+      color: "#FED7AA", // Orange
+      borderColor: "#FDBA74"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
-      {/* CSS for Interactions, Glasses, and Timeline */}
+      {/* CSS for Interactions, Glasses, and Studio Grid */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -75,22 +106,37 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* Timeline Section Animations */
-        .string-path {
-          stroke-dasharray: 1000;
-          stroke-dashoffset: 1000;
-          transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Studio Grid */
+        .studio-card {
+          transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+          overflow: hidden;
         }
-        .string-path.draw {
-          stroke-dashoffset: 0;
+        .studio-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
         }
-        
-        .messy-item {
-          transition: transform 0.3s ease;
+        .studio-card .card-bg {
+          transition: all 0.4s ease;
+          transform: scale(1);
+          opacity: 0.1;
         }
-        .messy-item:hover {
-          transform: scale(1.05) rotate(0deg) !important;
-          z-index: 50 !important;
+        .studio-card:hover .card-bg {
+          transform: scale(1.5);
+          opacity: 0.3;
+        }
+        .studio-card .card-content {
+          transition: transform 0.4s ease;
+          transform: translateY(40px);
+        }
+        .studio-card:hover .card-content {
+          transform: translateY(0);
+        }
+        .studio-card .card-desc {
+          transition: opacity 0.4s ease;
+          opacity: 0;
+        }
+        .studio-card:hover .card-desc {
+          opacity: 1;
         }
       `}</style>
 
@@ -330,102 +376,49 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE EVIDENCE TIMELINE SECTION (Option 2) */}
-        <section 
-          ref={timelineReveal.ref}
-          className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center overflow-hidden py-20 border-y border-black/5 bg-white/30 rounded-3xl"
-        >
-          <div className="text-center mb-20 relative z-30">
-            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">From fragments to truth.</h2>
-            <p className="text-[#1A1A1A]/50 text-lg">Connect the dots. Uncover the bigger picture.</p>
+        {/* THE CANVAS STUDIO REVEAL (Option 3) */}
+        <section className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center">
+          
+          <div className="text-center mb-16 relative z-30">
+            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">The Canvas Studio.</h2>
+            <p className="text-[#1A1A1A]/50 text-lg">Ten tools to map the bigger picture. Hover to explore.</p>
           </div>
 
-          <div className="relative w-full max-w-[1000px] h-[500px] flex justify-between items-center px-10">
-            
-            {/* Left Side: Chaotic Data */}
-            <div className="relative w-[40%] h-full flex flex-col justify-between py-10">
-              <div className={`messy-item absolute top-[10%] left-0 w-48 bg-white p-3 shadow-xl border border-black/10 rounded-sm transform -rotate-6 ${timelineReveal.isVisible ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0.2s' }}>
-                <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-black/50 uppercase tracking-widest"><FileText className="w-3 h-3" /> Transcript.pdf</div>
-                <div className="h-1 w-full bg-black/10 mb-1" />
-                <div className="h-1 w-3/4 bg-black/10" />
-              </div>
-              
-              <div className={`messy-item absolute top-[40%] left-10 w-56 bg-white p-3 shadow-xl border border-black/10 rounded-sm transform rotate-3 z-10 ${timelineReveal.isVisible ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0.4s' }}>
-                <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-[#D96C39] uppercase tracking-widest"><Network className="w-3 h-3" /> miamiherald.com</div>
-                <div className="h-1 w-full bg-black/10 mb-1" />
-                <div className="h-1 w-5/6 bg-black/10" />
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+            {studioTools.map((tool, index) => (
+              <div 
+                key={index}
+                className="studio-card group relative bg-white border border-black/10 rounded-2xl p-8 cursor-pointer shadow-lg shadow-black/5 flex flex-col justify-between min-h-[220px]"
+              >
+                {/* Colored Background Splash */}
+                <div 
+                  className="card-bg absolute inset-0 rounded-2xl pointer-events-none" 
+                  style={{ backgroundColor: tool.color }}
+                />
 
-              <div className={`messy-item absolute bottom-[10%] left-4 w-44 bg-white p-3 shadow-xl border border-black/10 rounded-sm transform -rotate-2 ${timelineReveal.isVisible ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0.6s' }}>
-                <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-black/50 uppercase tracking-widest"><MessageSquare className="w-3 h-3" /> Tweet screenshot</div>
-                <div className="h-1 w-full bg-black/10 mb-1" />
-                <div className="h-1 w-1/2 bg-black/10" />
-              </div>
-            </div>
-
-            {/* The Strings (SVG) */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" preserveAspectRatio="none">
-              {/* String 1 */}
-              <path 
-                d="M 250 150 Q 450 250 700 150" 
-                fill="none" stroke="#C24A35" strokeWidth="2" 
-                className={`string-path ${timelineReveal.isVisible ? 'draw' : ''}`} 
-                style={{ transitionDelay: '0.8s' }}
-              />
-              {/* String 2 */}
-              <path 
-                d="M 350 250 Q 550 350 750 250" 
-                fill="none" stroke="#C24A35" strokeWidth="2" 
-                className={`string-path ${timelineReveal.isVisible ? 'draw' : ''}`} 
-                style={{ transitionDelay: '1.2s' }}
-              />
-              {/* String 3 */}
-              <path 
-                d="M 250 400 Q 450 400 700 350" 
-                fill="none" stroke="#C24A35" strokeWidth="2" 
-                className={`string-path ${timelineReveal.isVisible ? 'draw' : ''}`} 
-                style={{ transitionDelay: '1.6s' }}
-              />
-              
-              {/* Connections on the right side */}
-              <path 
-                d="M 700 150 Q 750 250 750 250" 
-                fill="none" stroke="#A6917A" strokeWidth="2" strokeDasharray="4 4"
-                className={`string-path ${timelineReveal.isVisible ? 'draw' : ''}`} 
-                style={{ transitionDelay: '2.2s' }}
-              />
-            </svg>
-
-            {/* Right Side: The Canvas Graph */}
-            <div className="relative w-[50%] h-full flex flex-col justify-center items-end gap-12 z-20">
-              
-              {/* Node 1: Question */}
-              <div className={`w-64 bg-[#FBD0D4] border border-black/10 shadow-2xl rounded-xl p-4 transform transition-all duration-700 ${timelineReveal.isVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`} style={{ transitionDelay: '1s' }}>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] font-mono font-bold text-black/60 uppercase tracking-widest flex items-center gap-1.5"><Sparkles className="w-3 h-3" /> Question</span>
+                <div className="relative z-10">
+                  <div 
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 shadow-sm border border-black/5 bg-white group-hover:scale-110 transition-transform duration-300"
+                  >
+                    <tool.icon className="w-6 h-6 text-[#1A1A1A]" />
+                  </div>
+                  
+                  <div className="card-content">
+                    <h3 className="font-display text-2xl text-[#1A1A1A]">{tool.title}</h3>
+                    <p className="card-desc text-sm text-[#1A1A1A]/70 mt-2 leading-relaxed">
+                      {tool.desc}
+                    </p>
+                  </div>
                 </div>
-                <h4 className="font-display text-lg leading-tight text-black">What is the real motive?</h4>
-              </div>
 
-              {/* Node 2: Evidence */}
-              <div className={`w-72 bg-[#CBE6F9] border border-black/10 shadow-2xl rounded-xl p-4 transform transition-all duration-700 ${timelineReveal.isVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`} style={{ transitionDelay: '1.4s' }}>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] font-mono font-bold text-[#2D6A65] uppercase tracking-widest flex items-center gap-1.5"><FileText className="w-3 h-3" /> Evidence</span>
-                  <span className="text-[9px] font-mono text-black/40 bg-white/50 px-2 py-0.5 rounded">Miami Herald</span>
+                <div className="relative z-10 mt-6 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#1A1A1A]/50">Available in App</span>
+                  <ArrowUpRight className="w-4 h-4 text-[#1A1A1A]/50" />
                 </div>
-                <h4 className="font-display text-lg leading-tight text-black">Troops deployed to secure US favor</h4>
               </div>
-
-              {/* Node 3: Hypothesis */}
-              <div className={`w-64 bg-[#E8DAFB] border border-black/10 shadow-2xl rounded-xl p-4 transform transition-all duration-700 ${timelineReveal.isVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`} style={{ transitionDelay: '1.8s' }}>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] font-mono font-bold text-[#8B5CF6] uppercase tracking-widest flex items-center gap-1.5"><Lightbulb className="w-3 h-3" /> Hypothesis</span>
-                </div>
-                <h4 className="font-display text-lg leading-tight text-black">Economic aid bargaining chip</h4>
-              </div>
-
-            </div>
+            ))}
           </div>
+
         </section>
 
       </main>
