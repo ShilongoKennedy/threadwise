@@ -33,11 +33,15 @@ function AuthCallback() {
       }
 
       window.history.replaceState({}, document.title, "/auth/callback");
-      if (active) await navigate({ to: "/", replace: true });
+      
+      // FIXED: Navigate to /app instead of /
+      if (active) await navigate({ to: "/app", replace: true });
     };
+    
     void finish().catch((error: unknown) => {
       if (active) setProblem(error instanceof Error ? error.message : "Google sign-in could not be completed.");
     });
+    
     return () => { active = false; };
   }, [navigate]);
 
@@ -46,7 +50,8 @@ function AuthCallback() {
       <p className="font-mono text-xs uppercase tracking-[0.22em] text-accent-ink">Threadwise account</p>
       <h1 className="mt-3 font-display text-4xl">{problem ? "Sign-in needs attention" : "Opening your desk…"}</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{problem || "Finishing your secure Google sign-in."}</p>
-      {problem && <a href="/" className="mt-6 inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">Return to canvas</a>}
+      {/* FIXED: Send them back to login on error, not home */}
+      {problem && <a href="/login" className="mt-6 inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">Return to login</a>}
     </section>
   </main>;
 }
