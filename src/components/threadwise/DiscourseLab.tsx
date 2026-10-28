@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, Trash2, X, Globe, Loader2, Search, Check, Sparkles, FileText, AlertTriangle, Activity, ShieldAlert, Cpu } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, Trash2, X, Globe, Loader2, Search, Check, Sparkles, FileText, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,7 +7,7 @@ import { useThread } from "@/lib/threadwise/store";
 import { streamTask } from "@/lib/threadwise/ai-client";
 import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type CodeId, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
 import { toast } from "sonner";
-import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip } from "recharts";
+import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from "recharts";
 
 type View = "read" | "compare" | "count" | "investigate";
 const uid = () => crypto.randomUUID();
@@ -23,16 +23,11 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const [term, setTerm] = useState("");
   const [selection, setSelection] = useState<{ quote: string; doc: DiscourseDoc } | null>(null);
   
-  // Persistent state from corpus
   const savedInv = (corpus as any).investigation || {};
-  
-  // Cross-Source state
   const [urls, setUrls] = useState<string[]>(savedInv.urls?.length ? savedInv.urls : [""]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState("");
   const [analysis, setAnalysis] = useState<any>(savedInv.analysis || null);
-  
-  // Feedback state for planting
   const [plantedIds, setPlantedIds] = useState<Record<string, boolean>>({});
 
   const docs = [...corpus.docs].sort((a, b) => a.date.localeCompare(b.date));
@@ -55,9 +50,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       epistemic: kind === "evidence" ? "evidence" : kind === "hypothesis" ? "hypothesis" : "unknown",
       meta: { ...data.meta, source: source || "Cross-Source Investigation" }
     }));
-    
     setPlantedIds(prev => ({ ...prev, [id]: true }));
-    toast.success("Planted on canvas", { description: "Switch to the canvas to view." });
+    toast.success("Planted on canvas");
   };
 
   const runInvestigation = async () => {
@@ -68,28 +62,16 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     setPlantedIds({});
 
     try {
-      const output = await streamTask({
-        mode: "cross-source",
-        urls: validUrls,
-      }, () => {});
-      
+      const output = await streamTask({ mode: "cross-source", urls: validUrls }, () => {});
       const res = JSON.parse(output);
-      if (res.error) {
-        setAnalysisError(res.error);
-      } else {
-        const enhancedAnalysis = {
-          ...res.analysis,
-          quantData: res.analysis.quantData || {
-            entities: res.analysis.entities?.map((e: string, i: number) => ({ name: e, weight: 80 - (i * 5) })) || [],
-            contradictionIndex: Math.floor(Math.random() * 40) + 40 
-          }
-        };
+      if (res.error) setAnalysisError(res.error);
+      else {
+        const enhancedAnalysis = { ...res.analysis, quantData: res.analysis.quantData || { contradictionIndex: 50 } };
         setAnalysis(enhancedAnalysis);
-        // PERSIST TO CORPUS
         update({ ...corpus, investigation: { urls: validUrls, analysis: enhancedAnalysis } } as any);
       }
     } catch (e: any) {
-      setAnalysisError(e.message || "The investigation failed. Check the links and try again.");
+      setAnalysisError(e.message || "The investigation failed.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -102,358 +84,389 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     { subject: "Motive", A: analysis.quantData.radar.motive, fullMark: 100 },
     { subject: "Evidence", A: analysis.quantData.radar.evidence, fullMark: 100 },
   ] : [
-    { subject: "Bias", A: 85, fullMark: 100 },
-    { subject: "Omission", A: 60, fullMark: 100 },
-    { subject: "Urgency", A: 90, fullMark: 100 },
-    { subject: "Motive", A: 75, fullMark: 100 },
-    { subject: "Evidence", A: 40, fullMark: 100 },
+    { subject: "Bias", A: 0, fullMark: 100 },
+    { subject: "Omission", A: 0, fullMark: 100 },
+    { subject: "Urgency", A: 0, fullMark: 100 },
+    { subject: "Motive", A: 0, fullMark: 100 },
+    { subject: "Evidence", A: 0, fullMark: 100 },
   ];
 
-  return <div className="tw-lab" role="dialog" aria-modal="true" aria-label="Discourse lab">
-    <header className="tw-lab-head bg-[#FDFBF7]/90 backdrop-blur-md border-b border-black/5">
-      <div>
-        <span className="tw-kicker text-[#C24A35] flex items-center gap-2"><Cpu className="w-3 h-3"/> Intelligence OS</span>
-        <h2 className="font-display text-3xl text-[#1A1A1A]">Discourse Lab</h2>
+  const compared = compareIds.map((id) => docs.find((doc) => doc.id === id)).filter(Boolean) as DiscourseDoc[];
+  const terms = corpus.terms;
+  const termCounts = useMemo(() => docs.map((doc) => ({ doc, values: terms.map((phrase) => ({ phrase, n: countPhrase(doc.text, phrase), rate: words(doc.text).length ? Math.round(countPhrase(doc.text, phrase) / words(doc.text).length * 10000) / 10 : 0 })) })), [docs, terms]);
+
+  return (
+    <div className="tw-lab fixed inset-0 z-50 flex flex-col bg-[#FDFBF7] font-sans" role="dialog" aria-modal="true">
+      
+      {/* AMBIENT BACKGROUND */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[20%] left-[10%] w-[40vw] h-[40vw] rounded-full bg-[#FDF0B6] opacity-20 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[10%] w-[50vw] h-[50vw] rounded-full bg-[#CBE6F9] opacity-30 blur-[150px]" />
+        <div className="absolute top-0 left-0 right-0 h-[400px] bg-gradient-to-b from-white/60 to-transparent pointer-events-none" />
       </div>
-      <nav className="bg-black/5 p-1 rounded-xl">
-        {([ ["investigate", "Analysis", Globe], ["read", "Read & code", BookOpenText], ["compare", "Compare", Columns2], ["count", "Metrics", Hash] ] as const).map(([id, label, Icon]) => 
-          <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`rounded-lg transition-all ${view === id ? "bg-white shadow-sm text-[#1A1A1A]" : "text-muted-foreground hover:text-[#1A1A1A]"}`}>
-            <Icon className="mr-2 h-4 w-4" />{label}
-          </Button>
-        )}
-      </nav>
-      <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close discourse lab" className="rounded-full hover:bg-black/5"><X /></Button>
-    </header>
 
-    <div className="tw-lab-body bg-[#FDFBF7] flex">
-      {/* LEFT SIDEBAR - COLLECTION */}
-      <aside className="w-72 shrink-0 bg-white/40 border-r border-black/5 flex flex-col h-full overflow-hidden">
-        <div className="p-4 border-b border-black/5">
-          <div className="flex items-center justify-between mb-4">
-            <span className="tw-kicker">Corpus · {docs.length}</span>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setDraft({ title: "", speaker: "", date: "", occasion: "", audience: "", text: "" })}><Plus className="h-3 w-3" /></Button>
-          </div>
-          <div className="space-y-2">
-            <Input placeholder="Document title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="bg-white border-black/10 h-8 text-xs"/>
-            <Textarea rows={3} placeholder="Paste raw text to index..." value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} className="bg-white border-black/10 text-xs resize-none"/>
-            <Button size="sm" className="w-full bg-[#1A1A1A] text-white h-8 text-xs" disabled={!draft.title.trim() || !draft.text.trim()} onClick={() => {
-              if (!draft.title.trim() || !draft.text.trim()) return; 
-              const doc = { id: uid(), ...draft, title: draft.title.trim(), text: draft.text.trim() }; 
-              save({ docs: [...corpus.docs, doc] }); 
-              setActiveId(doc.id); 
-              setDraft({ title: "", speaker: "", date: "", occasion: "", audience: "", text: "" }); 
-            }}>
-              <Plus className="mr-1 h-3 w-3" /> Index Document
-            </Button>
-          </div>
+      <header className="relative z-10 flex items-center justify-between border-b border-black/10 bg-white/60 px-6 py-4 backdrop-blur-xl">
+        <div>
+          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[#C24A35]">
+            <Cpu className="h-3 w-3" /> Intelligence OS
+          </span>
+          <h2 className="font-display text-3xl text-[#1A1A1A]">Discourse Lab</h2>
         </div>
-        <ol className="flex-1 overflow-y-auto p-2 space-y-1">
-          {docs.map((doc) => 
-            <li key={doc.id} className={`group rounded-lg transition-colors ${doc.id === active?.id ? "bg-[#CBE6F9]/40 border border-[#CBE6F9]" : "hover:bg-black/5 border border-transparent"}`}>
-              <button className="w-full text-left p-3" onClick={() => { setActiveId(doc.id); setView("read"); }}>
-                <small className="font-mono text-[10px] text-muted-foreground block mb-1">{doc.date || "undated"}</small>
-                <b className="font-display text-sm block truncate">{doc.title}</b>
-              </button>
-            </li>
-          )}
-        </ol>
-      </aside>
+        <nav className="flex gap-1 rounded-xl bg-black/5 p-1">
+          {([ ["investigate", "Analysis", Globe], ["read", "Read & code", BookOpenText], ["compare", "Compare", Columns2], ["count", "Metrics", Hash] ] as const).map(([id, label, Icon]) => (
+            <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`rounded-lg transition-all ${view === id ? "bg-white text-[#1A1A1A] shadow-sm" : "text-muted-foreground hover:text-[#1A1A1A]"}`}>
+              <Icon className="mr-2 h-4 w-4" />{label}
+            </Button>
+          ))}
+        </nav>
+        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-black/5"><X /></Button>
+      </header>
 
-      {/* MAIN DASHBOARD AREA */}
-      <main className="flex-1 overflow-y-auto bg-[#FDFBF7]">
-        
-        {view === "investigate" && (
-          <div className="p-8 max-w-6xl mx-auto h-full">
-            
-            {/* HEADER & INPUT */}
-            <div className="mb-8 flex justify-between items-end">
-              <div>
-                <h3 className="font-display text-4xl mb-2 text-[#1A1A1A]">Intelligence Dossier</h3>
-                <p className="text-muted-foreground text-sm max-w-xl">Cross-reference global sources, extract quantitative sentiment signals, and map strategic blind spots.</p>
+      <div className="relative z-10 flex flex-1 overflow-hidden">
+        {/* LEFT SIDEBAR */}
+        <aside className="flex w-72 shrink-0 flex-col border-r border-black/5 bg-white/40 backdrop-blur-md">
+          <div className="border-b border-black/5 p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50">Corpus · {docs.length}</span>
+            </div>
+            <div className="space-y-2">
+              <Input placeholder="Document title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="h-8 border-black/10 bg-white text-xs" />
+              <Textarea rows={3} placeholder="Paste raw text to index..." value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} className="resize-none border-black/10 bg-white text-xs" />
+              <Button size="sm" className="h-8 w-full bg-[#1A1A1A] text-xs text-white" disabled={!draft.title.trim() || !draft.text.trim()} onClick={() => {
+                if (!draft.title.trim() || !draft.text.trim()) return; 
+                const doc = { id: uid(), ...draft, title: draft.title.trim(), text: draft.text.trim() }; 
+                save({ docs: [...corpus.docs, doc] }); setActiveId(doc.id); 
+                setDraft({ title: "", speaker: "", date: "", occasion: "", audience: "", text: "" }); 
+              }}>
+                <Plus className="mr-1 h-3 w-3" /> Index Document
+              </Button>
+            </div>
+          </div>
+          <ol className="flex-1 space-y-1 overflow-y-auto p-2">
+            {docs.map((doc) => (
+              <li key={doc.id} className={`group rounded-lg transition-colors ${doc.id === active?.id ? "border border-[#CBE6F9] bg-[#CBE6F9]/40" : "border border-transparent hover:bg-black/5"}`}>
+                <button className="w-full p-3 text-left" onClick={() => { setActiveId(doc.id); setView("read"); }}>
+                  <small className="mb-1 block font-mono text-[10px] text-muted-foreground">{doc.date || "undated"}</small>
+                  <b className="block truncate font-display text-sm">{doc.title}</b>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </aside>
+
+        {/* MAIN CONTENT AREA */}
+        <main className="flex-1 overflow-y-auto">
+          
+          {/* INVESTIGATE VIEW */}
+          {view === "investigate" && (
+            <div className="mx-auto max-w-6xl p-8 pb-24">
+              
+              <div className="mb-8 flex items-end justify-between">
+                <div>
+                  <h3 className="mb-2 font-display text-4xl text-[#1A1A1A]">Intelligence Dossier</h3>
+                  <p className="max-w-xl text-sm text-[#1A1A1A]/60">Cross-reference global sources, extract quantitative sentiment signals, and map strategic blind spots.</p>
+                </div>
+                {analysis && (
+                  <Button variant="outline" className="border-black/10" onClick={() => { setAnalysis(null); update({ ...corpus, investigation: undefined } as any); }}>
+                    Clear Analysis
+                  </Button>
+                )}
               </div>
-              {analysis && (
-                <Button variant="outline" onClick={() => { setAnalysis(null); update({ ...corpus, investigation: undefined } as any); }}>
-                  Clear Analysis
+
+              {/* URL INPUT COMMAND BAR */}
+              <div className="mb-10 flex items-center gap-2 rounded-2xl border border-black/5 bg-white p-2 shadow-sm">
+                <div className="flex flex-1 gap-2">
+                  {urls.map((url, i) => (
+                    <div key={i} className="relative flex-1">
+                      <Globe className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input 
+                        value={url} placeholder="https://foreignaffairs.com/..." 
+                        className="border-transparent bg-[#FDFBF7] pl-9 focus-visible:border-[#C24A35] focus-visible:ring-[#C24A35]"
+                        onChange={(e) => { const newUrls = [...urls]; newUrls[i] = e.target.value; setUrls(newUrls); }} 
+                      />
+                      {urls.length > 1 && (
+                        <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2" onClick={() => setUrls(urls.filter((_, idx) => idx !== i))}>
+                          <X className="h-3 w-3 text-muted-foreground" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <Button variant="outline" size="icon" onClick={() => setUrls([...urls, ""])} className="shrink-0 border-black/10">
+                  <Plus className="h-4 w-4" />
                 </Button>
+                <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="shrink-0 bg-[#1A1A1A] px-6 text-white hover:bg-[#333]">
+                  {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...</> : <><Sparkles className="mr-2 h-4 w-4" /> Run Investigation</>}
+                </Button>
+              </div>
+
+              {analysisError && <p className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">{analysisError}</p>}
+
+              {isAnalyzing && (
+                <div className="py-20 text-center">
+                  <div className="relative mb-6 inline-block">
+                    <div className="h-20 w-20 animate-spin rounded-full border-4 border-[#CBE6F9] border-t-[#C24A35]"></div>
+                    <Activity className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-[#C24A35]" />
+                  </div>
+                  <h4 className="mb-2 font-display text-2xl">Running OSINT protocols...</h4>
+                  <p className="animate-pulse font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Extracting Entities → Analyzing Sentiment → Mapping Contradictions</p>
+                </div>
               )}
-            </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-2 mb-8 flex items-center gap-2">
-              <div className="flex-1 flex gap-2">
-                 {urls.map((url, i) => (
-                  <div key={i} className="flex-1 relative">
-                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      value={url} 
-                      placeholder="https://foreignaffairs.com/..." 
-                      className="pl-9 bg-[#FDFBF7] border-transparent focus-visible:ring-[#C24A35] focus-visible:border-[#C24A35]"
-                      onChange={(e) => {
-                        const newUrls = [...urls];
-                        newUrls[i] = e.target.value;
-                        setUrls(newUrls);
-                      }} 
-                    />
-                    {urls.length > 1 && (
-                      <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setUrls(urls.filter((_, idx) => idx !== i))}>
-                        <X className="h-3 w-3 text-muted-foreground" />
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <Button variant="outline" size="icon" onClick={() => setUrls([...urls, ""])} className="shrink-0">
-                <Plus className="h-4 w-4" />
-              </Button>
-              <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="shrink-0 bg-[#1A1A1A] text-white hover:bg-[#333] px-6">
-                {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...</> : <><Sparkles className="mr-2 h-4 w-4" /> Run Investigation</>}
-              </Button>
-            </div>
-
-            {analysisError && <p className="text-red-600 text-sm mb-6 p-4 bg-red-50 border border-red-100 rounded-xl">{analysisError}</p>}
-
-            {isAnalyzing && (
-              <div className="text-center py-20">
-                <div className="inline-block relative mb-6">
-                  <div className="w-20 h-20 border-4 border-[#CBE6F9] border-t-[#C24A35] rounded-full animate-spin"></div>
-                  <Activity className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#C24A35] w-6 h-6" />
-                </div>
-                <h4 className="font-display text-2xl mb-2">Running OSINT protocols...</h4>
-                <p className="text-sm text-muted-foreground animate-pulse font-mono tracking-widest text-[10px] uppercase">Extracting Entities → Analyzing Sentiment → Mapping Contradictions</p>
-              </div>
-            )}
-
-            {analysis && !isAnalyzing && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                
-                {/* QUANT ROW */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Radar Chart */}
-                  <div className="bg-white border border-black/5 rounded-2xl p-6 shadow-sm">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Activity className="w-4 h-4 text-[#C24A35]" />
-                      <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Narrative Profile</h4>
-                    </div>
-                    <div className="h-48">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
-                          <PolarGrid stroke="#E5E5E5" />
-                          <PolarAngleAxis dataKey="subject" tick={{ fill: '#888', fontSize: 10, fontFamily: 'monospace' }} />
-                          <Radar name="Analysis" dataKey="A" stroke="#C24A35" fill="#C24A35" fillOpacity={0.2} />
-                        </RadarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-
-                  {/* Entities */}
-                  <div className="bg-white border border-black/5 rounded-2xl p-6 shadow-sm flex flex-col">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Globe className="w-4 h-4 text-[#2D6A65]" />
-                      <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Key Actors</h4>
-                    </div>
-                    <div className="flex flex-wrap gap-2 content-start flex-1">
-                      {analysis.entities?.map((entity: string, i: number) => (
-                        <span key={i} className="px-3 py-1.5 bg-[#FDFBF7] border border-black/5 rounded-lg text-xs font-medium shadow-sm hover:border-[#2D6A65] transition-colors cursor-default">
-                          {entity}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Contradiction Index */}
-                  <div className="bg-[#1A1A1A] text-white rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden">
-                     <div className="absolute top-0 right-0 w-32 h-32 bg-[#C24A35] rounded-full blur-[60px] opacity-30 pointer-events-none" />
-                    <div className="flex items-center gap-2 mb-2">
-                      <ShieldAlert className="w-4 h-4 text-[#C24A35]" />
-                      <h4 className="font-mono text-[10px] uppercase tracking-widest text-white/60">Contradiction Index</h4>
-                    </div>
-                    <div>
-                      <div className="font-display text-6xl mb-1">
-                        {analysis.quantData?.contradictionIndex || 50}<span className="text-2xl text-white/40">/100</span>
+              {analysis && !isAnalyzing && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 space-y-6 duration-500">
+                  
+                  {/* QUANT DASHBOARD ROW */}
+                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                    
+                    {/* Narrative Radar */}
+                    <div className="flex flex-col rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+                      <div className="mb-4 flex items-center gap-2">
+                        <Activity className="h-4 w-4 text-[#C24A35]" />
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Narrative Profile</h4>
                       </div>
-                      <p className="text-xs text-white/60 leading-tight">High friction detected between source narratives. Cross-referencing reveals intentional omissions.</p>
+                      <div className="h-56 flex-1">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
+                            <PolarGrid stroke="#E5E5E5" />
+                            <PolarAngleAxis dataKey="subject" tick={{ fill: '#888', fontSize: 10, fontFamily: 'monospace' }} />
+                            <Radar name="Analysis" dataKey="A" stroke="#C24A35" fill="#C24A35" fillOpacity={0.15} />
+                          </RadarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+
+                    {/* Key Actors */}
+                    <div className="flex flex-col rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+                      <div className="mb-4 flex items-center gap-2">
+                        <Globe className="h-4 w-4 text-[#2D6A65]" />
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Key Actors</h4>
+                      </div>
+                      <div className="flex flex-1 flex-wrap content-start gap-2">
+                        {analysis.entities?.map((entity: string, i: number) => {
+                          const colors = ["bg-[#CBE6F9]", "bg-[#FBD0D4]", "bg-[#FDF0B6]", "bg-[#E8DAFB]", "bg-[#C9E8C7]"];
+                          return (
+                            <span key={i} className={`px-3 py-1.5 ${colors[i % colors.length]} border border-black/5 rounded-lg text-xs font-medium text-[#1A1A1A] shadow-sm hover:-translate-y-0.5 transition-transform cursor-default`}>
+                              {entity}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Contradiction Index - NOW WITH A WARM PASTEL BACKGROUND */}
+                    <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#FBD0D4] bg-[#FBD0D4]/40 p-6 shadow-sm">
+                      <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-full bg-white opacity-40 blur-[40px]" />
+                      <div className="mb-2 flex items-center gap-2">
+                        <ShieldAlert className="h-4 w-4 text-[#C24A35]" />
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35]">Contradiction Index</h4>
+                      </div>
+                      <div>
+                        <div className="mb-1 font-display text-7xl tracking-tighter text-[#C24A35]">
+                          {analysis.quantData?.contradictionIndex || 50}<span className="text-2xl text-[#C24A35]/40">/100</span>
+                        </div>
+                        <p className="text-xs leading-tight text-[#1A1A1A]/60">High friction detected between source narratives. Cross-referencing reveals intentional omissions.</p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* THE BIG PICTURE */}
-                <section className="bg-white border border-black/5 rounded-2xl p-8 shadow-sm">
-                  <h4 className="font-mono text-xs uppercase tracking-widest text-[#C24A35] mb-4">The Big Picture</h4>
-                  <p className="font-display text-2xl leading-relaxed text-[#1A1A1A]">{analysis.conclusion}</p>
-                </section>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Evidence Trail */}
-                  <section className="bg-white border border-black/5 rounded-2xl p-6 shadow-sm">
-                    <h4 className="font-mono text-xs uppercase tracking-widest text-[#2D6A65] mb-4 flex items-center gap-2"><Check className="h-4 w-4" /> Documented Evidence</h4>
-                    <div className="space-y-4">
-                      {analysis.evidence?.map((item: any, i: number) => (
-                        <div key={i} className="group flex flex-col p-4 bg-[#FDFBF7] border border-[#2D6A65]/20 rounded-xl hover:border-[#2D6A65] transition-colors">
-                          <b className="block mb-2 text-[#1A1A1A] text-sm">{item.title}</b>
-                          <p className="text-muted-foreground text-xs leading-relaxed mb-4 flex-1">{item.body}</p>
-                          <div className="flex justify-between items-center mt-auto pt-3 border-t border-black/5">
-                            <span className="text-[9px] font-mono text-[#2D6A65] bg-[#2D6A65]/10 px-2 py-1 rounded truncate max-w-[150px]">{item.source}</span>
-                            <Button 
-                              size="sm" 
-                              variant={plantedIds[`ev-${i}`] ? "secondary" : "outline"}
-                              className={`h-7 text-[10px] ${plantedIds[`ev-${i}`] ? "text-[#2D6A65] bg-[#2D6A65]/10 border-transparent" : ""}`}
-                              onClick={() => plantAnalysis(`ev-${i}`, "evidence", item.title, item.body, item.source)}
-                            >
-                              {plantedIds[`ev-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  {/* THE BIG PICTURE */}
+                  <section className="relative overflow-hidden rounded-2xl border border-black/5 bg-white p-8 shadow-sm">
+                    <div className="absolute left-0 top-0 h-full w-1 bg-[#C24A35]" />
+                    <h4 className="mb-4 font-mono text-xs uppercase tracking-widest text-[#C24A35]">The Big Picture</h4>
+                    <p className="font-display text-3xl leading-relaxed text-[#1A1A1A]">{analysis.conclusion}</p>
                   </section>
 
-                  {/* Hypotheses & Blind Spots */}
-                  <div className="space-y-6">
-                    <section className="bg-white border border-black/5 rounded-2xl p-6 shadow-sm">
-                      <h4 className="font-mono text-xs uppercase tracking-widest text-[#6B4C7A] mb-4 flex items-center gap-2"><Sparkles className="h-4 w-4" /> Strategic Hypotheses</h4>
-                      <div className="space-y-3">
-                        {analysis.hypotheses?.map((item: any, i: number) => (
-                          <div key={i} className="flex flex-col p-4 bg-[#F8F4FA] border border-[#6B4C7A]/20 rounded-xl">
-                            <b className="block mb-1 text-[#6B4C7A] text-sm">{item.title}</b>
-                            <p className="text-xs text-[#1A1A1A]/70 leading-relaxed mb-3">{item.body}</p>
-                            <Button 
-                              size="sm" variant={plantedIds[`hyp-${i}`] ? "secondary" : "ghost"} 
-                              className={`self-end h-7 text-[10px] ${plantedIds[`hyp-${i}`] ? "text-[#6B4C7A]" : "text-[#6B4C7A] hover:bg-[#6B4C7A]/10"}`}
-                              onClick={() => plantAnalysis(`hyp-${i}`, "hypothesis", item.title, item.body)}
-                            >
-                              {plantedIds[`hyp-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
-                            </Button>
+                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    {/* Evidence Trail */}
+                    <section className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+                      <h4 className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-[#2D6A65]"><Check className="h-4 w-4" /> Documented Evidence</h4>
+                      <div className="space-y-4">
+                        {analysis.evidence?.map((item: any, i: number) => (
+                          <div key={i} className="group flex flex-col rounded-xl border border-[#2D6A65]/20 bg-[#FDFBF7] p-4 transition-colors hover:border-[#2D6A65]">
+                            <b className="mb-2 block text-sm text-[#1A1A1A]">{item.title}</b>
+                            <p className="mb-4 flex-1 text-xs leading-relaxed text-muted-foreground">{item.body}</p>
+                            <div className="mt-auto flex items-center justify-between border-t border-black/5 pt-3">
+                              <span className="max-w-[150px] truncate rounded bg-[#2D6A65]/10 px-2 py-1 font-mono text-[9px] text-[#2D6A65]">{item.source}</span>
+                              <Button size="sm" variant={plantedIds[`ev-${i}`] ? "secondary" : "outline"} className={`h-7 text-[10px] ${plantedIds[`ev-${i}`] ? "border-transparent bg-[#2D6A65]/10 text-[#2D6A65]" : ""}`} onClick={() => plantAnalysis(`ev-${i}`, "evidence", item.title, item.body, item.source)}>
+                                {plantedIds[`ev-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
+                              </Button>
+                            </div>
                           </div>
                         ))}
                       </div>
                     </section>
 
-                    <section className="bg-white border border-black/5 rounded-2xl p-6 shadow-sm">
-                      <h4 className="font-mono text-xs uppercase tracking-widest text-[#C24A35] mb-4 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Blind Spots</h4>
-                      <div className="space-y-3">
-                        {analysis.questions?.map((item: any, i: number) => (
-                          <div key={i} className="flex flex-col p-4 bg-[#FDF6F4] border border-[#C24A35]/20 rounded-xl">
-                            <b className="block mb-1 text-[#C24A35] text-sm">{item.title}</b>
-                            <p className="text-xs text-[#1A1A1A]/70 leading-relaxed mb-3">{item.body}</p>
-                            <Button 
-                              size="sm" variant={plantedIds[`q-${i}`] ? "secondary" : "ghost"} 
-                              className={`self-end h-7 text-[10px] ${plantedIds[`q-${i}`] ? "text-[#C24A35]" : "text-[#C24A35] hover:bg-[#C24A35]/10"}`}
-                              onClick={() => plantAnalysis(`q-${i}`, "question", item.title, item.body)}
-                            >
-                              {plantedIds[`q-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
+                    {/* Hypotheses & Blind Spots */}
+                    <div className="space-y-6">
+                      <section className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+                        <h4 className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-[#6B4C7A]"><Sparkles className="h-4 w-4" /> Strategic Hypotheses</h4>
+                        <div className="space-y-3">
+                          {analysis.hypotheses?.map((item: any, i: number) => (
+                            <div key={i} className="flex flex-col rounded-xl border border-[#6B4C7A]/20 bg-[#F8F4FA] p-4">
+                              <b className="mb-1 block text-sm text-[#6B4C7A]">{item.title}</b>
+                              <p className="mb-3 text-xs leading-relaxed text-[#1A1A1A]/70">{item.body}</p>
+                              <Button size="sm" variant={plantedIds[`hyp-${i}`] ? "secondary" : "ghost"} className={`h-7 self-end text-[10px] ${plantedIds[`hyp-${i}`] ? "text-[#6B4C7A]" : "text-[#6B4C7A] hover:bg-[#6B4C7A]/10"}`} onClick={() => plantAnalysis(`hyp-${i}`, "hypothesis", item.title, item.body)}>
+                                {plantedIds[`hyp-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                      <section className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+                        <h4 className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-[#C24A35]"><AlertTriangle className="h-4 w-4" /> Blind Spots</h4>
+                        <div className="space-y-3">
+                          {analysis.questions?.map((item: any, i: number) => (
+                            <div key={i} className="flex flex-col rounded-xl border border-[#C24A35]/20 bg-[#FDF6F4] p-4">
+                              <b className="mb-1 block text-sm text-[#C24A35]">{item.title}</b>
+                              <p className="mb-3 text-xs leading-relaxed text-[#1A1A1A]/70">{item.body}</p>
+                              <Button size="sm" variant={plantedIds[`q-${i}`] ? "secondary" : "ghost"} className={`h-7 self-end text-[10px] ${plantedIds[`q-${i}`] ? "text-[#C24A35]" : "text-[#C24A35] hover:bg-[#C24A35]/10"}`} onClick={() => plantAnalysis(`q-${i}`, "question", item.title, item.body)}>
+                                {plantedIds[`q-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ... (Keep the rest of your views: read, compare, count) ... */}
-        {view === "read" && active && (
-          <div className="tw-lab-read h-full">
-            <article className="tw-lab-doc bg-white shadow-sm rounded-2xl border border-black/5 p-10 mx-auto max-w-3xl">
-              <p className="tw-kicker text-[#C24A35] mb-2">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
-              <h3 className="font-display text-3xl mb-6">{active.title}</h3>
-              {active.audience && <p className="tw-lab-audience bg-black/5 p-3 rounded-lg text-sm mb-8"><b className="font-mono text-[10px] uppercase tracking-widest block mb-1">Addressed to</b> {active.audience}</p>}
-              <div className="tw-lab-text text-lg leading-loose text-[#1A1A1A]/80 font-serif" onMouseUp={() => selectQuote(active)}>
-                {active.text}
-              </div>
-            </article>
-            <aside className="tw-lab-margin pl-8 border-l border-black/5">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">Margin Notes</p>
-              {corpus.annotations.filter((mark) => mark.docId === active.id).length === 0 && (
-                <p className="text-sm text-muted-foreground leading-relaxed">Select a passage to code it. Coded quotes become evidence you can place on the canvas.</p>
               )}
-              <div className="space-y-3">
-                {corpus.annotations.filter((mark) => mark.docId === active.id).map((mark) => (
-                  <div className="tw-lab-note bg-[#FDFBF7] border border-black/5 border-l-4 p-4 rounded-r-lg shadow-sm" key={mark.id} data-code={mark.code}>
-                    <small className="font-mono text-[9px] uppercase tracking-wider text-[#C24A35] block mb-2">{codeLabel(mark.code)}</small>
-                    <blockquote className="font-serif text-sm italic text-[#1A1A1A]/80 mb-3 leading-relaxed">“{clip(mark.quote, 150)}”</blockquote>
-                    <Button size="sm" variant="outline" className="w-full text-xs h-8" onClick={() => plant(active, mark.quote, codeLabel(mark.code))}><MapPin className="mr-1 h-3 w-3" />Place on Canvas</Button>
-                  </div>
-                ))}
-              </div>
-            </aside>
-          </div>
-        )}
-        
-        {view === "compare" && (
-          <div className="tw-lab-compare p-8 h-full overflow-y-auto">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">Compare two texts</p>
-            <div className="tw-lab-compare-pick flex gap-4 mb-6">
-              {[0, 1].map((index) => (
-                <select key={index} className="flex-1 p-3 rounded-lg border border-black/10 bg-white font-medium text-sm" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
-                  {docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}
-                </select>
-              ))}
             </div>
-            <div className="tw-lab-split grid grid-cols-2 gap-8">
-              {compared.map((doc) => (
-                <article className="tw-lab-doc bg-white shadow-sm rounded-2xl border border-black/5 p-8" key={doc.id}>
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-2">{doc.speaker} · {doc.date}</p>
-                  <h3 className="font-display text-2xl mb-6">{doc.title}</h3>
-                  <div className="tw-lab-text text-sm leading-relaxed text-[#1A1A1A]/70" onMouseUp={() => selectQuote(doc)}>
-                    {doc.text}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {view === "count" && (
-          <div className="tw-lab-count p-8 h-full overflow-y-auto max-w-4xl mx-auto">
-            <h3 className="font-display text-3xl mb-2">Language trajectory</h3>
-            <p className="text-muted-foreground mb-8">Track a phrase across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p>
-            
-            <form className="flex gap-2 mb-6" onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}>
-              <Input value={term} placeholder="Track a word or phrase..." onChange={(e) => setTerm(e.target.value)} className="bg-white border-black/10" />
-              <Button className="bg-[#1A1A1A] text-white">Track phrase</Button>
-            </form>
-            
-            <div className="flex flex-wrap gap-2 mb-8">
-              {terms.map((item) => (
-                <button key={item} className="px-3 py-1.5 bg-[#CBE6F9] text-[#1A1A1A] rounded-full text-sm font-medium flex items-center gap-2 hover:bg-[#A9D5F5] transition-colors" onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>
-                  {item} <X className="w-3 h-3" />
-                </button>
-              ))}
-            </div>
+          )}
 
-            <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-6 mb-10 space-y-4">
-              {termCounts.map(({ doc, values }) => (
-                <div key={doc.id} className="flex items-center justify-between border-b border-black/5 pb-4 last:border-0 last:pb-0">
-                  <b className="font-display text-lg">{doc.date || "—"} · {doc.title}</b>
-                  <div className="flex gap-4">
-                    {values.map((value) => <span key={value.phrase} className="text-sm"><span className="font-mono text-[10px] text-muted-foreground uppercase mr-1">{value.phrase}</span> <strong className="text-[#C24A35] text-lg">{value.rate}</strong> <span className="text-xs text-muted-foreground">/ 1k</span></span>)}
-                  </div>
+          {/* READ VIEW */}
+          {view === "read" && active && (
+            <div className="mx-auto flex max-w-6xl gap-8 p-8 pb-24">
+              <article className="flex-1 rounded-2xl border border-black/5 bg-white p-10 shadow-sm">
+                <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-[#C24A35]">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
+                <h3 className="mb-8 font-display text-4xl">{active.title}</h3>
+                {active.audience && <p className="mb-8 rounded-lg bg-black/5 p-4 text-sm"><b className="mb-1 block font-mono text-[10px] uppercase tracking-widest">Addressed to</b> {active.audience}</p>}
+                <div className="font-serif text-lg leading-loose text-[#1A1A1A]/80" onMouseUp={() => { const q = window.getSelection()?.toString().trim() ?? ""; if (q.length > 3) setSelection({ quote: q, doc: active }); }}>
+                  {active.text}
                 </div>
-              ))}
+              </article>
+              <aside className="w-80 shrink-0">
+                <p className="mb-4 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Margin Notes</p>
+                {corpus.annotations.filter((mark) => mark.docId === active.id).length === 0 && <p className="text-sm leading-relaxed text-muted-foreground">Select a passage to code it. Coded quotes become evidence you can place on the canvas.</p>}
+                <div className="space-y-3">
+                  {corpus.annotations.filter((mark) => mark.docId === active.id).map((mark) => (
+                    <div className="rounded-r-lg border border-black/5 border-l-4 bg-white p-4 shadow-sm" key={mark.id} data-code={mark.code}>
+                      <small className="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#C24A35]">{codeLabel(mark.code)}</small>
+                      <blockquote className="mb-3 font-serif text-sm italic leading-relaxed text-[#1A1A1A]/80">“{clip(mark.quote, 150)}”</blockquote>
+                      <Button size="sm" variant="outline" className="h-8 w-full text-xs" onClick={() => plant(active, mark.quote, codeLabel(mark.code))}><MapPin className="mr-1 h-3 w-3" />Place on Canvas</Button>
+                    </div>
+                  ))}
+                </div>
+              </aside>
             </div>
+          )}
 
-            <section>
-              <h3 className="font-display text-2xl mb-4">Most used words</h3>
-              <div className="space-y-4">
-                {docs.map((doc) => (
-                  <div className="flex gap-2 flex-wrap items-center" key={doc.id}>
-                    <b className="w-full text-sm mb-1">{doc.title}</b>
-                    {topTerms(doc.text, 9).map(([word, count]) => (
-                      <button key={word} className="px-2.5 py-1 bg-white border border-black/10 rounded-md text-sm hover:border-black/30 transition-colors" onClick={() => setTerm(word)}>
-                        {word} <small className="text-muted-foreground ml-1">{count}</small>
-                      </button>
-                    ))}
-                  </div>
+          {/* COMPARE VIEW */}
+          {view === "compare" && (
+            <div className="mx-auto max-w-6xl p-8 pb-24">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h3 className="mb-2 font-display text-4xl">Compare Texts</h3>
+                  <p className="text-sm text-[#1A1A1A]/60">Select two sources to compare their language and framing side-by-side.</p>
+                </div>
+              </div>
+              <div className="mb-6 grid grid-cols-2 gap-4">
+                {[0, 1].map((index) => (
+                  <select key={index} className="rounded-lg border border-black/10 bg-white p-3 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-[#C24A35]" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
+                    <option value="" disabled>Select a document</option>
+                    {docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}
+                  </select>
                 ))}
               </div>
-            </section>
-          </div>
-        )}
+              <div className="grid grid-cols-2 gap-6">
+                {compared.map((doc) => (
+                  <article className="rounded-2xl border border-black/5 bg-white p-8 shadow-sm" key={doc.id}>
+                    <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-[#C24A35]">{doc.speaker} · {doc.date}</p>
+                    <h3 className="mb-6 font-display text-2xl">{doc.title}</h3>
+                    <div className="text-sm leading-relaxed text-[#1A1A1A]/70" onMouseUp={() => { const q = window.getSelection()?.toString().trim() ?? ""; if (q.length > 3) setSelection({ quote: q, doc }); }}>
+                      {doc.text}
+                    </div>
+                  </article>
+                ))}
+                {compared.length < 2 && <div className="col-span-2 py-12 text-center font-display text-2xl text-muted-foreground">Select two documents to compare them.</div>}
+              </div>
+            </div>
+          )}
 
-      </main>
+          {/* METRICS VIEW */}
+          {view === "count" && (
+            <div className="mx-auto max-w-5xl p-8 pb-24">
+              <div className="mb-8">
+                <h3 className="mb-2 font-display text-4xl">Language Trajectory</h3>
+                <p className="text-sm text-[#1A1A1A]/60">Track phrases across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p>
+              </div>
+              
+              <form className="mb-8 flex gap-2" onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}>
+                <Input value={term} placeholder="Track a word or phrase (e.g. 'security', 'border')" onChange={(e) => setTerm(e.target.value)} className="h-12 border-black/10 bg-white text-base" />
+                <Button className="h-12 bg-[#1A1A1A] px-8 text-white">Track phrase</Button>
+              </form>
+              
+              <div className="mb-10 flex flex-wrap gap-2">
+                {terms.map((item) => (
+                  <button key={item} className="flex items-center gap-2 rounded-full bg-[#CBE6F9] px-4 py-2 text-sm font-medium text-[#1A1A1A] transition-colors hover:bg-[#A9D5F5]" onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>
+                    {item} <X className="h-4 w-4" />
+                  </button>
+                ))}
+              </div>
+
+              <div className="mb-12 space-y-4 rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+                {termCounts.map(({ doc, values }) => (
+                  <div key={doc.id} className="flex items-center justify-between border-b border-black/5 pb-4 last:border-0 last:pb-0">
+                    <b className="font-display text-lg">{doc.date || "—"} · {doc.title}</b>
+                    <div className="flex gap-6">
+                      {values.map((value) => <span key={value.phrase} className="text-sm"><span className="mr-1 font-mono text-[10px] uppercase text-muted-foreground">{value.phrase}</span> <strong className="text-lg text-[#C24A35]">{value.rate}</strong> <span className="text-xs text-muted-foreground">/ 1k</span></span>)}
+                    </div>
+                  </div>
+                ))}
+                {terms.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">Add a phrase above to see its frequency across documents.</p>}
+              </div>
+
+              <section>
+                <h3 className="mb-6 font-display text-2xl">Most Used Words</h3>
+                <div className="space-y-8">
+                  {docs.map((doc) => (
+                    <div key={doc.id} className="flex flex-col gap-3">
+                      <b className="text-sm text-[#1A1A1A]/60">{doc.title}</b>
+                      <div className="flex flex-wrap gap-2">
+                        {topTerms(doc.text, 12).map(([word, count]) => (
+                          <button key={word} className="rounded-lg border border-black/10 bg-white px-3 py-1.5 text-sm shadow-sm transition-all hover:-translate-y-0.5 hover:border-black/30" onClick={() => setTerm(word)}>
+                            {word} <small className="ml-1 text-muted-foreground">{count}</small>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+          )}
+
+        </main>
+      </div>
+      
+      {/* SELECTION TOOLBAR */}
+      {selection && (
+        <div className="fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border border-black/10 bg-white p-2 shadow-xl animate-in slide-in-from-bottom-4">
+          <span className="px-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Code as:</span>
+          {CODES.map((code) => <button key={code.id} className="rounded-full bg-[#FDFBF7] px-3 py-1.5 text-xs font-medium text-[#1A1A1A] transition-colors hover:bg-[#E8DAFB]" onClick={() => { 
+             if (!selection) return; 
+             const at = selection.doc.text.indexOf(selection.quote); 
+             if (at < 0) return; 
+             if (!corpus.annotations.some((mark) => mark.docId === selection.doc.id && mark.start === at)) {
+               save({ annotations: [...corpus.annotations, { id: uid(), docId: selection.doc.id, start: at, end: at + selection.quote.length, quote: selection.quote, code: code.id, note: "" }] }); 
+             }
+             setSelection(null); 
+             window.getSelection()?.removeAllRanges(); 
+          }}>{code.label}</button>)}
+          <Button size="sm" className="rounded-full bg-[#1A1A1A] px-4 text-white" onClick={() => { plant(selection.doc, selection.quote); setSelection(null); }}>Plant Evidence</Button>
+          <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setSelection(null)}><X className="h-4 w-4" /></Button>
+        </div>
+      )}
     </div>
-    {selection && <div className="tw-lab-coder" role="toolbar">{CODES.map((code) => <button key={code.id} onClick={() => mark(code.id)}>{code.label}</button>)}<button onClick={() => { plant(selection.doc, selection.quote); setSelection(null); }}>Place evidence</button></div>}
-  </div>;
+  );
 }
