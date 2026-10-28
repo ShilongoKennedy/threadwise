@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
-  ArrowUpRight, Sparkles, FileText, Lightbulb, 
+  ArrowUpRight, ArrowRight, Sparkles, FileText, Lightbulb, 
   Activity, Cpu, Network, Layers, Target, 
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
-  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  Zap
+  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
@@ -63,26 +62,26 @@ function WelcomePage() {
 
   useEffect(() => {
     if (!socraticReveal.isVisible || phase !== "waiting") return;
-
-    setPhase("question");
+    
     let qIndex = 0;
     let aIndex = 0;
     let timeout: ReturnType<typeof setTimeout>;
+    let cancelled = false;
 
     const typeQuestion = () => {
+      if (cancelled) return;
       if (qIndex <= questionText.length) {
         setTypedQuestion(questionText.slice(0, qIndex));
         qIndex++;
-        timeout = setTimeout(typeQuestion, 30);
+        timeout = setTimeout(typeQuestion, 25);
       } else {
-        setTimeout(() => {
-          setPhase("answer");
-          typeAnswer();
-        }, 800); // Pause before AI responds
+        setPhase("answer");
+        timeout = setTimeout(typeAnswer, 800);
       }
     };
 
     const typeAnswer = () => {
+      if (cancelled) return;
       if (aIndex <= answerText.length) {
         setTypedAnswer(answerText.slice(0, aIndex));
         aIndex++;
@@ -92,10 +91,14 @@ function WelcomePage() {
       }
     };
 
+    setPhase("question");
     timeout = setTimeout(typeQuestion, 500);
 
-    return () => clearTimeout(timeout);
-  }, [socraticReveal.isVisible, phase]);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [socraticReveal.isVisible]);
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
@@ -376,7 +379,7 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE SOCRATIC TYPEWRITER (Option 4) */}
+        {/* THE SOCRATIC TYPEWRITER */}
         <section 
           ref={socraticReveal.ref}
           className="w-full max-w-[1000px] mt-40 mb-24 relative flex flex-col items-center"
