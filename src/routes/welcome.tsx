@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
-  ArrowUpRight, ArrowRight, Sparkles, FileText, Lightbulb, 
-  Activity, Cpu, Network, Layers, Target, Zap, X, Users, 
-  TrendingUp, BookOpen, Sliders, Calendar, FileCheck, 
-  PieChart, Map, GitMerge, PenTool, MessageSquare, GitBranch, 
-  HelpCircle, LayoutTemplate, Search, FolderOpen
+  ArrowUpRight, Sparkles, FileText, Lightbulb, 
+  Activity, Cpu, Network, Layers, Target, 
+  Zap, X, Users, TrendingUp, BookOpen, Sliders, 
+  Calendar, FileCheck, PieChart, Map, GitMerge, 
+  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -33,14 +33,48 @@ function WelcomePage() {
   const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 6;
   const tiltY = (mouse.x / (typeof window !== 'undefined' ? window.innerWidth : 1200) - 0.5) * -6;
 
+  // LED Glow colors
+  const ledColor = "#D96C39";
+  const laptopYellow = "#FDF0B6"; // The pastel yellow from your palette
+  const laptopYellowDark = "#E3D398";
+
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
+      {/* CSS for the LED/Neon effect */}
+      <style>{`
+        @keyframes pulse-glow {
+          0%, 100% { text-shadow: 0 0 10px ${ledColor}40, 0 0 20px ${ledColor}20, 0 0 30px ${ledColor}10; }
+          50% { text-shadow: 0 0 15px ${ledColor}60, 0 0 25px ${ledColor}40, 0 0 40px ${ledColor}20; }
+        }
+        .led-text {
+          color: ${ledColor};
+          -webkit-text-stroke: 1px ${ledColor};
+          animation: pulse-glow 3s infinite alternate;
+        }
+        .led-text-outline {
+          color: transparent;
+          -webkit-text-stroke: 1px #1A1A1A;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(0,0,0,0.1);
+          border-radius: 4px;
+        }
+      `}</style>
+
       {/* ARTISTIC AMBIENT BACKGROUND */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#FDF0B6] opacity-20 blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-[#E8DAFB] opacity-20 blur-[150px]" />
-        <div className="absolute top-[20%] right-[10%] w-[40vw] h-[40vw] rounded-full bg-[#CBE6F9] opacity-20 blur-[120px]" />
+        {/* Yellow glow from the laptop */}
+        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 w-[80vw] h-[60vh] rounded-full opacity-20 blur-[150px]" style={{ backgroundColor: laptopYellow }} />
+        {/* Pink/Blue subtle accents */}
+        <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#FBD0D4] opacity-10 blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#CBE6F9] opacity-10 blur-[100px]" />
       </div>
 
       {/* Subtle Grid */}
@@ -74,7 +108,6 @@ function WelcomePage() {
             <span className="flex items-center gap-2"><Cpu className="w-3 h-3"/> DeepSeek v3</span>
           </div>
           
-          {/* Sign In / Auth Buttons */}
           <Link to="/login" className="hidden sm:block text-sm font-medium text-[#1A1A1A]/70 hover:text-[#1A1A1A] transition-colors">
             Sign in
           </Link>
@@ -84,38 +117,47 @@ function WelcomePage() {
         </div>
       </header>
 
-      {/* HERO SECTION - FOCUS ON THE LAPTOP */}
+      {/* HERO SECTION - LED TEXT & YELLOW LAPTOP */}
       <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-12 pb-24 flex flex-col items-center text-center flex-1">
         
-        {/* Minimal Typography */}
-        <div className="relative z-20 flex flex-col items-center mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="h-px w-8 bg-[#D96C39]" />
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-[#D96C39] font-bold">The Spatial Workbench</span>
-            <span className="h-px w-8 bg-[#D96C39]" />
+        {/* The "LED Light" Typography */}
+        <div className="relative z-20 flex flex-col items-center mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="h-px w-8 bg-[#D96C39]/50" />
+            <span className="text-[11px] font-mono uppercase tracking-[0.4em] text-[#D96C39] font-bold">The Spatial Workbench</span>
+            <span className="h-px w-8 bg-[#D96C39]/50" />
           </div>
 
-          <h1 className="font-display text-[50px] md:text-[80px] lg:text-[100px] leading-[0.9] tracking-tighter mb-6 text-[#1A1A1A]">
-            See what <span className="italic text-[#D96C39]">connects.</span>
+          {/* Massive Glowing Text */}
+          <h1 className="font-display text-[60px] md:text-[100px] lg:text-[130px] leading-[0.9] tracking-tighter mb-4 text-[#1A1A1A]">
+            See what <span className="italic led-text relative inline-block">
+              connects.
+              {/* Inner glow effect */}
+              <span className="absolute inset-0 blur-md opacity-50 bg-clip-text text-transparent bg-gradient-to-r from-[#D96C39] to-[#E88B5C] pointer-events-none">
+                connects.
+              </span>
+            </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-[#1A1A1A]/60 leading-relaxed max-w-xl font-light">
+          <p className="text-lg md:text-xl text-[#1A1A1A]/50 leading-relaxed max-w-xl font-light mt-4">
             Bring your sources, questions, and ideas together.
           </p>
         </div>
 
-        {/* THE INTERACTIVE CHARCOAL MACBOOK */}
-        <div className="relative w-full max-w-[1100px] perspective-[2000px] mt-4 group">
+        {/* THE YELLOW MACBOOK */}
+        <div className="relative w-full max-w-[1100px] perspective-[2000px] group mt-4">
           <div 
-            className="relative w-full rounded-t-2xl rounded-b-xl border-[12px] border-[#2C2A28] bg-[#2C2A28] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300 ease-out group-hover:shadow-[0_50px_120px_-20px_rgba(217,108,57,0.15)]"
+            className="relative w-full rounded-t-2xl rounded-b-xl border-[12px] bg-[#2C2A28] overflow-hidden transition-all duration-300 ease-out"
             style={{ 
+              borderColor: laptopYellow,
+              boxShadow: `0 40px 100px -20px rgba(0,0,0,0.3), 0 0 80px -20px ${laptopYellow}`,
               transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(0.98)`,
               transformStyle: 'preserve-3d'
             }}
           >
-            {/* MacBook Camera Notch */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#2C2A28] rounded-b-xl z-50 flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full bg-black/50" />
+            {/* MacBook Camera Notch (Yellow) */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 rounded-b-xl z-50 flex items-center justify-center" style={{ backgroundColor: laptopYellow }}>
+              <div className="w-2 h-2 rounded-full bg-black/20" />
             </div>
 
             {/* Screen Area */}
@@ -271,15 +313,15 @@ function WelcomePage() {
 
             </div>
             
-            {/* MacBook Bottom Bezel */}
-            <div className="h-6 bg-[#2C2A28] flex items-center justify-center">
-              <div className="w-16 h-1 bg-black/30 rounded-full" />
+            {/* MacBook Bottom Bezel (Yellow) */}
+            <div className="h-6 flex items-center justify-center" style={{ backgroundColor: laptopYellow }}>
+              <div className="w-16 h-1 rounded-full" style={{ backgroundColor: laptopYellowDark }} />
             </div>
           </div>
           
-          {/* MacBook Base/Shadow */}
-          <div className="relative h-6 bg-[#1A1A1A] rounded-b-[2rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] mx-auto w-[110%] -ml-[5%] z-[-1]">
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/50 rounded-b-lg" />
+          {/* MacBook Base/Shadow (Yellow) */}
+          <div className="relative h-6 rounded-b-[2rem] mx-auto w-[110%] -ml-[5%] z-[-1]" style={{ backgroundColor: laptopYellowDark, boxShadow: '0 30px 60px -15px rgba(0,0,0,0.3)' }}>
+             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/10 rounded-b-lg" />
           </div>
         </div>
 
