@@ -33,7 +33,7 @@ function WelcomePage() {
   const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 6;
   const tiltY = (mouse.x / (typeof window !== 'undefined' ? window.innerWidth : 1200) - 0.5) * -6;
 
-  // Colors from your palette
+  // Colors
   const laptopYellow = "#FDF0B6"; 
   const laptopYellowDark = "#E3D398";
 
@@ -48,33 +48,38 @@ function WelcomePage() {
         
         /* Realistic Optical Glasses Styling */
         .lens-frame {
-          border: 12px solid ${laptopYellowDark};
+          border: 14px solid ${laptopYellow};
           box-shadow: 
-            inset 0 0 4px rgba(0,0,0,0.1), 
-            0 20px 40px -10px rgba(0,0,0,0.15),
+            inset 0 0 8px rgba(0,0,0,0.15), 
+            0 20px 40px -10px rgba(0,0,0,0.1),
             0 0 0 1px rgba(0,0,0,0.05);
         }
-        .lens-glass {
-          background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 80%);
+        
+        /* Pure White Glass with realistic reflections */
+        .lens-glass-pure-white {
+          background: #FFFFFF;
           backdrop-filter: blur(2px);
           box-shadow: 
-            inset 0 20px 40px rgba(0,0,0,0.05),
-            inset 0 -20px 40px rgba(255,255,255,0.6),
+            inset 0 20px 40px rgba(0,0,0,0.03),
+            inset 0 -20px 40px rgba(0,0,0,0.02),
             inset 0 0 10px rgba(0,0,0,0.05);
         }
+        
         .glass-reflection-1 {
-          background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 60%);
+          background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 60%);
           border-radius: 50%;
           filter: blur(1px);
         }
         .glass-reflection-2 {
-          background: linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+          background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
           border-radius: 50%;
           filter: blur(4px);
         }
+        
         .hinge-piece {
-          background: linear-gradient(180deg, ${laptopYellow} 0%, ${laptopYellowDark} 100%);
-          box-shadow: inset 0 0 2px rgba(255,255,255,0.5), 0 4px 10px rgba(0,0,0,0.1);
+          background: ${laptopYellow};
+          box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
+          border: 1px solid rgba(0,0,0,0.05);
         }
       `}</style>
 
@@ -125,7 +130,7 @@ function WelcomePage() {
         </div>
       </header>
 
-      {/* HERO SECTION - THE REALISTIC OPTICAL GLASSES */}
+      {/* HERO SECTION - THE PURE WHITE OPTICAL GLASSES */}
       <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-12 pb-24 flex flex-col items-center text-center flex-1">
         
         <div className="relative z-20 flex flex-col items-center mb-16 w-full max-w-5xl">
@@ -136,59 +141,60 @@ function WelcomePage() {
             <div className="relative flex items-center justify-center">
               
               {/* Left Hinge (Endpiece) */}
-              <div className="absolute -left-8 top-1/2 -translate-y-1/2 w-12 h-8 hinge-piece rounded-l-lg z-20 flex items-center justify-end pr-2 shadow-lg">
-                <div className="w-1.5 h-1.5 bg-black/20 rounded-full shadow-inner" />
+              <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-14 h-10 hinge-piece rounded-l-xl z-20 flex items-center justify-end pr-3">
+                <div className="w-2 h-2 bg-black/10 rounded-full shadow-inner" />
               </div>
 
               {/* Left Lens */}
-              <div className="relative w-[300px] h-[300px] md:w-[350px] md:h-[350px] rounded-full lens-frame z-10 flex items-center justify-center overflow-hidden">
-                {/* Glass Base */}
-                <div className="absolute inset-0 rounded-full lens-glass" />
+              <div className="relative w-[320px] h-[320px] md:w-[380px] md:h-[380px] rounded-full lens-frame z-10 flex items-center justify-center overflow-hidden">
+                {/* Pure White Glass Base */}
+                <div className="absolute inset-0 rounded-full lens-glass-pure-white" />
                 
-                {/* Glass Reflections */}
-                <div className="absolute top-[5%] left-[10%] w-[180px] h-[100px] glass-reflection-1 transform -rotate-[35deg]" />
-                <div className="absolute bottom-[10%] right-[10%] w-[200px] h-[80px] glass-reflection-2 transform rotate-[15deg]" />
+                {/* Glass Reflections (more intense on pure white) */}
+                <div className="absolute top-[5%] left-[10%] w-[200px] h-[120px] glass-reflection-1 transform -rotate-[35deg] opacity-80" />
+                <div className="absolute bottom-[10%] right-[10%] w-[250px] h-[100px] glass-reflection-2 transform rotate-[15deg] opacity-50" />
                 
-                {/* Pastel Dots (with slight drop shadow to look like they are inside/under the glass) */}
-                <div className="absolute top-[20%] left-[25%] w-4 h-4 rounded-full bg-[#FDF0B6] shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-10" />
-                <div className="absolute bottom-[25%] left-[30%] w-4 h-4 rounded-full bg-[#E8DAFB] shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-10" />
+                {/* Pastel Dots */}
+                <div className="absolute top-[20%] left-[25%] w-5 h-5 rounded-full bg-[#FDF0B6] shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-10 border border-black/5" />
+                <div className="absolute bottom-[25%] left-[30%] w-5 h-5 rounded-full bg-[#E8DAFB] shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-10 border border-black/5" />
                 
                 {/* Left Text */}
-                <h1 className="font-display text-[50px] md:text-[65px] tracking-tight text-[#1A1A1A] z-20 relative drop-shadow-sm">
+                <h1 className="font-display text-[55px] md:text-[70px] tracking-tight text-[#1A1A1A] z-20 relative drop-shadow-sm">
                   See what
                 </h1>
               </div>
 
-              {/* The Bridge (SVG for perfect curve with realistic depth) */}
-              <div className="relative -mx-4 z-0 drop-shadow-md">
-                <svg width="100" height="50" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M 0 40 Q 50 10 100 40" stroke={laptopYellowDark} strokeWidth="12" strokeLinecap="round" />
-                  <path d="M 0 40 Q 50 10 100 40" stroke={laptopYellow} strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+              {/* The Bridge (SVG for perfect curve, matching yellow) */}
+              <div className="relative -mx-5 z-0 drop-shadow-sm">
+                <svg width="120" height="60" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M 0 50 Q 60 10 120 50" stroke={laptopYellowDark} strokeWidth="14" strokeLinecap="round" />
+                  <path d="M 0 50 Q 60 10 120 50" stroke={laptopYellow} strokeWidth="12" strokeLinecap="round" />
+                  <path d="M 0 50 Q 60 10 120 50" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
                 </svg>
               </div>
 
               {/* Right Lens */}
-              <div className="relative w-[300px] h-[300px] md:w-[350px] md:h-[350px] rounded-full lens-frame z-10 flex items-center justify-center overflow-hidden">
-                {/* Glass Base */}
-                <div className="absolute inset-0 rounded-full lens-glass" />
+              <div className="relative w-[320px] h-[320px] md:w-[380px] md:h-[380px] rounded-full lens-frame z-10 flex items-center justify-center overflow-hidden">
+                {/* Pure White Glass Base */}
+                <div className="absolute inset-0 rounded-full lens-glass-pure-white" />
                 
                 {/* Glass Reflections */}
-                <div className="absolute top-[10%] right-[10%] w-[150px] h-[90px] glass-reflection-1 transform rotate-[25deg]" />
-                <div className="absolute bottom-[15%] left-[10%] w-[180px] h-[70px] glass-reflection-2 transform -rotate-[10deg]" />
+                <div className="absolute top-[10%] right-[10%] w-[180px] h-[110px] glass-reflection-1 transform rotate-[25deg] opacity-80" />
+                <div className="absolute bottom-[15%] left-[10%] w-[220px] h-[90px] glass-reflection-2 transform -rotate-[10deg] opacity-50" />
 
                 {/* Pastel Dots */}
-                <div className="absolute top-[25%] right-[30%] w-4 h-4 rounded-full bg-[#FBD0D4] shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-10" />
-                <div className="absolute bottom-[20%] right-[25%] w-4 h-4 rounded-full bg-[#CBE6F9] shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-10" />
+                <div className="absolute top-[25%] right-[30%] w-5 h-5 rounded-full bg-[#FBD0D4] shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-10 border border-black/5" />
+                <div className="absolute bottom-[20%] right-[25%] w-5 h-5 rounded-full bg-[#CBE6F9] shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-10 border border-black/5" />
 
                 {/* Right Text */}
-                <h1 className="font-display text-[50px] md:text-[65px] tracking-tight text-[#8B5CF6] italic z-20 relative drop-shadow-sm">
+                <h1 className="font-display text-[55px] md:text-[70px] tracking-tight text-[#8B5CF6] italic z-20 relative drop-shadow-sm">
                   connects.
                 </h1>
               </div>
 
               {/* Right Hinge (Endpiece) */}
-              <div className="absolute -right-8 top-1/2 -translate-y-1/2 w-12 h-8 hinge-piece rounded-r-lg z-20 flex items-center justify-start pl-2 shadow-lg">
-                <div className="w-1.5 h-1.5 bg-black/20 rounded-full shadow-inner" />
+              <div className="absolute -right-10 top-1/2 -translate-y-1/2 w-14 h-10 hinge-piece rounded-r-xl z-20 flex items-center justify-start pl-3">
+                <div className="w-2 h-2 bg-black/10 rounded-full shadow-inner" />
               </div>
 
             </div>
@@ -398,7 +404,6 @@ function WelcomePage() {
               
               {/* Book 5 (Bottom) - Action */}
               <div className="relative w-[100%] h-[50px] bg-white border border-black/10 rounded-sm shadow-xl flex items-center px-6 transition-transform duration-300 group-hover:-translate-y-2 z-10" style={{ transform: 'translateZ(10px)' }}>
-                {/* Pages Edge */}
                 <div className="absolute right-0 top-[2px] bottom-[2px] w-4 bg-[#F8F6F0] border-l border-black/5" style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 3px)' }} />
                 <div className="w-4 h-4 rounded-full bg-[#D8B4E2] mr-4 shadow-inner" />
                 <span className="font-sans font-medium text-[#1A1A1A]/70 text-lg">Action</span>
