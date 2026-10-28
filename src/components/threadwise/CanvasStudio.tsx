@@ -34,6 +34,7 @@ import {
   Wallet,
   FileBadge,
   BookOpenText,
+  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,36 +75,64 @@ import { ConsequenceMap } from "./ConsequenceMap";
 import { DossierTool, RunwayTool, ScenarioTool } from "./StrategyTools";
 import { DiscourseLab } from "./DiscourseLab";
 
-const TOOLS = [
-  { id: "presence", label: "Live room & audio", icon: Users },
-  { id: "risk", label: "Risk simulation", icon: ChartNoAxesCombined },
-  { id: "discourse", label: "Discourse lab", icon: BookOpenText },
-  { id: "scenario", label: "Scenario stress-test", icon: SlidersHorizontal },
-  { id: "runway", label: "Resource & runway", icon: Wallet },
-  { id: "dossier", label: "Executive dossier", icon: FileBadge },
-  { id: "radar", label: "Executive radar", icon: ChartNoAxesCombined },
-  { id: "zoom", label: "Spatial narratives", icon: Maximize },
-  { id: "tensions", label: "Contradiction engine", icon: GitFork },
-  { id: "field", label: "Field capture", icon: PenLine },
-  { id: "intake", label: "Conversation to canvas", icon: FileUp },
-  { id: "bridge", label: "External bridge", icon: Link2 },
-  { id: "branches", label: "Branches & merge", icon: GitBranch },
-  { id: "present", label: "Presentation", icon: Presentation },
-  { id: "playback", label: "Thought playback", icon: Play },
-  { id: "theatre", label: "Decision theatre", icon: Square },
-  { id: "consequences", label: "Consequence map", icon: GitFork },
-  { id: "redteam", label: "Red-team audit", icon: ShieldCheck },
-  { id: "pointer", label: "Laser & temporary ink", icon: MousePointer2 },
-  { id: "frames", label: "Swimlanes & frames", icon: PanelTop },
-  { id: "stamps", label: "Reaction stamps", icon: Stamp },
-  { id: "inbox", label: "Capture inbox", icon: Inbox },
-  { id: "path", label: "Critical path & depth", icon: ScanLine },
-  { id: "weave", label: "Batch wire", icon: Layers },
-  { id: "layout", label: "Auto-layout", icon: Wand2 },
-  { id: "evidence", label: "Document & evidence", icon: FileUp },
-  { id: "seal", label: "Decision signature", icon: Check },
-  { id: "export", label: "Vector & narrative export", icon: Download },
+const TOOL_GROUPS = [
+  {
+    label: "Capture",
+    tools: [
+      { id: "inbox", label: "Capture inbox", icon: Inbox },
+      { id: "field", label: "Field capture", icon: PenLine },
+      { id: "intake", label: "Conversation to canvas", icon: FileUp },
+      { id: "evidence", label: "Document & evidence", icon: FileUp },
+    ],
+  },
+  {
+    label: "Organize",
+    tools: [
+      { id: "layout", label: "Auto-layout", icon: Wand2 },
+      { id: "frames", label: "Swimlanes & frames", icon: PanelTop },
+      { id: "weave", label: "Batch wire", icon: Layers },
+      { id: "branches", label: "Branches & merge", icon: GitBranch },
+    ],
+  },
+  {
+    label: "Analyze",
+    tools: [
+      { id: "risk", label: "Risk simulation", icon: ChartNoAxesCombined },
+      { id: "tensions", label: "Contradiction engine", icon: GitFork },
+      { id: "redteam", label: "Red-team audit", icon: ShieldCheck },
+      { id: "path", label: "Critical path & depth", icon: ScanLine },
+      { id: "radar", label: "Executive radar", icon: Target },
+      { id: "zoom", label: "Spatial narratives", icon: Maximize },
+      { id: "discourse", label: "Discourse lab", icon: BookOpenText },
+    ],
+  },
+  {
+    label: "Strategy",
+    tools: [
+      { id: "scenario", label: "Scenario stress-test", icon: SlidersHorizontal },
+      { id: "runway", label: "Resource & runway", icon: Wallet },
+      { id: "dossier", label: "Executive dossier", icon: FileBadge },
+    ],
+  },
+  {
+    label: "Deliver",
+    tools: [
+      { id: "present", label: "Presentation", icon: Presentation },
+      { id: "playback", label: "Thought playback", icon: Play },
+      { id: "theatre", label: "Decision theatre", icon: Square },
+      { id: "consequences", label: "Consequence map", icon: GitFork },
+      { id: "presence", label: "Live room & audio", icon: Users },
+      { id: "stamps", label: "Reaction stamps", icon: Stamp },
+      { id: "pointer", label: "Laser & temporary ink", icon: MousePointer2 },
+      { id: "seal", label: "Decision signature", icon: Check },
+      { id: "export", label: "Vector & narrative export", icon: Download },
+      { id: "bridge", label: "External bridge", icon: Link2 },
+    ],
+  },
 ];
+
+const ALL_TOOLS = TOOL_GROUPS.flatMap((g) => g.tools);
+
 type Stroke = { id: string; points: { x: number; y: number }[]; at: number };
 const saveFile = (text: string, name: string, type: string) => {
   const url = URL.createObjectURL(new Blob([text], { type }));
@@ -114,6 +143,7 @@ const saveFile = (text: string, name: string, type: string) => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 const downloadSlug = (s: string) => s.replace(/[^a-z0-9]+/gi, "-").slice(0, 60) || "canvas";
+
 export function CanvasStudio({
   onEvidence,
   onPresentChange,
@@ -550,30 +580,37 @@ export function CanvasStudio({
             </Button>
           </div>
           <div className="tw-studio-body">
-            <nav aria-label="Canvas tools" className="tw-studio-nav">
-              {TOOLS.map((t) => (
-                <Button
-                  key={t.id}
-                  variant={tool === t.id ? "secondary" : "ghost"}
-                  title={t.label}
-                  className="justify-start text-xs"
-                  onClick={() => {
-                    setTool(t.id);
-                    setError("");
-                    setMessage("");
-                    if (t.id === "presence") setLive(true);
-                    if (t.id === "discourse") setLab(true);
-                    if (t.id === "evidence") onEvidence();
-                  }}
-                >
-                  <t.icon className="h-4 w-4" />
-                  <span>{t.label}</span>
-                </Button>
+            <nav aria-label="Canvas tools" className="tw-studio-nav flex flex-col gap-1 overflow-y-auto p-2">
+              {TOOL_GROUPS.map((group) => (
+                <div key={group.label} className="mb-2">
+                  <div className="sticky top-0 bg-card px-2 py-1.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 shadow-sm">
+                    {group.label}
+                  </div>
+                  {group.tools.map((t) => (
+                    <Button
+                      key={t.id}
+                      variant={tool === t.id ? "secondary" : "ghost"}
+                      title={t.label}
+                      className="w-full justify-start text-xs h-9 px-2"
+                      onClick={() => {
+                        setTool(t.id);
+                        setError("");
+                        setMessage("");
+                        if (t.id === "presence") setLive(true);
+                        if (t.id === "discourse") setLab(true);
+                        if (t.id === "evidence") onEvidence();
+                      }}
+                    >
+                      <t.icon className="mr-2 h-4 w-4 shrink-0" />
+                      <span className="truncate">{t.label}</span>
+                    </Button>
+                  ))}
+                </div>
               ))}
             </nav>
             <section className="tw-studio-content">
               <h3 className="mb-5 flex items-center gap-2 font-display text-xl">
-                {TOOLS.find((t) => t.id === tool)?.label}
+                {ALL_TOOLS.find((t) => t.id === tool)?.label}
               </h3>
               {tool === "presence" && (
                 <Button onClick={() => setLive(true)}>
