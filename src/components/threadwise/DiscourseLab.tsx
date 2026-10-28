@@ -7,7 +7,7 @@ import { useThread } from "@/lib/threadwise/store";
 import { streamTask } from "@/lib/threadwise/ai-client";
 import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type CodeId, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
 import { toast } from "sonner";
-import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Tooltip, PolarRadiusAxis } from "recharts";
+import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PolarRadiusAxis } from "recharts";
 
 type View = "read" | "compare" | "count" | "investigate";
 const uid = () => crypto.randomUUID();
@@ -97,12 +97,10 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     return (
       <div className="relative flex flex-col items-center justify-center w-full h-full min-h-[140px]">
         <svg width="120" height="100" viewBox="0 0 120 100" className="overflow-visible">
-          {/* Background track - soft pink */}
-          <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="#FBD0D4" strokeWidth="10" strokeLinecap="round" />
-          {/* Active track - terracotta */}
-          <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#C24A35" strokeWidth="10" strokeLinecap="round" />
-          <circle cx={cx} cy={cy} r="5" fill="#1A1A1A" />
-          <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
+          <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="var(--border)" strokeWidth="8" strokeLinecap="round" />
+          <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#C24A35" strokeWidth="8" strokeLinecap="round" />
+          <circle cx={cx} cy={cy} r="4" fill="var(--foreground)" />
+          <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="var(--foreground)" strokeWidth="2" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
         </svg>
         <div className="absolute bottom-0 text-center">
           <span className="font-display text-4xl text-[#C24A35]">{score}</span>
@@ -113,52 +111,48 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   };
 
   return (
-    <div className="tw-lab fixed inset-0 z-50 flex flex-col bg-[#FDFBF7] font-sans" role="dialog" aria-modal="true">
-      
-      {/* EDITORIAL BACKGROUND */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#FDF0B6] rounded-full blur-[150px] opacity-20 pointer-events-none translate-x-1/3 -translate-y-1/3" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#CBE6F9] rounded-full blur-[150px] opacity-30 pointer-events-none -translate-x-1/3 translate-y-1/3" />
+    <div className="tw-lab fixed inset-0 z-50 flex flex-col bg-background font-sans" role="dialog" aria-modal="true">
+      {/* BACKGROUND - Aligned with Canvas */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
 
-      {/* HEADER */}
-      <header className="relative z-10 flex items-center justify-between border-b border-black/10 bg-white/60 px-6 py-4 backdrop-blur-xl shrink-0">
+      <header className="relative z-10 flex items-center justify-between border-b px-6 py-4 bg-card">
         <div>
-          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[#C24A35]">
-            <Crosshair className="h-3 w-3" /> Intelligence OS / Classified
+          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            <Crosshair className="h-3 w-3" /> The Reading Room
           </span>
-          <h2 className="font-display text-3xl text-[#1A1A1A]">Discourse Lab</h2>
+          <h2 className="font-display text-3xl text-foreground">Discourse Lab</h2>
         </div>
-        <nav className="flex gap-1 rounded-xl bg-black/5 p-1">
+        <nav className="flex gap-1 bg-muted/50 p-1 rounded-xl border">
           {([ ["investigate", "Dossier", ShieldAlert], ["read", "Source Reading", BookOpenText], ["compare", "Text Diff", Columns2], ["count", "Metrics", Hash] ] as const).map(([id, label, Icon]) => (
-            <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`rounded-lg transition-all ${view === id ? "bg-[#1A1A1A] text-white shadow-md" : "text-muted-foreground hover:text-[#1A1A1A]"}`}>
+            <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`rounded-lg transition-all ${view === id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
               <Icon className="mr-2 h-4 w-4" />{label}
             </Button>
           ))}
         </nav>
-        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-black/5"><X /></Button>
+        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full"><X /></Button>
       </header>
 
       <div className="relative z-10 flex flex-1 overflow-hidden">
         {/* LEFT SIDEBAR */}
-        <aside className="flex w-72 shrink-0 flex-col border-r border-black/10 bg-white/40 backdrop-blur-md">
-          <div className="border-b border-black/10 p-5">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50 block mb-3">Indexed Sources · {docs.length}</span>
+        <aside className="flex w-72 shrink-0 flex-col border-r bg-card/50">
+          <div className="border-b p-5">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground block mb-3">Indexed Sources · {docs.length}</span>
             <div className="space-y-3">
-              <Input placeholder="Document title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="h-9 border-black/10 bg-white text-xs font-medium" />
-              <Textarea rows={3} placeholder="Paste raw text..." value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} className="resize-none border-black/10 bg-white text-xs" />
-              <Button size="sm" className="h-9 w-full bg-[#1A1A1A] text-xs text-white" disabled={!draft.title.trim() || !draft.text.trim()} onClick={() => {
+              <Input placeholder="Document title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="h-9 text-xs font-medium" />
+              <Textarea rows={3} placeholder="Paste raw text..." value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} className="resize-none text-xs" />
+              <Button size="sm" className="h-9 w-full text-xs" disabled={!draft.title.trim() || !draft.text.trim()} onClick={() => {
                 if (!draft.title.trim() || !draft.text.trim()) return; 
                 const doc = { id: uid(), ...draft, title: draft.title.trim(), text: draft.text.trim() }; 
                 save({ docs: [...corpus.docs, doc] }); setActiveId(doc.id); setDraft({ title: "", speaker: "", date: "", occasion: "", audience: "", text: "" }); 
-              }}><Plus className="mr-1 h-3 w-3" /> Add to Corpus</Button>
+              }}><Plus className="mr-1 h-3 w-3" /> Index Document</Button>
             </div>
           </div>
           <ol className="flex-1 space-y-1 overflow-y-auto p-3">
             {docs.map((doc) => (
-              <li key={doc.id} className={`group rounded-lg transition-all ${doc.id === active?.id ? "border border-black/10 bg-white shadow-sm" : "border border-transparent hover:bg-black/5"}`}>
+              <li key={doc.id} className={`group rounded-lg transition-all ${doc.id === active?.id ? "border bg-card shadow-sm" : "border border-transparent hover:bg-muted/50"}`}>
                 <button className="w-full p-4 text-left" onClick={() => { setActiveId(doc.id); setView("read"); }}>
-                  <small className="mb-1 block font-mono text-[10px] text-[#C24A35]">{doc.date || "undated"}</small>
-                  <b className="block truncate font-display text-sm">{doc.title}</b>
+                  <small className="mb-1 block font-mono text-[10px] text-muted-foreground">{doc.date || "undated"}</small>
+                  <b className="block truncate font-display text-sm text-foreground">{doc.title}</b>
                 </button>
               </li>
             ))}
@@ -166,44 +160,44 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
         </aside>
 
         {/* MAIN CONTENT AREA */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-background/50">
           
           {view === "investigate" && (
             <div className="mx-auto max-w-6xl p-8 pb-24">
               
               <div className="mb-8 flex items-end justify-between">
                 <div>
-                  <h3 className="mb-2 font-display text-5xl tracking-tight text-[#1A1A1A]">Intelligence Dossier</h3>
-                  <p className="max-w-xl text-sm text-[#1A1A1A]/60">Cross-reference global sources, extract quantitative sentiment signals, and map strategic blind spots.</p>
+                  <h3 className="mb-2 font-display text-4xl tracking-tight text-foreground">Intelligence Dossier</h3>
+                  <p className="max-w-xl text-sm text-muted-foreground">Cross-reference global sources, extract quantitative sentiment signals, and map strategic blind spots.</p>
                 </div>
               </div>
 
               {/* URL INPUT COMMAND BAR */}
-              <div className="mb-10 flex items-center gap-2 rounded-2xl border border-black/10 bg-white p-2 shadow-lg">
+              <div className="mb-10 flex items-center gap-2 rounded-xl border bg-card p-2 shadow-sm">
                 <div className="flex flex-1 gap-2">
                   {urls.map((url, i) => (
                     <div key={i} className="relative flex-1">
-                      <Globe className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#C24A35]" />
-                      <Input value={url} placeholder="https://foreignaffairs.com/..." className="h-12 border-transparent bg-[#FDFBF7] pl-11 font-mono text-sm focus-visible:border-[#C24A35] focus-visible:ring-[#C24A35]" onChange={(e) => { const newUrls = [...urls]; newUrls[i] = e.target.value; setUrls(newUrls); }} />
+                      <Globe className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input value={url} placeholder="https://foreignaffairs.com/..." className="h-11 border-transparent bg-muted/30 pl-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-ring" onChange={(e) => { const newUrls = [...urls]; newUrls[i] = e.target.value; setUrls(newUrls); }} />
                       {urls.length > 1 && <Button variant="ghost" size="icon" className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2" onClick={() => setUrls(urls.filter((_, idx) => idx !== i))}><X className="h-3 w-3 text-muted-foreground" /></Button>}
                     </div>
                   ))}
                 </div>
-                <Button variant="outline" size="icon" onClick={() => setUrls([...urls, ""])} className="h-12 w-12 shrink-0 border-black/10"><Plus className="h-5 w-5" /></Button>
-                <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="h-12 shrink-0 bg-[#1A1A1A] px-8 text-white hover:bg-[#333]">
-                  {isAnalyzing ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</> : <><Sparkles className="mr-2 h-5 w-5" /> Analyze Sources</>}
+                <Button variant="outline" size="icon" onClick={() => setUrls([...urls, ""])} className="h-11 w-11 shrink-0"><Plus className="h-4 w-4" /></Button>
+                <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="h-11 shrink-0 px-8">
+                  {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</> : <><Sparkles className="mr-2 h-4 w-4" /> Analyze Sources</>}
                 </Button>
               </div>
 
-              {analysisError && <p className="mb-6 rounded-xl border border-[#C24A35]/20 bg-[#FDF6F4] p-4 text-sm text-[#C24A35]">{analysisError}</p>}
+              {analysisError && <p className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{analysisError}</p>}
 
               {isAnalyzing && (
                 <div className="py-24 text-center">
                   <div className="relative mb-8 inline-block">
-                    <div className="h-24 w-24 animate-spin rounded-full border-2 border-[#E5E5E5] border-t-[#C24A35]"></div>
-                    <Fingerprint className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 text-[#C24A35] animate-pulse" />
+                    <div className="h-16 w-16 animate-spin rounded-full border-2 border-muted border-t-foreground"></div>
+                    <Fingerprint className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-foreground animate-pulse" />
                   </div>
-                  <h4 className="mb-2 font-display text-3xl">Deconstructing Narratives...</h4>
+                  <h4 className="mb-2 font-display text-2xl text-foreground">Deconstructing Narratives...</h4>
                   <p className="animate-pulse font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Entity Extraction → Semantic Mapping → Contradiction Analysis</p>
                 </div>
               )}
@@ -211,37 +205,37 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
               {analysis && !isAnalyzing && (
                 <div className="animate-in fade-in slide-in-from-bottom-8 space-y-6 duration-700">
                   
-                  {/* QUANT DASHBOARD ROW - COLORFUL PASTELS */}
+                  {/* QUANT DASHBOARD ROW */}
                   <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 items-start">
                     
-                    {/* Narrative Radar - Soft Blue Card */}
-                    <div className="flex flex-col rounded-2xl border-2 border-[#1A1A1A] bg-[#CBE6F9] p-6 shadow-[4px_4px_0px_#1A1A1A] relative overflow-hidden h-auto">
+                    {/* Narrative Radar */}
+                    <div className="flex flex-col rounded-xl border bg-card p-6 shadow-sm relative overflow-hidden h-auto">
                       <div className="mb-2 flex items-center gap-2 relative z-10">
-                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]">Narrative Profile</h4>
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Narrative Profile</h4>
                       </div>
                       <div className="h-64 w-full relative z-10">
                         <ResponsiveContainer width="100%" height="100%">
                           <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
-                            <PolarGrid stroke="#1A1A1A" strokeOpacity={0.2} strokeDasharray="3 3" />
-                            <PolarAngleAxis dataKey="subject" tick={{ fill: '#1A1A1A', fontSize: 10, fontFamily: 'var(--font-mono)', fontWeight: 'bold' }} />
+                            <PolarGrid stroke="var(--border)" strokeDasharray="3 3" />
+                            <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: 'var(--font-mono)' }} />
                             <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                            <Radar name="Analysis" dataKey="A" stroke="#1A1A1A" strokeWidth={2} fill="#FFFFFF" fillOpacity={0.5} />
+                            <Radar name="Analysis" dataKey="A" stroke="#C24A35" strokeWidth={2} fill="#C24A35" fillOpacity={0.1} />
                           </RadarChart>
                         </ResponsiveContainer>
                       </div>
                     </div>
 
-                    {/* Entity Network - Warm Yellow Card */}
-                    <div className="flex flex-col rounded-2xl border-2 border-[#1A1A1A] bg-[#FDF0B6] p-6 shadow-[4px_4px_0px_#1A1A1A] relative overflow-hidden h-auto">
+                    {/* Entity Network */}
+                    <div className="flex flex-col rounded-xl border bg-card p-6 shadow-sm relative overflow-hidden h-auto">
                       <div className="mb-6 flex items-center gap-2 relative z-10">
-                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]">Entity Network</h4>
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Key Actors</h4>
                       </div>
                       <div className="flex flex-1 flex-wrap content-start gap-2 relative z-10">
                         {analysis.entities?.map((entity: string, i: number) => {
                           const isCentral = i < 2;
-                          const color = isCentral ? "bg-[#1A1A1A] text-white border-[#1A1A1A]" : "bg-white text-[#1A1A1A] border-[#1A1A1A]";
+                          const color = isCentral ? "bg-foreground text-background border-transparent" : "bg-muted/50 text-foreground border-border";
                           return (
-                            <span key={i} className={`px-3 py-1.5 ${color} border-2 rounded-full text-xs font-display font-medium shadow-sm hover:-translate-y-0.5 transition-transform cursor-default`}>
+                            <span key={i} className={`px-3 py-1.5 ${color} border rounded-md text-xs font-medium hover:-translate-y-0.5 transition-transform cursor-default`}>
                               {entity}
                             </span>
                           );
@@ -249,43 +243,41 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       </div>
                     </div>
 
-                    {/* Contradiction Gauge - Soft Pink Card */}
-                    <div className="flex flex-col rounded-2xl border-2 border-[#1A1A1A] bg-[#FBD0D4] p-6 shadow-[4px_4px_0px_#1A1A1A] relative overflow-hidden h-auto">
+                    {/* Contradiction Gauge */}
+                    <div className="flex flex-col rounded-xl border bg-card p-6 shadow-sm relative overflow-hidden h-auto">
                       <div className="mb-2 flex items-center gap-2 relative z-10">
                         <ShieldAlert className="h-4 w-4 text-[#C24A35]" />
-                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35]">Contradiction Index</h4>
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Contradiction Index</h4>
                       </div>
                       <div className="flex-1 flex flex-col items-center justify-center py-4">
                         <ContradictionGauge score={analysis.quantData?.contradictionIndex || 50} />
-                        <p className="text-[10px] text-center font-mono font-bold uppercase tracking-widest text-[#C24A35] mt-2">High friction detected</p>
+                        <p className="text-[10px] text-center font-mono uppercase tracking-widest text-muted-foreground mt-2">High friction detected</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* THE BIG PICTURE - Board Mint Card (The Hero) */}
-                  <section className="relative rounded-2xl border-2 border-[#1A1A1A] bg-[#75F09A] p-10 shadow-[8px_8px_0px_#1A1A1A] mt-10">
-                    <div className="absolute top-6 right-6 rotate-12 border-4 border-[#1A1A1A] text-[#1A1A1A] px-4 py-1 font-mono text-xl font-bold uppercase tracking-widest opacity-20 select-none">
-                      Classified
-                    </div>
+                  {/* THE BIG PICTURE - Editorial Block */}
+                  <section className="relative rounded-xl border bg-card p-10 shadow-sm mt-8 overflow-hidden">
+                    <div className="absolute left-0 top-0 h-full w-1 bg-[#C24A35]" />
                     <div className="mb-6 flex items-center gap-3">
-                      <div className="bg-[#1A1A1A] p-2 rounded-lg"><FileWarning className="h-5 w-5 text-[#75F09A]" /></div>
-                      <h4 className="font-mono text-sm font-bold uppercase tracking-widest text-[#1A1A1A]">The Big Picture</h4>
+                      <div className="bg-muted p-2 rounded-lg"><FileWarning className="h-5 w-5 text-foreground" /></div>
+                      <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">The Big Picture</h4>
                     </div>
-                    <p className="font-display text-3xl leading-relaxed text-[#1A1A1A] first-letter:text-7xl first-letter:font-bold first-letter:float-left first-letter:mr-3 first-letter:mt-2">{analysis.conclusion}</p>
+                    <p className="font-display text-2xl leading-relaxed text-foreground first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:mt-1">{analysis.conclusion}</p>
                   </section>
 
                   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 mt-8">
-                    {/* Evidence Trail - Sage Green Headers */}
-                    <section className="rounded-2xl border-2 border-[#1A1A1A] bg-white p-6 shadow-[4px_4px_0px_#1A1A1A]">
-                      <h4 className="mb-6 flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest text-[#1A1A1A] border-b-2 border-[#1A1A1A] pb-4"><Check className="h-4 w-4" /> Documented Evidence</h4>
+                    {/* Evidence Trail */}
+                    <section className="rounded-xl border bg-card p-6 shadow-sm">
+                      <h4 className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><Check className="h-4 w-4" /> Documented Evidence</h4>
                       <div className="space-y-4">
                         {analysis.evidence?.map((item: any, i: number) => (
-                          <div key={i} className="group relative flex flex-col rounded-xl border-2 border-[#1A1A1A] bg-[#FDFBF7] p-5 transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_#1A1A1A]">
-                            <b className="mb-2 block font-display text-lg text-[#1A1A1A]">{item.title}</b>
-                            <p className="mb-4 flex-1 text-xs leading-relaxed text-[#1A1A1A]/70">{item.body}</p>
-                            <div className="mt-auto flex items-center justify-between border-t border-[#1A1A1A]/10 pt-3">
-                              <span className="max-w-[200px] truncate font-mono text-[9px] font-bold uppercase tracking-wider text-[#2D6A65]">{item.source}</span>
-                              <Button size="sm" variant={plantedIds[`ev-${i}`] ? "secondary" : "outline"} className={`h-8 rounded-full px-4 text-[10px] uppercase tracking-wider font-bold border-2 border-[#1A1A1A] ${plantedIds[`ev-${i}`] ? "bg-[#1A1A1A] text-white" : "bg-white text-[#1A1A1A] hover:bg-[#FDF0B6]"}`} onClick={() => plantAnalysis(`ev-${i}`, "evidence", item.title, item.body, item.source)}>
+                          <div key={i} className="group relative flex flex-col rounded-lg border bg-background p-5 transition-all hover:border-border-strong hover:shadow-sm">
+                            <b className="mb-2 block font-display text-base text-foreground">{item.title}</b>
+                            <p className="mb-4 flex-1 text-xs leading-relaxed text-muted-foreground">{item.body}</p>
+                            <div className="mt-auto flex items-center justify-between border-t pt-3">
+                              <span className="max-w-[200px] truncate font-mono text-[9px] uppercase tracking-wider text-muted-foreground">{item.source}</span>
+                              <Button size="sm" variant={plantedIds[`ev-${i}`] ? "secondary" : "outline"} className={`h-8 rounded-md px-4 text-[10px] uppercase tracking-wider font-bold ${plantedIds[`ev-${i}`] ? "bg-foreground text-background" : ""}`} onClick={() => plantAnalysis(`ev-${i}`, "evidence", item.title, item.body, item.source)}>
                                 {plantedIds[`ev-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
                               </Button>
                             </div>
@@ -294,30 +286,30 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       </div>
                     </section>
 
-                    {/* Hypotheses & Blind Spots - Lilac & Pink Cards */}
+                    {/* Hypotheses & Blind Spots */}
                     <div className="space-y-6">
-                      <section className="rounded-2xl border-2 border-[#1A1A1A] bg-white p-6 shadow-[4px_4px_0px_#1A1A1A]">
-                        <h4 className="mb-4 flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest text-[#1A1A1A] border-b-2 border-[#1A1A1A] pb-4"><Sparkles className="h-4 w-4 text-[#6B4C7A]" /> Strategic Hypotheses</h4>
+                      <section className="rounded-xl border bg-card p-6 shadow-sm">
+                        <h4 className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><Sparkles className="h-4 w-4" /> Strategic Hypotheses</h4>
                         <div className="space-y-3">
                           {analysis.hypotheses?.map((item: any, i: number) => (
-                            <div key={i} className="flex flex-col rounded-xl border-2 border-[#1A1A1A] bg-[#E8DAFB] p-5">
-                              <b className="mb-1 block font-display text-base text-[#1A1A1A]">{item.title}</b>
-                              <p className="mb-3 text-xs leading-relaxed text-[#1A1A1A]/80">{item.body}</p>
-                              <Button size="sm" variant="ghost" className={`h-8 self-end rounded-full text-[10px] font-bold uppercase tracking-wider border-2 border-[#1A1A1A] ${plantedIds[`hyp-${i}`] ? "bg-[#1A1A1A] text-white" : "bg-white text-[#1A1A1A] hover:bg-[#FBD0D4]"}`} onClick={() => plantAnalysis(`hyp-${i}`, "hypothesis", item.title, item.body)}>
+                            <div key={i} className="flex flex-col rounded-lg border bg-background p-5">
+                              <b className="mb-1 block font-display text-base text-foreground">{item.title}</b>
+                              <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{item.body}</p>
+                              <Button size="sm" variant="ghost" className={`h-8 self-end rounded-md text-[10px] font-bold uppercase tracking-wider ${plantedIds[`hyp-${i}`] ? "text-foreground bg-muted" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`} onClick={() => plantAnalysis(`hyp-${i}`, "hypothesis", item.title, item.body)}>
                                 {plantedIds[`hyp-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
                               </Button>
                             </div>
                           ))}
                         </div>
                       </section>
-                      <section className="rounded-2xl border-2 border-[#1A1A1A] bg-white p-6 shadow-[4px_4px_0px_#1A1A1A]">
-                        <h4 className="mb-4 flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest text-[#1A1A1A] border-b-2 border-[#1A1A1A] pb-4"><AlertTriangle className="h-4 w-4 text-[#C24A35]" /> Blind Spots</h4>
+                      <section className="rounded-xl border bg-card p-6 shadow-sm">
+                        <h4 className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><AlertTriangle className="h-4 w-4" /> Blind Spots</h4>
                         <div className="space-y-3">
                           {analysis.questions?.map((item: any, i: number) => (
-                            <div key={i} className="flex flex-col rounded-xl border-2 border-[#1A1A1A] bg-[#FBD0D4] p-5">
-                              <b className="mb-1 block font-display text-base text-[#1A1A1A]">{item.title}</b>
-                              <p className="mb-3 text-xs leading-relaxed text-[#1A1A1A]/80">{item.body}</p>
-                              <Button size="sm" variant="ghost" className={`h-8 self-end rounded-full text-[10px] font-bold uppercase tracking-wider border-2 border-[#1A1A1A] ${plantedIds[`q-${i}`] ? "bg-[#1A1A1A] text-white" : "bg-white text-[#1A1A1A] hover:bg-[#FDF0B6]"}`} onClick={() => plantAnalysis(`q-${i}`, "question", item.title, item.body)}>
+                            <div key={i} className="flex flex-col rounded-lg border bg-background p-5">
+                              <b className="mb-1 block font-display text-base text-[#C24A35]">{item.title}</b>
+                              <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{item.body}</p>
+                              <Button size="sm" variant="ghost" className={`h-8 self-end rounded-md text-[10px] font-bold uppercase tracking-wider ${plantedIds[`q-${i}`] ? "text-[#C24A35] bg-[#C24A35]/10" : "text-[#C24A35] hover:bg-[#C24A35]/10"}`} onClick={() => plantAnalysis(`q-${i}`, "question", item.title, item.body)}>
                                 {plantedIds[`q-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
                               </Button>
                             </div>
@@ -334,24 +326,23 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           {/* READ VIEW */}
           {view === "read" && active && (
             <div className="mx-auto flex max-w-6xl gap-8 p-8 pb-24">
-              <article className="flex-1 rounded-2xl border-2 border-[#1A1A1A] bg-white p-12 shadow-[8px_8px_0px_#1A1A1A] relative">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#C24A35] to-[#FBD0D4]" />
-                <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-widest text-[#C24A35]">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
-                <h3 className="mb-8 font-display text-5xl leading-tight">{active.title}</h3>
-                {active.audience && <p className="mb-8 rounded-lg bg-[#FDFBF7] border-2 border-[#1A1A1A] p-4 text-sm"><b className="mb-1 block font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Addressed to</b> {active.audience}</p>}
-                <div className="font-serif text-xl leading-loose text-[#1A1A1A]/80" onMouseUp={() => { const q = window.getSelection()?.toString().trim() ?? ""; if (q.length > 3) setSelection({ quote: q, doc: active }); }}>
+              <article className="flex-1 rounded-xl border bg-card p-12 shadow-sm relative">
+                <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
+                <h3 className="mb-8 font-display text-4xl leading-tight">{active.title}</h3>
+                {active.audience && <p className="mb-8 rounded-lg bg-muted/50 p-4 text-sm"><b className="mb-1 block font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Addressed to</b> {active.audience}</p>}
+                <div className="font-serif text-lg leading-loose text-foreground/80" onMouseUp={() => { const q = window.getSelection()?.toString().trim() ?? ""; if (q.length > 3) setSelection({ quote: q, doc: active }); }}>
                   {active.text}
                 </div>
               </article>
               <aside className="w-80 shrink-0">
-                <p className="mb-4 font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1A1A] border-b-2 border-[#1A1A1A] pb-2">Margin Notes</p>
+                <p className="mb-4 font-mono text-[10px] uppercase tracking-widest text-muted-foreground border-b pb-2">Margin Notes</p>
                 {corpus.annotations.filter((mark) => mark.docId === active.id).length === 0 && <p className="text-sm leading-relaxed text-muted-foreground italic mt-4">Select a passage to code it. Coded quotes become evidence you can place on the canvas.</p>}
                 <div className="space-y-3 mt-4">
                   {corpus.annotations.filter((mark) => mark.docId === active.id).map((mark) => (
-                    <div className="rounded-xl border-2 border-[#1A1A1A] bg-[#FDF0B6] p-5 shadow-[4px_4px_0px_#1A1A1A]" key={mark.id} data-code={mark.code}>
-                      <small className="mb-3 block font-mono text-[9px] font-bold uppercase tracking-wider text-[#1A1A1A]">{codeLabel(mark.code)}</small>
-                      <blockquote className="mb-4 font-serif text-sm italic leading-relaxed text-[#1A1A1A]/80 border-l-2 border-[#1A1A1A] pl-3">“{clip(mark.quote, 150)}”</blockquote>
-                      <Button size="sm" variant="outline" className="h-8 w-full rounded-full border-2 border-[#1A1A1A] text-[10px] uppercase tracking-wider font-bold bg-white text-[#1A1A1A] hover:bg-[#CBE6F9]" onClick={() => plant(active, mark.quote, codeLabel(mark.code))}><MapPin className="mr-1 h-3 w-3" />Plant on Canvas</Button>
+                    <div className="rounded-xl border bg-card p-5 shadow-sm" key={mark.id} data-code={mark.code}>
+                      <small className="mb-3 block font-mono text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{codeLabel(mark.code)}</small>
+                      <blockquote className="mb-4 font-serif text-sm italic leading-relaxed text-foreground/80 border-l-2 border-[#C24A35] pl-3">“{clip(mark.quote, 150)}”</blockquote>
+                      <Button size="sm" variant="outline" className="h-8 w-full rounded-md text-[10px] uppercase tracking-wider font-bold" onClick={() => plant(active, mark.quote, codeLabel(mark.code))}><MapPin className="mr-1 h-3 w-3" />Plant on Canvas</Button>
                     </div>
                   ))}
                 </div>
@@ -363,29 +354,28 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           {view === "compare" && (
             <div className="mx-auto max-w-7xl p-8 pb-24">
               <div className="mb-8">
-                <h3 className="mb-2 font-display text-5xl">Text Diff</h3>
-                <p className="text-sm text-[#1A1A1A]/60">Select two sources to compare their language and framing side-by-side.</p>
+                <h3 className="mb-2 font-display text-4xl">Compare Texts</h3>
+                <p className="text-sm text-muted-foreground">Select two sources to compare their language and framing side-by-side.</p>
               </div>
               <div className="mb-8 grid grid-cols-2 gap-6">
                 {[0, 1].map((index) => (
-                  <select key={index} className="rounded-xl border-2 border-[#1A1A1A] bg-white p-4 text-sm font-medium shadow-[4px_4px_0px_#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#C24A35]" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
+                  <select key={index} className="rounded-lg border bg-card p-3 text-sm font-medium shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
                     <option value="" disabled>Select a document</option>
                     {docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}
                   </select>
                 ))}
               </div>
-              <div className="grid grid-cols-2 gap-8 relative">
-                <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-[#1A1A1A] -translate-x-1/2 hidden md:block" />
+              <div className="grid grid-cols-2 gap-6">
                 {compared.map((doc) => (
-                  <article className="rounded-2xl border-2 border-[#1A1A1A] bg-white p-10 shadow-[8px_8px_0px_#1A1A1A]" key={doc.id}>
-                    <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#C24A35]">{doc.speaker} · {doc.date}</p>
-                    <h3 className="mb-8 font-display text-3xl">{doc.title}</h3>
-                    <div className="font-serif text-base leading-relaxed text-[#1A1A1A]/70" onMouseUp={() => { const q = window.getSelection()?.toString().trim() ?? ""; if (q.length > 3) setSelection({ quote: q, doc }); }}>
+                  <article className="rounded-xl border bg-card p-10 shadow-sm" key={doc.id}>
+                    <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{doc.speaker} · {doc.date}</p>
+                    <h3 className="mb-6 font-display text-2xl">{doc.title}</h3>
+                    <div className="font-serif text-sm leading-relaxed text-foreground/70" onMouseUp={() => { const q = window.getSelection()?.toString().trim() ?? ""; if (q.length > 3) setSelection({ quote: q, doc }); }}>
                       {doc.text}
                     </div>
                   </article>
                 ))}
-                {compared.length < 2 && <div className="col-span-2 py-20 text-center font-display text-3xl text-muted-foreground">Select two documents to compare them.</div>}
+                {compared.length < 2 && <div className="col-span-2 py-20 text-center font-display text-2xl text-muted-foreground">Select two documents to compare them.</div>}
               </div>
             </div>
           )}
@@ -394,32 +384,32 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           {view === "count" && (
             <div className="mx-auto max-w-5xl p-8 pb-24">
               <div className="mb-10">
-                <h3 className="mb-2 font-display text-5xl">Language Trajectory</h3>
-                <p className="text-sm text-[#1A1A1A]/60">Track phrases across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p>
+                <h3 className="mb-2 font-display text-4xl">Language Trajectory</h3>
+                <p className="text-sm text-muted-foreground">Track phrases across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p>
               </div>
               
               <form className="mb-8 flex gap-3" onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}>
-                <Input value={term} placeholder="Track a word or phrase (e.g. 'security', 'border')" onChange={(e) => setTerm(e.target.value)} className="h-14 border-2 border-[#1A1A1A] bg-white text-lg rounded-xl px-6 shadow-[4px_4px_0px_#1A1A1A]" />
-                <Button className="h-14 bg-[#1A1A1A] border-2 border-[#1A1A1A] px-10 rounded-xl text-white text-base shadow-[4px_4px_0px_#C24A35] hover:bg-[#333] hover:-translate-y-0.5 transition-transform">Track</Button>
+                <Input value={term} placeholder="Track a word or phrase (e.g. 'security', 'border')" onChange={(e) => setTerm(e.target.value)} className="h-12 text-base rounded-lg" />
+                <Button className="h-12 px-8 text-base">Track</Button>
               </form>
               
               <div className="mb-12 flex flex-wrap gap-2">
                 {terms.map((item) => (
-                  <button key={item} className="flex items-center gap-2 rounded-full border-2 border-[#1A1A1A] bg-[#CBE6F9] px-5 py-2.5 text-sm font-medium text-[#1A1A1A] transition-colors hover:bg-[#A9D5F5] shadow-[2px_2px_0px_#1A1A1A]" onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>
+                  <button key={item} className="flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted" onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>
                     {item} <X className="h-4 w-4" />
                   </button>
                 ))}
               </div>
 
-              <div className="mb-16 space-y-6 rounded-2xl border-2 border-[#1A1A1A] bg-white p-8 shadow-[8px_8px_0px_#1A1A1A]">
+              <div className="mb-16 space-y-6 rounded-xl border bg-card p-8 shadow-sm">
                 {termCounts.map(({ doc, values }) => (
-                  <div key={doc.id} className="flex items-center justify-between border-b-2 border-[#1A1A1A]/10 pb-6 last:border-0 last:pb-0">
-                    <b className="font-display text-xl max-w-[300px] truncate">{doc.date || "—"} · {doc.title}</b>
+                  <div key={doc.id} className="flex items-center justify-between border-b pb-6 last:border-0 last:pb-0">
+                    <b className="font-display text-lg max-w-[300px] truncate">{doc.date || "—"} · {doc.title}</b>
                     <div className="flex gap-8">
                       {values.map((value) => (
                         <div key={value.phrase} className="text-right">
-                          <span className="block font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">{value.phrase}</span>
-                          <strong className="text-3xl text-[#C24A35]">{value.rate}</strong>
+                          <span className="block font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{value.phrase}</span>
+                          <strong className="text-2xl text-foreground">{value.rate}</strong>
                           <span className="text-xs text-muted-foreground ml-1">/1k</span>
                         </div>
                       ))}
@@ -430,15 +420,15 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
               </div>
 
               <section>
-                <h3 className="mb-8 font-display text-3xl">Vocabulary Fingerprint</h3>
-                <div className="space-y-10">
+                <h3 className="mb-8 font-display text-2xl">Vocabulary Fingerprint</h3>
+                <div className="space-y-8">
                   {docs.map((doc) => (
-                    <div key={doc.id} className="flex flex-col gap-4 p-8 rounded-2xl border-2 border-[#1A1A1A] bg-[#FDFBF7] shadow-[4px_4px_0px_#1A1A1A]">
-                      <b className="text-sm font-mono font-bold uppercase tracking-widest text-[#1A1A1A]/50 border-b-2 border-[#1A1A1A] pb-2">{doc.title}</b>
+                    <div key={doc.id} className="flex flex-col gap-4">
+                      <b className="text-sm font-mono uppercase tracking-widest text-muted-foreground border-b pb-2">{doc.title}</b>
                       <div className="flex flex-wrap gap-3 mt-2">
                         {topTerms(doc.text, 15).map(([word, count], i) => {
-                          const size = count > 20 ? "text-3xl font-bold" : count > 10 ? "text-xl font-semibold" : "text-base";
-                          const color = i % 3 === 0 ? "text-[#C24A35]" : i % 3 === 1 ? "text-[#2D6A65]" : "text-[#1A1A1A]/70";
+                          const size = count > 20 ? "text-2xl font-bold" : count > 10 ? "text-lg font-semibold" : "text-base";
+                          const color = i % 3 === 0 ? "text-[#C24A35]" : i % 3 === 1 ? "text-foreground" : "text-muted-foreground";
                           return (
                             <button key={word} className={`${size} ${color} hover:opacity-60 transition-opacity font-display`} onClick={() => setTerm(word)} title={`${count} occurrences`}>
                               {word}
@@ -457,9 +447,9 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       
       {/* SELECTION TOOLBAR */}
       {selection && (
-        <div className="fixed bottom-10 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-full border-2 border-[#1A1A1A] bg-white p-3 shadow-[6px_6px_0px_#1A1A1A] animate-in slide-in-from-bottom-8">
-          <span className="px-4 font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Code as:</span>
-          {CODES.map((code) => <button key={code.id} className="rounded-full border-2 border-transparent bg-[#FDFBF7] px-4 py-2 text-xs font-medium text-[#1A1A1A] transition-colors hover:border-[#1A1A1A] hover:bg-[#E8DAFB]" onClick={() => { 
+        <div className="fixed bottom-10 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border bg-card p-2 shadow-lg animate-in slide-in-from-bottom-8">
+          <span className="px-4 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Code as:</span>
+          {CODES.map((code) => <button key={code.id} className="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" onClick={() => { 
              if (!selection) return; 
              const at = selection.doc.text.indexOf(selection.quote); 
              if (at < 0) return; 
@@ -469,8 +459,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
              setSelection(null); 
              window.getSelection()?.removeAllRanges(); 
           }}>{code.label}</button>)}
-          <Button size="sm" className="rounded-full border-2 border-[#1A1A1A] bg-[#1A1A1A] px-6 text-white font-bold uppercase tracking-wider text-[10px] hover:bg-[#333]" onClick={() => { plant(selection.doc, selection.quote); setSelection(null); }}>Plant</Button>
-          <Button variant="ghost" size="icon" className="rounded-full ml-2 hover:bg-[#FBD0D4]" onClick={() => setSelection(null)}><X className="h-4 w-4" /></Button>
+          <Button size="sm" className="rounded-md px-4 font-bold uppercase tracking-wider text-[10px]" onClick={() => { plant(selection.doc, selection.quote); setSelection(null); }}>Plant</Button>
+          <Button variant="ghost" size="icon" className="rounded-full ml-1" onClick={() => setSelection(null)}><X className="h-4 w-4" /></Button>
         </div>
       )}
     </div>
