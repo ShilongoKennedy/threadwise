@@ -25,24 +25,9 @@ function useMousePosition() {
   return mousePosition;
 }
 
-function useScrollReveal() {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
-      { threshold: 0.2 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => { if (ref.current) observer.unobserve(ref.current); };
-  }, []);
-  return { ref, isVisible };
-}
-
 // --- MAIN COMPONENT ---
 function WelcomePage() {
   const mouse = useMousePosition();
-  const boardReveal = useScrollReveal();
 
   // 3D Tilt for the MacBook
   const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 6;
@@ -75,43 +60,68 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* Red String Board */
+        /* Living Investigation Board */
         .board-container {
-          background-color: #1A1817;
+          background-color: #EFECE3;
           background-image: 
-            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 60%),
-            linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6) 0%, transparent 70%),
+            linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
           background-size: 100% 100%, 40px 40px, 40px 40px;
-          box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+          box-shadow: inset 0 0 80px rgba(0,0,0,0.05);
+          border: 1px solid rgba(0,0,0,0.05);
         }
         
+        /* Continuous Flowing Strings */
+        @keyframes flow-string {
+          to { stroke-dashoffset: -24; }
+        }
+        .red-string {
+          stroke-dasharray: 6 6;
+          animation: flow-string 1.5s linear infinite;
+        }
+
+        /* Floating Cards */
+        @keyframes float-card-1 {
+          0%, 100% { transform: translateY(0) rotate(-3deg); }
+          50% { transform: translateY(-8px) rotate(-2deg); }
+        }
+        @keyframes float-card-2 {
+          0%, 100% { transform: translateY(0) rotate(2deg); }
+          50% { transform: translateY(-12px) rotate(3deg); }
+        }
+        @keyframes float-card-3 {
+          0%, 100% { transform: translateY(0) rotate(1deg); }
+          50% { transform: translateY(-6px) rotate(0deg); }
+        }
+        @keyframes float-card-4 {
+          0%, 100% { transform: translateY(0) rotate(-2deg); }
+          50% { transform: translateY(-10px) rotate(-1deg); }
+        }
+
+        .card-float-1 { animation: float-card-1 6s ease-in-out infinite; }
+        .card-float-2 { animation: float-card-2 7s ease-in-out infinite; }
+        .card-float-3 { animation: float-card-3 5s ease-in-out infinite; }
+        .card-float-4 { animation: float-card-4 8s ease-in-out infinite; }
+
         .evidence-card {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          transition: all 0.3s ease;
         }
         .evidence-card:hover {
-          transform: translateY(-5px) scale(1.02);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+          animation-play-state: paused;
+          transform: scale(1.05) rotate(0deg) !important;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
           z-index: 50 !important;
         }
 
-        .red-string {
-          stroke-dasharray: 1000;
-          stroke-dashoffset: 1000;
-          transition: stroke-dashoffset 2.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .red-string.draw {
-          stroke-dashoffset: 0;
-        }
-
         .pin {
-          width: 12px;
-          height: 12px;
+          width: 14px;
+          height: 14px;
           border-radius: 50%;
           background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
           box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset -2px -2px 4px rgba(0,0,0,0.2);
           position: absolute;
-          top: -6px;
+          top: -7px;
           left: 50%;
           transform: translateX(-50%);
           z-index: 10;
@@ -354,34 +364,31 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE RED STRING INVESTIGATION BOARD (Option 5) */}
-        <section 
-          ref={boardReveal.ref}
-          className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center"
-        >
+        {/* THE LIVING INVESTIGATION BOARD (Option 5 Refined) */}
+        <section className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center">
           <div className="text-center mb-16 relative z-30">
             <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">Every story has a thread.</h2>
             <p className="text-[#1A1A1A]/50 text-lg">Connect the evidence. Find the hidden motive.</p>
           </div>
 
-          <div className="board-container relative w-full rounded-3xl border border-white/10 overflow-hidden h-[600px] flex items-center justify-center p-8 shadow-2xl">
+          <div className="board-container relative w-full rounded-3xl overflow-hidden h-[600px] flex items-center justify-center p-8 shadow-2xl">
             
-            {/* The Red Strings (SVG) */}
+            {/* The Animated Red Strings (SVG) */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
               {/* Center to Top Left */}
-              <path d="M 600 300 Q 400 150 250 200" fill="none" stroke="#cc0000" strokeWidth="2" className={`red-string ${boardReveal.isVisible ? 'draw' : ''}`} style={{ transitionDelay: '0.5s' }} />
+              <path d="M 600 300 Q 400 150 250 200" fill="none" stroke="#C24A35" strokeWidth="2" className="red-string" />
               {/* Center to Top Right */}
-              <path d="M 600 300 Q 800 150 950 200" fill="none" stroke="#cc0000" strokeWidth="2" className={`red-string ${boardReveal.isVisible ? 'draw' : ''}`} style={{ transitionDelay: '0.8s' }} />
+              <path d="M 600 300 Q 800 150 950 200" fill="none" stroke="#C24A35" strokeWidth="2" className="red-string" />
               {/* Center to Bottom Left */}
-              <path d="M 600 300 Q 400 450 250 400" fill="none" stroke="#cc0000" strokeWidth="2" className={`red-string ${boardReveal.isVisible ? 'draw' : ''}`} style={{ transitionDelay: '1.1s' }} />
+              <path d="M 600 300 Q 400 450 250 400" fill="none" stroke="#C24A35" strokeWidth="2" className="red-string" />
               {/* Center to Bottom Right */}
-              <path d="M 600 300 Q 800 450 950 400" fill="none" stroke="#cc0000" strokeWidth="2" className={`red-string ${boardReveal.isVisible ? 'draw' : ''}`} style={{ transitionDelay: '1.4s' }} />
+              <path d="M 600 300 Q 800 450 950 400" fill="none" stroke="#C24A35" strokeWidth="2" className="red-string" />
             </svg>
 
-            {/* Evidence Cards */}
+            {/* Evidence Cards - Floating Continuously */}
             
             {/* Card 1: Top Left (URL) */}
-            <div className={`evidence-card absolute top-[15%] left-[10%] w-56 bg-white p-4 rounded-sm shadow-xl z-10 transform -rotate-3 transition-all duration-700 ${boardReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '0.2s' }}>
+            <div className="evidence-card card-float-1 absolute top-[15%] left-[10%] w-56 bg-white p-4 rounded-sm shadow-xl z-10">
               <div className="pin" />
               <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-black/50 uppercase tracking-widest border-b border-black/10 pb-2">
                 <Network className="w-3 h-3" /> Article Source
@@ -391,7 +398,7 @@ function WelcomePage() {
             </div>
 
             {/* Card 2: Top Right (Quote) */}
-            <div className={`evidence-card absolute top-[20%] right-[10%] w-60 bg-white p-4 rounded-sm shadow-xl z-10 transform rotate-2 transition-all duration-700 ${boardReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '0.4s' }}>
+            <div className="evidence-card card-float-2 absolute top-[20%] right-[10%] w-60 bg-white p-4 rounded-sm shadow-xl z-10">
               <div className="pin" />
               <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-[#D96C39] uppercase tracking-widest border-b border-black/10 pb-2">
                 <MessageSquare className="w-3 h-3" /> Official Statement
@@ -401,7 +408,7 @@ function WelcomePage() {
             </div>
 
             {/* Card 3: Bottom Left (Map/Image) */}
-            <div className={`evidence-card absolute bottom-[15%] left-[15%] w-52 bg-white p-3 rounded-sm shadow-xl z-10 transform rotate-1 transition-all duration-700 ${boardReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '0.6s' }}>
+            <div className="evidence-card card-float-3 absolute bottom-[15%] left-[15%] w-52 bg-white p-3 rounded-sm shadow-xl z-10">
               <div className="pin" />
               <div className="w-full h-24 bg-[#E5E5E5] rounded mb-2 flex items-center justify-center relative overflow-hidden">
                 <Map className="w-8 h-8 text-black/20" />
@@ -411,7 +418,7 @@ function WelcomePage() {
             </div>
 
             {/* Card 4: Bottom Right (Question) */}
-            <div className={`evidence-card absolute bottom-[20%] right-[15%] w-56 bg-[#FBD0D4] p-4 rounded-sm shadow-xl z-10 transform -rotate-2 transition-all duration-700 ${boardReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '0.8s' }}>
+            <div className="evidence-card card-float-4 absolute bottom-[20%] right-[15%] w-56 bg-[#FBD0D4] p-4 rounded-sm shadow-xl z-10">
               <div className="pin" />
               <div className="flex items-center gap-2 mb-2 text-[10px] font-mono font-bold text-black/60 uppercase tracking-widest border-b border-black/10 pb-2">
                 <Sparkles className="w-3 h-3" /> Hypothesis
@@ -420,7 +427,7 @@ function WelcomePage() {
             </div>
 
             {/* Center Card: The Big Conclusion */}
-            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 bg-[#1A1A1A] text-white p-6 rounded-lg shadow-2xl z-20 border border-white/20 transform transition-all duration-1000 ${boardReveal.isVisible ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`} style={{ transitionDelay: '1.6s' }}>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 bg-[#1A1A1A] text-white p-6 rounded-lg shadow-2xl z-20 border border-white/20">
               <div className="pin bg-gradient-to-br from-yellow-400 to-orange-500" />
               <div className="flex items-center gap-2 mb-3 text-[10px] font-mono uppercase tracking-widest text-[#D96C39]">
                 <Target className="w-4 h-4" /> The Bigger Picture
