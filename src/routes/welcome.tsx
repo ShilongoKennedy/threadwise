@@ -5,7 +5,7 @@ import {
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  Paperclip, CheckCircle2
+  Paperclip, CheckCircle2, Fingerprint
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -37,6 +37,7 @@ function WelcomePage() {
   // Colors
   const laptopYellow = "#FDF0B6"; 
   const laptopYellowDark = "#E3D398";
+  const boardMint = "#75F09A"; // Requested color
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
@@ -61,80 +62,81 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* --- THE PREMIUM INVESTIGATION BOARD --- */
+        /* --- THE POP-ART INVESTIGATION BOARD --- */
         
         .board-container {
-          background-color: #1C1E21; /* Deep charcoal/blue felt */
+          background-color: ${boardMint};
           background-image: 
-            url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
-            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 80%);
+            url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E"),
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 80%);
           box-shadow: 
-            inset 0 0 80px rgba(0,0,0,0.8),
+            inset 0 0 60px rgba(0,0,0,0.15),
             0 30px 60px -15px rgba(0,0,0,0.3);
-          border: 4px solid #2A2C30;
-          border-radius: 8px;
+          border: 16px solid ${laptopYellow};
+          border-radius: 4px;
         }
         
         /* The String Path Base */
         .string-base {
           fill: none;
-          stroke: #8C2B2B; /* Deep blood red */
-          stroke-width: 2.5;
-          filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.6));
+          stroke: #C22B2B; /* Deep blood red */
+          stroke-width: 3;
+          filter: drop-shadow(3px 6px 4px rgba(0,0,0,0.3));
         }
         
         /* The Animated Data Pulse traveling down the string */
         .string-pulse {
           fill: none;
-          stroke: #FF5A5A;
-          stroke-width: 2.5;
-          stroke-dasharray: 20 200;
+          stroke: #FF6B6B;
+          stroke-width: 3;
+          stroke-dasharray: 15 150;
           animation: flow-pulse 3s linear infinite;
-          filter: drop-shadow(0px 0px 4px rgba(255,90,90,0.8));
+          filter: drop-shadow(0px 0px 4px rgba(255,107,107,0.8));
         }
         
         @keyframes flow-pulse {
-          0% { stroke-dashoffset: 220; }
+          0% { stroke-dashoffset: 165; }
           100% { stroke-dashoffset: 0; }
         }
 
         /* Floating Paper Cards */
         @keyframes float-1 {
-          0%, 100% { transform: translateY(0) rotate(-4deg); }
-          50% { transform: translateY(-10px) rotate(-3deg); }
+          0%, 100% { transform: translateY(0) rotate(-3deg); }
+          50% { transform: translateY(-8px) rotate(-2deg); }
         }
         @keyframes float-2 {
-          0%, 100% { transform: translateY(0) rotate(3deg); }
-          50% { transform: translateY(-14px) rotate(4deg); }
+          0%, 100% { transform: translateY(0) rotate(4deg); }
+          50% { transform: translateY(-12px) rotate(5deg); }
         }
         @keyframes float-3 {
           0%, 100% { transform: translateY(0) rotate(2deg); }
-          50% { transform: translateY(-8px) rotate(1deg); }
+          50% { transform: translateY(-6px) rotate(1deg); }
         }
         @keyframes float-4 {
-          0%, 100% { transform: translateY(0) rotate(-3deg); }
-          50% { transform: translateY(-12px) rotate(-2deg); }
+          0%, 100% { transform: translateY(0) rotate(-2deg); }
+          50% { transform: translateY(-10px) rotate(-1deg); }
         }
 
-        .animate-float-1 { animation: float-1 7s ease-in-out infinite; }
-        .animate-float-2 { animation: float-2 9s ease-in-out infinite; }
-        .animate-float-3 { animation: float-3 6s ease-in-out infinite; }
-        .animate-float-4 { animation: float-4 8s ease-in-out infinite; }
+        .animate-float-1 { animation: float-1 8s ease-in-out infinite; }
+        .animate-float-2 { animation: float-2 10s ease-in-out infinite; }
+        .animate-float-3 { animation: float-3 7s ease-in-out infinite; }
+        .animate-float-4 { animation: float-4 9s ease-in-out infinite; }
 
         .paper-card {
           background-color: #FCFAF8;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
           box-shadow: 
-            0 15px 30px -5px rgba(0,0,0,0.4),
-            0 5px 15px -2px rgba(0,0,0,0.2),
+            0 15px 30px -5px rgba(0,0,0,0.3),
+            0 5px 15px -2px rgba(0,0,0,0.15),
             inset 0 0 20px rgba(255,255,255,0.5);
-          border: 1px solid rgba(0,0,0,0.05);
-          transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+          border: 1px solid rgba(0,0,0,0.08);
+          transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         
         .paper-card:hover {
           animation-play-state: paused;
           transform: scale(1.05) rotate(0deg) !important;
-          box-shadow: 0 25px 50px -10px rgba(0,0,0,0.6);
+          box-shadow: 0 25px 50px -10px rgba(0,0,0,0.5);
           z-index: 50 !important;
         }
 
@@ -148,46 +150,68 @@ function WelcomePage() {
           display: flex;
           flex-direction: column;
           align-items: center;
+          filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.3));
         }
         .pin-head {
-          width: 16px;
-          height: 16px;
+          width: 18px;
+          height: 18px;
           border-radius: 50%;
-          background: radial-gradient(circle at 35% 35%, #ff6b6b, #b30000);
+          background: radial-gradient(circle at 30% 30%, #ff7b7b, #b30000);
           box-shadow: 
-            inset -2px -2px 4px rgba(0,0,0,0.5),
-            inset 2px 2px 4px rgba(255,255,255,0.6),
-            0 4px 6px rgba(0,0,0,0.4);
+            inset -2px -2px 4px rgba(0,0,0,0.6),
+            inset 2px 2px 4px rgba(255,255,255,0.7);
           position: relative;
         }
         .pin-needle {
           width: 2px;
           height: 12px;
-          background: linear-gradient(to right, #888, #fff, #666);
-          box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+          background: linear-gradient(to right, #999, #fff, #777);
+          box-shadow: 1px 2px 2px rgba(0,0,0,0.3);
           margin-top: -2px;
         }
 
         /* Center Dossier Styling */
         .dossier-paper {
-          background-color: #F2EFE9;
-          background-image: repeating-linear-gradient(to bottom, transparent, transparent 28px, rgba(0,0,0,0.03) 28px, rgba(0,0,0,0.03) 29px);
+          background-color: #F9F7F1;
+          background-image: 
+            url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.06'/%3E%3C/svg%3E"),
+            repeating-linear-gradient(to bottom, transparent, transparent 28px, rgba(0,0,0,0.04) 28px, rgba(0,0,0,0.04) 29px);
           box-shadow: 
-            0 30px 60px -10px rgba(0,0,0,0.5),
-            inset 0 0 40px rgba(0,0,0,0.05);
+            0 40px 80px -20px rgba(0,0,0,0.4),
+            0 10px 20px rgba(0,0,0,0.1),
+            inset 0 0 40px rgba(0,0,0,0.02);
           border-radius: 2px;
+          transform: rotate(1deg);
         }
+        
+        /* TOP SECRET Stamp */
         .stamp {
-          border: 3px solid #C24A35;
-          color: #C24A35;
-          opacity: 0.8;
+          border: 4px solid #C22B2B;
+          color: #C22B2B;
+          opacity: 0.7;
           transform: rotate(-15deg);
           mix-blend-mode: multiply;
-          font-family: monospace;
-          font-weight: bold;
+          font-family: 'Courier New', Courier, monospace;
+          font-weight: 900;
           letter-spacing: 0.2em;
           text-transform: uppercase;
-          box-shadow: inset 0 0 0 1px rgba(194, 74, 53, 0.2);
+          box-shadow: inset 0 0 0 2px rgba(194, 43, 43, 0.2);
+        }
+
+        /* Tape Effect */
+        .tape {
+          position: absolute;
+          top: -10px;
+          left: 50%;
+          transform: translateX(-50%) rotate(2deg);
+          width: 80px;
+          height: 25px;
+          background-color: rgba(255, 255, 255, 0.4);
+          backdrop-filter: blur(2px);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          border-left: 1px solid rgba(255,255,255,0.5);
+          border-right: 1px solid rgba(255,255,255,0.5);
+          z-index: 30;
         }
       `}</style>
 
@@ -427,14 +451,14 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE PREMIUM LIVING INVESTIGATION BOARD */}
+        {/* THE POP-ART INVESTIGATION BOARD */}
         <section className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center">
           <div className="text-center mb-16 relative z-30">
             <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">Every story has a thread.</h2>
             <p className="text-[#1A1A1A]/50 text-lg">Connect the evidence. Find the hidden motive.</p>
           </div>
 
-          <div className="board-container relative w-full rounded-lg overflow-hidden h-[650px] flex items-center justify-center p-8">
+          <div className="board-container relative w-full rounded-sm overflow-hidden h-[650px] flex items-center justify-center p-8">
             
             {/* The Animated Red Strings */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
@@ -459,8 +483,9 @@ function WelcomePage() {
             
             {/* Card 1: Top Left (Article) */}
             <div className="paper-card animate-float-1 absolute top-[15%] left-[8%] w-60 p-5 rounded-sm z-10">
+              <div className="tape" />
               <div className="map-pin"><div className="pin-head" /><div className="pin-needle" /></div>
-              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#C24A35] uppercase tracking-widest border-b border-black/10 pb-2">
+              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#C22B2B] uppercase tracking-widest border-b border-black/10 pb-2">
                 <Network className="w-3 h-3" /> Article Source
               </div>
               <p className="text-[15px] font-display leading-tight text-black mb-3">"El Salvador sends special forces to Haiti."</p>
@@ -473,7 +498,7 @@ function WelcomePage() {
               <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-[#5B456B] uppercase tracking-widest border-b border-black/10 pb-2">
                 <MessageSquare className="w-3 h-3" /> Official Statement
               </div>
-              <p className="text-sm font-sans italic text-black/80 leading-relaxed mb-3">"We are there to support our allies and maintain regional stability."</p>
+              <p className="text-sm font-sans italic text-black/80 leading-relaxed mb-3">"We are there to support our allies and maintain regional <span className="bg-black text-black selection:bg-white">stability</span>."</p>
               <p className="text-[10px] font-mono text-black/50">Pentagon Briefing</p>
             </div>
 
@@ -492,28 +517,29 @@ function WelcomePage() {
 
             {/* Card 4: Bottom Right (Question) */}
             <div className="paper-card animate-float-4 absolute bottom-[18%] right-[12%] w-60 p-5 rounded-sm z-10 bg-[#FBD0D4]/40">
+              <div className="tape" style={{ transform: 'translateX(-50%) rotate(-3deg)' }} />
               <div className="map-pin"><div className="pin-head" /><div className="pin-needle" /></div>
-              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-bold text-[#C24A35] uppercase tracking-widest border-b border-[#C24A35]/20 pb-2">
+              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-bold text-[#C22B2B] uppercase tracking-widest border-b border-[#C22B2B]/20 pb-2">
                 <Sparkles className="w-3 h-3" /> Hypothesis
               </div>
               <p className="text-[15px] font-display leading-tight text-black">Is this actually about securing US economic aid?</p>
             </div>
 
             {/* Center Dossier */}
-            <div className="dossier-paper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] p-8 rounded-sm z-20">
+            <div className="dossier-paper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] p-8 rounded-sm z-20">
               <div className="map-pin" style={{ top: '-10px' }}><div className="pin-head bg-gradient-to-br from-yellow-400 to-orange-500" /><div className="pin-needle" /></div>
               
               {/* Paperclip */}
-              <div className="absolute top-4 right-6 text-black/20 rotate-12">
-                <Paperclip className="w-8 h-8" />
+              <div className="absolute top-4 right-8 text-black/30 rotate-12">
+                <Paperclip className="w-10 h-10" />
               </div>
 
               {/* Top Secret Stamp */}
-              <div className="stamp absolute top-8 right-8 text-[12px] px-3 py-1 rotate-12">
+              <div className="stamp absolute top-10 right-10 text-[14px] px-4 py-1 rotate-12">
                 Declassified
               </div>
 
-              <div className="flex items-center gap-2 mb-4 text-[10px] font-mono uppercase tracking-widest text-[#C24A35] border-b border-black/10 pb-3">
+              <div className="flex items-center gap-2 mb-4 text-[10px] font-mono uppercase tracking-widest text-[#C22B2B] border-b border-black/10 pb-3">
                 <Target className="w-4 h-4" /> The Bigger Picture
               </div>
               <h3 className="font-display text-3xl leading-tight mb-4 text-[#1A1A1A]">Strategic Bargaining Chip</h3>
