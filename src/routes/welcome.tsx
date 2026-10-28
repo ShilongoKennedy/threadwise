@@ -31,7 +31,7 @@ function useScrollReveal() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
-      { threshold: 0.3 }
+      { threshold: 0.2 }
     );
     if (ref.current) observer.observe(ref.current);
     return () => { if (ref.current) observer.unobserve(ref.current); };
@@ -42,7 +42,7 @@ function useScrollReveal() {
 // --- MAIN COMPONENT ---
 function WelcomePage() {
   const mouse = useMousePosition();
-  const socraticReveal = useScrollReveal();
+  const boardReveal = useScrollReveal();
 
   // 3D Tilt for the MacBook
   const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 6;
@@ -52,58 +52,10 @@ function WelcomePage() {
   const laptopYellow = "#FDF0B6"; 
   const laptopYellowDark = "#E3D398";
 
-  // Typewriter State for Socratic Inquiry
-  const [typedQuestion, setTypedQuestion] = useState("");
-  const [typedAnswer, setTypedAnswer] = useState("");
-  const [phase, setPhase] = useState<"waiting" | "question" | "answer" | "done">("waiting");
-
-  const questionText = "If the deployment is about saving 4 soldiers, why send elite special forces and a Pentagon plane instead of standard humanitarian aid?";
-  const answerText = "The disproportionate military response suggests the primary objective is not search and rescue. It is a strategic display of force to secure US diplomatic favor and economic aid for El Salvador.";
-
-  useEffect(() => {
-    if (!socraticReveal.isVisible || phase !== "waiting") return;
-    
-    let qIndex = 0;
-    let aIndex = 0;
-    let timeout: ReturnType<typeof setTimeout>;
-    let cancelled = false;
-
-    const typeQuestion = () => {
-      if (cancelled) return;
-      if (qIndex <= questionText.length) {
-        setTypedQuestion(questionText.slice(0, qIndex));
-        qIndex++;
-        timeout = setTimeout(typeQuestion, 25);
-      } else {
-        setPhase("answer");
-        timeout = setTimeout(typeAnswer, 800);
-      }
-    };
-
-    const typeAnswer = () => {
-      if (cancelled) return;
-      if (aIndex <= answerText.length) {
-        setTypedAnswer(answerText.slice(0, aIndex));
-        aIndex++;
-        timeout = setTimeout(typeAnswer, 20);
-      } else {
-        setPhase("done");
-      }
-    };
-
-    setPhase("question");
-    timeout = setTimeout(typeQuestion, 500);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timeout);
-    };
-  }, [socraticReveal.isVisible]);
-
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
-      {/* CSS for Interactions, Glasses, and Typewriter */}
+      {/* CSS for Interactions, Glasses, and Investigation Board */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -123,23 +75,46 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* Cursor Blink */
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-        .cursor {
-          display: inline-block;
-          width: 8px;
-          height: 18px;
-          background-color: currentColor;
-          animation: blink 1s step-end infinite;
-          vertical-align: middle;
-          margin-left: 4px;
+        /* Red String Board */
+        .board-container {
+          background-color: #1A1817;
+          background-image: 
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 60%),
+            linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+          background-size: 100% 100%, 40px 40px, 40px 40px;
+          box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
         }
         
-        .typewriter-text {
-          min-height: 100px;
+        .evidence-card {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .evidence-card:hover {
+          transform: translateY(-5px) scale(1.02);
+          box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+          z-index: 50 !important;
+        }
+
+        .red-string {
+          stroke-dasharray: 1000;
+          stroke-dashoffset: 1000;
+          transition: stroke-dashoffset 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .red-string.draw {
+          stroke-dashoffset: 0;
+        }
+
+        .pin {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
+          box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset -2px -2px 4px rgba(0,0,0,0.2);
+          position: absolute;
+          top: -6px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 10;
         }
       `}</style>
 
@@ -379,84 +354,81 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE SOCRATIC TYPEWRITER */}
+        {/* THE RED STRING INVESTIGATION BOARD (Option 5) */}
         <section 
-          ref={socraticReveal.ref}
-          className="w-full max-w-[1000px] mt-40 mb-24 relative flex flex-col items-center"
+          ref={boardReveal.ref}
+          className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center"
         >
           <div className="text-center mb-16 relative z-30">
-            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">The Socratic Method.</h2>
-            <p className="text-[#1A1A1A]/50 text-lg">Don't just summarize. Interrogate the evidence.</p>
+            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">Every story has a thread.</h2>
+            <p className="text-[#1A1A1A]/50 text-lg">Connect the evidence. Find the hidden motive.</p>
           </div>
 
-          <div className="w-full flex flex-col lg:flex-row gap-6 items-stretch relative">
+          <div className="board-container relative w-full rounded-3xl border border-white/10 overflow-hidden h-[600px] flex items-center justify-center p-8 shadow-2xl">
             
-            {/* Left Side: The User's Question */}
-            <div className="flex-1 bg-white border border-black/10 rounded-2xl p-8 shadow-xl relative z-10">
-              <div className="flex items-center gap-3 mb-6 border-b border-black/5 pb-4">
-                <div className="w-8 h-8 rounded-full bg-[#FDF0B6] flex items-center justify-center shadow-inner">
-                  <Users className="w-4 h-4 text-[#1A1A1A]" />
-                </div>
-                <div>
-                  <h3 className="font-display text-xl text-[#1A1A1A]">The Researcher</h3>
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-black/40">Inquiry</p>
-                </div>
+            {/* The Red Strings (SVG) */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+              {/* Center to Top Left */}
+              <path d="M 600 300 Q 400 150 250 200" fill="none" stroke="#cc0000" strokeWidth="2" className={`red-string ${boardReveal.isVisible ? 'draw' : ''}`} style={{ transitionDelay: '0.5s' }} />
+              {/* Center to Top Right */}
+              <path d="M 600 300 Q 800 150 950 200" fill="none" stroke="#cc0000" strokeWidth="2" className={`red-string ${boardReveal.isVisible ? 'draw' : ''}`} style={{ transitionDelay: '0.8s' }} />
+              {/* Center to Bottom Left */}
+              <path d="M 600 300 Q 400 450 250 400" fill="none" stroke="#cc0000" strokeWidth="2" className={`red-string ${boardReveal.isVisible ? 'draw' : ''}`} style={{ transitionDelay: '1.1s' }} />
+              {/* Center to Bottom Right */}
+              <path d="M 600 300 Q 800 450 950 400" fill="none" stroke="#cc0000" strokeWidth="2" className={`red-string ${boardReveal.isVisible ? 'draw' : ''}`} style={{ transitionDelay: '1.4s' }} />
+            </svg>
+
+            {/* Evidence Cards */}
+            
+            {/* Card 1: Top Left (URL) */}
+            <div className={`evidence-card absolute top-[15%] left-[10%] w-56 bg-white p-4 rounded-sm shadow-xl z-10 transform -rotate-3 transition-all duration-700 ${boardReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '0.2s' }}>
+              <div className="pin" />
+              <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-black/50 uppercase tracking-widest border-b border-black/10 pb-2">
+                <Network className="w-3 h-3" /> Article Source
               </div>
-              <div className="typewriter-text font-sans text-xl leading-relaxed text-[#1A1A1A]">
-                "{typedQuestion}"
-                {phase === "question" && <span className="cursor bg-[#1A1A1A]" />}
-              </div>
+              <p className="text-sm font-sans font-medium text-black leading-tight">"El Salvador sends special forces to Haiti."</p>
+              <p className="text-[10px] font-mono text-black/40 mt-2">Miami Herald</p>
             </div>
 
-            {/* Connecting Line (Desktop) */}
-            <div className="hidden lg:flex flex-col justify-center items-center w-12 relative z-0">
-              <div className="h-full w-px bg-black/10 border-l border-dashed border-black/20" />
-              <div className="absolute bg-[#FDFBF7] p-2 rounded-full border border-black/10 shadow-sm">
-                <ArrowRight className="w-4 h-4 text-black/40" />
+            {/* Card 2: Top Right (Quote) */}
+            <div className={`evidence-card absolute top-[20%] right-[10%] w-60 bg-white p-4 rounded-sm shadow-xl z-10 transform rotate-2 transition-all duration-700 ${boardReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '0.4s' }}>
+              <div className="pin" />
+              <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-[#D96C39] uppercase tracking-widest border-b border-black/10 pb-2">
+                <MessageSquare className="w-3 h-3" /> Official Statement
               </div>
+              <p className="text-sm font-sans italic text-black/80">"We are there to support our allies and maintain regional stability."</p>
+              <p className="text-[10px] font-mono text-black/40 mt-2">Pentagon Briefing</p>
             </div>
 
-            {/* Right Side: The AI's Response */}
-            <div className="flex-1 bg-[#1A1A1A] border border-white/10 rounded-2xl p-8 shadow-2xl relative z-10 overflow-hidden">
-              {/* Subtle AI Glow */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#8B5CF6] rounded-full blur-[100px] opacity-20 pointer-events-none" />
-              
-              <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4 relative z-10">
-                <div className="w-8 h-8 rounded-full bg-[#8B5CF6]/20 flex items-center justify-center shadow-inner border border-[#8B5CF6]/30">
-                  <Sparkles className="w-4 h-4 text-[#8B5CF6]" />
-                </div>
-                <div>
-                  <h3 className="font-display text-xl text-white">Threadwise AI</h3>
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-[#8B5CF6]">Socratic Analysis</p>
-                </div>
-                <div className="ml-auto flex gap-1">
-                  <div className="w-2 h-2 rounded-full bg-[#FBD0D4] animate-pulse" />
-                  <div className="w-2 h-2 rounded-full bg-[#C9E8C7] animate-pulse delay-75" />
-                  <div className="w-2 h-2 rounded-full bg-[#CBE6F9] animate-pulse delay-150" />
-                </div>
+            {/* Card 3: Bottom Left (Map/Image) */}
+            <div className={`evidence-card absolute bottom-[15%] left-[15%] w-52 bg-white p-3 rounded-sm shadow-xl z-10 transform rotate-1 transition-all duration-700 ${boardReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '0.6s' }}>
+              <div className="pin" />
+              <div className="w-full h-24 bg-[#E5E5E5] rounded mb-2 flex items-center justify-center relative overflow-hidden">
+                <Map className="w-8 h-8 text-black/20" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20" />
               </div>
-              
-              <div className="typewriter-text font-mono text-sm leading-relaxed text-white/90 relative z-10">
-                {phase !== "answer" && phase !== "done" ? (
-                  <span className="text-white/30 italic">Awaiting prompt...</span>
-                ) : (
-                  <>
-                    {typedAnswer}
-                    {(phase === "answer" || phase === "done") && <span className="cursor bg-[#8B5CF6]" />}
-                  </>
-                )}
+              <p className="text-xs font-mono text-black/60 text-center">Location: Port-au-Prince</p>
+            </div>
+
+            {/* Card 4: Bottom Right (Question) */}
+            <div className={`evidence-card absolute bottom-[20%] right-[15%] w-56 bg-[#FBD0D4] p-4 rounded-sm shadow-xl z-10 transform -rotate-2 transition-all duration-700 ${boardReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '0.8s' }}>
+              <div className="pin" />
+              <div className="flex items-center gap-2 mb-2 text-[10px] font-mono font-bold text-black/60 uppercase tracking-widest border-b border-black/10 pb-2">
+                <Sparkles className="w-3 h-3" /> Hypothesis
               </div>
-              
-              {phase === "done" && (
-                <div className="mt-8 pt-4 border-t border-white/10 flex justify-between items-center animate-in fade-in duration-500 relative z-10">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#C9E8C7] flex items-center gap-1.5">
-                    <FileCheck className="w-3 h-3" /> Hypothesis Generated
-                  </span>
-                  <button className="text-[10px] font-mono uppercase tracking-widest text-white/50 hover:text-white transition-colors flex items-center gap-1">
-                    Plant on Canvas <ArrowRight className="w-3 h-3" />
-                  </button>
-                </div>
-              )}
+              <p className="text-sm font-sans font-medium text-black leading-tight">Is this actually about securing US economic aid?</p>
+            </div>
+
+            {/* Center Card: The Big Conclusion */}
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 bg-[#1A1A1A] text-white p-6 rounded-lg shadow-2xl z-20 border border-white/20 transform transition-all duration-1000 ${boardReveal.isVisible ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`} style={{ transitionDelay: '1.6s' }}>
+              <div className="pin bg-gradient-to-br from-yellow-400 to-orange-500" />
+              <div className="flex items-center gap-2 mb-3 text-[10px] font-mono uppercase tracking-widest text-[#D96C39]">
+                <Target className="w-4 h-4" /> The Bigger Picture
+              </div>
+              <h3 className="font-display text-2xl leading-tight mb-2">Strategic Bargaining Chip</h3>
+              <p className="text-sm font-sans text-white/60 leading-relaxed">
+                The disproportionate military response reveals a deeper motive: El Salvador is leveraging the deployment to secure diplomatic favor and financial backing from the United States.
+              </p>
             </div>
 
           </div>
