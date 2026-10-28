@@ -5,7 +5,7 @@ import {
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  Mic
+  Mic, Play, Terminal, ShieldAlert
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -46,9 +46,9 @@ function WelcomePage() {
     return () => clearInterval(timer);
   }, []);
 
-  const secondsDegrees = time.getSeconds() * 6;
-  const minutesDegrees = time.getMinutes() * 6 + time.getSeconds() * 0.1;
-  const hoursDegrees = (time.getHours() % 12) * 30 + time.getMinutes() * 0.5;
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  };
 
   const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
   const currentMonth = monthNames[time.getMonth()];
@@ -109,7 +109,7 @@ function WelcomePage() {
         /* Glowing Data Streams */
         .data-stream-base {
           fill: none;
-          stroke: rgba(255,255,255,0.5);
+          stroke: rgba(255,255,255,0.3);
           stroke-width: 2;
         }
         .data-stream-pulse {
@@ -125,21 +125,23 @@ function WelcomePage() {
           100% { stroke-dashoffset: 0; }
         }
 
-        /* Floating Tools */
-        .tool-card {
-          background: #F9F7F1;
-          border: 1px solid rgba(0,0,0,0.1);
+        /* Floating Widgets */
+        .widget {
+          background: rgba(26, 28, 29, 0.85);
+          backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
           box-shadow: 
-            0 20px 40px -10px rgba(0,0,0,0.25),
-            inset 0 0 10px rgba(255,255,255,0.8);
+            0 20px 40px -10px rgba(0,0,0,0.4),
+            inset 0 0 20px rgba(255,255,255,0.05);
+          border-radius: 16px;
           transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
           cursor: pointer;
-          border-radius: 12px;
         }
         
-        .tool-card:hover {
+        .widget:hover {
           transform: scale(1.05) translateY(-5px) !important;
-          box-shadow: 0 30px 60px -15px rgba(0,0,0,0.4);
+          border-color: rgba(0, 240, 255, 0.5);
+          box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6), 0 0 30px rgba(0, 240, 255, 0.2);
           z-index: 50 !important;
         }
 
@@ -156,53 +158,53 @@ function WelcomePage() {
         /* Blue AI Core */
         .ai-core-container {
           position: relative;
-          width: 200px;
-          height: 200px;
+          width: 220px;
+          height: 220px;
           display: flex;
           align-items: center;
           justify-content: center;
-          filter: drop-shadow(0 0 40px rgba(0, 240, 255, 0.4));
+          filter: drop-shadow(0 0 50px rgba(0, 240, 255, 0.4));
         }
         
         .ai-outer-socket {
           position: absolute;
           inset: 0;
           border-radius: 50%;
-          background: linear-gradient(135deg, #2a2e33, #111, #333, #000);
+          background: linear-gradient(135deg, #1a1c1d, #0a0b0c, #2a2e33, #000);
           box-shadow: 
-            inset -5px -5px 15px rgba(0,0,0,0.9),
-            inset 5px 5px 15px rgba(255,255,255,0.1),
+            inset -8px -8px 20px rgba(0,0,0,0.9),
+            inset 8px 8px 20px rgba(255,255,255,0.1),
             0 15px 30px rgba(0,0,0,0.6);
-          border: 2px solid #444;
+          border: 2px solid #333;
         }
         
         .ai-mech-ring {
           position: absolute;
-          inset: 20px;
+          inset: 25px;
           border-radius: 50%;
-          border: 3px dashed rgba(0, 240, 255, 0.4);
-          animation: spin 15s linear infinite;
+          border: 3px dashed rgba(0, 240, 255, 0.3);
+          animation: spin 20s linear infinite;
         }
         
         .ai-blue-core {
           position: absolute;
-          width: 90px;
-          height: 90px;
+          width: 100px;
+          height: 100px;
           background: radial-gradient(circle at 40% 40%, #a6faff, #00f0ff, #004488, #000);
           border-radius: 50%;
           box-shadow: 
-            0 0 50px #00f0ff,
+            0 0 60px #00f0ff,
             inset 0 0 20px #000;
           display: flex;
           align-items: center;
           justify-content: center;
-          animation: pulse-blue 2s infinite alternate;
+          animation: pulse-blue 3s infinite alternate;
           z-index: 10;
         }
         
         .ai-lens-inner {
-          width: 35px;
-          height: 35px;
+          width: 40px;
+          height: 40px;
           background: #001a33;
           border-radius: 50%;
           border: 2px solid rgba(0, 240, 255, 0.8);
@@ -214,82 +216,53 @@ function WelcomePage() {
         }
         
         .ai-lens-glint {
-          width: 10px;
-          height: 10px;
+          width: 12px;
+          height: 12px;
           background: #fff;
           border-radius: 50%;
           box-shadow: 0 0 10px #fff;
           position: absolute;
-          top: 5px;
-          left: 5px;
+          top: 6px;
+          left: 6px;
         }
 
         @keyframes pulse-blue {
-          0% { box-shadow: 0 0 30px #00f0ff, inset 0 0 20px #000; }
-          100% { box-shadow: 0 0 70px #00f0ff, inset 0 0 20px #000; }
+          0% { box-shadow: 0 0 40px #00f0ff, inset 0 0 20px #000; }
+          100% { box-shadow: 0 0 80px #00f0ff, inset 0 0 20px #000; }
         }
 
         @keyframes spin {
           100% { transform: rotate(360deg); }
         }
 
-        /* Clock Details */
-        .clock-tick {
-          position: absolute;
-          width: 2px;
-          height: 8px;
-          background: #333;
-          top: 6px;
-          left: 50%;
-          transform-origin: 50% 72px; /* Adjust based on clock size */
-        }
-
-        /* Magnifying Glass */
-        .magnifier-lens {
-          position: absolute;
-          width: 110px;
-          height: 110px;
-          border-radius: 50%;
-          border: 6px solid #555;
-          background: rgba(255,255,255,0.05);
-          backdrop-filter: blur(2px) contrast(1.2);
-          box-shadow: 
-            inset 0 0 20px rgba(255,255,255,0.4),
-            inset 5px 5px 15px rgba(0,0,0,0.1),
-            0 10px 20px rgba(0,0,0,0.3);
-          z-index: 20;
-          animation: scan-magnify 8s ease-in-out infinite alternate;
-        }
-        
-        .magnifier-handle {
-          position: absolute;
-          bottom: -30px;
-          right: -15px;
-          width: 14px;
-          height: 50px;
-          background: linear-gradient(to right, #4a2c11, #8b5a2b, #4a2c11);
-          border-radius: 7px;
-          transform: rotate(45deg);
-          z-index: 19;
-          box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-        }
-
-        @keyframes scan-magnify {
-          0% { transform: translate(-20px, 20px) rotate(-15deg); }
-          100% { transform: translate(40px, -20px) rotate(15deg); }
+        /* Digital Clock Glow */
+        .digital-time {
+          font-family: 'Courier New', Courier, monospace;
+          color: #00f0ff;
+          text-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3);
+          letter-spacing: 0.1em;
         }
 
         /* Waveform Animation */
         .wave-bar {
           width: 4px;
-          background-color: #4ade80;
+          background-color: #00f0ff;
           border-radius: 2px;
           animation: wave 1.2s ease-in-out infinite alternate;
-          box-shadow: 0 0 5px #4ade80;
+          box-shadow: 0 0 8px #00f0ff;
         }
         @keyframes wave {
           0% { height: 10%; }
           100% { height: 100%; }
+        }
+        
+        /* Terminal Scroll */
+        .terminal-scroll {
+          animation: scroll-up 10s linear infinite;
+        }
+        @keyframes scroll-up {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-50%); }
         }
       `}</style>
 
@@ -554,65 +527,57 @@ function WelcomePage() {
                 <path d="M 920 520 Q 800 500 600 350" className="data-stream-pulse" style={{ animationDelay: '1.5s' }} />
               </svg>
 
-              {/* Tool 1: Working Analog Clock */}
-              <div className="tool-card animate-float-1 absolute top-[12%] left-[10%] w-52 h-52 rounded-full z-10 flex items-center justify-center border-8 border-[#D1C7B7] bg-[#FDFBF7] shadow-2xl">
-                <div className="relative w-40 h-40 rounded-full bg-[#FCFAF8] shadow-inner flex items-center justify-center border border-black/10">
-                  {/* Tick Marks */}
-                  {[...Array(12)].map((_, i) => (
-                    <div key={i} className="absolute w-1 h-3 bg-black/60 top-2 left-1/2 -translate-x-1/2" style={{ transform: `rotate(${i * 30}deg) translateY(-60px)` }} />
-                  ))}
-                  {/* Hands */}
-                  <div className="clock-hand w-2 h-12 bg-black z-20 rounded-full" style={{ transform: `rotate(${hoursDegrees}deg)` }} />
-                  <div className="clock-hand w-1.5 h-16 bg-black/80 z-20 rounded-full" style={{ transform: `rotate(${minutesDegrees}deg)` }} />
-                  <div className="clock-hand w-1 h-16 bg-[#C22B2B] z-30 rounded-full" style={{ transform: `rotate(${secondsDegrees}deg)` }} />
-                  {/* Center Pin */}
-                  <div className="absolute w-4 h-4 bg-black rounded-full z-40 border-2 border-white/50" />
+              {/* Widget 1: Digital Clock */}
+              <div className="widget animate-float-1 absolute top-[12%] left-[8%] w-64 h-36 p-6 flex flex-col items-center justify-center z-10">
+                <div className="text-[10px] font-mono text-white/40 uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <Activity className="w-3 h-3 text-[#00f0ff]" /> Sys Time
+                </div>
+                <div className="digital-time text-4xl font-bold">
+                  {formatTime(time)}
                 </div>
               </div>
 
-              {/* Tool 2: Desk Flip Calendar */}
-              <div className="tool-card animate-float-2 absolute top-[15%] right-[10%] w-60 h-72 z-10 flex flex-col items-center pt-8 bg-[#F9F7F1] border border-black/10 rounded-b-xl shadow-2xl">
+              {/* Widget 2: Desk Calendar */}
+              <div className="widget animate-float-2 absolute top-[15%] right-[8%] w-60 h-64 z-10 flex flex-col items-center pt-8 bg-[#F9F7F1] border border-black/10 rounded-b-xl shadow-2xl">
                 {/* Metal Spirals */}
                 <div className="absolute top-0 left-1/4 -translate-y-1/2 w-4 h-8 rounded-full border-4 border-gray-400 bg-transparent" />
                 <div className="absolute top-0 right-1/4 -translate-y-1/2 w-4 h-8 rounded-full border-4 border-gray-400 bg-transparent" />
                 
                 {/* Calendar Body */}
-                <div className="w-48 h-56 bg-white shadow-lg border border-black/5 flex flex-col rounded-sm overflow-hidden">
-                  <div className="w-full h-14 bg-[#C22B2B] text-white flex items-center justify-center font-mono text-xl tracking-[0.3em] uppercase">
+                <div className="w-48 h-52 bg-white shadow-lg border border-black/5 flex flex-col rounded-sm overflow-hidden">
+                  <div className="w-full h-12 bg-[#C22B2B] text-white flex items-center justify-center font-mono text-lg tracking-[0.3em] uppercase">
                     {currentMonth}
                   </div>
-                  <div className="flex-1 flex items-center justify-center font-display text-8xl text-[#1A1A1A]">
+                  <div className="flex-1 flex items-center justify-center font-display text-7xl text-[#1A1A1A]">
                     {currentDate}
                   </div>
                 </div>
               </div>
 
-              {/* Tool 3: Redacted Document & Magnifier */}
-              <div className="tool-card animate-float-3 absolute bottom-[12%] left-[12%] w-72 h-80 z-10 p-6 bg-[#F4EFE6] border border-[#D1C7B7] rotate-[-3deg] shadow-2xl">
-                {/* Top Secret Stamp */}
-                <div className="absolute top-6 right-6 border-4 border-[#C22B2B] text-[#C22B2B] text-xs font-mono px-3 py-1 rotate-12 opacity-80 uppercase font-bold tracking-widest rounded-sm">
-                  Top Secret
+              {/* Widget 3: Live Terminal */}
+              <div className="widget animate-float-3 absolute bottom-[12%] left-[10%] w-72 h-56 p-4 flex flex-col z-10 overflow-hidden">
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/10 text-[10px] font-mono text-white/50 uppercase tracking-widest">
+                  <Terminal className="w-3 h-3 text-[#00f0ff]" /> Live Feed
                 </div>
-                
-                <div className="flex flex-col gap-3 mt-8">
-                  <div className="h-3 w-full bg-black/90 rounded-sm" />
-                  <div className="h-3 w-5/6 bg-black/90 rounded-sm" />
-                  <div className="h-3 w-full bg-black/90 rounded-sm" />
-                  <div className="h-3 w-3/4 bg-black/90 rounded-sm" />
-                  <div className="h-3 w-full bg-black/90 rounded-sm" />
-                  <div className="h-3 w-4/5 bg-black/90 rounded-sm" />
-                </div>
-
-                {/* Magnifying Glass overlay */}
-                <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                  <div className="magnifier-lens">
-                    <div className="magnifier-handle" />
+                <div className="font-mono text-[10px] text-[#00f0ff] leading-relaxed overflow-hidden h-full relative">
+                  <div className="terminal-scroll space-y-2">
+                    <p>&gt; INGESTING MIAMI HERALD...</p>
+                    <p>&gt; EXTRACTING KEY ENTITIES...</p>
+                    <p>&gt; ENTITY MATCH: EL SALVADOR</p>
+                    <p>&gt; ANALYZING PENTAGON BRIEFING...</p>
+                    <p>&gt; DETECTING SEMANTIC OMISSIONS...</p>
+                    <p>&gt; MOTIVE SUSPECTED: ECONOMIC</p>
+                    <p>&gt; CROSS-REFERENCING LOCATIONS...</p>
+                    {/* Duplicate for seamless scroll */}
+                    <p>&gt; INGESTING MIAMI HERALD...</p>
+                    <p>&gt; EXTRACTING KEY ENTITIES...</p>
+                    <p>&gt; ENTITY MATCH: EL SALVADOR</p>
                   </div>
                 </div>
               </div>
 
-              {/* Tool 4: Voice Recorder */}
-              <div className="tool-card animate-float-4 absolute bottom-[15%] right-[12%] w-72 h-52 z-10 p-6 bg-[#2C2A28] border border-[#444] rounded-xl flex flex-col shadow-2xl">
+              {/* Widget 4: Audio Signature */}
+              <div className="widget animate-float-4 absolute bottom-[15%] right-[10%] w-72 h-48 p-6 flex flex-col z-10">
                 <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2 text-[10px] font-mono text-white/50 uppercase tracking-widest">
                     <Mic className="w-4 h-4 text-[#00f0ff]" /> Audio Log 04
@@ -623,17 +588,11 @@ function WelcomePage() {
                   </div>
                 </div>
 
-                {/* Tape Spools & Waveform */}
-                <div className="flex items-center gap-6 h-full">
-                  <div className="flex gap-3">
-                    <div className="w-14 h-14 rounded-full border-[6px] border-dashed border-gray-500 animate-spin bg-black/40" style={{ animationDuration: '6s' }} />
-                    <div className="w-14 h-14 rounded-full border-[6px] border-dashed border-gray-500 animate-spin bg-black/40" style={{ animationDuration: '6s' }} />
-                  </div>
-                  <div className="flex-1 flex items-end justify-between gap-1 h-14 pb-2">
-                    {[...Array(12)].map((_, i) => (
-                      <div key={i} className="wave-bar" style={{ animationDelay: `${i * 0.15}s` }} />
-                    ))}
-                  </div>
+                {/* Waveform */}
+                <div className="flex-1 flex items-end justify-between gap-1 h-14 pb-2 px-2">
+                  {[...Array(16)].map((_, i) => (
+                    <div key={i} className="wave-bar" style={{ animationDelay: `${i * 0.1}s` }} />
+                  ))}
                 </div>
               </div>
 
