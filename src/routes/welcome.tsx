@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
   ArrowUpRight, ArrowRight, Sparkles, FileText, Lightbulb, 
   Terminal, CheckCircle2, ChevronRight, Activity, Cpu, Network, 
-  MousePointer2, Layers, Target, Shield, Zap, Quote
+  Layers, Target, Zap
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -11,20 +11,6 @@ export const Route = createFileRoute("/welcome")({
 });
 
 // --- CUSTOM HOOKS ---
-function useScrollProgress() {
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const updateScroll = () => {
-      const currentScroll = window.scrollY;
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress((currentScroll / scrollHeight) * 100);
-    };
-    window.addEventListener("scroll", updateScroll);
-    return () => window.removeEventListener("scroll", updateScroll);
-  }, []);
-  return progress;
-}
-
 function useMousePosition() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   useEffect(() => {
@@ -53,7 +39,6 @@ function useScrollReveal() {
 
 // --- MAIN COMPONENT ---
 function WelcomePage() {
-  const scrollProgress = useScrollProgress();
   const mouse = useMousePosition();
   const revealSection2 = useScrollReveal();
   const revealSection3 = useScrollReveal();
@@ -80,44 +65,29 @@ function WelcomePage() {
   }, []);
 
   // 3D Tilt calculations
-  const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 12;
-  const tiltY = (mouse.x / (typeof window !== 'undefined' ? window.innerWidth : 1200) - 0.5) * -12;
+  const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 10;
+  const tiltY = (mouse.x / (typeof window !== 'undefined' ? window.innerWidth : 1200) - 0.5) * -10;
 
   return (
     <div className="min-h-screen bg-[#FCF8ED] text-[#2C2A28] font-sans selection:bg-[#D97736] selection:text-white overflow-hidden relative">
       
-      {/* Paper Grain & Vignette Overlays */}
-      <div className="pointer-events-none fixed inset-0 z-50 opacity-[0.05] mix-blend-multiply" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
-      <div className="pointer-events-none fixed inset-0 z-40 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_rgba(252,248,237,0.8)_100%)]" />
-
-      {/* Scroll Progress Bar */}
-      <div 
-        className="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-[#2D6A65] via-[#D97736] to-[#6B4C7A] z-50 transition-all duration-75 ease-out shadow-[0_0_10px_rgba(217,119,54,0.5)]"
-        style={{ width: `${scrollProgress}%` }}
-      />
-
-      {/* Dynamic Cursor Spotlight */}
-      <div 
-        className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
-        style={{
-          background: `radial-gradient(800px circle at ${mouse.x}px ${mouse.y}px, rgba(255,255,255,0.4), transparent 50%)`,
-        }}
-      />
+      {/* Subtle Paper Grain (Very light) */}
+      <div className="pointer-events-none fixed inset-0 z-50 opacity-[0.02] mix-blend-multiply" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
 
       {/* Canvas Grid Background */}
       <div 
-        className="absolute inset-0 z-0 pointer-events-none opacity-[0.15]"
+        className="absolute inset-0 z-0 pointer-events-none opacity-[0.08]"
         style={{
           backgroundImage: `
             linear-gradient(to right, #A6917A 1px, transparent 1px),
             linear-gradient(to bottom, #A6917A 1px, transparent 1px)
           `,
-          backgroundSize: '60px 60px',
+          backgroundSize: '40px 40px',
         }}
       />
 
       {/* HEADER */}
-      <header className="relative z-30 flex justify-between items-center px-6 md:px-12 py-6 border-b border-[#2C2A28]/10">
+      <header className="relative z-30 flex justify-between items-center px-6 md:px-12 py-6 border-b border-[#2C2A28]/10 bg-[#FCF8ED]/80 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#D97736]">
             <circle cx="6" cy="18" r="2.5" fill="currentColor"/>
@@ -134,37 +104,61 @@ function WelcomePage() {
             <span className="flex items-center gap-2"><Activity className="w-3 h-3 text-[#2D6A65]"/> System Online</span>
             <span className="flex items-center gap-2"><Cpu className="w-3 h-3"/> DeepSeek v3</span>
           </div>
-          <Link to="/" className="group flex items-center gap-2 px-6 py-2.5 bg-[#2C2A28] text-[#FCF8ED] hover:bg-[#D97736] transition-colors duration-300 font-mono text-xs uppercase tracking-widest shadow-xl shadow-[#2C2A28]/10">
+          <Link to="/" className="group flex items-center gap-2 px-6 py-2.5 bg-[#2C2A28] text-[#FCF8ED] hover:bg-[#D97736] transition-colors duration-300 font-mono text-xs uppercase tracking-widest shadow-lg">
             Open Workspace <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
         </div>
       </header>
 
-      {/* HERO SECTION */}
-      <main className="relative z-10 w-full max-w-[1500px] mx-auto px-6 pt-24 pb-32 flex flex-col items-center justify-center min-h-[90vh]">
+      {/* HERO SECTION - SPLIT LAYOUT */}
+      <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-20 pb-32 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-[85vh]">
         
-        {/* Massive Background Typography */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0 opacity-80 mix-blend-multiply">
-          <h1 className="font-display text-[15vw] leading-[0.8] tracking-tighter text-[#2C2A28] text-center">
-            Map the<br/>
-            <span className="italic text-[#D97736]">unseen.</span>
+        {/* Left Side: Typography */}
+        <div className="flex flex-col relative z-20">
+          <div className="flex items-center gap-3 mb-8">
+            <span className="h-px w-10 bg-[#D97736]" />
+            <span className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#D97736] font-bold">For the naturally curious</span>
+          </div>
+
+          <h1 className="font-display text-[70px] md:text-[90px] lg:text-[110px] leading-[0.9] tracking-tighter mb-8 text-[#2C2A28]">
+            Threadwise.<br />
+            See what <span className="text-[#D97736] italic relative inline-block">
+              connects.
+              <svg className="absolute -bottom-2 left-0 w-full h-3 text-[#D97736]/30" viewBox="0 0 100 10" preserveAspectRatio="none">
+                <path d="M0 5 Q 50 10 100 5" fill="none" stroke="currentColor" strokeWidth="3" />
+              </svg>
+            </span>
           </h1>
+
+          <div className="text-xl md:text-2xl text-[#2C2A28]/70 leading-relaxed mb-12 space-y-3 font-light">
+            <p>Bring your sources, questions and ideas together.</p>
+            <p>Find the evidence. Test the explanation.</p>
+            <p>Decide what comes next.</p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 mb-16">
+            <Link to="/" className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-[#D97736] text-white hover:bg-[#C2662A] transition-all hover:scale-[1.02] shadow-xl shadow-[#D97736]/20 text-sm font-bold tracking-wide rounded-lg">
+              Start your canvas <ArrowUpRight className="w-4 h-4" />
+            </Link>
+            <a href="#example" className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white border border-[#2C2A28]/10 text-[#2C2A28] hover:bg-black/5 transition-colors text-sm font-bold tracking-wide rounded-lg shadow-sm">
+              Explore an example <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
         </div>
 
-        {/* Floating Canvas Nodes (Foreground) */}
-        <div className="relative w-full h-[600px] z-20 perspective-[1500px]">
-          
+        {/* Right Side: The Floating Canvas */}
+        <div className="relative h-[600px] w-full flex items-center justify-center perspective-[1200px]">
+          {/* Subtle connecting lines */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-            <path d="M 20% 30% Q 40% 40% 60% 60%" fill="none" stroke="#2D6A65" strokeWidth="2" strokeDasharray="6 6" opacity="0.4" />
-            <path d="M 80% 20% Q 70% 50% 60% 60%" fill="none" stroke="#6B4C7A" strokeWidth="2" strokeDasharray="6 6" opacity="0.4" />
+            <path d="M 20% 30% Q 40% 40% 60% 60%" fill="none" stroke="#A6917A" strokeWidth="2" strokeDasharray="6 6" opacity="0.4" />
+            <path d="M 80% 20% Q 70% 50% 60% 60%" fill="none" stroke="#A6917A" strokeWidth="2" strokeDasharray="6 6" opacity="0.4" />
           </svg>
 
           {/* Node 1: Evidence (Teal) */}
           <div 
-            className="absolute top-[10%] left-[5%] md:left-[10%] w-[300px] bg-white border border-[#2D6A65]/20 shadow-[0_20px_50px_-12px_rgba(45,106,101,0.3)] rounded-xl overflow-hidden transition-transform duration-100 ease-out z-20"
-            style={{ transform: `translate(${mouse.x * -0.03}px, ${mouse.y * -0.03}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)` }}
+            className="absolute top-[5%] left-[0%] w-[300px] bg-white border border-[#2D6A65]/20 shadow-[0_20px_40px_-12px_rgba(45,106,101,0.2)] rounded-xl overflow-hidden transition-transform duration-100 ease-out z-20"
+            style={{ transform: `translate(${mouse.x * -0.02}px, ${mouse.y * -0.02}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)` }}
           >
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-[#2D6A65] rounded-full shadow-lg border-2 border-white z-30" />
             <div className="flex justify-between items-center px-5 py-3 bg-[#E5F0EF] border-b border-[#2D6A65]/10">
               <span className="text-[11px] font-mono font-bold text-[#2D6A65] flex items-center gap-1.5 uppercase tracking-widest"><FileText className="w-4 h-4"/> Evidence</span>
               <span className="text-[10px] font-mono text-[#2D6A65]/60">FACT</span>
@@ -181,10 +175,9 @@ function WelcomePage() {
 
           {/* Node 2: Hypothesis (Purple) */}
           <div 
-            className="absolute top-[15%] right-[5%] md:right-[10%] w-[320px] bg-white border border-[#6B4C7A]/20 shadow-[0_20px_50px_-12px_rgba(107,76,122,0.3)] rounded-xl overflow-hidden transition-transform duration-100 ease-out z-20"
+            className="absolute top-[10%] right-[0%] w-[320px] bg-white border border-[#6B4C7A]/20 shadow-[0_20px_40px_-12px_rgba(107,76,122,0.2)] rounded-xl overflow-hidden transition-transform duration-100 ease-out z-20"
             style={{ transform: `translate(${mouse.x * 0.02}px, ${mouse.y * 0.02}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)` }}
           >
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-[#6B4C7A] rounded-full shadow-lg border-2 border-white z-30" />
             <div className="flex justify-between items-center px-5 py-3 bg-[#F2EAF5] border-b border-[#6B4C7A]/10">
               <span className="text-[11px] font-mono font-bold text-[#6B4C7A] flex items-center gap-1.5 uppercase tracking-widest"><Lightbulb className="w-4 h-4"/> Hypothesis</span>
               <span className="text-[10px] font-mono text-[#6B4C7A]/60">UNKNOWN</span>
@@ -197,10 +190,9 @@ function WelcomePage() {
 
           {/* Node 3: Question (Orange) */}
           <div 
-            className="absolute top-[55%] left-1/2 -translate-x-1/2 w-[340px] bg-[#2C2A28] text-white shadow-[0_20px_50px_-12px_rgba(44,42,40,0.5)] rounded-xl overflow-hidden transition-transform duration-100 ease-out z-30"
+            className="absolute top-[45%] left-1/2 -translate-x-1/2 w-[340px] bg-[#2C2A28] text-white shadow-[0_30px_60px_-15px_rgba(44,42,40,0.4)] rounded-xl overflow-hidden transition-transform duration-100 ease-out z-30"
             style={{ transform: `translate(calc(-50% + ${mouse.x * -0.01}px), calc(0% + ${mouse.y * -0.01}px)) rotateX(${tiltX}deg) rotateY(${tiltY}deg)` }}
           >
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-[#D97736] rounded-full shadow-lg border-2 border-[#2C2A28] z-30" />
             <div className="flex justify-between items-center px-5 py-3 bg-[#D97736]/10 border-b border-[#D97736]/20">
               <span className="text-[11px] font-mono font-bold text-[#D97736] flex items-center gap-1.5 uppercase tracking-widest"><Sparkles className="w-4 h-4"/> Question</span>
               <span className="text-[10px] font-mono text-white/40">OPEN</span>
@@ -211,38 +203,12 @@ function WelcomePage() {
             </div>
           </div>
         </div>
-
-        {/* CTA Floating at the bottom of the Hero */}
-        <div className="relative z-40 mt-[-50px] flex flex-col sm:flex-row items-center gap-6">
-            <Link to="/" className="flex items-center gap-3 px-8 py-4 bg-[#D97736] text-white hover:bg-[#C2662A] transition-all hover:scale-105 shadow-xl shadow-[#D97736]/30 rounded-full font-medium tracking-wide">
-              Start your investigation <ArrowUpRight className="w-5 h-5" />
-            </Link>
-            <a href="#example" className="flex items-center gap-3 px-8 py-4 bg-white text-[#2C2A28] hover:bg-black/5 transition-colors shadow-lg rounded-full font-medium tracking-wide border border-black/5">
-              Explore an example <ArrowRight className="w-5 h-5" />
-            </a>
-        </div>
       </main>
-
-      {/* INFINITE TICKER */}
-      <div className="relative z-30 w-full overflow-hidden border-y border-[#2C2A28]/10 bg-white/40 py-5 backdrop-blur-md">
-        <div className="flex whitespace-nowrap animate-marquee w-max">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="flex items-center gap-12 px-6 font-mono text-[11px] uppercase tracking-[0.3em] text-[#2C2A28]/60">
-              <span>Geopolitics</span> <span className="text-[#D97736]">•</span>
-              <span>Forensic Accounting</span> <span className="text-[#2D6A65]">•</span>
-              <span>Corporate Strategy</span> <span className="text-[#6B4C7A]">•</span>
-              <span>Sociology</span> <span className="text-[#D97736]">•</span>
-              <span>Intelligence Analysis</span> <span className="text-[#2D6A65]">•</span>
-              <span>Investigative Reporting</span> <span className="text-[#6B4C7A]">•</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* SECTION 2: CHAOS VS ORDER */}
       <section 
         ref={revealSection2.ref} 
-        className={`relative z-10 py-32 px-6 bg-white/50 border-b border-[#2C2A28]/10 transition-all duration-1000 ease-out ${revealSection2.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+        className={`relative z-10 py-32 px-6 bg-white border-y border-[#2C2A28]/10 transition-all duration-1000 ease-out ${revealSection2.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
       >
         <div className="max-w-[1200px] mx-auto text-center mb-20">
           <h2 className="font-display text-4xl md:text-6xl tracking-tight mb-8 max-w-3xl mx-auto leading-[1.1] text-[#2C2A28]">
@@ -317,14 +283,6 @@ function WelcomePage() {
             {/* Main Canvas Area */}
             <div className="flex-1 relative bg-[#FCF8ED] overflow-hidden bg-[radial-gradient(#d4c8b8_1px,transparent_1px)] [background-size:24px_24px]">
               
-              {/* Simulated Custom Cursor */}
-              <div 
-                className="absolute z-50 pointer-events-none transition-transform duration-100 ease-out"
-                style={{ left: `${mouse.x * 0.4}px`, top: `${mouse.y * 0.4}px` }}
-              >
-                 <MousePointer2 className="w-6 h-6 text-[#2C2A28] fill-white drop-shadow-md" />
-              </div>
-
               {/* Scanning Line Effect */}
               {activeNode && (
                 <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
