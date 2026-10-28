@@ -5,14 +5,15 @@ import {
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  Mic, Terminal
+  Mic, Terminal, Github, Twitter
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 
+// --- CUSTOM HOOKS ---
 function useMousePosition() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   useEffect(() => {
@@ -25,10 +26,31 @@ function useMousePosition() {
   return mousePosition;
 }
 
+function useScrollReveal() {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setIsVisible(true);
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => {
+      if (ref.current) observer.unobserve(ref.current);
+    };
+  }, []);
+
+  return { ref, isVisible };
+}
+
+// --- MAIN COMPONENT ---
 function LandingPage() {
   const mouse = useMousePosition();
   
-  // Disable tilt on small screens to prevent overflow
+  // Disable tilt on small screens
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const tiltX = isMobile ? 0 : (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 6;
   const tiltY = isMobile ? 0 : (mouse.x / (typeof window !== 'undefined' ? window.innerWidth : 1200) - 0.5) * -6;
@@ -51,10 +73,19 @@ function LandingPage() {
   const currentMonth = monthNames[time.getMonth()];
   const currentDate = time.getDate();
 
+  // Section Reveal Hooks
+  const heroReveal = useScrollReveal();
+  const laptopReveal = useScrollReveal();
+  const commandCenterReveal = useScrollReveal();
+
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
       <style>{`
+        /* Scroll Reveal Utilities */
+        .reveal-hidden { opacity: 0; transform: translateY(40px); }
+        .reveal-visible { opacity: 1; transform: translateY(0); transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
@@ -151,11 +182,7 @@ function LandingPage() {
       <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 md:px-12 py-4 bg-[#FDFBF7]/80 backdrop-blur-md border-b border-[#1A1A1A]/10">
         <Link to="/" className="flex items-center gap-2 md:gap-3 group">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1A1A1A] md:w-7 md:h-7">
-            <circle cx="6" cy="18" r="2.5" fill="currentColor"/>
-            <path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2"/>
-            <circle cx="18" cy="6" r="2.5" fill="currentColor"/>
-            <path d="M18 6L12 12" stroke="currentColor" strokeWidth="1.5"/>
-            <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
+            <circle cx="6" cy="18" r="2.5" fill="currentColor"/><path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2"/><circle cx="18" cy="6" r="2.5" fill="currentColor"/><path d="M18 6L12 12" stroke="currentColor" strokeWidth="1.5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/>
           </svg>
           <span className="font-display italic text-xl md:text-2xl tracking-tight font-medium text-[#1A1A1A] group-hover:opacity-70 transition-opacity">threadwise</span>
         </Link>
@@ -179,7 +206,10 @@ function LandingPage() {
       <main className="relative z-10 w-full max-w-[1400px] mx-auto px-4 md:px-6 pt-28 md:pt-32 pb-24 flex flex-col items-center text-center flex-1">
         
         {/* HERO SECTION - GLASSES */}
-        <div className="relative z-20 flex flex-col items-center mb-16 w-full max-w-5xl">
+        <div 
+          ref={heroReveal.ref}
+          className={`relative z-20 flex flex-col items-center mb-16 w-full max-w-5xl transition-all duration-1000 ${heroReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
+        >
           <div className="relative flex justify-center items-center h-[300px] md:h-[450px] w-full scale-[0.6] md:scale-100 origin-top">
             
             <div className="relative flex items-center justify-center">
@@ -225,7 +255,10 @@ function LandingPage() {
         </div>
 
         {/* THE YELLOW MACBOOK */}
-        <div className="relative w-full max-w-[1100px] perspective-[2000px] group mt-4">
+        <div 
+          ref={laptopReveal.ref}
+          className={`relative w-full max-w-[1100px] perspective-[2000px] group mt-4 transition-all duration-1000 delay-200 ${laptopReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
+        >
           <div 
             className="relative w-full rounded-t-2xl rounded-b-xl border-8 md:border-[12px] bg-[#2C2A28] overflow-hidden transition-all duration-300 ease-out"
             style={{ borderColor: laptopYellow, boxShadow: `0 40px 100px -20px rgba(0,0,0,0.3), 0 0 80px -20px ${laptopYellow}`, transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(0.98)`, transformStyle: 'preserve-3d' }}
@@ -238,7 +271,6 @@ function LandingPage() {
               <div className="absolute inset-0 bg-[#FDFBF7]">
                 <div className="absolute inset-0 pointer-events-none opacity-20" style={{ backgroundImage: `linear-gradient(to right, #A6917A 1px, transparent 1px), linear-gradient(to bottom, #A6917A 1px, transparent 1px)`, backgroundSize: '20px 20px' }} />
                 
-                {/* Hidden on mobile for cleaner look */}
                 <div className="hidden md:flex absolute top-4 left-4 items-center gap-2 z-10">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1A1A1A]">
                     <circle cx="6" cy="18" r="2.5" fill="currentColor"/><path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2"/><circle cx="18" cy="6" r="2.5" fill="currentColor"/><path d="M18 6L12 12" stroke="currentColor" strokeWidth="1.5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/>
@@ -251,7 +283,6 @@ function LandingPage() {
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-black/5 text-[#1A1A1A] rounded-md text-[10px] font-mono tracking-widest uppercase cursor-pointer shadow-sm"><LayoutTemplate className="w-3 h-3" /> Plan</div>
                 </div>
 
-                {/* Nodes - Scaled down for mobile */}
                 <div className="absolute top-[20%] left-[10%] md:left-[25%] w-[80px] md:w-[110px] bg-[#CBE6F9] border border-black/5 shadow-md rounded-md p-1.5 md:p-2 z-10">
                   <div className="flex justify-between items-center mb-1"><span className="text-[6px] md:text-[7px] font-mono font-bold text-[#1A1A1A]/60 uppercase tracking-widest">Evidence</span></div>
                   <h4 className="font-display text-[8px] md:text-[10px] leading-tight text-[#1A1A1A]">UN Report</h4>
@@ -282,7 +313,6 @@ function LandingPage() {
                 <path d="M 400 350 L 300 350" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
               </svg>
 
-              {/* Canvas Studio Modal - Hidden on very small screens to prevent clutter */}
               <div className="hidden sm:flex absolute top-[10%] bottom-[10%] right-[5%] w-[55%] bg-white rounded-xl shadow-2xl flex-col z-30 border border-black/5 overflow-hidden">
                 <div className="p-3 md:p-4 border-b border-black/5 flex justify-between items-start">
                   <div>
@@ -304,7 +334,6 @@ function LandingPage() {
                 </div>
               </div>
 
-              {/* Bottom Toolbar */}
               <div className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 bg-[#1A1A1A] rounded-full px-2 md:px-4 py-1.5 md:py-2 flex items-center gap-2 md:gap-4 shadow-2xl z-40">
                  <div className="flex items-center gap-1 text-[#FDFBF7]/70 cursor-pointer"><Lightbulb className="w-2.5 h-2.5 md:w-3 md:h-3 text-[#FDF0B6]" /><span className="text-[7px] md:text-[9px] font-mono uppercase tracking-wider">Idea</span></div>
                  <div className="flex items-center gap-1 text-[#FDFBF7]/70 cursor-pointer"><FileText className="w-2.5 h-2.5 md:w-3 md:h-3 text-[#CBE6F9]" /><span className="text-[7px] md:text-[9px] font-mono uppercase tracking-wider">Note</span></div>
@@ -317,8 +346,12 @@ function LandingPage() {
           <div className="relative h-4 md:h-6 rounded-b-[1rem] md:rounded-b-[2rem] mx-auto w-[105%] md:w-[110%] -ml-[2.5%] md:-ml-[5%] z-[-1]" style={{ backgroundColor: laptopYellowDark, boxShadow: '0 30px 60px -15px rgba(0,0,0,0.3)' }}><div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 md:w-32 h-1 md:h-1.5 bg-black/10 rounded-b-lg" /></div>
         </div>
 
-        {/* THE DETECTIVE'S COMMAND CENTER - FULLY RESPONSIVE */}
-        <section id="features" className="w-full max-w-[1200px] mt-24 md:mt-40 mb-24 relative flex flex-col items-center">
+        {/* THE DETECTIVE'S COMMAND CENTER */}
+        <section 
+          id="features" 
+          ref={commandCenterReveal.ref}
+          className={`w-full max-w-[1200px] mt-24 md:mt-40 mb-24 relative flex flex-col items-center transition-all duration-1000 delay-300 ${commandCenterReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
+        >
           <div className="text-center mb-10 md:mb-16 relative z-30 px-4">
             <h2 className="font-display text-3xl md:text-5xl text-[#1A1A1A] mb-2 md:mb-4">Every story has a thread.</h2>
             <p className="text-[#1A1A1A]/50 text-sm md:text-lg">Connect the evidence. Find the hidden motive.</p>
@@ -327,7 +360,6 @@ function LandingPage() {
           <div className="board-container w-full h-auto md:h-[700px] p-2">
             <div className="board-screen w-full h-full p-4 md:p-0 flex flex-col md:block gap-6 md:gap-0">
               
-              {/* SVG Streams - Hidden on mobile */}
               <svg className="hidden md:block absolute inset-0 w-full h-full pointer-events-none z-0">
                 <path d="M 280 180 Q 400 200 600 350" className="data-stream-base" /><path d="M 280 180 Q 400 200 600 350" className="data-stream-pulse" />
                 <path d="M 920 180 Q 800 200 600 350" className="data-stream-base" /><path d="M 920 180 Q 800 200 600 350" className="data-stream-pulse" style={{ animationDelay: '0.5s' }} />
@@ -335,20 +367,17 @@ function LandingPage() {
                 <path d="M 920 520 Q 800 500 600 350" className="data-stream-base" /><path d="M 920 520 Q 800 500 600 350" className="data-stream-pulse" style={{ animationDelay: '1.5s' }} />
               </svg>
 
-              {/* AI Core - Order 1 on mobile (Top) */}
               <div className="relative md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 flex flex-col items-center z-20 order-1 md:order-none my-6 md:my-0">
                 <div className="ai-core-container">
                   <div className="ai-outer-socket" /><div className="ai-mech-ring" /><div className="ai-blue-core"><div className="ai-lens-inner"><div className="ai-lens-glint" /></div></div>
                 </div>
               </div>
 
-              {/* Widget 1: Digital Clock */}
               <div className="widget relative md:absolute md:top-[12%] md:left-[8%] w-full md:w-64 h-28 md:h-36 p-4 md:p-6 flex flex-col items-center justify-center z-10 order-2 md:order-none">
                 <div className="text-[9px] md:text-[10px] font-mono text-black/40 uppercase tracking-widest mb-1 md:mb-2 flex items-center gap-1.5 md:gap-2"><Activity className="w-3 h-3 text-[#C24A35]" /> Sys Time</div>
                 <div className="digital-time text-3xl md:text-4xl font-bold">{formatTime(time)}</div>
               </div>
 
-              {/* Widget 2: Desk Calendar */}
               <div className="widget relative md:absolute md:top-[15%] md:right-[8%] w-full md:w-60 h-auto md:h-64 z-10 flex flex-col items-center py-4 md:pt-8 md:pb-0 rounded-xl md:rounded-b-xl order-3 md:order-none">
                 <div className="hidden md:block absolute top-0 left-1/4 -translate-y-1/2 w-4 h-8 rounded-full border-4 border-gray-400 bg-transparent" /><div className="hidden md:block absolute top-0 right-1/4 -translate-y-1/2 w-4 h-8 rounded-full border-4 border-gray-400 bg-transparent" />
                 <div className="w-40 md:w-48 h-36 md:h-52 bg-white shadow-lg border border-black/5 flex flex-col rounded-sm overflow-hidden">
@@ -357,7 +386,6 @@ function LandingPage() {
                 </div>
               </div>
 
-              {/* Widget 3: Live Terminal */}
               <div className="widget relative md:absolute md:bottom-[12%] md:left-[10%] w-full md:w-72 h-40 md:h-56 p-3 md:p-4 flex flex-col z-10 overflow-hidden order-4 md:order-none">
                 <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 pb-1.5 md:pb-2 border-b border-black/10 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Terminal className="w-3 h-3 text-[#2D6A65]" /> Live Feed</div>
                 <div className="font-mono text-[9px] md:text-[10px] text-[#1A1A1A] leading-relaxed overflow-hidden h-full relative">
@@ -367,7 +395,6 @@ function LandingPage() {
                 </div>
               </div>
 
-              {/* Widget 4: Audio Signature */}
               <div className="widget relative md:absolute md:bottom-[15%] md:right-[10%] w-full md:w-72 h-36 md:h-48 p-4 md:p-6 flex flex-col z-10 order-5 md:order-none">
                 <div className="flex justify-between items-center mb-3 md:mb-6 border-b border-black/10 pb-2 md:pb-3">
                   <div className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Mic className="w-3 h-3 md:w-4 md:h-4 text-[#6B4C7A]" /> Audio Log</div>
@@ -383,13 +410,50 @@ function LandingPage() {
         </section>
       </main>
 
-      <footer className="relative z-30 border-t border-[#1A1A1A]/10 py-8 mt-auto bg-[#FDFBF7]/80 backdrop-blur-md">
-        <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <span className="text-[10px] font-mono text-[#1A1A1A]/40">© 2026 Threadwise Inc.</span>
-          <div className="flex gap-6 md:gap-8 font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50">
-             <Link to="/app" className="hover:text-[#1A1A1A] transition-colors">Workspace</Link>
-             <a href="#" className="hover:text-[#1A1A1A] transition-colors">Privacy</a>
-             <a href="#" className="hover:text-[#1A1A1A] transition-colors">Terms</a>
+      {/* UPGRADED EDITORIAL FOOTER */}
+      <footer className="relative z-30 border-t border-[#1A1A1A]/10 bg-[#FDFBF7]/80 backdrop-blur-md pt-16 pb-8">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12 mb-16">
+            <div className="max-w-sm">
+              <Link to="/" className="flex items-center gap-3 mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1A1A1A]">
+                  <circle cx="6" cy="18" r="2.5" fill="currentColor"/><path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2"/><circle cx="18" cy="6" r="2.5" fill="currentColor"/><path d="M18 6L12 12" stroke="currentColor" strokeWidth="1.5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/>
+                </svg>
+                <span className="font-display italic text-2xl tracking-tight font-medium text-[#1A1A1A]">threadwise</span>
+              </Link>
+              <p className="text-sm text-[#1A1A1A]/50 leading-relaxed">
+                A spatial intelligence workbench for researchers, strategists, and complex thinkers.
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap gap-12 md:gap-24 font-mono text-[11px] uppercase tracking-widest text-[#1A1A1A]/50">
+              <div className="flex flex-col gap-4">
+                <span className="text-[#1A1A1A] font-bold mb-1">Product</span>
+                <Link to="/app" className="hover:text-[#1A1A1A] transition-colors">Workspace</Link>
+                <a href="#features" className="hover:text-[#1A1A1A] transition-colors">Features</a>
+                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Pricing</a>
+              </div>
+              <div className="flex flex-col gap-4">
+                <span className="text-[#1A1A1A] font-bold mb-1">Company</span>
+                <a href="#" className="hover:text-[#1A1A1A] transition-colors">About</a>
+                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Blog</a>
+                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Contact</a>
+              </div>
+              <div className="flex flex-col gap-4">
+                <span className="text-[#1A1A1A] font-bold mb-1">Legal</span>
+                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Privacy</a>
+                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Terms</a>
+                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Security</a>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-[#1A1A1A]/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <span className="text-[10px] font-mono text-[#1A1A1A]/40 uppercase tracking-widest">© 2026 Threadwise Inc. All rights reserved.</span>
+            <div className="flex items-center gap-6">
+              <a href="#" className="text-[#1A1A1A]/40 hover:text-[#1A1A1A] transition-colors"><Github className="w-5 h-5" /></a>
+              <a href="#" className="text-[#1A1A1A]/40 hover:text-[#1A1A1A] transition-colors"><Twitter className="w-5 h-5" /></a>
+            </div>
           </div>
         </div>
       </footer>
