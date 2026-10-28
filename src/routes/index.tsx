@@ -5,7 +5,7 @@ import {
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  Mic, Terminal, Github, Twitter
+  Mic, Terminal, Github, Twitter, Search
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -270,7 +270,7 @@ function LandingPage() {
           </div>
 
           <p className="text-base md:text-xl text-[#1A1A1A]/50 leading-relaxed max-w-xl font-light mt-2 md:mt-6 px-4">
-            Bring your sources, questions, and ideas together.
+            Uncover the hidden motives behind speeches, news, and complex events.
           </p>
         </div>
 
@@ -373,8 +373,8 @@ function LandingPage() {
           className={`w-full max-w-[1200px] mt-24 md:mt-40 mb-24 relative flex flex-col items-center transition-all duration-1000 delay-300 ${commandCenterReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
         >
           <div className="text-center mb-10 md:mb-16 relative z-30 px-4">
-            <h2 className="font-display text-3xl md:text-5xl text-[#1A1A1A] mb-2 md:mb-4">Every story has a thread.</h2>
-            <p className="text-[#1A1A1A]/50 text-sm md:text-lg">Connect the evidence. Find the hidden motive.</p>
+            <h2 className="font-display text-3xl md:text-5xl text-[#1A1A1A] mb-2 md:mb-4">Find the hidden motive.</h2>
+            <p className="text-[#1A1A1A]/50 text-sm md:text-lg">Cross-reference sources, expose contradictions, and map the truth.</p>
           </div>
 
           <div className="board-container w-full h-auto md:h-[700px] p-2">
@@ -410,7 +410,7 @@ function LandingPage() {
                 <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 pb-1.5 md:pb-2 border-b border-black/10 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Terminal className="w-3 h-3 text-[#2D6A65]" /> Live Feed</div>
                 <div className="font-mono text-[9px] md:text-[10px] text-[#1A1A1A] leading-relaxed overflow-hidden h-full relative">
                   <div className="terminal-scroll space-y-1.5 md:space-y-2">
-                    <p>&gt; INGESTING SOURCES...</p><p>&gt; EXTRACTING ENTITIES...</p><p>&gt; ENTITY MATCH: EL SALVADOR</p><p>&gt; ANALYZING BRIEFING...</p><p>&gt; DETECTING OMISSIONS...</p><p>&gt; MOTIVE SUSPECTED: ECONOMIC</p><p>&gt; INGESTING SOURCES...</p><p>&gt; EXTRACTING ENTITIES...</p>
+                    <p>&gt; INGESTING SPEECH...</p><p>&gt; EXTRACTING ENTITIES...</p><p>&gt; OMISSION DETECTED</p><p>&gt; ANALYZING TONE...</p><p>&gt; HIDDEN MOTIVE SUSPECTED</p><p>&gt; CROSS-REFERENCING NEWS...</p><p>&gt; INGESTING NEWS...</p><p>&gt; CONTRADICTION FOUND</p>
                   </div>
                 </div>
               </div>
