@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { safeStorage } from "./safe-storage";
 import {
   addEdge,
   applyEdgeChanges,
@@ -103,7 +104,7 @@ export const useThread = create<State>()(
         const cleanEdges = edges.map(({ selected: _s, ...e }) => e);
         const last = history.at(-1);
         if (last && JSON.stringify([last.nodes, last.edges]) === JSON.stringify([cleanNodes, cleanEdges])) return;
-        set({ history: [...history, { id: uid(), at: Date.now(), label, nodes: structuredClone(cleanNodes), edges: structuredClone(cleanEdges) }].slice(-200) });
+        set({ history: [...history, { id: uid(), at: Date.now(), label, nodes: structuredClone(cleanNodes), edges: structuredClone(cleanEdges) }].slice(-40) });
       },
       cancelExperiment: () => set({ pendingExperiment: null }),
       finishExperiment: (id, result, lessons, graduateIds, promoteTo) => {
@@ -219,7 +220,11 @@ export const useThread = create<State>()(
       select: (selectedId) => set({ selectedId }),
       reset: () => set({ ...seed(), selectedId: null, ghosts: [] }),
     }),
-    { name: "threadwise-canvas-v1", partialize: (s) => ({ nodes: s.nodes, edges: s.edges, ghosts: s.ghosts, history: s.history }) },
+    { 
+      name: "threadwise-canvas-v1", 
+      storage: createJSONStorage(() => safeStorage),
+      partialize: (s) => ({ nodes: s.nodes, edges: s.edges, ghosts: s.ghosts, history: s.history }) 
+    },
   ),
 );
 
