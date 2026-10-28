@@ -1,24 +1,39 @@
-import { createFileRoute, ClientOnly } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
+import { createFileRoute, ClientOnly, useNavigate } from "@tanstack/react-router";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 const Canvas = lazy(() => import("@/components/threadwise/Canvas"));
 
 export const Route = createFileRoute("/app")({
-  head: () => ({
-    meta: [
-      { title: "Threadwise — Canvas for connected thinking" },
-      { name: "description", content: "Capture ideas, notes, questions, experiments and actions, then connect them on an infinite canvas." },
-      { property: "og:title", content: "Threadwise — Canvas for connected thinking" },
-      { property: "og:description", content: "Turn scattered thoughts into connected understanding and meaningful action." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: Index,
+  component: AppPage,
 });
 
-function Index() {
-  const loading = <div className="flex h-screen items-center justify-center font-display text-muted-foreground">Threadwise</div>;
+function AppPage() {
+  const navigate = useNavigate();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    // Check if user is logged in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        // If no session, kick them to the login page
+        navigate({ to: "/login" });
+      } else {
+        setIsChecking(false);
+      }
+    });
+  }, [navigate]);
+
+  const loading = (
+    <div className="flex h-screen flex-col items-center justify-center bg-[#FDFBF7]">
+      <Loader2 className="w-8 h-8 animate-spin text-[#1A1A1A]/20 mb-4" />
+      <div className="font-display text-lg text-[#1A1A1A]/50">Opening workspace...</div>
+    </div>
+  );
+
+  if (isChecking) return loading;
+
   return (
     <main className="h-screen w-screen overflow-hidden bg-background">
       <ClientOnly fallback={loading}>
