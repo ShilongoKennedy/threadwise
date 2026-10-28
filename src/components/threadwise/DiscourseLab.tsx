@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, Trash2, X, Globe, Loader2, Search, Check } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, Trash2, X, Globe, Loader2, Search, Check, Sparkles, FileText, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +15,7 @@ const codeLabel = (code: CodeId) => CODES.find((item) => item.id === code)?.labe
 export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Corpus; update: (corpus: Corpus) => void; onClose: () => void }) {
   const corpus = stored ?? emptyCorpus();
   const s = useThread();
-  const [view, setView] = useState<View>("read");
+  const [view, setView] = useState<View>("investigate"); // Default to the main attraction
   const [activeId, setActiveId] = useState(corpus.docs[0]?.id ?? "");
   const [compareIds, setCompareIds] = useState<[string, string]>([corpus.docs[0]?.id ?? "", corpus.docs[1]?.id ?? ""]);
   const [draft, setDraft] = useState({ title: "", speaker: "", date: "", occasion: "", audience: "", text: "" });
@@ -38,6 +38,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const plant = (doc: DiscourseDoc, quote: string, label = "Discourse evidence") => {
     const id = s.addNode("note", { x: 80 + s.nodes.length * 14, y: 90 + s.nodes.length * 12 });
     s.updateNode(id, (data) => ({ ...data, title: `“${clip(quote, 82)}”`, body: `“${quote}”\n\n— ${doc.title}${doc.speaker ? ` · ${doc.speaker}` : ""}${doc.date ? ` · ${doc.date}` : ""}\n\n${label}`, epistemic: "evidence", meta: { ...data.meta, source: doc.title } }));
+    toast.success("Placed on canvas");
   };
 
   const plantAnalysis = (id: string, kind: "evidence" | "hypothesis" | "question", title: string, body: string, source?: string) => {
@@ -51,7 +52,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       meta: { ...data.meta, source: source || "Cross-Source Investigation" }
     }));
     
-    // Give visual feedback
     setPlantedIds(prev => ({ ...prev, [id]: true }));
     toast.success("Planted on canvas", { description: "Switch to the canvas to view." });
   };
@@ -91,171 +91,190 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   };
 
   return <div className="tw-lab" role="dialog" aria-modal="true" aria-label="Discourse lab">
-    <header className="tw-lab-head">
-      <div><span className="tw-kicker">The reading room</span><h2>Discourse lab</h2></div>
-      <nav>
-        {([ ["read", "Read & code", BookOpenText], ["compare", "Compare", Columns2], ["count", "Count", Hash], ["investigate", "Investigate", Globe] ] as const).map(([id, label, Icon]) => 
-          <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)}><Icon className="mr-1 h-4 w-4" />{label}</Button>
+    <header className="tw-lab-head bg-[#FDFBF7]/90 backdrop-blur-md">
+      <div>
+        <span className="tw-kicker text-[#C24A35]">The Reading Room</span>
+        <h2 className="font-display text-3xl text-[#1A1A1A]">Discourse Lab</h2>
+      </div>
+      <nav className="bg-black/5 p-1 rounded-xl">
+        {([ ["investigate", "Investigate", Globe], ["read", "Read & code", BookOpenText], ["compare", "Compare", Columns2], ["count", "Count", Hash] ] as const).map(([id, label, Icon]) => 
+          <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`rounded-lg transition-all ${view === id ? "bg-white shadow-sm text-[#1A1A1A]" : "text-muted-foreground hover:text-[#1A1A1A]"}`}>
+            <Icon className="mr-2 h-4 w-4" />{label}
+          </Button>
         )}
       </nav>
-      <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close discourse lab"><X /></Button>
+      <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close discourse lab" className="rounded-full hover:bg-black/5"><X /></Button>
     </header>
 
-    <div className="tw-lab-body">
-      <aside className="tw-lab-ledger">
+    <div className="tw-lab-body bg-[#FDFBF7]">
+      <aside className="tw-lab-ledger bg-white/50 border-r border-black/5">
         <div><span className="tw-kicker">Collection · {docs.length}</span></div>
-        <div className="tw-lab-add">
-          <Input placeholder="Text title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })}/>
-          <div className="grid grid-cols-2 gap-2">
-            <Input placeholder="Speaker" value={draft.speaker} onChange={(e) => setDraft({ ...draft, speaker: e.target.value })}/>
-            <Input type="date" value={draft.date} onChange={(e) => setDraft({ ...draft, date: e.target.value })}/>
+        <div className="tw-lab-add bg-white rounded-xl p-4 shadow-sm border border-black/5">
+          <Input placeholder="Document title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="mb-2 bg-transparent border-black/10"/>
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <Input placeholder="Speaker" value={draft.speaker} onChange={(e) => setDraft({ ...draft, speaker: e.target.value })} className="bg-transparent border-black/10"/>
+            <Input type="date" value={draft.date} onChange={(e) => setDraft({ ...draft, date: e.target.value })} className="bg-transparent border-black/10"/>
           </div>
-          <Input placeholder="Audience / occasion" value={draft.audience} onChange={(e) => setDraft({ ...draft, audience: e.target.value })}/>
-          <Textarea rows={5} placeholder="Paste a speech, transcript, or article…" value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })}/>
-          <Button size="sm" disabled={!draft.title.trim() || !draft.text.trim()} onClick={addDoc}><Plus className="mr-1 h-4 w-4" />Add text</Button>
+          <Input placeholder="Audience / occasion" value={draft.audience} onChange={(e) => setDraft({ ...draft, audience: e.target.value })} className="mb-2 bg-transparent border-black/10"/>
+          <Textarea rows={3} placeholder="Paste text here…" value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} className="mb-2 bg-transparent border-black/10 text-xs"/>
+          <Button size="sm" className="w-full bg-[#1A1A1A] text-white" disabled={!draft.title.trim() || !draft.text.trim()} onClick={addDoc}><Plus className="mr-2 h-4 w-4" />Add to collection</Button>
         </div>
-        <ol>
+        <ol className="mt-4 space-y-1">
           {docs.map((doc) => 
-            <li key={doc.id} data-active={doc.id === active?.id}>
-              <button onClick={() => { setActiveId(doc.id); setView("read"); }}>
-                <small>{doc.date || "undated"}</small>
-                <b>{doc.title}</b>
-                <span>{doc.speaker || "Unknown speaker"} · {corpus.annotations.filter((mark) => mark.docId === doc.id).length} marks</span>
+            <li key={doc.id} data-active={doc.id === active?.id} className={`group rounded-lg transition-colors ${doc.id === active?.id ? "bg-[#CBE6F9]/30 border border-[#CBE6F9]" : "hover:bg-black/5 border border-transparent"}`}>
+              <button className="w-full text-left p-3" onClick={() => { setActiveId(doc.id); setView("read"); }}>
+                <small className="font-mono text-[10px] text-muted-foreground block mb-1">{doc.date || "undated"}</small>
+                <b className="font-display text-sm block truncate">{doc.title}</b>
+                <span className="text-[10px] text-muted-foreground mt-1 block">{doc.speaker || "Unknown speaker"} · {corpus.annotations.filter((mark) => mark.docId === doc.id).length} marks</span>
               </button>
-              <Button size="icon" variant="ghost" onClick={() => save({ docs: corpus.docs.filter((item) => item.id !== doc.id), annotations: corpus.annotations.filter((mark) => mark.docId !== doc.id) })} aria-label={`Remove ${doc.title}`}><Trash2 /></Button>
+              <Button size="icon" variant="ghost" className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 h-6 w-6" onClick={() => save({ docs: corpus.docs.filter((item) => item.id !== doc.id), annotations: corpus.annotations.filter((mark) => mark.docId !== doc.id) })} aria-label={`Remove ${doc.title}`}><Trash2 className="h-3 w-3" /></Button>
             </li>
           )}
         </ol>
       </aside>
 
-      <main className="tw-lab-main">
-        {/* EXISTING VIEWS */}
-        {view === "read" && active && <div className="tw-lab-read"><article className="tw-lab-doc"><p className="tw-kicker">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p><h3>{active.title}</h3><p className="tw-lab-audience">{active.audience && `Addressed to: ${active.audience}`}</p><div className="tw-lab-text" onMouseUp={() => selectQuote(active)}>{active.text}</div></article><aside className="tw-lab-margin"><p className="tw-kicker">Margin</p><p>Select a passage to code it. Coded quotes become evidence you can place on the canvas.</p>{corpus.annotations.filter((mark) => mark.docId === active.id).map((mark) => <div className="tw-lab-note" key={mark.id} data-code={mark.code}><small>{codeLabel(mark.code)}</small><blockquote>“{clip(mark.quote, 150)}”</blockquote><Button size="sm" variant="ghost" onClick={() => plant(active, mark.quote, codeLabel(mark.code))}><MapPin className="mr-1 h-4 w-4" />Place</Button></div>)}</aside></div>}
+      <main className="tw-lab-main bg-[#FDFBF7]">
         
-        {view === "compare" && <div className="tw-lab-compare"><p className="tw-kicker">Compare two texts</p><div className="tw-lab-compare-pick">{[0, 1].map((index) => <select key={index} value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>{docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}</select>)}</div><div className="tw-lab-split">{compared.map((doc) => <article className="tw-lab-doc" key={doc.id}><p className="tw-kicker">{doc.speaker} · {doc.date}</p><h3>{doc.title}</h3><div className="tw-lab-text" onMouseUp={() => selectQuote(doc)}>{doc.text}</div></article>)}</div></div>}
-        
-        {view === "count" && <div className="tw-lab-count"><h3>Language trajectory</h3><p>Track a phrase across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p><form onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}><Input value={term} placeholder="Track a word or phrase" onChange={(e) => setTerm(e.target.value)}/><Button>Track</Button></form><div className="tw-lab-terms">{terms.map((item) => <button key={item} onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>{item} ×</button>)}</div><div className="tw-lab-table">{termCounts.map(({ doc, values }) => <div key={doc.id}><b>{doc.date || "—"} · {doc.title}</b>{values.map((value) => <span key={value.phrase}>{value.phrase}: <strong>{value.rate}</strong> / 1k</span>)}</div>)}</div><section><h3>Most used words</h3>{docs.map((doc) => <div className="tw-lab-terms-list" key={doc.id}><b>{doc.title}</b>{topTerms(doc.text, 9).map(([word, count]) => <button key={word} onClick={() => setTerm(word)}>{word} <small>{count}</small></button>)}</div>)}</section></div>}
-
-        {/* NEW INVESTIGATE VIEW (THE DOSSIER) */}
+        {/* INVESTIGATE VIEW (The Main Attraction) */}
         {view === "investigate" && (
-          <div className="p-8 max-w-5xl mx-auto h-full overflow-y-auto bg-background/50 border-l">
-            <div className="mb-8 border-b pb-6">
-              <h3 className="font-display text-3xl mb-2 flex items-center gap-2"><Globe className="text-primary"/> Intelligence Dossier</h3>
-              <p className="text-muted-foreground text-sm max-w-2xl">Cross-reference multiple sources to reveal hidden connections, strategic motives, and unanswered questions. The AI acts as your intelligence analyst.</p>
+          <div className="p-8 max-w-5xl mx-auto h-full overflow-y-auto">
+            <div className="mb-10 text-center">
+              <h3 className="font-display text-4xl mb-3 text-[#1A1A1A]">Intelligence Dossier</h3>
+              <p className="text-muted-foreground max-w-2xl mx-auto">Paste multiple news articles, speeches, or transcripts. The AI will cross-reference them to reveal hidden connections, strategic motives, and unanswered questions.</p>
             </div>
 
-            <div className="space-y-3 mb-8 bg-muted/20 p-6 rounded-xl border">
-              <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4">Source Ingestion</h4>
-              {urls.map((url, i) => (
-                <div key={i} className="flex gap-2 items-center">
-                  <span className="text-xs font-mono text-muted-foreground w-6">0{i+1}</span>
-                  <Input 
-                    value={url} 
-                    placeholder="https://..." 
-                    className="bg-background"
-                    onChange={(e) => {
-                      const newUrls = [...urls];
-                      newUrls[i] = e.target.value;
-                      setUrls(newUrls);
-                    }} 
-                  />
-                  {urls.length > 1 && (
-                    <Button variant="ghost" size="icon" onClick={() => setUrls(urls.filter((_, idx) => idx !== i))}>
-                      <Trash2 className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <div className="flex gap-4 pt-2">
-                <Button variant="outline" size="sm" onClick={() => setUrls([...urls, ""])}>
-                  <Plus className="mr-2 h-4 w-4" /> Add source
+            <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg border border-black/5 p-6 mb-12">
+              <div className="space-y-3 mb-6">
+                {urls.map((url, i) => (
+                  <div key={i} className="flex gap-2 items-center">
+                    <span className="text-xs font-mono text-muted-foreground w-6">0{i+1}</span>
+                    <Input 
+                      value={url} 
+                      placeholder="https://..." 
+                      className="bg-[#FDFBF7] border-black/10 focus-visible:ring-[#C24A35]"
+                      onChange={(e) => {
+                        const newUrls = [...urls];
+                        newUrls[i] = e.target.value;
+                        setUrls(newUrls);
+                      }} 
+                    />
+                    {urls.length > 1 && (
+                      <Button variant="ghost" size="icon" onClick={() => setUrls(urls.filter((_, idx) => idx !== i))}>
+                        <Trash2 className="h-4 w-4 text-muted-foreground hover:text-red-500" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-4 pt-4 border-t border-black/5">
+                <Button variant="outline" size="sm" onClick={() => setUrls([...urls, ""])} className="border-black/10">
+                  <Plus className="mr-2 h-4 w-4" /> Add Source
                 </Button>
-                <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="flex-1 max-w-xs">
-                  {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...</> : <><Search className="mr-2 h-4 w-4" /> Run Investigation</>}
+                <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="flex-1 bg-[#1A1A1A] text-white hover:bg-[#333]">
+                  {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing Sources...</> : <><Sparkles className="mr-2 h-4 w-4" /> Run Investigation</>}
                 </Button>
               </div>
-              {analysisError && <p className="text-destructive text-sm mt-2">{analysisError}</p>}
+              {analysisError && <p className="text-red-600 text-sm mt-4 p-3 bg-red-50 rounded-lg">{analysisError}</p>}
             </div>
 
+            {isAnalyzing && (
+              <div className="max-w-3xl mx-auto text-center py-12">
+                <div className="inline-block relative">
+                  <div className="w-24 h-24 border-4 border-[#CBE6F9] border-t-[#C24A35] rounded-full animate-spin mb-6"></div>
+                  <Search className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#C24A35] w-8 h-8" />
+                </div>
+                <h4 className="font-display text-2xl mb-2">Reading the evidence...</h4>
+                <p className="text-sm text-muted-foreground animate-pulse">Cross-referencing entities, extracting motives, and identifying contradictions.</p>
+              </div>
+            )}
+
             {analysis && (
-              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
                 
                 {/* Executive Summary */}
-                <section className="bg-primary/5 border-l-4 border-primary p-6 rounded-r-xl">
-                  <h4 className="font-mono text-xs uppercase tracking-widest text-primary mb-3">The Big Picture (Executive Summary)</h4>
-                  <p className="font-display text-lg leading-relaxed text-foreground/90">{analysis.conclusion}</p>
+                <section className="bg-[#1A1A1A] text-white p-8 rounded-2xl shadow-xl relative overflow-hidden">
+                   <div className="absolute top-0 right-0 w-64 h-64 bg-[#C24A35] rounded-full blur-[100px] opacity-20 pointer-events-none" />
+                  <div className="flex items-center gap-3 mb-4">
+                    <Target className="w-6 h-6 text-[#C24A35]" />
+                    <h4 className="font-mono text-xs uppercase tracking-widest text-[#C24A35]">The Big Picture</h4>
+                  </div>
+                  <p className="font-display text-2xl leading-relaxed text-white/90">{analysis.conclusion}</p>
                   
-                  <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-primary/10">
-                    <span className="text-xs font-mono text-muted-foreground py-1 mr-2">Key Actors:</span>
+                  <div className="flex flex-wrap gap-2 mt-6 pt-6 border-t border-white/10">
+                    <span className="text-xs font-mono text-white/40 py-1 mr-2">KEY ACTORS:</span>
                     {analysis.entities?.map((entity: string, i: number) => (
-                      <span key={i} className="px-2.5 py-0.5 bg-background border rounded text-xs font-medium">{entity}</span>
+                      <span key={i} className="px-3 py-1 bg-white/10 rounded-full text-xs font-medium border border-white/10">{entity}</span>
                     ))}
                   </div>
                 </section>
 
-                {/* Evidence Trail */}
-                <section>
-                  <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Documented Evidence</h4>
-                  <div className="space-y-3">
-                    {analysis.evidence?.map((item: any, i: number) => (
-                      <div key={i} className="group flex gap-4 p-4 bg-background border rounded-lg hover:border-emerald-600/50 transition-colors">
-                        <div className="flex-1">
-                          <b className="block mb-1 text-sm">{item.title}</b>
-                          <p className="text-muted-foreground text-sm leading-relaxed mb-2">{item.body}</p>
-                          <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded">{item.source}</span>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Evidence Trail */}
+                  <section>
+                    <h4 className="font-mono text-xs uppercase tracking-widest text-[#2D6A65] mb-4 flex items-center gap-2"><Check className="h-4 w-4" /> Documented Evidence</h4>
+                    <div className="space-y-4">
+                      {analysis.evidence?.map((item: any, i: number) => (
+                        <div key={i} className="group flex flex-col p-5 bg-white border border-[#2D6A65]/20 rounded-xl hover:border-[#2D6A65] transition-colors shadow-sm">
+                          <b className="block mb-2 text-[#1A1A1A]">{item.title}</b>
+                          <p className="text-muted-foreground text-sm leading-relaxed mb-4 flex-1">{item.body}</p>
+                          <div className="flex justify-between items-center mt-auto pt-3 border-t border-black/5">
+                            <span className="text-[10px] font-mono text-[#2D6A65] bg-[#2D6A65]/10 px-2 py-1 rounded">{item.source}</span>
+                            <Button 
+                              size="sm" 
+                              variant={plantedIds[`ev-${i}`] ? "secondary" : "outline"}
+                              className={`h-8 ${plantedIds[`ev-${i}`] ? "text-[#2D6A65] bg-[#2D6A65]/10" : ""}`}
+                              onClick={() => plantAnalysis(`ev-${i}`, "evidence", item.title, item.body, item.source)}
+                            >
+                              {plantedIds[`ev-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant on Canvas</>}
+                            </Button>
+                          </div>
                         </div>
-                        <Button 
-                          size="sm" 
-                          variant={plantedIds[`ev-${i}`] ? "secondary" : "outline"}
-                          className={`self-start ${plantedIds[`ev-${i}`] ? "text-emerald-600" : ""}`}
-                          onClick={() => plantAnalysis(`ev-${i}`, "evidence", item.title, item.body, item.source)}
-                        >
-                          {plantedIds[`ev-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                      ))}
+                    </div>
+                  </section>
 
-                {/* Hypotheses */}
-                <section>
-                  <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2"><Search className="h-4 w-4 text-purple-600" /> Strategic Motives & Hypotheses</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {analysis.hypotheses?.map((item: any, i: number) => (
-                      <div key={i} className="flex flex-col p-5 bg-purple-50/50 border border-purple-100 rounded-lg">
-                        <b className="block mb-2 text-sm text-purple-900">{item.title}</b>
-                        <p className="text-sm text-purple-800/80 leading-relaxed mb-4 flex-1">{item.body}</p>
-                        <Button 
-                          size="sm" 
-                          variant={plantedIds[`hyp-${i}`] ? "secondary" : "outline"}
-                          className={`self-start ${plantedIds[`hyp-${i}`] ? "text-purple-600" : ""}`}
-                          onClick={() => plantAnalysis(`hyp-${i}`, "hypothesis", item.title, item.body)}
-                        >
-                          {plantedIds[`hyp-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                  {/* Hypotheses */}
+                  <section>
+                    <h4 className="font-mono text-xs uppercase tracking-widest text-[#6B4C7A] mb-4 flex items-center gap-2"><Sparkles className="h-4 w-4" /> Strategic Hypotheses</h4>
+                    <div className="space-y-4">
+                      {analysis.hypotheses?.map((item: any, i: number) => (
+                        <div key={i} className="flex flex-col p-5 bg-[#F8F4FA] border border-[#6B4C7A]/20 rounded-xl hover:border-[#6B4C7A] transition-colors shadow-sm">
+                          <b className="block mb-2 text-[#6B4C7A]">{item.title}</b>
+                          <p className="text-sm text-[#1A1A1A]/70 leading-relaxed mb-4 flex-1">{item.body}</p>
+                          <div className="flex justify-end mt-auto pt-3 border-t border-[#6B4C7A]/10">
+                            <Button 
+                              size="sm" 
+                              variant={plantedIds[`hyp-${i}`] ? "secondary" : "outline"}
+                              className={`h-8 ${plantedIds[`hyp-${i}`] ? "text-[#6B4C7A] bg-[#6B4C7A]/10" : "text-[#6B4C7A] border-[#6B4C7A]/30 hover:bg-[#6B4C7A]/10"}`}
+                              onClick={() => plantAnalysis(`hyp-${i}`, "hypothesis", item.title, item.body)}
+                            >
+                              {plantedIds[`hyp-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant on Canvas</>}
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </div>
 
                 {/* Questions */}
                 <section>
-                  <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2"><Search className="h-4 w-4 text-orange-600" /> The Blind Spots (Unanswered Questions)</h4>
-                  <div className="space-y-3">
+                  <h4 className="font-mono text-xs uppercase tracking-widest text-[#C24A35] mb-4 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> The Blind Spots</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {analysis.questions?.map((item: any, i: number) => (
-                      <div key={i} className="flex gap-4 p-4 bg-orange-50/50 border border-orange-100 rounded-lg">
-                        <div className="flex-1">
-                          <b className="block mb-1 text-sm text-orange-900">{item.title}</b>
-                          <p className="text-sm text-orange-800/80 leading-relaxed">{item.body}</p>
+                      <div key={i} className="flex flex-col p-5 bg-[#FDF6F4] border border-[#C24A35]/20 rounded-xl hover:border-[#C24A35] transition-colors shadow-sm">
+                        <b className="block mb-2 text-[#C24A35]">{item.title}</b>
+                        <p className="text-sm text-[#1A1A1A]/70 leading-relaxed mb-4 flex-1">{item.body}</p>
+                        <div className="flex justify-end mt-auto pt-3 border-t border-[#C24A35]/10">
+                          <Button 
+                            size="sm" 
+                            variant={plantedIds[`q-${i}`] ? "secondary" : "outline"}
+                            className={`h-8 ${plantedIds[`q-${i}`] ? "text-[#C24A35] bg-[#C24A35]/10" : "text-[#C24A35] border-[#C24A35]/30 hover:bg-[#C24A35]/10"}`}
+                            onClick={() => plantAnalysis(`q-${i}`, "question", item.title, item.body)}
+                          >
+                            {plantedIds[`q-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant on Canvas</>}
+                          </Button>
                         </div>
-                        <Button 
-                          size="sm" 
-                          variant={plantedIds[`q-${i}`] ? "secondary" : "outline"}
-                          className={`self-start ${plantedIds[`q-${i}`] ? "text-orange-600" : ""}`}
-                          onClick={() => plantAnalysis(`q-${i}`, "question", item.title, item.body)}
-                        >
-                          {plantedIds[`q-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
-                        </Button>
                       </div>
                     ))}
                   </div>
@@ -263,6 +282,108 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
               </div>
             )}
+          </div>
+        )}
+
+        {/* READ & CODE VIEW */}
+        {view === "read" && active && (
+          <div className="tw-lab-read h-full">
+            <article className="tw-lab-doc bg-white shadow-sm rounded-2xl border border-black/5 p-10 mx-auto max-w-3xl">
+              <p className="tw-kicker text-[#C24A35] mb-2">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
+              <h3 className="font-display text-3xl mb-6">{active.title}</h3>
+              {active.audience && <p className="tw-lab-audience bg-black/5 p-3 rounded-lg text-sm mb-8"><b className="font-mono text-[10px] uppercase tracking-widest block mb-1">Addressed to</b> {active.audience}</p>}
+              <div className="tw-lab-text text-lg leading-loose text-[#1A1A1A]/80 font-serif" onMouseUp={() => selectQuote(active)}>
+                {active.text}
+              </div>
+            </article>
+            <aside className="tw-lab-margin pl-8 border-l border-black/5">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">Margin Notes</p>
+              {corpus.annotations.filter((mark) => mark.docId === active.id).length === 0 && (
+                <p className="text-sm text-muted-foreground leading-relaxed">Select a passage to code it. Coded quotes become evidence you can place on the canvas.</p>
+              )}
+              <div className="space-y-3">
+                {corpus.annotations.filter((mark) => mark.docId === active.id).map((mark) => (
+                  <div className="tw-lab-note bg-[#FDFBF7] border border-black/5 border-l-4 p-4 rounded-r-lg shadow-sm" key={mark.id} data-code={mark.code}>
+                    <small className="font-mono text-[9px] uppercase tracking-wider text-[#C24A35] block mb-2">{codeLabel(mark.code)}</small>
+                    <blockquote className="font-serif text-sm italic text-[#1A1A1A]/80 mb-3 leading-relaxed">“{clip(mark.quote, 150)}”</blockquote>
+                    <Button size="sm" variant="outline" className="w-full text-xs h-8" onClick={() => plant(active, mark.quote, codeLabel(mark.code))}><MapPin className="mr-1 h-3 w-3" />Place on Canvas</Button>
+                  </div>
+                ))}
+              </div>
+            </aside>
+          </div>
+        )}
+        
+        {/* COMPARE VIEW */}
+        {view === "compare" && (
+          <div className="tw-lab-compare p-8 h-full overflow-y-auto">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">Compare two texts</p>
+            <div className="tw-lab-compare-pick flex gap-4 mb-6">
+              {[0, 1].map((index) => (
+                <select key={index} className="flex-1 p-3 rounded-lg border border-black/10 bg-white font-medium text-sm" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
+                  {docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}
+                </select>
+              ))}
+            </div>
+            <div className="tw-lab-split grid grid-cols-2 gap-8">
+              {compared.map((doc) => (
+                <article className="tw-lab-doc bg-white shadow-sm rounded-2xl border border-black/5 p-8" key={doc.id}>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-2">{doc.speaker} · {doc.date}</p>
+                  <h3 className="font-display text-2xl mb-6">{doc.title}</h3>
+                  <div className="tw-lab-text text-sm leading-relaxed text-[#1A1A1A]/70" onMouseUp={() => selectQuote(doc)}>
+                    {doc.text}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* COUNT VIEW */}
+        {view === "count" && (
+          <div className="tw-lab-count p-8 h-full overflow-y-auto max-w-4xl mx-auto">
+            <h3 className="font-display text-3xl mb-2">Language trajectory</h3>
+            <p className="text-muted-foreground mb-8">Track a phrase across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p>
+            
+            <form className="flex gap-2 mb-6" onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}>
+              <Input value={term} placeholder="Track a word or phrase..." onChange={(e) => setTerm(e.target.value)} className="bg-white border-black/10" />
+              <Button className="bg-[#1A1A1A] text-white">Track phrase</Button>
+            </form>
+            
+            <div className="flex flex-wrap gap-2 mb-8">
+              {terms.map((item) => (
+                <button key={item} className="px-3 py-1.5 bg-[#CBE6F9] text-[#1A1A1A] rounded-full text-sm font-medium flex items-center gap-2 hover:bg-[#A9D5F5] transition-colors" onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>
+                  {item} <X className="w-3 h-3" />
+                </button>
+              ))}
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-6 mb-10 space-y-4">
+              {termCounts.map(({ doc, values }) => (
+                <div key={doc.id} className="flex items-center justify-between border-b border-black/5 pb-4 last:border-0 last:pb-0">
+                  <b className="font-display text-lg">{doc.date || "—"} · {doc.title}</b>
+                  <div className="flex gap-4">
+                    {values.map((value) => <span key={value.phrase} className="text-sm"><span className="font-mono text-[10px] text-muted-foreground uppercase mr-1">{value.phrase}</span> <strong className="text-[#C24A35] text-lg">{value.rate}</strong> <span className="text-xs text-muted-foreground">/ 1k</span></span>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <section>
+              <h3 className="font-display text-2xl mb-4">Most used words</h3>
+              <div className="space-y-4">
+                {docs.map((doc) => (
+                  <div className="flex gap-2 flex-wrap items-center" key={doc.id}>
+                    <b className="w-full text-sm mb-1">{doc.title}</b>
+                    {topTerms(doc.text, 9).map(([word, count]) => (
+                      <button key={word} className="px-2.5 py-1 bg-white border border-black/10 rounded-md text-sm hover:border-black/30 transition-colors" onClick={() => setTerm(word)}>
+                        {word} <small className="text-muted-foreground ml-1">{count}</small>
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
         )}
 
