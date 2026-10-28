@@ -4,8 +4,7 @@ import {
   Activity, Cpu, Network, Layers, Target, 
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
-  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  ShieldCheck, Fingerprint
+  PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
@@ -32,7 +31,7 @@ function useScrollReveal() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
     if (ref.current) observer.observe(ref.current);
     return () => { if (ref.current) observer.unobserve(ref.current); };
@@ -43,7 +42,7 @@ function useScrollReveal() {
 // --- MAIN COMPONENT ---
 function WelcomePage() {
   const mouse = useMousePosition();
-  const dossierReveal = useScrollReveal();
+  const timelineReveal = useScrollReveal();
 
   // 3D Tilt for the MacBook
   const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 6;
@@ -53,33 +52,10 @@ function WelcomePage() {
   const laptopYellow = "#FDF0B6"; 
   const laptopYellowDark = "#E3D398";
 
-  // Typewriter State for Dossier
-  const [typedText, setTypedText] = useState("");
-  const dossierText = "> SYSTEM INITIALIZED...\n> AWAITING SOURCES...\n> READY FOR INVESTIGATION.";
-
-  useEffect(() => {
-    let i = 0;
-    // FIXED: Used ReturnType instead of NodeJS.Timeout
-    let timeout: ReturnType<typeof setTimeout>;
-    
-    const type = () => {
-      setTypedText(dossierText.slice(0, i));
-      i++;
-      if (i <= dossierText.length) {
-        timeout = setTimeout(type, 40);
-      }
-    };
-
-    if (dossierReveal.isVisible) {
-      timeout = setTimeout(type, 500);
-    }
-    return () => clearTimeout(timeout);
-  }, [dossierReveal.isVisible]);
-
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
-      {/* CSS for Interactions, Glasses, and Dossier */}
+      {/* CSS for Interactions, Glasses, and Timeline */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -99,41 +75,23 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* Dossier Styles */
-        .folder-container {
-          perspective: 1500px;
+        /* Timeline Section Animations */
+        .string-path {
+          stroke-dasharray: 1000;
+          stroke-dashoffset: 1000;
+          transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .folder-back {
-          background-color: #E8D5B5;
-          box-shadow: inset 0 0 20px rgba(0,0,0,0.05), 0 20px 40px rgba(0,0,0,0.1);
-        }
-        .folder-paper {
-          background-color: #FCFAF2;
-          box-shadow: 0 -5px 20px rgba(0,0,0,0.05), 0 10px 30px rgba(0,0,0,0.1);
-          transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-          transform-style: preserve-3d;
-        }
-        .folder-container:hover .folder-paper {
-          transform: translateY(-30px) rotateX(2deg) scale(1.02);
+        .string-path.draw {
+          stroke-dashoffset: 0;
         }
         
-        .stamp {
-          border: 3px solid #C24A35;
-          color: #C24A35;
-          opacity: 0.7;
-          transform: rotate(-12deg);
-          mix-blend-mode: multiply;
-          font-family: monospace;
-          font-weight: bold;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
+        .messy-item {
+          transition: transform 0.3s ease;
         }
-
-        .red-string {
-          stroke-dasharray: 4;
-          animation: dash 20s linear infinite;
+        .messy-item:hover {
+          transform: scale(1.05) rotate(0deg) !important;
+          z-index: 50 !important;
         }
-        @keyframes dash { to { stroke-dashoffset: -100; } }
       `}</style>
 
       {/* ARTISTIC AMBIENT BACKGROUND */}
@@ -372,110 +330,98 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE INTELLIGENCE DOSSIER SECTION */}
+        {/* THE EVIDENCE TIMELINE SECTION (Option 2) */}
         <section 
-          ref={dossierReveal.ref}
-          className="w-full max-w-[1000px] mt-40 mb-24 relative flex flex-col items-center"
+          ref={timelineReveal.ref}
+          className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center overflow-hidden py-20 border-y border-black/5 bg-white/30 rounded-3xl"
         >
-          <div className="text-center mb-16 relative z-30">
-            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">The Intelligence Dossier.</h2>
-            <p className="text-[#1A1A1A]/50 text-lg">Hover to declassify. Read the assets.</p>
+          <div className="text-center mb-20 relative z-30">
+            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">From fragments to truth.</h2>
+            <p className="text-[#1A1A1A]/50 text-lg">Connect the dots. Uncover the bigger picture.</p>
           </div>
 
-          <div className="folder-container relative w-full max-w-[850px] h-[550px]">
-            {/* The Manila Folder Background */}
-            <div className="folder-back absolute inset-0 rounded-xl rounded-tl-none">
-              {/* Folder Tab */}
-              <div className="absolute -top-10 left-0 w-48 h-12 bg-[#E8D5B5] rounded-t-xl flex items-center justify-center border-b border-black/5">
-                <span className="font-mono text-[10px] font-bold text-[#1A1A1A]/40 uppercase tracking-[0.3em]">TOP SECRET</span>
+          <div className="relative w-full max-w-[1000px] h-[500px] flex justify-between items-center px-10">
+            
+            {/* Left Side: Chaotic Data */}
+            <div className="relative w-[40%] h-full flex flex-col justify-between py-10">
+              <div className={`messy-item absolute top-[10%] left-0 w-48 bg-white p-3 shadow-xl border border-black/10 rounded-sm transform -rotate-6 ${timelineReveal.isVisible ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0.2s' }}>
+                <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-black/50 uppercase tracking-widest"><FileText className="w-3 h-3" /> Transcript.pdf</div>
+                <div className="h-1 w-full bg-black/10 mb-1" />
+                <div className="h-1 w-3/4 bg-black/10" />
+              </div>
+              
+              <div className={`messy-item absolute top-[40%] left-10 w-56 bg-white p-3 shadow-xl border border-black/10 rounded-sm transform rotate-3 z-10 ${timelineReveal.isVisible ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0.4s' }}>
+                <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-[#D96C39] uppercase tracking-widest"><Network className="w-3 h-3" /> miamiherald.com</div>
+                <div className="h-1 w-full bg-black/10 mb-1" />
+                <div className="h-1 w-5/6 bg-black/10" />
+              </div>
+
+              <div className={`messy-item absolute bottom-[10%] left-4 w-44 bg-white p-3 shadow-xl border border-black/10 rounded-sm transform -rotate-2 ${timelineReveal.isVisible ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0.6s' }}>
+                <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-black/50 uppercase tracking-widest"><MessageSquare className="w-3 h-3" /> Tweet screenshot</div>
+                <div className="h-1 w-full bg-black/10 mb-1" />
+                <div className="h-1 w-1/2 bg-black/10" />
               </div>
             </div>
 
-            {/* The Document Inside */}
-            <div className="folder-paper absolute inset-x-4 top-4 bottom-4 rounded shadow-2xl p-10 flex flex-col">
+            {/* The Strings (SVG) */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" preserveAspectRatio="none">
+              {/* String 1 */}
+              <path 
+                d="M 250 150 Q 450 250 700 150" 
+                fill="none" stroke="#C24A35" strokeWidth="2" 
+                className={`string-path ${timelineReveal.isVisible ? 'draw' : ''}`} 
+                style={{ transitionDelay: '0.8s' }}
+              />
+              {/* String 2 */}
+              <path 
+                d="M 350 250 Q 550 350 750 250" 
+                fill="none" stroke="#C24A35" strokeWidth="2" 
+                className={`string-path ${timelineReveal.isVisible ? 'draw' : ''}`} 
+                style={{ transitionDelay: '1.2s' }}
+              />
+              {/* String 3 */}
+              <path 
+                d="M 250 400 Q 450 400 700 350" 
+                fill="none" stroke="#C24A35" strokeWidth="2" 
+                className={`string-path ${timelineReveal.isVisible ? 'draw' : ''}`} 
+                style={{ transitionDelay: '1.6s' }}
+              />
               
-              {/* Document Header */}
-              <div className="flex justify-between items-start border-b border-black/10 pb-6 mb-6">
-                <div>
-                  <h3 className="font-display text-3xl text-[#1A1A1A] mb-1">THREADWISE PROTOCOL</h3>
-                  <p className="font-mono text-[10px] text-[#1A1A1A]/50 uppercase tracking-widest">Clearance Level: Researcher</p>
+              {/* Connections on the right side */}
+              <path 
+                d="M 700 150 Q 750 250 750 250" 
+                fill="none" stroke="#A6917A" strokeWidth="2" strokeDasharray="4 4"
+                className={`string-path ${timelineReveal.isVisible ? 'draw' : ''}`} 
+                style={{ transitionDelay: '2.2s' }}
+              />
+            </svg>
+
+            {/* Right Side: The Canvas Graph */}
+            <div className="relative w-[50%] h-full flex flex-col justify-center items-end gap-12 z-20">
+              
+              {/* Node 1: Question */}
+              <div className={`w-64 bg-[#FBD0D4] border border-black/10 shadow-2xl rounded-xl p-4 transform transition-all duration-700 ${timelineReveal.isVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`} style={{ transitionDelay: '1s' }}>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[10px] font-mono font-bold text-black/60 uppercase tracking-widest flex items-center gap-1.5"><Sparkles className="w-3 h-3" /> Question</span>
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  <div className="stamp text-xl px-4 py-2 border-[3px]">DECLASSIFIED</div>
-                  <span className="font-mono text-[10px] text-[#1A1A1A]/30">FILE NO. 2026-004</span>
-                </div>
+                <h4 className="font-display text-lg leading-tight text-black">What is the real motive?</h4>
               </div>
 
-              {/* Document Body */}
-              <div className="flex flex-1 gap-12">
-                
-                {/* Left Column - Assets */}
-                <div className="flex-1 flex flex-col gap-6">
-                  <h4 className="font-mono text-xs font-bold uppercase tracking-widest text-[#D96C39] border-b border-[#D96C39]/30 pb-2">Available Assets</h4>
-                  
-                  <div className="flex items-start gap-4 group/asset cursor-pointer">
-                    <div className="w-8 h-8 rounded border border-black/10 flex items-center justify-center bg-white shadow-sm group-hover/asset:border-[#CBE6F9] transition-colors">
-                      <BookOpen className="w-4 h-4 text-[#2D6A65]" />
-                    </div>
-                    <div>
-                      {/* FIXED: Closed h5 with h5 instead of h3 */}
-                      <h5 className="font-display text-lg font-medium">Discourse Lab</h5>
-                      <p className="font-sans text-sm text-[#1A1A1A]/60">Cross-reference multiple news sources to map the bigger picture.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4 group/asset cursor-pointer">
-                    <div className="w-8 h-8 rounded border border-black/10 flex items-center justify-center bg-white shadow-sm group-hover/asset:border-[#F8C8DC] transition-colors">
-                      <FileText className="w-4 h-4 text-[#5B456B]" />
-                    </div>
-                    <div>
-                      {/* FIXED: Closed h5 with h5 instead of h3 */}
-                      <h5 className="font-display text-lg font-medium">Evidence Clipper</h5>
-                      <p className="font-sans text-sm text-[#1A1A1A]/60">Extract verbatim quotes and cited takeaways from any URL or document.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4 group/asset cursor-pointer">
-                    <div className="w-8 h-8 rounded border border-black/10 flex items-center justify-center bg-white shadow-sm group-hover/asset:border-[#C1E1C1] transition-colors">
-                      <Sparkles className="w-4 h-4 text-[#C24A35]" />
-                    </div>
-                    <div>
-                      {/* FIXED: Closed h5 with h5 instead of h3 */}
-                      <h5 className="font-display text-lg font-medium">Socratic Inquiry</h5>
-                      <p className="font-sans text-sm text-[#1A1A1A]/60">Challenge assumptions and surface hidden tensions on your canvas.</p>
-                    </div>
-                  </div>
-
+              {/* Node 2: Evidence */}
+              <div className={`w-72 bg-[#CBE6F9] border border-black/10 shadow-2xl rounded-xl p-4 transform transition-all duration-700 ${timelineReveal.isVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`} style={{ transitionDelay: '1.4s' }}>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[10px] font-mono font-bold text-[#2D6A65] uppercase tracking-widest flex items-center gap-1.5"><FileText className="w-3 h-3" /> Evidence</span>
+                  <span className="text-[9px] font-mono text-black/40 bg-white/50 px-2 py-0.5 rounded">Miami Herald</span>
                 </div>
-
-                {/* Right Column - Terminal Output */}
-                <div className="w-1/3 bg-[#1A1A1A] rounded-lg p-5 shadow-inner flex flex-col">
-                  <div className="flex items-center gap-1.5 mb-4">
-                    <div className="w-2 h-2 rounded-full bg-[#FBD0D4]" />
-                    <div className="w-2 h-2 rounded-full bg-[#FDF0B6]" />
-                    <div className="w-2 h-2 rounded-full bg-[#C9E8C7]" />
-                    <span className="ml-2 text-[8px] font-mono text-white/30 uppercase tracking-widest">Terminal</span>
-                  </div>
-                  <div className="font-mono text-[10px] text-[#C9E8C7] whitespace-pre-wrap leading-relaxed flex-1">
-                    {typedText}
-                    <span className="animate-pulse inline-block w-1.5 h-3 bg-[#C9E8C7] align-middle ml-1" />
-                  </div>
-                  
-                  {/* Red String SVG connecting to the assets */}
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" style={{ zIndex: 100 }}>
-                    <path d="M 700 250 Q 750 200 800 150" fill="none" stroke="#C24A35" strokeWidth="2" className="red-string" />
-                  </svg>
-                </div>
-
+                <h4 className="font-display text-lg leading-tight text-black">Troops deployed to secure US favor</h4>
               </div>
 
-              {/* Document Footer */}
-              <div className="border-t border-black/10 pt-4 mt-6 flex justify-between items-center">
-                <span className="font-mono text-[10px] text-[#1A1A1A]/40">INITIATED BY: KENNEDY SHILONGO</span>
-                <div className="flex gap-4">
-                  <Fingerprint className="w-5 h-5 text-[#1A1A1A]/20" />
-                  <ShieldCheck className="w-5 h-5 text-[#1A1A1A]/20" />
+              {/* Node 3: Hypothesis */}
+              <div className={`w-64 bg-[#E8DAFB] border border-black/10 shadow-2xl rounded-xl p-4 transform transition-all duration-700 ${timelineReveal.isVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`} style={{ transitionDelay: '1.8s' }}>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[10px] font-mono font-bold text-[#8B5CF6] uppercase tracking-widest flex items-center gap-1.5"><Lightbulb className="w-3 h-3" /> Hypothesis</span>
                 </div>
+                <h4 className="font-display text-lg leading-tight text-black">Economic aid bargaining chip</h4>
               </div>
 
             </div>
