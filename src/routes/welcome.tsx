@@ -5,9 +5,9 @@ import {
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  ShieldCheck
+  Zap
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export const Route = createFileRoute("/welcome")({
   component: WelcomePage,
@@ -26,9 +26,24 @@ function useMousePosition() {
   return mousePosition;
 }
 
+function useScrollReveal() {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
+      { threshold: 0.3 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => { if (ref.current) observer.unobserve(ref.current); };
+  }, []);
+  return { ref, isVisible };
+}
+
 // --- MAIN COMPONENT ---
 function WelcomePage() {
   const mouse = useMousePosition();
+  const socraticReveal = useScrollReveal();
 
   // 3D Tilt for the MacBook
   const tiltX = (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 6;
@@ -38,55 +53,54 @@ function WelcomePage() {
   const laptopYellow = "#FDF0B6"; 
   const laptopYellowDark = "#E3D398";
 
-  const studioTools = [
-    {
-      title: "Discourse Lab",
-      desc: "Cross-reference multiple news sources to map the bigger picture.",
-      icon: BookOpen,
-      color: "#CBE6F9", // Blue
-      borderColor: "#93C5FD"
-    },
-    {
-      title: "Evidence Clipper",
-      desc: "Extract verbatim quotes and cited takeaways from any URL.",
-      icon: FileText,
-      color: "#FBD0D4", // Pink
-      borderColor: "#F9A8D4"
-    },
-    {
-      title: "Socratic Inquiry",
-      desc: "Challenge assumptions and surface hidden tensions on your canvas.",
-      icon: Sparkles,
-      color: "#E8DAFB", // Purple
-      borderColor: "#D8B4FE"
-    },
-    {
-      title: "Risk Simulation",
-      desc: "Run scenario stress-tests and calculate executive radar scores.",
-      icon: TrendingUp,
-      color: "#FDF0B6", // Yellow
-      borderColor: "#FDE047"
-    },
-    {
-      title: "Executive Dossier",
-      desc: "Generate a structured intelligence report from your findings.",
-      icon: FileCheck,
-      color: "#C9E8C7", // Green
-      borderColor: "#86EFAC"
-    },
-    {
-      title: "Live Room",
-      desc: "Collaborate in real-time with audio, cursors, and shared canvases.",
-      icon: Users,
-      color: "#FED7AA", // Orange
-      borderColor: "#FDBA74"
-    }
-  ];
+  // Typewriter State for Socratic Inquiry
+  const [typedQuestion, setTypedQuestion] = useState("");
+  const [typedAnswer, setTypedAnswer] = useState("");
+  const [phase, setPhase] = useState<"waiting" | "question" | "answer" | "done">("waiting");
+
+  const questionText = "If the deployment is about saving 4 soldiers, why send elite special forces and a Pentagon plane instead of standard humanitarian aid?";
+  const answerText = "The disproportionate military response suggests the primary objective is not search and rescue. It is a strategic display of force to secure US diplomatic favor and economic aid for El Salvador.";
+
+  useEffect(() => {
+    if (!socraticReveal.isVisible || phase !== "waiting") return;
+
+    setPhase("question");
+    let qIndex = 0;
+    let aIndex = 0;
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const typeQuestion = () => {
+      if (qIndex <= questionText.length) {
+        setTypedQuestion(questionText.slice(0, qIndex));
+        qIndex++;
+        timeout = setTimeout(typeQuestion, 30);
+      } else {
+        setTimeout(() => {
+          setPhase("answer");
+          typeAnswer();
+        }, 800); // Pause before AI responds
+      }
+    };
+
+    const typeAnswer = () => {
+      if (aIndex <= answerText.length) {
+        setTypedAnswer(answerText.slice(0, aIndex));
+        aIndex++;
+        timeout = setTimeout(typeAnswer, 20);
+      } else {
+        setPhase("done");
+      }
+    };
+
+    timeout = setTimeout(typeQuestion, 500);
+
+    return () => clearTimeout(timeout);
+  }, [socraticReveal.isVisible, phase]);
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
-      {/* CSS for Interactions, Glasses, and Studio Grid */}
+      {/* CSS for Interactions, Glasses, and Typewriter */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -106,37 +120,23 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* Studio Grid */
-        .studio-card {
-          transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-          overflow: hidden;
+        /* Cursor Blink */
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
         }
-        .studio-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+        .cursor {
+          display: inline-block;
+          width: 8px;
+          height: 18px;
+          background-color: currentColor;
+          animation: blink 1s step-end infinite;
+          vertical-align: middle;
+          margin-left: 4px;
         }
-        .studio-card .card-bg {
-          transition: all 0.4s ease;
-          transform: scale(1);
-          opacity: 0.1;
-        }
-        .studio-card:hover .card-bg {
-          transform: scale(1.5);
-          opacity: 0.3;
-        }
-        .studio-card .card-content {
-          transition: transform 0.4s ease;
-          transform: translateY(40px);
-        }
-        .studio-card:hover .card-content {
-          transform: translateY(0);
-        }
-        .studio-card .card-desc {
-          transition: opacity 0.4s ease;
-          opacity: 0;
-        }
-        .studio-card:hover .card-desc {
-          opacity: 1;
+        
+        .typewriter-text {
+          min-height: 100px;
         }
       `}</style>
 
@@ -376,49 +376,87 @@ function WelcomePage() {
         {/* --- END OF LAPTOP --- */}
 
 
-        {/* THE CANVAS STUDIO REVEAL (Option 3) */}
-        <section className="w-full max-w-[1200px] mt-40 mb-24 relative flex flex-col items-center">
-          
+        {/* THE SOCRATIC TYPEWRITER (Option 4) */}
+        <section 
+          ref={socraticReveal.ref}
+          className="w-full max-w-[1000px] mt-40 mb-24 relative flex flex-col items-center"
+        >
           <div className="text-center mb-16 relative z-30">
-            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">The Canvas Studio.</h2>
-            <p className="text-[#1A1A1A]/50 text-lg">Ten tools to map the bigger picture. Hover to explore.</p>
+            <h2 className="font-display text-4xl md:text-5xl text-[#1A1A1A] mb-4">The Socratic Method.</h2>
+            <p className="text-[#1A1A1A]/50 text-lg">Don't just summarize. Interrogate the evidence.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-            {studioTools.map((tool, index) => (
-              <div 
-                key={index}
-                className="studio-card group relative bg-white border border-black/10 rounded-2xl p-8 cursor-pointer shadow-lg shadow-black/5 flex flex-col justify-between min-h-[220px]"
-              >
-                {/* Colored Background Splash */}
-                <div 
-                  className="card-bg absolute inset-0 rounded-2xl pointer-events-none" 
-                  style={{ backgroundColor: tool.color }}
-                />
-
-                <div className="relative z-10">
-                  <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 shadow-sm border border-black/5 bg-white group-hover:scale-110 transition-transform duration-300"
-                  >
-                    <tool.icon className="w-6 h-6 text-[#1A1A1A]" />
-                  </div>
-                  
-                  <div className="card-content">
-                    <h3 className="font-display text-2xl text-[#1A1A1A]">{tool.title}</h3>
-                    <p className="card-desc text-sm text-[#1A1A1A]/70 mt-2 leading-relaxed">
-                      {tool.desc}
-                    </p>
-                  </div>
+          <div className="w-full flex flex-col lg:flex-row gap-6 items-stretch relative">
+            
+            {/* Left Side: The User's Question */}
+            <div className="flex-1 bg-white border border-black/10 rounded-2xl p-8 shadow-xl relative z-10">
+              <div className="flex items-center gap-3 mb-6 border-b border-black/5 pb-4">
+                <div className="w-8 h-8 rounded-full bg-[#FDF0B6] flex items-center justify-center shadow-inner">
+                  <Users className="w-4 h-4 text-[#1A1A1A]" />
                 </div>
-
-                <div className="relative z-10 mt-6 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#1A1A1A]/50">Available in App</span>
-                  <ArrowUpRight className="w-4 h-4 text-[#1A1A1A]/50" />
+                <div>
+                  <h3 className="font-display text-xl text-[#1A1A1A]">The Researcher</h3>
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-black/40">Inquiry</p>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="typewriter-text font-sans text-xl leading-relaxed text-[#1A1A1A]">
+                "{typedQuestion}"
+                {phase === "question" && <span className="cursor bg-[#1A1A1A]" />}
+              </div>
+            </div>
 
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden lg:flex flex-col justify-center items-center w-12 relative z-0">
+              <div className="h-full w-px bg-black/10 border-l border-dashed border-black/20" />
+              <div className="absolute bg-[#FDFBF7] p-2 rounded-full border border-black/10 shadow-sm">
+                <ArrowRight className="w-4 h-4 text-black/40" />
+              </div>
+            </div>
+
+            {/* Right Side: The AI's Response */}
+            <div className="flex-1 bg-[#1A1A1A] border border-white/10 rounded-2xl p-8 shadow-2xl relative z-10 overflow-hidden">
+              {/* Subtle AI Glow */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#8B5CF6] rounded-full blur-[100px] opacity-20 pointer-events-none" />
+              
+              <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4 relative z-10">
+                <div className="w-8 h-8 rounded-full bg-[#8B5CF6]/20 flex items-center justify-center shadow-inner border border-[#8B5CF6]/30">
+                  <Sparkles className="w-4 h-4 text-[#8B5CF6]" />
+                </div>
+                <div>
+                  <h3 className="font-display text-xl text-white">Threadwise AI</h3>
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-[#8B5CF6]">Socratic Analysis</p>
+                </div>
+                <div className="ml-auto flex gap-1">
+                  <div className="w-2 h-2 rounded-full bg-[#FBD0D4] animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-[#C9E8C7] animate-pulse delay-75" />
+                  <div className="w-2 h-2 rounded-full bg-[#CBE6F9] animate-pulse delay-150" />
+                </div>
+              </div>
+              
+              <div className="typewriter-text font-mono text-sm leading-relaxed text-white/90 relative z-10">
+                {phase !== "answer" && phase !== "done" ? (
+                  <span className="text-white/30 italic">Awaiting prompt...</span>
+                ) : (
+                  <>
+                    {typedAnswer}
+                    {(phase === "answer" || phase === "done") && <span className="cursor bg-[#8B5CF6]" />}
+                  </>
+                )}
+              </div>
+              
+              {phase === "done" && (
+                <div className="mt-8 pt-4 border-t border-white/10 flex justify-between items-center animate-in fade-in duration-500 relative z-10">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#C9E8C7] flex items-center gap-1.5">
+                    <FileCheck className="w-3 h-3" /> Hypothesis Generated
+                  </span>
+                  <button className="text-[10px] font-mono uppercase tracking-widest text-white/50 hover:text-white transition-colors flex items-center gap-1">
+                    Plant on Canvas <ArrowRight className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+          </div>
         </section>
 
       </main>
