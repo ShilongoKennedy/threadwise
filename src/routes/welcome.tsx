@@ -94,42 +94,40 @@ function WelcomePage() {
         </div>
       </header>
 
-      {/* HERO SECTION - BINOCULARS */}
+      {/* HERO SECTION - THE GLASS LENSES */}
       <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-12 pb-24 flex flex-col items-center text-center flex-1">
         
-        {/* The Binoculars Graphic */}
-        <div className="relative z-20 flex flex-col items-center mb-16 w-full max-w-4xl">
+        <div className="relative z-20 flex flex-col items-center mb-16 w-full max-w-5xl">
           
-          <div className="relative w-full flex items-center justify-center">
-            {/* Custom SVG Binoculars */}
-            <svg viewBox="0 0 800 300" className="w-full h-auto max-h-[300px] drop-shadow-sm overflow-visible">
-              {/* Left Lens */}
-              <circle cx="250" cy="150" r="140" fill="#FDFBF7" stroke="#1A1A1A" strokeWidth="4" />
-              <circle cx="250" cy="150" r="120" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
-              
-              {/* Right Lens */}
-              <circle cx="550" cy="150" r="140" fill="#FDFBF7" stroke="#1A1A1A" strokeWidth="4" />
-              <circle cx="550" cy="150" r="120" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
-              
-              {/* Bridge */}
-              <path d="M 370 100 Q 400 80 430 100 L 430 200 Q 400 220 370 200 Z" fill="#1A1A1A" />
-              
-              {/* Left Text */}
-              <text x="250" y="145" textAnchor="middle" dominantBaseline="middle" className="font-display text-[70px] font-medium fill-[#1A1A1A]">
-                See what
-              </text>
-              
-              {/* Right Text (Pink Accent) */}
-              <text x="550" y="145" textAnchor="middle" dominantBaseline="middle" className="font-display text-[70px] italic font-medium fill-[#D96C39]">
-                connects.
-              </text>
+          <div className="relative flex justify-center items-center h-[350px] w-full">
+            
+            {/* Left Lens */}
+            <div className="absolute top-0 left-[10%] md:left-[20%] w-[300px] h-[300px] md:w-[350px] md:h-[350px] rounded-full border-[3px] border-[#1A1A1A]/10 bg-white/40 backdrop-blur-md shadow-[inset_0_0_40px_rgba(0,0,0,0.05),0_20px_40px_rgba(0,0,0,0.05)]">
+              {/* Inner reflection */}
+              <div className="absolute top-[10%] left-[10%] w-[120px] h-[80px] rounded-full bg-white/60 blur-[10px] transform -rotate-45" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full border border-[#1A1A1A]/5 border-dashed" />
+            </div>
 
-              {/* Decorative pastel dots inside lenses */}
-              <circle cx="160" cy="80" r="8" fill="#FDF0B6" />
-              <circle cx="640" cy="220" r="8" fill="#CBE6F9" />
-              <circle cx="180" cy="220" r="6" fill="#E8DAFB" />
-              <circle cx="620" cy="80" r="6" fill="#FBD0D4" />
-            </svg>
+            {/* Right Lens */}
+            <div className="absolute top-0 right-[10%] md:right-[20%] w-[300px] h-[300px] md:w-[350px] md:h-[350px] rounded-full border-[3px] border-[#1A1A1A]/10 bg-white/40 backdrop-blur-md shadow-[inset_0_0_40px_rgba(0,0,0,0.05),0_20px_40px_rgba(0,0,0,0.05)]">
+               {/* Inner reflection */}
+               <div className="absolute top-[15%] right-[15%] w-[100px] h-[60px] rounded-full bg-white/60 blur-[10px] transform rotate-45" />
+               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full border border-[#1A1A1A]/5 border-dashed" />
+            </div>
+
+            {/* Central Bridge/Text */}
+            <div className="relative z-30 flex flex-col items-center">
+              <h1 className="font-display text-[50px] md:text-[80px] lg:text-[100px] leading-[0.9] tracking-tighter text-[#1A1A1A]">
+                See what <br />
+                <span className="italic text-[#D96C39]">connects.</span>
+              </h1>
+            </div>
+
+            {/* Decorative Pastel Dots floating in lenses */}
+            <div className="absolute top-[20%] left-[25%] w-4 h-4 rounded-full bg-[#FDF0B6] shadow-sm animate-pulse" />
+            <div className="absolute bottom-[20%] left-[35%] w-5 h-5 rounded-full bg-[#E8DAFB] shadow-sm animate-pulse delay-100" />
+            <div className="absolute top-[30%] right-[25%] w-3 h-3 rounded-full bg-[#FBD0D4] shadow-sm animate-pulse delay-200" />
+            <div className="absolute bottom-[25%] right-[30%] w-4 h-4 rounded-full bg-[#CBE6F9] shadow-sm animate-pulse delay-300" />
           </div>
 
           <p className="text-lg md:text-xl text-[#1A1A1A]/50 leading-relaxed max-w-xl font-light mt-8">
@@ -137,7 +135,7 @@ function WelcomePage() {
           </p>
         </div>
 
-        {/* THE YELLOW MACBOOK */}
+        {/* --- DO NOT TOUCH: THE YELLOW MACBOOK --- */}
         <div className="relative w-full max-w-[1100px] perspective-[2000px] group mt-4">
           <div 
             className="relative w-full rounded-t-2xl rounded-b-xl border-[12px] bg-[#2C2A28] overflow-hidden transition-all duration-300 ease-out"
@@ -317,59 +315,92 @@ function WelcomePage() {
              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/10 rounded-b-lg" />
           </div>
         </div>
+        {/* --- END OF LAPTOP --- */}
 
-        {/* THE WORK TABLE SECTION */}
-        <section className="w-full max-w-[900px] mt-32 mb-16 relative">
-          <div className="text-center mb-16">
+        {/* THE 3D WORK TABLE SECTION */}
+        <section className="w-full max-w-[900px] mt-40 mb-16 relative">
+          <div className="text-center mb-20">
             <h2 className="font-display text-4xl text-[#1A1A1A] mb-4">A desk for your thoughts.</h2>
             <p className="text-[#1A1A1A]/50">Organize your research. Connect the dots.</p>
           </div>
 
-          <div className="relative flex justify-center items-end h-[300px]">
-            {/* The Book Stack */}
-            <div className="relative flex flex-col items-center justify-end w-[400px] group perspective-[1000px]">
+          <div className="relative flex justify-center items-end h-[350px] perspective-[1200px]">
+            
+            {/* The 3D Book Stack */}
+            <div 
+              className="relative flex flex-col items-center justify-end w-[350px] group transition-transform duration-500 hover:rotate-0"
+              style={{ transform: 'rotateX(45deg) rotateZ(-30deg)', transformStyle: 'preserve-3d' }}
+            >
               
               {/* Book 5 (Bottom) - Action */}
-              <div className="relative w-[90%] h-[45px] bg-white border border-black/10 rounded-sm shadow-md transform transition-transform duration-300 group-hover:-translate-y-1 z-10 flex items-center px-4 cursor-default">
-                <div className="w-3 h-3 rounded-full bg-[#D8B4E2] mr-3" />
-                <span className="font-sans font-medium text-[#1A1A1A]/70 text-sm">Action</span>
+              <div className="relative w-[100%] h-[50px] bg-white border border-black/10 rounded-sm shadow-xl flex items-center px-6 transition-transform duration-300 group-hover:-translate-y-2 z-10" style={{ transform: 'translateZ(10px)' }}>
+                {/* Pages Edge */}
+                <div className="absolute right-0 top-[2px] bottom-[2px] w-4 bg-[#F8F6F0] border-l border-black/5" style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 3px)' }} />
+                <div className="w-4 h-4 rounded-full bg-[#D8B4E2] mr-4 shadow-inner" />
+                <span className="font-sans font-medium text-[#1A1A1A]/70 text-lg">Action</span>
               </div>
               
               {/* Book 4 - Insights */}
-              <div className="relative w-[92%] h-[45px] bg-white border border-black/10 rounded-sm shadow-md transform transition-transform duration-300 group-hover:-translate-y-2 -mt-[1px] z-20 flex items-center px-4 cursor-default">
-                <div className="w-3 h-3 rounded-full bg-[#B3DDF2] mr-3" />
-                <span className="font-sans font-medium text-[#1A1A1A]/70 text-sm">Insights</span>
+              <div className="relative w-[98%] h-[50px] bg-white border border-black/10 rounded-sm shadow-xl flex items-center px-6 -mt-[2px] transition-transform duration-300 group-hover:-translate-y-3 z-20" style={{ transform: 'translateZ(20px)' }}>
+                <div className="absolute right-0 top-[2px] bottom-[2px] w-4 bg-[#F8F6F0] border-l border-black/5" style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 3px)' }} />
+                <div className="w-4 h-4 rounded-full bg-[#B3DDF2] mr-4 shadow-inner" />
+                <span className="font-sans font-medium text-[#1A1A1A]/70 text-lg">Insights</span>
               </div>
 
               {/* Book 3 - Connections */}
-              <div className="relative w-[94%] h-[45px] bg-white border border-black/10 rounded-sm shadow-md transform transition-transform duration-300 group-hover:-translate-y-3 -mt-[1px] z-30 flex items-center px-4 cursor-default">
-                <div className="w-3 h-3 rounded-full bg-[#C1E1C1] mr-3" />
-                <span className="font-sans font-medium text-[#1A1A1A]/70 text-sm">Connections</span>
+              <div className="relative w-[96%] h-[50px] bg-white border border-black/10 rounded-sm shadow-xl flex items-center px-6 -mt-[2px] transition-transform duration-300 group-hover:-translate-y-4 z-30" style={{ transform: 'translateZ(30px)' }}>
+                <div className="absolute right-0 top-[2px] bottom-[2px] w-4 bg-[#F8F6F0] border-l border-black/5" style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 3px)' }} />
+                <div className="w-4 h-4 rounded-full bg-[#C1E1C1] mr-4 shadow-inner" />
+                <span className="font-sans font-medium text-[#1A1A1A]/70 text-lg">Connections</span>
               </div>
 
               {/* Book 2 - Evidence */}
-              <div className="relative w-[96%] h-[45px] bg-white border border-black/10 rounded-sm shadow-md transform transition-transform duration-300 group-hover:-translate-y-4 -mt-[1px] z-40 flex items-center px-4 cursor-default">
-                <div className="w-3 h-3 rounded-full bg-[#F8C8DC] mr-3" />
-                <span className="font-sans font-medium text-[#1A1A1A]/70 text-sm">Evidence</span>
+              <div className="relative w-[94%] h-[50px] bg-white border border-black/10 rounded-sm shadow-xl flex items-center px-6 -mt-[2px] transition-transform duration-300 group-hover:-translate-y-5 z-40" style={{ transform: 'translateZ(40px)' }}>
+                <div className="absolute right-0 top-[2px] bottom-[2px] w-4 bg-[#F8F6F0] border-l border-black/5" style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 3px)' }} />
+                <div className="w-4 h-4 rounded-full bg-[#F8C8DC] mr-4 shadow-inner" />
+                <span className="font-sans font-medium text-[#1A1A1A]/70 text-lg">Evidence</span>
               </div>
 
               {/* Book 1 (Top) - Ideas */}
-              <div className="relative w-[98%] h-[45px] bg-white border border-black/10 rounded-sm shadow-lg transform transition-transform duration-300 group-hover:-translate-y-5 -mt-[1px] z-50 flex items-center px-4 cursor-default">
-                <div className="w-3 h-3 rounded-full bg-[#FDF0B6] mr-3" />
-                <span className="font-sans font-medium text-[#1A1A1A]/70 text-sm">Ideas</span>
+              <div className="relative w-[92%] h-[50px] bg-[#FDFBF7] border border-black/10 rounded-sm shadow-2xl flex items-center px-6 -mt-[2px] transition-transform duration-300 group-hover:-translate-y-6 z-50" style={{ transform: 'translateZ(50px)' }}>
+                <div className="absolute right-0 top-[2px] bottom-[2px] w-4 bg-[#F8F6F0] border-l border-black/5" style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 3px)' }} />
+                <div className="w-4 h-4 rounded-full bg-[#FDF0B6] mr-4 shadow-inner" />
+                <span className="font-sans font-medium text-[#1A1A1A] text-lg">Ideas</span>
               </div>
             </div>
 
-            {/* The Pencil Cup */}
-            <div className="relative ml-16 w-[100px] h-[160px] bg-[#F8F6F0] rounded-b-xl border border-black/10 shadow-lg flex justify-center items-end pb-4 z-20">
-              {/* Pencils */}
-              <div className="absolute bottom-[140px] left-[30px] w-[8px] h-[80px] bg-[#FDF0B6] rounded-t-sm transform -rotate-12 shadow-sm border border-black/10" />
-              <div className="absolute bottom-[150px] left-[50px] w-[8px] h-[90px] bg-[#FBD0D4] rounded-t-sm transform rotate-6 shadow-sm border border-black/10" />
-              <div className="absolute bottom-[120px] left-[65px] w-[8px] h-[70px] bg-[#1A1A1A] rounded-t-sm transform rotate-12 shadow-sm border border-black/10" />
+            {/* The 3D Pen Cup */}
+            <div className="relative ml-24 w-[120px] h-[180px] z-20" style={{ transform: 'translateZ(20px)' }}>
               
-              {/* Cup lip */}
-              <div className="absolute top-0 w-full h-[15px] border-b border-black/5 bg-[#FDFBF7] rounded-t-xl" />
+              {/* Pencils sticking out (Positioned behind the cup body) */}
+              <div className="absolute bottom-[150px] left-[20px] w-[10px] h-[100px] bg-[#FDF0B6] rounded-t-sm transform -rotate-12 shadow-md border border-black/10 z-0">
+                 <div className="absolute top-0 left-0 w-full h-[15px] bg-[#E3D398]" style={{ clipPath: 'polygon(50% 0, 100% 100%, 0 100%)' }} />
+              </div>
+              <div className="absolute bottom-[160px] left-[50px] w-[10px] h-[110px] bg-[#FBD0D4] rounded-t-sm transform rotate-6 shadow-md border border-black/10 z-10">
+                 <div className="absolute top-0 left-0 w-full h-[15px] bg-[#E5B3B8]" style={{ clipPath: 'polygon(50% 0, 100% 100%, 0 100%)' }} />
+              </div>
+              <div className="absolute bottom-[130px] left-[80px] w-[10px] h-[80px] bg-[#1A1A1A] rounded-t-sm transform rotate-12 shadow-md border border-black/10 z-0">
+                 <div className="absolute top-0 left-0 w-full h-[15px] bg-[#333]" style={{ clipPath: 'polygon(50% 0, 100% 100%, 0 100%)' }} />
+              </div>
+
+              {/* The Cup Body */}
+              <div className="absolute bottom-0 w-full h-[140px] bg-[#F8F6F0] rounded-b-[40px] shadow-[20px_20px_40px_rgba(0,0,0,0.1),inset_-10px_0_20px_rgba(0,0,0,0.05)] border border-black/10 z-20">
+                {/* Rim/Opening */}
+                <div className="absolute top-0 w-full h-[20px] bg-[#FDFBF7] rounded-[50%] border border-black/10 shadow-inner" />
+                {/* Decorative vertical lines */}
+                <div className="absolute inset-0 flex justify-around px-4 opacity-20 pointer-events-none rounded-b-[40px] overflow-hidden">
+                   <div className="w-px h-full bg-black/10" />
+                   <div className="w-px h-full bg-black/10" />
+                   <div className="w-px h-full bg-black/10" />
+                   <div className="w-px h-full bg-black/10" />
+                   <div className="w-px h-full bg-black/10" />
+                </div>
+              </div>
             </div>
+
+            {/* Shadow beneath the desk items */}
+            <div className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 w-[600px] h-[60px] bg-black/5 blur-[20px] rounded-[100%]" />
+
           </div>
         </section>
 
