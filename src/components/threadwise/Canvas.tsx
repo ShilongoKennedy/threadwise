@@ -880,12 +880,39 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </nav>
         </div>
         {onboarding.open && <Onboarding onClose={onboarding.close} />}
+        
+        {/* NEW PREMIUM EMPTY STATE */}
         {s.nodes.length === 0 && (
-          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-            <p className="font-display text-3xl italic">Begin with a single thought.</p>
-            <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              Double-click anywhere · or press 1–5
-            </p>
+          <div className="absolute inset-0 z-40 flex flex-col items-center justify-center pointer-events-none p-4">
+            <div className="pointer-events-auto bg-card/85 backdrop-blur-2xl border border-white/20 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] rounded-3xl p-10 max-w-md w-full text-center animate-in fade-in zoom-in-95 duration-500">
+              <div className="mx-auto w-16 h-16 bg-[#FDF0B6] rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-black/5">
+                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1A1A1A]">
+                    <circle cx="6" cy="18" r="2.5" fill="currentColor"/>
+                    <path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2"/>
+                    <circle cx="18" cy="6" r="2.5" fill="currentColor"/>
+                    <path d="M18 6L12 12" stroke="currentColor" strokeWidth="1.5"/>
+                    <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
+                 </svg>
+              </div>
+              <h2 className="font-display text-3xl mb-2 text-foreground">Welcome to your desk.</h2>
+              <p className="text-sm text-muted-foreground mb-8">A blank canvas awaits. Start by adding a thought, loading an example, or taking the tour.</p>
+              
+              <div className="flex flex-col gap-3">
+                <Button onClick={() => create("idea")} className="w-full h-12 text-base bg-[#1A1A1A] hover:bg-[#333] text-white">
+                  <Plus className="mr-2 h-5 w-5" /> Add your first idea
+                </Button>
+                <Button variant="outline" onClick={() => s.reset()} className="w-full h-12 bg-white/50">
+                  Load an example canvas
+                </Button>
+                <Button variant="ghost" onClick={onboarding.show} className="w-full h-12 text-muted-foreground hover:text-foreground">
+                  Replay the tutorial
+                </Button>
+              </div>
+
+              <p className="mt-8 font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60">
+                Or double-click anywhere on the canvas
+              </p>
+            </div>
           </div>
         )}
 
