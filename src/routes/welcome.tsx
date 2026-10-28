@@ -40,11 +40,32 @@ function WelcomePage() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#FBD0D4] selection:text-[#1A1A1A] overflow-hidden relative flex flex-col">
       
-      {/* CSS for Interactions */}
+      {/* CSS for Interactions & Glasses */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        
+        /* Optical Glasses Styling */
+        .lens-glass {
+          box-shadow: 
+            inset 0 0 20px rgba(255,255,255,0.8),
+            inset 0 0 5px rgba(0,0,0,0.05),
+            0 15px 35px -5px rgba(0,0,0,0.1);
+          background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 80%);
+        }
+        .lens-rim {
+          border: 2px solid #8A8D91;
+          box-shadow: inset 0 0 2px rgba(255,255,255,0.5), 0 0 1px rgba(0,0,0,0.2);
+        }
+        .glass-reflection {
+          background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 60%);
+          border-radius: 50%;
+          filter: blur(2px);
+        }
+        .metal-bridge {
+          background: linear-gradient(to bottom, #D1D5DB, #9CA3AF, #D1D5DB);
+        }
       `}</style>
 
       {/* ARTISTIC AMBIENT BACKGROUND */}
@@ -94,40 +115,63 @@ function WelcomePage() {
         </div>
       </header>
 
-      {/* HERO SECTION - THE GLASS LENSES */}
+      {/* HERO SECTION - THE OPTICAL GLASSES */}
       <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-12 pb-24 flex flex-col items-center text-center flex-1">
         
         <div className="relative z-20 flex flex-col items-center mb-16 w-full max-w-5xl">
           
-          <div className="relative flex justify-center items-center h-[350px] w-full">
+          <div className="relative flex justify-center items-center h-[400px] w-full">
             
-            {/* Left Lens */}
-            <div className="absolute top-0 left-[10%] md:left-[20%] w-[300px] h-[300px] md:w-[350px] md:h-[350px] rounded-full border-[3px] border-[#1A1A1A]/10 bg-white/40 backdrop-blur-md shadow-[inset_0_0_40px_rgba(0,0,0,0.05),0_20px_40px_rgba(0,0,0,0.05)]">
-              {/* Inner reflection */}
-              <div className="absolute top-[10%] left-[10%] w-[120px] h-[80px] rounded-full bg-white/60 blur-[10px] transform -rotate-45" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full border border-[#1A1A1A]/5 border-dashed" />
-            </div>
+            {/* The Glasses Frame Container */}
+            <div className="relative flex items-center justify-center">
+              
+              {/* Left Hinge */}
+              <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-8 h-6 metal-bridge rounded-l-md z-0 flex items-center justify-end pr-1 shadow-sm">
+                <div className="w-1 h-3 bg-black/20 rounded-full" />
+              </div>
 
-            {/* Right Lens */}
-            <div className="absolute top-0 right-[10%] md:right-[20%] w-[300px] h-[300px] md:w-[350px] md:h-[350px] rounded-full border-[3px] border-[#1A1A1A]/10 bg-white/40 backdrop-blur-md shadow-[inset_0_0_40px_rgba(0,0,0,0.05),0_20px_40px_rgba(0,0,0,0.05)]">
-               {/* Inner reflection */}
-               <div className="absolute top-[15%] right-[15%] w-[100px] h-[60px] rounded-full bg-white/60 blur-[10px] transform rotate-45" />
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full border border-[#1A1A1A]/5 border-dashed" />
-            </div>
+              {/* Left Lens */}
+              <div className="relative w-[280px] h-[280px] md:w-[320px] md:h-[320px] rounded-full lens-rim lens-glass z-10 flex items-center justify-center">
+                {/* Glass Reflection */}
+                <div className="absolute top-[10%] left-[15%] w-[120px] h-[70px] glass-reflection transform -rotate-[30deg]" />
+                {/* Pastel Dots */}
+                <div className="absolute top-[20%] left-[25%] w-4 h-4 rounded-full bg-[#FDF0B6] shadow-sm" />
+                <div className="absolute bottom-[25%] left-[30%] w-4 h-4 rounded-full bg-[#E8DAFB] shadow-sm" />
+                
+                {/* Left Text */}
+                <h1 className="font-display text-[45px] md:text-[55px] lg:text-[65px] tracking-tight text-[#1A1A1A] z-20">
+                  See what
+                </h1>
+              </div>
 
-            {/* Central Bridge/Text */}
-            <div className="relative z-30 flex flex-col items-center">
-              <h1 className="font-display text-[50px] md:text-[80px] lg:text-[100px] leading-[0.9] tracking-tighter text-[#1A1A1A]">
-                See what <br />
-                <span className="italic text-[#D96C39]">connects.</span>
-              </h1>
-            </div>
+              {/* The Bridge (SVG for perfect curve) */}
+              <div className="relative -mx-3 z-0">
+                <svg width="80" height="40" viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M 0 30 Q 40 10 80 30" stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round" />
+                  <path d="M 0 32 Q 40 12 80 32" stroke="#D1D5DB" strokeWidth="1" strokeLinecap="round" />
+                </svg>
+              </div>
 
-            {/* Decorative Pastel Dots floating in lenses */}
-            <div className="absolute top-[20%] left-[25%] w-4 h-4 rounded-full bg-[#FDF0B6] shadow-sm animate-pulse" />
-            <div className="absolute bottom-[20%] left-[35%] w-5 h-5 rounded-full bg-[#E8DAFB] shadow-sm animate-pulse delay-100" />
-            <div className="absolute top-[30%] right-[25%] w-3 h-3 rounded-full bg-[#FBD0D4] shadow-sm animate-pulse delay-200" />
-            <div className="absolute bottom-[25%] right-[30%] w-4 h-4 rounded-full bg-[#CBE6F9] shadow-sm animate-pulse delay-300" />
+              {/* Right Lens */}
+              <div className="relative w-[280px] h-[280px] md:w-[320px] md:h-[320px] rounded-full lens-rim lens-glass z-10 flex items-center justify-center">
+                {/* Glass Reflection */}
+                <div className="absolute top-[15%] right-[20%] w-[100px] h-[60px] glass-reflection transform rotate-[20deg]" />
+                {/* Pastel Dots */}
+                <div className="absolute top-[25%] right-[30%] w-4 h-4 rounded-full bg-[#FBD0D4] shadow-sm" />
+                <div className="absolute bottom-[20%] right-[25%] w-4 h-4 rounded-full bg-[#CBE6F9] shadow-sm" />
+
+                {/* Right Text */}
+                <h1 className="font-display text-[45px] md:text-[55px] lg:text-[65px] tracking-tight text-[#8B5CF6] italic z-20">
+                  connects.
+                </h1>
+              </div>
+
+              {/* Right Hinge */}
+              <div className="absolute -right-6 top-1/2 -translate-y-1/2 w-8 h-6 metal-bridge rounded-r-md z-0 flex items-center justify-start pl-1 shadow-sm">
+                <div className="w-1 h-3 bg-black/20 rounded-full" />
+              </div>
+
+            </div>
           </div>
 
           <p className="text-lg md:text-xl text-[#1A1A1A]/50 leading-relaxed max-w-xl font-light mt-8">
