@@ -5,7 +5,7 @@ import {
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  ShieldAlert, Play, Disc3, Mic
+  Mic
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -77,7 +77,7 @@ function WelcomePage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        /* --- THE COMMAND CENTER BOARD --- */
+        /* --- THE PREMIUM COMMAND CENTER --- */
         
         .board-container {
           background-color: #1a1c1d;
@@ -114,11 +114,11 @@ function WelcomePage() {
         }
         .data-stream-pulse {
           fill: none;
-          stroke: #fff;
+          stroke: #00f0ff;
           stroke-width: 3;
           stroke-dasharray: 20 250;
           animation: flow-data 3s linear infinite;
-          filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #75F09A);
+          filter: drop-shadow(0 0 10px #00f0ff);
         }
         @keyframes flow-data {
           0% { stroke-dashoffset: 270; }
@@ -153,121 +153,130 @@ function WelcomePage() {
         .animate-float-3 { animation: float-3 9s ease-in-out infinite; }
         .animate-float-4 { animation: float-4 11s ease-in-out infinite; }
 
-        /* Terminator AI Eye */
-        .terminator-eye {
+        /* Blue AI Core */
+        .ai-core-container {
           position: relative;
-          width: 180px;
-          height: 180px;
+          width: 200px;
+          height: 200px;
           display: flex;
           align-items: center;
           justify-content: center;
-          filter: drop-shadow(0 0 30px rgba(255, 0, 0, 0.4));
+          filter: drop-shadow(0 0 40px rgba(0, 240, 255, 0.4));
         }
         
-        .eye-outer-metal {
+        .ai-outer-socket {
           position: absolute;
           inset: 0;
           border-radius: 50%;
-          background: linear-gradient(135deg, #444, #111, #333, #000);
+          background: linear-gradient(135deg, #2a2e33, #111, #333, #000);
           box-shadow: 
             inset -5px -5px 15px rgba(0,0,0,0.9),
-            inset 5px 5px 15px rgba(255,255,255,0.2),
-            0 10px 20px rgba(0,0,0,0.6);
-          border: 2px solid #555;
+            inset 5px 5px 15px rgba(255,255,255,0.1),
+            0 15px 30px rgba(0,0,0,0.6);
+          border: 2px solid #444;
         }
         
-        .eye-inner-ring {
+        .ai-mech-ring {
           position: absolute;
-          inset: 15px;
+          inset: 20px;
           border-radius: 50%;
-          border: 4px dashed #222;
-          animation: spin 12s linear infinite;
+          border: 3px dashed rgba(0, 240, 255, 0.4);
+          animation: spin 15s linear infinite;
         }
         
-        .eye-red-core {
+        .ai-blue-core {
           position: absolute;
-          width: 80px;
-          height: 80px;
-          background: radial-gradient(circle at 40% 40%, #ff3b3b, #8a0000, #000);
+          width: 90px;
+          height: 90px;
+          background: radial-gradient(circle at 40% 40%, #a6faff, #00f0ff, #004488, #000);
           border-radius: 50%;
           box-shadow: 
-            0 0 40px #ff0000,
+            0 0 50px #00f0ff,
             inset 0 0 20px #000;
           display: flex;
           align-items: center;
           justify-content: center;
-          animation: pulse-red 2s infinite alternate;
+          animation: pulse-blue 2s infinite alternate;
           z-index: 10;
         }
         
-        .eye-lens {
-          width: 30px;
-          height: 30px;
-          background: #000;
+        .ai-lens-inner {
+          width: 35px;
+          height: 35px;
+          background: #001a33;
           border-radius: 50%;
-          border: 2px solid rgba(255,255,255,0.2);
-          box-shadow: inset 0 0 10px #000;
+          border: 2px solid rgba(0, 240, 255, 0.8);
+          box-shadow: inset 0 0 15px #000, 0 0 10px #00f0ff;
           position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         
-        .eye-lens::after {
-          content: '';
-          position: absolute;
-          top: 5px; left: 5px;
-          width: 8px; height: 8px;
+        .ai-lens-glint {
+          width: 10px;
+          height: 10px;
+          background: #fff;
           border-radius: 50%;
-          background: rgba(255,255,255,0.6);
+          box-shadow: 0 0 10px #fff;
+          position: absolute;
+          top: 5px;
+          left: 5px;
         }
 
-        @keyframes pulse-red {
-          0% { box-shadow: 0 0 30px #ff0000, inset 0 0 20px #000; }
-          100% { box-shadow: 0 0 60px #ff0000, inset 0 0 20px #000; }
+        @keyframes pulse-blue {
+          0% { box-shadow: 0 0 30px #00f0ff, inset 0 0 20px #000; }
+          100% { box-shadow: 0 0 70px #00f0ff, inset 0 0 20px #000; }
         }
 
         @keyframes spin {
           100% { transform: rotate(360deg); }
         }
 
-        /* Clock Hands */
-        .clock-hand {
+        /* Clock Details */
+        .clock-tick {
           position: absolute;
-          bottom: 50%;
+          width: 2px;
+          height: 8px;
+          background: #333;
+          top: 6px;
           left: 50%;
-          transform-origin: bottom center;
-          border-radius: 4px;
-          z-index: 10;
+          transform-origin: 50% 72px; /* Adjust based on clock size */
         }
 
         /* Magnifying Glass */
-        .magnifier {
+        .magnifier-lens {
           position: absolute;
-          width: 120px;
-          height: 120px;
+          width: 110px;
+          height: 110px;
           border-radius: 50%;
-          border: 6px solid #888;
-          background: rgba(255,255,255,0.1);
-          backdrop-filter: blur(2px);
+          border: 6px solid #555;
+          background: rgba(255,255,255,0.05);
+          backdrop-filter: blur(2px) contrast(1.2);
           box-shadow: 
-            inset 0 0 20px rgba(255,255,255,0.5),
+            inset 0 0 20px rgba(255,255,255,0.4),
+            inset 5px 5px 15px rgba(0,0,0,0.1),
             0 10px 20px rgba(0,0,0,0.3);
           z-index: 20;
-          animation: scan-magnify 6s ease-in-out infinite alternate;
+          animation: scan-magnify 8s ease-in-out infinite alternate;
         }
+        
         .magnifier-handle {
           position: absolute;
-          bottom: -40px;
-          right: -20px;
-          width: 16px;
-          height: 60px;
-          background: linear-gradient(to right, #5c3a21, #8b5a2b, #5c3a21);
-          border-radius: 8px;
+          bottom: -30px;
+          right: -15px;
+          width: 14px;
+          height: 50px;
+          background: linear-gradient(to right, #4a2c11, #8b5a2b, #4a2c11);
+          border-radius: 7px;
           transform: rotate(45deg);
           z-index: 19;
+          box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
         }
 
         @keyframes scan-magnify {
-          0% { transform: translate(-10px, 10px) rotate(-10deg); }
-          100% { transform: translate(30px, -10px) rotate(10deg); }
+          0% { transform: translate(-20px, 20px) rotate(-15deg); }
+          100% { transform: translate(40px, -20px) rotate(15deg); }
         }
 
         /* Waveform Animation */
@@ -275,7 +284,8 @@ function WelcomePage() {
           width: 4px;
           background-color: #4ade80;
           border-radius: 2px;
-          animation: wave 1s ease-in-out infinite alternate;
+          animation: wave 1.2s ease-in-out infinite alternate;
+          box-shadow: 0 0 5px #4ade80;
         }
         @keyframes wave {
           0% { height: 10%; }
@@ -526,55 +536,49 @@ function WelcomePage() {
             <p className="text-[#1A1A1A]/50 text-lg">Connect the evidence. Find the hidden motive.</p>
           </div>
 
-          <div className="board-container w-full h-[650px] p-2">
+          <div className="board-container w-full h-[700px] p-2">
             <div className="board-screen w-full h-full">
               
               {/* The Animated Data Streams */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-                <path d="M 250 200 Q 400 150 600 300" className="data-stream-base" />
-                <path d="M 250 200 Q 400 150 600 300" className="data-stream-pulse" />
+                <path d="M 280 180 Q 400 200 600 350" className="data-stream-base" />
+                <path d="M 280 180 Q 400 200 600 350" className="data-stream-pulse" />
                 
-                <path d="M 950 200 Q 800 150 600 300" className="data-stream-base" />
-                <path d="M 950 200 Q 800 150 600 300" className="data-stream-pulse" style={{ animationDelay: '0.5s' }} />
+                <path d="M 920 180 Q 800 200 600 350" className="data-stream-base" />
+                <path d="M 920 180 Q 800 200 600 350" className="data-stream-pulse" style={{ animationDelay: '0.5s' }} />
                 
-                <path d="M 250 500 Q 400 550 600 450" className="data-stream-base" />
-                <path d="M 250 500 Q 400 550 600 450" className="data-stream-pulse" style={{ animationDelay: '1s' }} />
+                <path d="M 280 520 Q 400 500 600 350" className="data-stream-base" />
+                <path d="M 280 520 Q 400 500 600 350" className="data-stream-pulse" style={{ animationDelay: '1s' }} />
                 
-                <path d="M 950 500 Q 800 550 600 450" className="data-stream-base" />
-                <path d="M 950 500 Q 800 550 600 450" className="data-stream-pulse" style={{ animationDelay: '1.5s' }} />
+                <path d="M 920 520 Q 800 500 600 350" className="data-stream-base" />
+                <path d="M 920 520 Q 800 500 600 350" className="data-stream-pulse" style={{ animationDelay: '1.5s' }} />
               </svg>
 
               {/* Tool 1: Working Analog Clock */}
-              <div className="tool-card animate-float-1 absolute top-[10%] left-[8%] w-48 h-48 rounded-full z-10 flex items-center justify-center border-4 border-[#D1C7B7] bg-[#FDFBF7]">
-                {/* Clock Face */}
+              <div className="tool-card animate-float-1 absolute top-[12%] left-[10%] w-52 h-52 rounded-full z-10 flex items-center justify-center border-8 border-[#D1C7B7] bg-[#FDFBF7] shadow-2xl">
                 <div className="relative w-40 h-40 rounded-full bg-[#FCFAF8] shadow-inner flex items-center justify-center border border-black/10">
                   {/* Tick Marks */}
-                  <div className="absolute inset-2 rounded-full border border-black/5" />
-                  <div className="absolute top-1 left-1/2 -translate-x-1/2 w-1 h-3 bg-black/40" />
-                  <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-3 bg-black/40" />
-                  <div className="absolute left-1 top-1/2 -translate-y-1/2 w-3 h-1 bg-black/40" />
-                  <div className="absolute right-1 top-1/2 -translate-y-1/2 w-3 h-1 bg-black/40" />
-                  
-                  {/* Hour Hand */}
-                  <div className="clock-hand w-1.5 h-12 bg-black" style={{ transform: `rotate(${hoursDegrees}deg)` }} />
-                  {/* Minute Hand */}
-                  <div className="clock-hand w-1 h-16 bg-black/70" style={{ transform: `rotate(${minutesDegrees}deg)` }} />
-                  {/* Second Hand */}
-                  <div className="clock-hand w-0.5 h-16 bg-red-600" style={{ transform: `rotate(${secondsDegrees}deg)` }} />
+                  {[...Array(12)].map((_, i) => (
+                    <div key={i} className="absolute w-1 h-3 bg-black/60 top-2 left-1/2 -translate-x-1/2" style={{ transform: `rotate(${i * 30}deg) translateY(-60px)` }} />
+                  ))}
+                  {/* Hands */}
+                  <div className="clock-hand w-2 h-12 bg-black z-20 rounded-full" style={{ transform: `rotate(${hoursDegrees}deg)` }} />
+                  <div className="clock-hand w-1.5 h-16 bg-black/80 z-20 rounded-full" style={{ transform: `rotate(${minutesDegrees}deg)` }} />
+                  <div className="clock-hand w-1 h-16 bg-[#C22B2B] z-30 rounded-full" style={{ transform: `rotate(${secondsDegrees}deg)` }} />
                   {/* Center Pin */}
-                  <div className="absolute w-3 h-3 bg-black rounded-full z-20 border border-white/50" />
+                  <div className="absolute w-4 h-4 bg-black rounded-full z-40 border-2 border-white/50" />
                 </div>
               </div>
 
               {/* Tool 2: Desk Flip Calendar */}
-              <div className="tool-card animate-float-2 absolute top-[15%] right-[8%] w-56 h-64 z-10 flex flex-col items-center pt-6 bg-[#F9F7F1] border border-black/10 rounded-b-xl">
-                {/* Metal Rings */}
-                <div className="absolute top-2 left-1/4 w-3 h-8 rounded-full border-2 border-gray-400 bg-transparent -translate-y-1/2" />
-                <div className="absolute top-2 right-1/4 w-3 h-8 rounded-full border-2 border-gray-400 bg-transparent -translate-y-1/2" />
+              <div className="tool-card animate-float-2 absolute top-[15%] right-[10%] w-60 h-72 z-10 flex flex-col items-center pt-8 bg-[#F9F7F1] border border-black/10 rounded-b-xl shadow-2xl">
+                {/* Metal Spirals */}
+                <div className="absolute top-0 left-1/4 -translate-y-1/2 w-4 h-8 rounded-full border-4 border-gray-400 bg-transparent" />
+                <div className="absolute top-0 right-1/4 -translate-y-1/2 w-4 h-8 rounded-full border-4 border-gray-400 bg-transparent" />
                 
                 {/* Calendar Body */}
-                <div className="w-48 h-56 bg-white shadow-md border border-black/5 flex flex-col rounded-sm">
-                  <div className="w-full h-12 bg-[#C22B2B] text-white flex items-center justify-center font-mono text-xl tracking-[0.3em] uppercase">
+                <div className="w-48 h-56 bg-white shadow-lg border border-black/5 flex flex-col rounded-sm overflow-hidden">
+                  <div className="w-full h-14 bg-[#C22B2B] text-white flex items-center justify-center font-mono text-xl tracking-[0.3em] uppercase">
                     {currentMonth}
                   </div>
                   <div className="flex-1 flex items-center justify-center font-display text-8xl text-[#1A1A1A]">
@@ -584,62 +588,64 @@ function WelcomePage() {
               </div>
 
               {/* Tool 3: Redacted Document & Magnifier */}
-              <div className="tool-card animate-float-3 absolute bottom-[10%] left-[12%] w-64 h-64 z-10 p-6 bg-[#F4EFE6] border border-[#D1C7B7] rotate-[-2deg]">
+              <div className="tool-card animate-float-3 absolute bottom-[12%] left-[12%] w-72 h-80 z-10 p-6 bg-[#F4EFE6] border border-[#D1C7B7] rotate-[-3deg] shadow-2xl">
                 {/* Top Secret Stamp */}
-                <div className="absolute top-4 right-4 border-2 border-red-600 text-red-600 text-[10px] font-mono px-2 py-0.5 rotate-12 opacity-60 uppercase">
+                <div className="absolute top-6 right-6 border-4 border-[#C22B2B] text-[#C22B2B] text-xs font-mono px-3 py-1 rotate-12 opacity-80 uppercase font-bold tracking-widest rounded-sm">
                   Top Secret
                 </div>
                 
-                <div className="flex flex-col gap-2 mt-6">
-                  <div className="h-3 w-full bg-black/80 rounded-sm" />
-                  <div className="h-3 w-5/6 bg-black/80 rounded-sm" />
-                  <div className="h-3 w-full bg-black/80 rounded-sm" />
-                  <div className="h-3 w-3/4 bg-black/80 rounded-sm" />
-                  <div className="h-3 w-full bg-black/80 rounded-sm" />
-                  <div className="h-3 w-4/5 bg-black/80 rounded-sm" />
+                <div className="flex flex-col gap-3 mt-8">
+                  <div className="h-3 w-full bg-black/90 rounded-sm" />
+                  <div className="h-3 w-5/6 bg-black/90 rounded-sm" />
+                  <div className="h-3 w-full bg-black/90 rounded-sm" />
+                  <div className="h-3 w-3/4 bg-black/90 rounded-sm" />
+                  <div className="h-3 w-full bg-black/90 rounded-sm" />
+                  <div className="h-3 w-4/5 bg-black/90 rounded-sm" />
                 </div>
 
                 {/* Magnifying Glass overlay */}
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="magnifier">
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                  <div className="magnifier-lens">
                     <div className="magnifier-handle" />
                   </div>
                 </div>
               </div>
 
               {/* Tool 4: Voice Recorder */}
-              <div className="tool-card animate-float-4 absolute bottom-[15%] right-[12%] w-64 h-48 z-10 p-4 bg-[#2C2A28] border border-[#444] rounded-xl flex flex-col">
-                <div className="flex justify-between items-center mb-4">
+              <div className="tool-card animate-float-4 absolute bottom-[15%] right-[12%] w-72 h-52 z-10 p-6 bg-[#2C2A28] border border-[#444] rounded-xl flex flex-col shadow-2xl">
+                <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2 text-[10px] font-mono text-white/50 uppercase tracking-widest">
-                    <Mic className="w-3 h-3" /> Audio Log 04
+                    <Mic className="w-4 h-4 text-[#00f0ff]" /> Audio Log 04
                   </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_#ff0000]" />
-                    <span className="text-[10px] font-mono text-red-500">REC</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_#ff0000]" />
+                    <span className="text-[10px] font-mono text-red-500 tracking-widest">REC</span>
                   </div>
                 </div>
 
                 {/* Tape Spools & Waveform */}
-                <div className="flex items-center gap-4 h-full">
-                  <div className="flex gap-2">
-                    <div className="w-12 h-12 rounded-full border-4 border-dashed border-gray-600 animate-spin" style={{ animationDuration: '4s' }} />
-                    <div className="w-12 h-12 rounded-full border-4 border-dashed border-gray-600 animate-spin" style={{ animationDuration: '4s' }} />
+                <div className="flex items-center gap-6 h-full">
+                  <div className="flex gap-3">
+                    <div className="w-14 h-14 rounded-full border-[6px] border-dashed border-gray-500 animate-spin bg-black/40" style={{ animationDuration: '6s' }} />
+                    <div className="w-14 h-14 rounded-full border-[6px] border-dashed border-gray-500 animate-spin bg-black/40" style={{ animationDuration: '6s' }} />
                   </div>
-                  <div className="flex-1 flex items-end justify-between gap-1 h-12">
+                  <div className="flex-1 flex items-end justify-between gap-1 h-14 pb-2">
                     {[...Array(12)].map((_, i) => (
-                      <div key={i} className="wave-bar" style={{ animationDelay: `${i * 0.1}s` }} />
+                      <div key={i} className="wave-bar" style={{ animationDelay: `${i * 0.15}s` }} />
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* Center: The Terminator AI Core */}
+              {/* Center: The Blue AI Core */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
-                <div className="terminator-eye">
-                  <div className="eye-outer-metal" />
-                  <div className="eye-inner-ring" />
-                  <div className="eye-red-core">
-                    <div className="eye-lens" />
+                <div className="ai-core-container">
+                  <div className="ai-outer-socket" />
+                  <div className="ai-mech-ring" />
+                  <div className="ai-blue-core">
+                    <div className="ai-lens-inner">
+                      <div className="ai-lens-glint" />
+                    </div>
                   </div>
                 </div>
               </div>
