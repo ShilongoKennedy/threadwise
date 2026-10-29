@@ -273,10 +273,10 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   };
 
   return (
-    <div className="tw-lab fixed inset-0 z-50 flex flex-col bg-background font-sans" role="dialog" aria-modal="true">
+    <div className="h-full w-full flex flex-col bg-background font-sans relative overflow-hidden" role="region" aria-label="Discourse Lab">
       <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
 
-      <header className="relative z-10 flex items-center justify-between border-b px-6 py-4 bg-card">
+      <header className="relative z-10 flex items-center justify-between border-b px-6 py-4 bg-card shrink-0">
         <div>
           <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             <Crosshair className="h-3 w-3" /> The Reading Room
@@ -295,8 +295,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       </header>
 
       <div className="relative z-10 flex flex-1 overflow-hidden">
-        <aside className="flex w-72 shrink-0 flex-col border-r bg-card/50">
-          <div className="border-b p-5">
+        <aside className="flex w-64 shrink-0 flex-col border-r bg-card/50">
+          <div className="border-b p-4">
             <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground block mb-3">Indexed Sources · {docs.length}</span>
             <div className="space-y-3">
               <Input placeholder="Document title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="h-9 text-xs font-medium" />
@@ -326,13 +326,13 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
         <main className="flex-1 overflow-y-auto bg-background/50">
           
           {view === "read" && active && (
-            <div className="mx-auto max-w-7xl p-8 pb-24 h-full flex flex-col">
-              <div className="mb-6 flex items-center justify-between shrink-0">
-                <div>
-                  <h3 className="mb-2 font-display text-3xl leading-tight">{active.title}</h3>
+            <div className="mx-auto max-w-7xl p-6 pb-24 h-full flex flex-col">
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-4 shrink-0">
+                <div className="min-w-0">
+                  <h3 className="mb-2 font-display text-3xl leading-tight truncate">{active.title}</h3>
                   <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   {activeAnalysis && (
                     <>
                       <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => exportReport("forensic")} title="Export Analysis"><Download className="h-4 w-4" /></Button>
@@ -357,8 +357,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
               {analysisError && <p className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive shrink-0">{analysisError}</p>}
 
-              <div className="flex flex-1 gap-8 min-h-0">
-                <article className="flex-1 rounded-xl border bg-card p-10 shadow-sm overflow-y-auto relative">
+              <div className="flex flex-1 flex-col xl:flex-row gap-6 min-h-0">
+                <article className="flex-1 rounded-xl border bg-card p-8 shadow-sm overflow-y-auto relative min-h-[400px]">
                   <div 
                     className="font-serif text-lg leading-loose text-foreground/90 whitespace-pre-wrap selection:bg-[#CBE6F9]"
                     onClick={handleTextClick}
@@ -367,9 +367,9 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   />
                 </article>
 
-                <aside className="w-[420px] shrink-0 flex flex-col gap-4 overflow-y-auto pr-2 pb-10">
+                <aside className="w-full xl:w-[400px] shrink-0 flex flex-col gap-4 overflow-y-auto pr-2 pb-10">
                   {!activeAnalysis && !isAnalyzingSource && (
-                    <div className="flex flex-col items-center justify-center h-full text-center p-8 border rounded-xl border-dashed bg-card/30">
+                    <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-8 border rounded-xl border-dashed bg-card/30">
                       <Fingerprint className="h-10 w-10 text-muted-foreground/50 mb-4" />
                       <h4 className="font-display text-xl mb-2">Awaiting Analysis</h4>
                       <p className="text-sm text-muted-foreground">Click "Analyze Source" to run forensic linguistics and extract hidden motives, biases, and contradictions.</p>
@@ -377,7 +377,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   )}
 
                   {isAnalyzingSource && (
-                    <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                    <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-8">
                       <Loader2 className="h-8 w-8 text-[#C24A35] animate-spin mb-4" />
                       <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground animate-pulse">Extracting Motives → Mapping Fallacies → Measuring Bias</p>
                     </div>
@@ -475,8 +475,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           )}
 
           {view === "investigate" && (
-            <div className="mx-auto max-w-6xl p-8 pb-24">
-              <div className="mb-8 flex items-end justify-between">
+            <div className="mx-auto max-w-6xl p-6 pb-24">
+              <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <h3 className="mb-2 font-display text-4xl tracking-tight text-foreground">Cross-Source Dossier</h3>
                   <p className="max-w-xl text-sm text-muted-foreground">Cross-reference global sources, extract quantitative sentiment signals, and map strategic blind spots.</p>
@@ -488,20 +488,22 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                 )}
               </div>
 
-              <div className="mb-10 flex items-center gap-2 rounded-xl border bg-card p-2 shadow-sm">
-                <div className="flex flex-1 gap-2">
+              <div className="mb-10 flex flex-col sm:flex-row items-center gap-2 rounded-xl border bg-card p-2 shadow-sm">
+                <div className="flex flex-1 flex-col sm:flex-row gap-2 w-full">
                   {urls.map((url, i) => (
-                    <div key={i} className="relative flex-1">
+                    <div key={i} className="relative flex-1 w-full">
                       <Globe className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input value={url} placeholder="https://foreignaffairs.com/..." className="h-11 border-transparent bg-muted/30 pl-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-ring" onChange={(e) => { const newUrls = [...urls]; newUrls[i] = e.target.value; setUrls(newUrls); }} />
                       {urls.length > 1 && <Button variant="ghost" size="icon" className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2" onClick={() => setUrls(urls.filter((_, idx) => idx !== i))}><X className="h-3 w-3 text-muted-foreground" /></Button>}
                     </div>
                   ))}
                 </div>
-                <Button variant="outline" size="icon" onClick={() => setUrls([...urls, ""])} className="h-11 w-11 shrink-0"><Plus className="h-4 w-4" /></Button>
-                <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="h-11 shrink-0 px-8">
-                  {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</> : <><Sparkles className="mr-2 h-4 w-4" /> Analyze Sources</>}
-                </Button>
+                <div className="flex w-full sm:w-auto gap-2">
+                  <Button variant="outline" size="icon" onClick={() => setUrls([...urls, ""])} className="h-11 w-11 shrink-0"><Plus className="h-4 w-4" /></Button>
+                  <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="h-11 flex-1 sm:flex-none shrink-0 px-8">
+                    {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</> : <><Sparkles className="mr-2 h-4 w-4" /> Analyze Sources</>}
+                  </Button>
+                </div>
               </div>
 
               {analysisError && <p className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{analysisError}</p>}
@@ -634,8 +636,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           )}
 
           {view === "compare" && (
-            <div className="mx-auto max-w-6xl p-8 pb-24">
-              <div className="mb-8 flex items-end justify-between">
+            <div className="mx-auto max-w-6xl p-6 pb-24">
+              <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <h3 className="mb-2 font-display text-4xl tracking-tight text-foreground">Comparative Intelligence</h3>
                   <p className="max-w-xl text-sm text-muted-foreground">Cross-examine two narratives to reveal diverging framings, omissions, and direct contradictions.</p>
@@ -656,8 +658,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                 )}
               </div>
 
-              <div className="mb-8 flex items-end gap-4 rounded-xl border bg-card p-4 shadow-sm">
-                <div className="flex-1 grid grid-cols-2 gap-4">
+              <div className="mb-8 flex flex-col md:flex-row items-end gap-4 rounded-xl border bg-card p-4 shadow-sm">
+                <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[0, 1].map((index) => (
                     <div key={index}>
                       <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-1 block">Source {index === 0 ? "A" : "B"}</label>
@@ -668,7 +670,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                     </div>
                   ))}
                 </div>
-                <Button onClick={runComparison} disabled={isComparing || !docA || !docB || docA.id === docB.id} className="h-[38px] px-6">
+                <Button onClick={runComparison} disabled={isComparing || !docA || !docB || docA.id === docB.id} className="h-[38px] px-6 w-full md:w-auto shrink-0">
                   {isComparing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Comparing...</> : <><GitMerge className="mr-2 h-4 w-4" /> Run Comparison</>}
                 </Button>
               </div>
@@ -718,7 +720,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
                   <section className="rounded-xl border bg-card p-6 shadow-sm">
                     <h4 className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><Target className="h-4 w-4" /> Entity Matrix</h4>
-                    <div className="grid grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div>
                         <h5 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3 text-center">Shared Focus</h5>
                         <div className="flex flex-col gap-2">
@@ -752,7 +754,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       {comparisonAnalysis.flashpoints?.map((fp: any, i: number) => (
                         <div key={i} className="rounded-lg border bg-background overflow-hidden">
                           <div className="bg-muted/50 px-4 py-2 border-b font-display text-sm font-bold">{fp.topic}</div>
-                          <div className="grid grid-cols-2 divide-x">
+                          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x">
                             <div className="p-4">
                               <span className="font-mono text-[9px] uppercase tracking-wider text-[#C24A35] block mb-2">{docA.title}</span>
                               <p className="text-xs leading-relaxed text-foreground/80">{fp.text_a_view}</p>
@@ -770,7 +772,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
               )}
 
               {!comparisonAnalysis && !isComparing && (
-                <div className="grid grid-cols-2 gap-6 mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                   {[docA, docB].map((doc, i) => doc && (
                     <article className="rounded-xl border bg-card p-8 shadow-sm" key={doc.id}>
                       <h3 className="mb-4 font-display text-2xl">{doc.title}</h3>
@@ -783,7 +785,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           )}
 
           {view === "count" && (
-            <div className="mx-auto max-w-5xl p-8 pb-24">
+            <div className="mx-auto max-w-5xl p-6 pb-24">
               <div className="mb-10 flex items-end justify-between">
                 <div>
                   <h3 className="mb-2 font-display text-4xl">Language Trajectory</h3>
@@ -791,8 +793,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                 </div>
               </div>
               
-              <form className="mb-6 flex gap-3" onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}>
-                <Input value={term} placeholder="Track a word or phrase (e.g. 'security', 'border')" onChange={(e) => setTerm(e.target.value)} className="h-12 text-base rounded-lg" />
+              <form className="mb-6 flex flex-col sm:flex-row gap-3" onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}>
+                <Input value={term} placeholder="Track a word or phrase (e.g. 'security', 'border')" onChange={(e) => setTerm(e.target.value)} className="h-12 text-base rounded-lg flex-1" />
                 <Button className="h-12 px-8 text-base">Track</Button>
               </form>
               
@@ -829,9 +831,9 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
               <div className="mb-16 space-y-4 rounded-xl border bg-card p-6 shadow-sm">
                 {termCounts.map(({ doc, values }) => (
-                  <div key={doc.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
+                  <div key={doc.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-4 last:border-0 last:pb-0 gap-4">
                     <b className="font-display text-base max-w-[300px] truncate">{doc.date || "—"} · {doc.title}</b>
-                    <div className="flex gap-6">
+                    <div className="flex gap-6 flex-wrap">
                       {values.map((value, i) => (
                         <div key={value.phrase} className="text-right">
                           <span className="block font-mono text-[9px] uppercase tracking-widest text-muted-foreground mb-1">{value.phrase}</span>

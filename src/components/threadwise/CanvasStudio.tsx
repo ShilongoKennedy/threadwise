@@ -251,7 +251,6 @@ export function CanvasStudio({
     const beginFromThought = (event: Event) => {
       const id = (event as CustomEvent<{ id?: string }>).detail?.id;
       if (!id || !s.nodes.some((node) => node.id === id) || s.replayIndex !== null) return;
-      // The invited thought is the opening beat; keep the authored walkthrough after it.
       update({ stops: [id, ...suite.stops.filter((stopId) => stopId !== id)] });
       setStop(0);
       setPresent(true);
@@ -261,6 +260,14 @@ export function CanvasStudio({
     window.addEventListener("threadwise:present-from", beginFromThought);
     return () => window.removeEventListener("threadwise:present-from", beginFromThought);
   }, [canvas?.id, s.nodes, s.replayIndex, suite.stops, onPresentChange]);
+  
+  // NEW: Listen for the open-lab event from the empty canvas state
+  useEffect(() => {
+    const openLab = () => { setLab(true); setOpen(false); };
+    window.addEventListener("threadwise:open-lab", openLab);
+    return () => window.removeEventListener("threadwise:open-lab", openLab);
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(
       () => setStrokes((v) => v.filter((s) => Date.now() - s.at < 12000)),
