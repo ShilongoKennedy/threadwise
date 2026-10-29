@@ -128,14 +128,13 @@ Return ONLY a valid JSON object matching this exact schema:
     }
 
     // ---------------------------------------------------------
-    // CROSS-SOURCE INVESTIGATIVE ANALYSIS
+    // CROSS-SOURCE INVESTIGATIVE ANALYSIS (With Fallback)
     // ---------------------------------------------------------
     if (input.mode === "cross-source") {
       if (!input.urls || input.urls.length === 0) {
         return Response.json({ message: "Provide at least one article URL." }, { status: 400 });
       }
 
-      // FIX: Scrape all URLs in parallel so it doesn't take 5 minutes
       const scrapePromises = input.urls.map(async (targetUrl) => {
         try {
           const page = await readWeb(targetUrl, request.signal);
@@ -148,7 +147,6 @@ Return ONLY a valid JSON object matching this exact schema:
       const scrapedDocs = await Promise.all(scrapePromises);
       const combinedText = scrapedDocs.join("\n\n---\n\n");
 
-      // FIX: Upgraded prompt to force real synthesis and cross-referencing
       const systemPrompt = `You are an elite intelligence analyst. You are provided with several raw documents/sources. 
 Your mission is to synthesize them into a unified intelligence dossier. Do not just summarize them individually. You must cross-reference them to find the hidden connections, the strategic overlaps, and the contradictions.
 
@@ -171,11 +169,27 @@ Return ONLY a valid JSON object matching this exact schema:
 }`;
 
       try {
-        const { text: aiText } = await generateText({
-          model: getModel("gemini"),
-          system: systemPrompt,
-          prompt: `Analyze these articles:\n\n${combinedText}`,
-        });
+        let aiText = "";
+        
+        try {
+          // Primary: Gemini for massive context window
+          const { text } = await generateText({
+            model: getModel("gemini"),
+            system: systemPrompt,
+            prompt: `Analyze these articles:\n\n${combinedText}`,
+            maxRetries: 1, // Don't waste time retrying 3 times if Google is overloaded
+          });
+          aiText = text;
+        } catch (primaryError) {
+          console.warn("Gemini failed or is overloaded. Falling back to DeepSeek...", primaryError);
+          // Fallback: DeepSeek
+          const { text } = await generateText({
+            model: getModel("deepseek"),
+            system: systemPrompt,
+            prompt: `Analyze these articles:\n\n${combinedText}`,
+          });
+          aiText = text;
+        }
 
         const parsed = extractJson<any>(aiText);
         return Response.json({ analysis: parsed, error: null }, { status: 200 });
