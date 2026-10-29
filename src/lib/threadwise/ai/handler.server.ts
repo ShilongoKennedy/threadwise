@@ -7,11 +7,15 @@ import { RELATIONS } from "../model";
 import { createDeepSeekProvider, deepSeekModelName } from "./deepseek.server";
 
 const inputSchema = z.object({
-  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source", "analyze-source"]),
+  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source", "analyze-source", "compare"]),
   threadId: z.string().optional(),
   messages: z.array(z.unknown()).max(200).optional(),
   graph: z.unknown().optional(),
   text: z.string().max(80_000).optional(),
+  textA: z.string().max(40_000).optional(),
+  textB: z.string().max(40_000).optional(),
+  titleA: z.string().optional(),
+  titleB: z.string().optional(),
   url: z.string().url().optional(),
   urls: z.array(z.string()).optional(),
   source: z.string().max(2000).optional(),
@@ -84,6 +88,60 @@ export async function handleThreadwise(request: Request) {
     const provider = createDeepSeekProvider();
 
     // ---------------------------------------------------------
+    // NEW: COMPARATIVE ANALYSIS MODE
+    // ---------------------------------------------------------
+    if (input.mode === "compare") {
+      if (!input.textA?.trim() || !input.textB?.trim()) {
+        return Response.json({ message: "Provide two texts to compare." }, { status: 400 });
+      }
+
+      const systemPrompt = `You are a senior intelligence analyst comparing two texts to reveal diverging narratives.
+Analyze both texts and extract:
+1. "divergenceScore": A score from 0 to 100 indicating how much these two texts disagree or frame the world differently (0 = identical, 100 = total opposites).
+2. "shared_entities": Key actors/concepts mentioned in BOTH texts.
+3. "unique_to_a": Key actors/concepts ONLY in Text A.
+4. "unique_to_b": Key actors/concepts ONLY in Text B.
+5. "flashpoints": An array of 2-4 specific areas where the texts directly contradict or frame things differently.
+   - "topic": The subject (e.g., "Economic Sanctions")
+   - "text_a_view": How Text A frames it.
+   - "text_b_view": How Text B frames it.
+6. "radar": Comparative scores (0-100) for BOTH texts across five dimensions: "bias", "omission", "urgency", "motive", "evidence".
+
+Return ONLY a valid JSON object matching this exact schema:
+{
+  "divergenceScore": number,
+  "shared_entities": string[],
+  "unique_to_a": string[],
+  "unique_to_b": string[],
+  "flashpoints": { "topic": string, "text_a_view": string, "text_b_view": string }[],
+  "radar": {
+    "a": { "bias": number, "omission": number, "urgency": number, "motive": number, "evidence": number },
+    "b": { "bias": number, "omission": number, "urgency": number, "motive": number, "evidence": number }
+  }
+}`;
+
+      try {
+        const { text: aiText } = await generateText({
+          model: provider.chat(deepSeekModelName()),
+          system: systemPrompt,
+          prompt: `TEXT A (${input.titleA || "Source A"}):\n${input.textA}\n\n---\n\nTEXT B (${input.titleB || "Source B"}):\n${input.textB}`,
+        });
+
+        const firstBrace = aiText.indexOf('{');
+        const lastBrace = aiText.lastIndexOf('}');
+        if (firstBrace === -1 || lastBrace === -1) throw new Error("AI did not return JSON.");
+        
+        const jsonString = aiText.substring(firstBrace, lastBrace + 1);
+        const parsed = JSON.parse(jsonString);
+
+        return Response.json({ analysis: parsed, error: null }, { status: 200 });
+      } catch (e) {
+        console.error("COMPARE ERROR:", e);
+        return Response.json({ analysis: null, error: (e as Error).message }, { status: 200 });
+      }
+    }
+
+    // ---------------------------------------------------------
     // CROSS-SOURCE INVESTIGATIVE ANALYSIS
     // ---------------------------------------------------------
     if (input.mode === "cross-source") {
@@ -151,7 +209,7 @@ Return ONLY a valid JSON object matching this exact schema:
     }
 
     // ---------------------------------------------------------
-    // NEW: SINGLE-SOURCE FORENSIC LINGUIST ANALYSIS
+    // SINGLE-SOURCE FORENSIC LINGUIST ANALYSIS
     // ---------------------------------------------------------
     if (input.mode === "analyze-source") {
       if (!input.text?.trim()) {

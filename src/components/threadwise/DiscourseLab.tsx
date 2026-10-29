@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,11 +7,13 @@ import { useThread } from "@/lib/threadwise/store";
 import { streamTask } from "@/lib/threadwise/ai-client";
 import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type CodeId, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
 import { toast } from "sonner";
-import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PolarRadiusAxis } from "recharts";
+import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PolarRadiusAxis, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell } from "recharts";
 
 type View = "read" | "compare" | "count" | "investigate";
 const uid = () => crypto.randomUUID();
 const codeLabel = (code: CodeId) => CODES.find((item) => item.id === code)?.label ?? code;
+
+const COLORS = ["#C24A35", "#1A1A1A", "#E3D398", "#6B4C7A", "#2D6A65"];
 
 export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Corpus; update: (corpus: Corpus) => void; onClose: () => void }) {
   const corpus = stored ?? emptyCorpus();
@@ -27,10 +29,13 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   
   const savedInv = (corpus as any).investigation || {};
   const savedAnalyses = (corpus as any).analyses || {};
+  const savedComparisons = (corpus as any).comparisons || {};
   
   const [urls, setUrls] = useState<string[]>(savedInv.urls?.length ? savedInv.urls : [""]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isAnalyzingSource, setIsAnalyzingSource] = useState(false);
+  const [isComparing, setIsComparing] = useState(false);
+  
   const [analysisError, setAnalysisError] = useState("");
   const [analysis, setAnalysis] = useState<any>(savedInv.analysis || null);
   const [plantedIds, setPlantedIds] = useState<Record<string, boolean>>({});
@@ -38,6 +43,12 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const docs = [...corpus.docs].sort((a, b) => a.date.localeCompare(b.date));
   const active = docs.find((doc) => doc.id === activeId) ?? docs[0];
   const activeAnalysis = savedAnalyses[active?.id];
+
+  const docA = docs.find((d) => d.id === compareIds[0]);
+  const docB = docs.find((d) => d.id === compareIds[1]);
+  const comparisonKey = `${compareIds[0]}_${compareIds[1]}`;
+  const comparisonAnalysis = savedComparisons[comparisonKey];
+
   const save = (patch: Partial<Corpus>) => update({ ...corpus, ...patch });
   
   const plant = (doc: DiscourseDoc, quote: string, label = "Discourse evidence") => {
@@ -87,30 +98,36 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     } catch (e: any) { setAnalysisError(e.message || "The analysis failed."); } finally { setIsAnalyzingSource(false); }
   };
 
+  const runComparison = async () => {
+    if (!docA || !docB) return;
+    setIsComparing(true); setAnalysisError("");
+    try {
+      const output = await streamTask({ mode: "compare", textA: docA.text, textB: docB.text, titleA: docA.title, titleB: docB.title }, () => {});
+      const res = JSON.parse(output);
+      if (res.error) setAnalysisError(res.error);
+      else {
+        update({ ...corpus, comparisons: { ...savedComparisons, [comparisonKey]: res.analysis } } as any);
+      }
+    } catch (e: any) { setAnalysisError(e.message || "The comparison failed."); } finally { setIsComparing(false); }
+  };
+
   // --- HIGHLIGHTING LOGIC ---
   const escapeHtml = (unsafe: string) => unsafe.replace(/[&<"'>]/g, function(m) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m] as string; });
   
   const getHighlightedText = (text: string, notes: any[]) => {
     if (!notes || !notes.length) return escapeHtml(text).replace(/\n/g, '<br/>');
     let result = escapeHtml(text);
-    
-    // Map notes with their original index, then sort by quote length descending to prevent nested matching issues
-    const sortedNotes = notes.map((note, i) => ({ ...note, originalIndex: i }))
-                            .sort((a, b) => b.quote.length - a.quote.length);
+    const sortedNotes = notes.map((note, i) => ({ ...note, originalIndex: i })).sort((a, b) => b.quote.length - a.quote.length);
     
     sortedNotes.forEach(note => {
       const escapedQuote = escapeHtml(note.quote).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const regex = new RegExp(`(${escapedQuote})`, 'gi');
-      
-      let bgClass = "";
-      let borderClass = "";
+      let bgClass = ""; let borderClass = "";
       if (note.type === "contradiction") { bgClass = "bg-[#FBD0D4]/60"; borderClass = "border-b-2 border-[#C24A35]"; }
       else if (note.type === "fallacy") { bgClass = "bg-[#FDF0B6]/70"; borderClass = "border-b-2 border-[#E3D398]"; }
       else { bgClass = "bg-[#E8DAFB]/60"; borderClass = "border-b-2 border-[#6B4C7A]"; }
-
       result = result.replace(regex, `<span id="hl-${note.originalIndex}" data-note-index="${note.originalIndex}" class="${bgClass} ${borderClass} px-1 rounded-sm cursor-pointer transition-all hover:bg-opacity-100 hover:shadow-sm" title="${note.title}">$1</span>`);
     });
-    
     return result.replace(/\n/g, '<br/>');
   };
 
@@ -128,14 +145,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     document.getElementById(`hl-${index}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
-  const radarData = analysis?.quantData?.radar ? [
-    { subject: "Bias", A: analysis.quantData.radar.bias },
-    { subject: "Omission", A: analysis.quantData.radar.omission },
-    { subject: "Urgency", A: analysis.quantData.radar.urgency },
-    { subject: "Motive", A: analysis.quantData.radar.motive },
-    { subject: "Evidence", A: analysis.quantData.radar.evidence },
-  ] : [];
-
   const sourceRadarData = activeAnalysis?.quantData?.radar ? [
     { subject: "Bias", A: activeAnalysis.quantData.radar.bias },
     { subject: "Omission", A: activeAnalysis.quantData.radar.omission },
@@ -144,9 +153,27 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     { subject: "Evidence", A: activeAnalysis.quantData.radar.evidence },
   ] : [];
 
-  const compared = compareIds.map((id) => docs.find((doc) => doc.id === id)).filter(Boolean) as DiscourseDoc[];
+  const compareRadarData = comparisonAnalysis?.radar ? [
+    { subject: "Bias", A: comparisonAnalysis.radar.a.bias, B: comparisonAnalysis.radar.b.bias },
+    { subject: "Omission", A: comparisonAnalysis.radar.a.omission, B: comparisonAnalysis.radar.b.omission },
+    { subject: "Urgency", A: comparisonAnalysis.radar.a.urgency, B: comparisonAnalysis.radar.b.urgency },
+    { subject: "Motive", A: comparisonAnalysis.radar.a.motive, B: comparisonAnalysis.radar.b.motive },
+    { subject: "Evidence", A: comparisonAnalysis.radar.a.evidence, B: comparisonAnalysis.radar.b.evidence },
+  ] : [];
+
   const terms = corpus.terms;
   const termCounts = useMemo(() => docs.map((doc) => ({ doc, values: terms.map((phrase) => ({ phrase, n: countPhrase(doc.text, phrase), rate: words(doc.text).length ? Math.round(countPhrase(doc.text, phrase) / words(doc.text).length * 10000) / 10 : 0 })) })), [docs, terms]);
+
+  const chartData = useMemo(() => {
+    return docs.map((doc) => {
+      const data: any = { name: doc.title.slice(0, 15) + (doc.title.length > 15 ? "..." : "") };
+      terms.forEach((t) => {
+        const count = countPhrase(doc.text, t);
+        data[t] = words(doc.text).length ? Math.round((count / words(doc.text).length) * 10000) / 10 : 0;
+      });
+      return data;
+    });
+  }, [docs, terms]);
 
   const ContradictionGauge = ({ score }: { score: number }) => {
     const radius = 50, cx = 60, cy = 60, startAngle = -210, endAngle = 30;
@@ -180,7 +207,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
   return (
     <div className="tw-lab fixed inset-0 z-50 flex flex-col bg-background font-sans" role="dialog" aria-modal="true">
-      {/* BACKGROUND */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
 
       <header className="relative z-10 flex items-center justify-between border-b px-6 py-4 bg-card">
@@ -201,7 +227,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       </header>
 
       <div className="relative z-10 flex flex-1 overflow-hidden">
-        {/* LEFT SIDEBAR */}
         <aside className="flex w-72 shrink-0 flex-col border-r bg-card/50">
           <div className="border-b p-5">
             <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground block mb-3">Indexed Sources · {docs.length}</span>
@@ -227,13 +252,10 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           </ol>
         </aside>
 
-        {/* MAIN CONTENT AREA */}
         <main className="flex-1 overflow-y-auto bg-background/50">
           
-          {/* FORENSIC WORKBENCH (READ VIEW) */}
           {view === "read" && active && (
             <div className="mx-auto max-w-7xl p-8 pb-24 h-full flex flex-col">
-              
               <div className="mb-6 flex items-center justify-between shrink-0">
                 <div>
                   <h3 className="mb-2 font-display text-3xl leading-tight">{active.title}</h3>
@@ -264,7 +286,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
               {analysisError && <p className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive shrink-0">{analysisError}</p>}
 
               <div className="flex flex-1 gap-8 min-h-0">
-                {/* LEFT: Text with Highlights */}
                 <article className="flex-1 rounded-xl border bg-card p-10 shadow-sm overflow-y-auto relative">
                   <div 
                     className="font-serif text-lg leading-loose text-foreground/90 whitespace-pre-wrap selection:bg-[#CBE6F9]"
@@ -274,7 +295,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   />
                 </article>
 
-                {/* RIGHT: Analyst Margin */}
                 <aside className="w-[420px] shrink-0 flex flex-col gap-4 overflow-y-auto pr-2 pb-10">
                   {!activeAnalysis && !isAnalyzingSource && (
                     <div className="flex flex-col items-center justify-center h-full text-center p-8 border rounded-xl border-dashed bg-card/30">
@@ -293,10 +313,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
                   {activeAnalysis && (
                     <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-500">
-                      
-                      {/* Top Metrics Row */}
                       <div className="grid grid-cols-2 gap-4">
-                        {/* Radar */}
                         <div className="rounded-xl border bg-card p-4 shadow-sm">
                           <h4 className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground mb-2">Narrative Profile</h4>
                           <div className="h-32 w-full">
@@ -310,20 +327,17 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                             </ResponsiveContainer>
                           </div>
                         </div>
-                        {/* Gauge */}
                         <div className="rounded-xl border bg-card p-4 shadow-sm flex flex-col items-center justify-center">
                           <h4 className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground mb-1 w-full text-left">Contradiction</h4>
                           <ContradictionGauge score={activeAnalysis.quantData?.contradictionIndex || 50} />
                         </div>
                       </div>
 
-                      {/* Executive Summary */}
                       <div className="rounded-xl border bg-[#FDFBF7] p-5 shadow-sm border-l-4 border-l-[#C24A35]">
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-2">Executive Summary</h4>
                         <p className="font-display text-base leading-relaxed text-foreground">{activeAnalysis.executive_summary}</p>
                       </div>
 
-                      {/* Margin Notes */}
                       <div>
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground border-b pb-2 mb-3">Forensic Margin Notes</h4>
                         <div className="space-y-3">
@@ -351,7 +365,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                         </div>
                       </div>
 
-                      {/* Unstated Assumptions */}
                       <div>
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground border-b pb-2 mb-3">Unstated Assumptions</h4>
                         <div className="space-y-2">
@@ -366,7 +379,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                         </div>
                       </div>
 
-                      {/* Questions to Ask */}
                       <div>
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground border-b pb-2 mb-3">The Dog That Didn't Bark</h4>
                         <div className="space-y-2">
@@ -383,7 +395,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                           ))}
                         </div>
                       </div>
-
                     </div>
                   )}
                 </aside>
@@ -391,7 +402,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
             </div>
           )}
 
-          {/* INVESTIGATE VIEW (CROSS-SOURCE) */}
           {view === "investigate" && (
             <div className="mx-auto max-w-6xl p-8 pb-24">
               <div className="mb-8 flex items-end justify-between">
@@ -449,7 +459,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       </div>
                       <div className="flex-1 w-full relative z-10 min-h-0">
                         <ResponsiveContainer width="100%" height="100%">
-                          <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData} margin={{ top: 10, right: 20, bottom: 10, left: 20 }}>
+                          <RadarChart cx="50%" cy="50%" outerRadius="75%" data={sourceRadarData} margin={{ top: 10, right: 20, bottom: 10, left: 20 }}>
                             <PolarGrid stroke="var(--border)" strokeDasharray="3 3" />
                             <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: 'var(--font-mono)' }} />
                             <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
@@ -547,70 +557,211 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           )}
 
           {view === "compare" && (
-            <div className="mx-auto max-w-7xl p-8 pb-24">
-              <div className="mb-8">
-                <h3 className="mb-2 font-display text-4xl">Compare Texts</h3>
-                <p className="text-sm text-muted-foreground">Select two sources to compare their language and framing side-by-side.</p>
+            <div className="mx-auto max-w-6xl p-8 pb-24">
+              <div className="mb-8 flex items-end justify-between">
+                <div>
+                  <h3 className="mb-2 font-display text-4xl tracking-tight text-foreground">Comparative Intelligence</h3>
+                  <p className="max-w-xl text-sm text-muted-foreground">Cross-examine two narratives to reveal diverging framings, omissions, and direct contradictions.</p>
+                </div>
+                {comparisonAnalysis && (
+                  <Button variant="outline" size="sm" className="h-9 border-dashed text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => { 
+                    const newComparisons = { ...savedComparisons };
+                    delete newComparisons[comparisonKey];
+                    update({ ...corpus, comparisons: newComparisons } as any); 
+                  }}>
+                    Clear Comparison
+                  </Button>
+                )}
               </div>
-              <div className="mb-8 grid grid-cols-2 gap-6">
-                {[0, 1].map((index) => (
-                  <select key={index} className="rounded-lg border bg-card p-3 text-sm font-medium shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
-                    <option value="" disabled>Select a document</option>
-                    {docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}
-                  </select>
-                ))}
-              </div>
-              <div className="grid grid-cols-2 gap-6">
-                {compared.map((doc) => (
-                  <article className="rounded-xl border bg-card p-10 shadow-sm" key={doc.id}>
-                    <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{doc.speaker} · {doc.date}</p>
-                    <h3 className="mb-6 font-display text-2xl">{doc.title}</h3>
-                    <div className="font-serif text-sm leading-relaxed text-foreground/70" onMouseUp={() => { const q = window.getSelection()?.toString().trim() ?? ""; if (q.length > 3) setSelection({ quote: q, doc }); }}>
-                      {doc.text}
+
+              <div className="mb-8 flex items-end gap-4 rounded-xl border bg-card p-4 shadow-sm">
+                <div className="flex-1 grid grid-cols-2 gap-4">
+                  {[0, 1].map((index) => (
+                    <div key={index}>
+                      <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-1 block">Source {index === 0 ? "A" : "B"}</label>
+                      <select className="w-full rounded-md border bg-background p-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
+                        <option value="" disabled>Select a document</option>
+                        {docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}
+                      </select>
                     </div>
-                  </article>
-                ))}
-                {compared.length < 2 && <div className="col-span-2 py-20 text-center font-display text-2xl text-muted-foreground">Select two documents to compare them.</div>}
+                  ))}
+                </div>
+                <Button onClick={runComparison} disabled={isComparing || !docA || !docB || docA.id === docB.id} className="h-[38px] px-6">
+                  {isComparing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Comparing...</> : <><GitMerge className="mr-2 h-4 w-4" /> Run Comparison</>}
+                </Button>
               </div>
+
+              {analysisError && <p className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{analysisError}</p>}
+
+              {isComparing && (
+                <div className="py-24 text-center">
+                  <div className="relative mb-8 inline-block">
+                    <div className="h-16 w-16 animate-spin rounded-full border-2 border-muted border-t-foreground"></div>
+                    <Activity className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-foreground animate-pulse" />
+                  </div>
+                  <h4 className="mb-2 font-display text-2xl text-foreground">Cross-examining Narratives...</h4>
+                  <p className="animate-pulse font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Mapping Entities → Detecting Omissions → Measuring Divergence</p>
+                </div>
+              )}
+
+              {comparisonAnalysis && !isComparing && docA && docB && (
+                <div className="animate-in fade-in slide-in-from-bottom-8 space-y-6 duration-700">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                    <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col items-center justify-center h-[320px]">
+                      <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-4 text-center">Divergence Score</h4>
+                      <ContradictionGauge score={comparisonAnalysis.divergenceScore} />
+                      <p className="text-[10px] text-center font-mono uppercase tracking-widest text-muted-foreground mt-6 border border-border px-3 py-1 rounded-full bg-muted/30">
+                        {comparisonAnalysis.divergenceScore > 70 ? "Fundamentally Opposed" : comparisonAnalysis.divergenceScore > 40 ? "Moderate Friction" : "Broad Alignment"}
+                      </p>
+                    </div>
+
+                    <div className="md:col-span-2 rounded-xl border bg-card p-6 shadow-sm h-[320px]">
+                      <div className="mb-2 flex items-center justify-between">
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Comparative Narrative Profile</h4>
+                      </div>
+                      <div className="h-[240px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RadarChart cx="50%" cy="50%" outerRadius="75%" data={compareRadarData} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+                            <PolarGrid stroke="var(--border)" strokeDasharray="3 3" />
+                            <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: 'var(--font-mono)' }} />
+                            <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                            <Radar name={docA.title} dataKey="A" stroke="#C24A35" strokeWidth={2} fill="#C24A35" fillOpacity={0.2} />
+                            <Radar name={docB.title} dataKey="B" stroke="var(--foreground)" strokeWidth={2} fill="var(--foreground)" fillOpacity={0.1} />
+                            <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'var(--font-mono)', paddingTop: '10px' }} />
+                          </RadarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
+
+                  <section className="rounded-xl border bg-card p-6 shadow-sm">
+                    <h4 className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><Target className="h-4 w-4" /> Entity Matrix</h4>
+                    <div className="grid grid-cols-3 gap-6">
+                      <div>
+                        <h5 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3 text-center">Shared Focus</h5>
+                        <div className="flex flex-col gap-2">
+                          {comparisonAnalysis.shared_entities?.map((e: string, i: number) => (
+                            <span key={i} className="w-full px-3 py-1.5 bg-muted text-foreground border rounded-md text-xs font-medium text-center truncate">{e}</span>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h5 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-3 text-center">Only in {docA.title.slice(0, 15)}...</h5>
+                        <div className="flex flex-col gap-2">
+                          {comparisonAnalysis.unique_to_a?.map((e: string, i: number) => (
+                            <span key={i} className="w-full px-3 py-1.5 bg-[#FBD0D4]/40 text-foreground border border-[#C24A35]/20 rounded-md text-xs font-medium text-center truncate">{e}</span>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h5 className="font-mono text-[10px] uppercase tracking-widest text-foreground mb-3 text-center">Only in {docB.title.slice(0, 15)}...</h5>
+                        <div className="flex flex-col gap-2">
+                          {comparisonAnalysis.unique_to_b?.map((e: string, i: number) => (
+                            <span key={i} className="w-full px-3 py-1.5 bg-[#CBE6F9]/40 text-foreground border border-foreground/20 rounded-md text-xs font-medium text-center truncate">{e}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="rounded-xl border bg-card p-6 shadow-sm">
+                    <h4 className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><AlertTriangle className="h-4 w-4" /> Flashpoints</h4>
+                    <div className="space-y-4">
+                      {comparisonAnalysis.flashpoints?.map((fp: any, i: number) => (
+                        <div key={i} className="rounded-lg border bg-background overflow-hidden">
+                          <div className="bg-muted/50 px-4 py-2 border-b font-display text-sm font-bold">{fp.topic}</div>
+                          <div className="grid grid-cols-2 divide-x">
+                            <div className="p-4">
+                              <span className="font-mono text-[9px] uppercase tracking-wider text-[#C24A35] block mb-2">{docA.title}</span>
+                              <p className="text-xs leading-relaxed text-foreground/80">{fp.text_a_view}</p>
+                            </div>
+                            <div className="p-4">
+                              <span className="font-mono text-[9px] uppercase tracking-wider text-foreground block mb-2">{docB.title}</span>
+                              <p className="text-xs leading-relaxed text-foreground/80">{fp.text_b_view}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              )}
+
+              {!comparisonAnalysis && !isComparing && (
+                <div className="grid grid-cols-2 gap-6 mt-6">
+                  {[docA, docB].map((doc, i) => doc && (
+                    <article className="rounded-xl border bg-card p-8 shadow-sm" key={doc.id}>
+                      <h3 className="mb-4 font-display text-2xl">{doc.title}</h3>
+                      <p className="text-sm leading-relaxed text-muted-foreground line-clamp-[20]">{doc.text}</p>
+                    </article>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
+          {/* METRICS VIEW (COUNT) - UPGRADED WITH BAR CHART */}
           {view === "count" && (
             <div className="mx-auto max-w-5xl p-8 pb-24">
-              <div className="mb-10">
-                <h3 className="mb-2 font-display text-4xl">Language Trajectory</h3>
-                <p className="text-sm text-muted-foreground">Track phrases across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p>
+              <div className="mb-10 flex items-end justify-between">
+                <div>
+                  <h3 className="mb-2 font-display text-4xl">Language Trajectory</h3>
+                  <p className="text-sm text-muted-foreground">Track phrases across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p>
+                </div>
               </div>
               
-              <form className="mb-8 flex gap-3" onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}>
+              <form className="mb-6 flex gap-3" onSubmit={(e) => { e.preventDefault(); const value = term.trim().toLowerCase(); if (value && !terms.includes(value) && terms.length < 6) save({ terms: [...terms, value] }); setTerm(""); }}>
                 <Input value={term} placeholder="Track a word or phrase (e.g. 'security', 'border')" onChange={(e) => setTerm(e.target.value)} className="h-12 text-base rounded-lg" />
                 <Button className="h-12 px-8 text-base">Track</Button>
               </form>
               
-              <div className="mb-12 flex flex-wrap gap-2">
-                {terms.map((item) => (
-                  <button key={item} className="flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted" onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>
-                    {item} <X className="h-4 w-4" />
+              <div className="mb-10 flex flex-wrap gap-2">
+                {terms.map((item, i) => (
+                  <button key={item} className="flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted shadow-sm" onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                    {item} <X className="h-4 w-4 text-muted-foreground" />
                   </button>
                 ))}
               </div>
 
-              <div className="mb-16 space-y-6 rounded-xl border bg-card p-8 shadow-sm">
+              {terms.length > 0 && docs.length > 0 && (
+                <div className="mb-12 rounded-xl border bg-card p-8 shadow-sm">
+                  <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-6">Phrase Frequency (per 1k words)</h4>
+                  <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                        <XAxis dataKey="name" tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: 'var(--font-mono)' }} tickLine={false} axisLine={false} />
+                        <YAxis tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: 'var(--font-mono)' }} tickLine={false} axisLine={false} />
+                        <RechartsTooltip 
+                          cursor={{ fill: 'var(--muted)', opacity: 0.4 }}
+                          contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px', fontSize: '12px', fontFamily: 'var(--font-sans)' }}
+                        />
+                        {terms.map((t, i) => (
+                          <Bar key={t} dataKey={t} fill={COLORS[i % COLORS.length]} radius={[4, 4, 0, 0]} />
+                        ))}
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-16 space-y-4 rounded-xl border bg-card p-6 shadow-sm">
                 {termCounts.map(({ doc, values }) => (
-                  <div key={doc.id} className="flex items-center justify-between border-b pb-6 last:border-0 last:pb-0">
-                    <b className="font-display text-lg max-w-[300px] truncate">{doc.date || "—"} · {doc.title}</b>
-                    <div className="flex gap-8">
-                      {values.map((value) => (
+                  <div key={doc.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
+                    <b className="font-display text-base max-w-[300px] truncate">{doc.date || "—"} · {doc.title}</b>
+                    <div className="flex gap-6">
+                      {values.map((value, i) => (
                         <div key={value.phrase} className="text-right">
-                          <span className="block font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{value.phrase}</span>
-                          <strong className="text-2xl text-foreground">{value.rate}</strong>
-                          <span className="text-xs text-muted-foreground ml-1">/1k</span>
+                          <span className="block font-mono text-[9px] uppercase tracking-widest text-muted-foreground mb-1">{value.phrase}</span>
+                          <strong className="text-xl" style={{ color: COLORS[i % COLORS.length] }}>{value.rate}</strong>
+                          <span className="text-[10px] text-muted-foreground ml-1">/1k</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 ))}
-                {terms.length === 0 && <p className="py-10 text-center font-display text-xl text-muted-foreground">Add a phrase above to see its frequency across documents.</p>}
+                {terms.length === 0 && <p className="py-8 text-center font-display text-lg text-muted-foreground">Add a phrase above to see its frequency across documents.</p>}
               </div>
 
               <section>
