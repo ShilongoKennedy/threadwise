@@ -30,6 +30,38 @@ const LOADING_STEPS = [
   "DRAFTING EXECUTIVE SUMMARY..."
 ];
 
+const DEFAULT_RADAR = { bias: 50, omission: 50, urgency: 50, motive: 50, evidence: 50 };
+
+// SANITIZER: Ensures the AI never breaks the UI
+const sanitizeAnalysis = (res: any) => {
+  if (!res) return null;
+  const quantData = res.quantData || {};
+  const radar = quantData.radar || {};
+  
+  return {
+    ...res,
+    executive_summary: res.executive_summary || "No summary generated.",
+    conclusion: res.conclusion || "No conclusion generated.",
+    entities: Array.isArray(res.entities) ? res.entities : [],
+    evidence: Array.isArray(res.evidence) ? res.evidence : [],
+    hypotheses: Array.isArray(res.hypotheses) ? res.hypotheses : [],
+    questions: Array.isArray(res.questions) ? res.questions : [],
+    questions_to_ask: Array.isArray(res.questions_to_ask) ? res.questions_to_ask : [],
+    unstated_assumptions: Array.isArray(res.unstated_assumptions) ? res.unstated_assumptions : [],
+    margin_notes: Array.isArray(res.margin_notes) ? res.margin_notes : [],
+    quantData: {
+      contradictionIndex: Number(quantData.contradictionIndex) || 50,
+      radar: {
+        bias: Number(radar.bias) || 50,
+        omission: Number(radar.omission) || 50,
+        urgency: Number(radar.urgency) || 50,
+        motive: Number(radar.motive) || 50,
+        evidence: Number(radar.evidence) || 50,
+      }
+    }
+  };
+};
+
 export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Corpus; update: (corpus: Corpus) => void; onClose: () => void }) {
   const corpus = stored ?? emptyCorpus();
   const s = useThread();
@@ -45,7 +77,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const [isReadingFile, setIsReadingFile] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   
-  // Loading animation state
   const [loadingStep, setLoadingStep] = useState(0);
 
   useEffect(() => {
@@ -216,9 +247,9 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       const res = JSON.parse(output);
       if (res.error) setAnalysisError(res.error);
       else {
-        const enhancedAnalysis = { ...res.analysis, quantData: res.analysis.quantData || { contradictionIndex: 50, radar: { bias: 70, omission: 80, urgency: 40, motive: 90, evidence: 30 } } };
-        setAnalysis(enhancedAnalysis);
-        update({ ...corpus, investigation: { urls: validUrls, analysis: enhancedAnalysis } } as any);
+        const clean = sanitizeAnalysis(res.analysis);
+        setAnalysis(clean);
+        update({ ...corpus, investigation: { urls: validUrls, analysis: clean } } as any);
       }
     } catch (e: any) { setAnalysisError(e.message || "The investigation failed."); } finally { setIsAnalyzing(false); }
   };
@@ -231,7 +262,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       const res = JSON.parse(output);
       if (res.error) setAnalysisError(res.error);
       else {
-        update({ ...corpus, analyses: { ...savedAnalyses, [active.id]: res.analysis } } as any);
+        const clean = sanitizeAnalysis(res.analysis);
+        update({ ...corpus, analyses: { ...savedAnalyses, [active.id]: clean } } as any);
       }
     } catch (e: any) { setAnalysisError(e.message || "The analysis failed."); } finally { setIsAnalyzingSource(false); }
   };
