@@ -1,5 +1,5 @@
-import { useMemo, useState, useRef } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp } from "lucide-react";
+import { useMemo, useState, useRef, useEffect } from "react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +22,14 @@ const SAMPLE_TEXT = `"I was in a country somewhere in the Middle East, and also 
 
 "But if we are not the preeminent military and economy, you will see our reserve status come down."`;
 
+const LOADING_STEPS = [
+  "INGESTING SOURCE...",
+  "EXTRACTING ENTITIES...",
+  "MAPPING RHETORICAL FALLACIES...",
+  "SCORING NARRATIVE BIAS...",
+  "DRAFTING EXECUTIVE SUMMARY..."
+];
+
 export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Corpus; update: (corpus: Corpus) => void; onClose: () => void }) {
   const corpus = stored ?? emptyCorpus();
   const s = useThread();
@@ -36,6 +44,19 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const [isDragging, setIsDragging] = useState(false);
   const [isReadingFile, setIsReadingFile] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  
+  // Loading animation state
+  const [loadingStep, setLoadingStep] = useState(0);
+
+  useEffect(() => {
+    if (isAnalyzingSource) {
+      setLoadingStep(0);
+      const interval = setInterval(() => {
+        setLoadingStep((prev) => (prev < LOADING_STEPS.length - 1 ? prev + 1 : prev));
+      }, 1200);
+      return () => clearInterval(interval);
+    }
+  }, [isAnalyzingSource]);
   
   const savedInv = (corpus as any).investigation || {};
   const savedAnalyses = (corpus as any).analyses || {};
@@ -87,18 +108,14 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
         title: file.name.replace(/\.[^/.]+$/, ""), 
         speaker: "", 
         date: new Date().toISOString().split('T')[0], 
-        text: text.slice(0, 50000) // Cap at 50k chars to prevent overloading AI
+        text: text.slice(0, 50000)
       };
       
       save({ docs: [...corpus.docs, newDoc] });
       setActiveId(newDoc.id);
       toast.success("Document indexed successfully");
       
-      // Auto-run analysis
-      setTimeout(() => {
-        const btn = document.getElementById("analyze-source-btn");
-        if (btn) btn.click();
-      }, 100);
+      setTimeout(() => { document.getElementById("analyze-source-btn")?.click(); }, 100);
       
     } catch (err: any) {
       toast.error(err.message || "Failed to read document");
@@ -451,9 +468,19 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   )}
 
                   {isAnalyzingSource && (
-                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center p-8">
-                      <Loader2 className="h-8 w-8 text-[#C24A35] animate-spin mb-4" />
-                      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground animate-pulse">Extracting Motives → Mapping Fallacies → Measuring Bias</p>
+                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center p-8 bg-black rounded-xl border border-black/20 shadow-inner">
+                      <div className="w-full max-w-xs text-left font-mono text-[10px] text-[#75F09A]">
+                        <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[#75F09A]/20">
+                          <Terminal className="w-4 h-4" /> <span className="animate-pulse">LIVE OSINT FEED</span>
+                        </div>
+                        {LOADING_STEPS.map((step, idx) => (
+                          <div key={idx} className={`mb-2 transition-opacity duration-300 ${idx > loadingStep ? 'opacity-0' : idx === loadingStep ? 'opacity-100' : 'opacity-50'}`}>
+                            <span className="mr-2 text-[#75F09A]/50">&gt;</span>
+                            {step}
+                            {idx === loadingStep && <span className="inline-block w-2 h-3 bg-[#75F09A] animate-pulse ml-1 align-middle" />}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
