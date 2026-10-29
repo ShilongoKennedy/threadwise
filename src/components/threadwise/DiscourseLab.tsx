@@ -121,7 +121,15 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const plant = (doc: DiscourseDoc, quote: string, label = "Discourse evidence") => {
     const id = s.addNode("note", { x: 80 + s.nodes.length * 14, y: 90 + s.nodes.length * 12 });
     s.updateNode(id, (data) => ({ ...data, title: `“${clip(quote, 82)}”`, body: `“${quote}”\n\n— ${doc.title}${doc.speaker ? ` · ${doc.speaker}` : ""}${doc.date ? ` · ${doc.date}` : ""}\n\n${label}`, epistemic: "evidence", meta: { ...data.meta, source: doc.title } }));
-    toast.success("Placed on canvas");
+    
+    // NEW: Actionable Toast
+    toast.success("Planted on canvas", {
+      description: "The evidence was added to your board.",
+      action: {
+        label: "View Board",
+        onClick: () => window.dispatchEvent(new CustomEvent("threadwise:view-canvas"))
+      }
+    });
   };
 
   const plantAnalysis = (id: string, kind: "evidence" | "hypothesis" | "question", title: string, body: string, source?: string) => {
@@ -133,7 +141,15 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       meta: { ...data.meta, source: source || "Cross-Source Investigation" }
     }));
     setPlantedIds(prev => ({ ...prev, [id]: true }));
-    toast.success("Planted on canvas");
+    
+    // NEW: Actionable Toast
+    toast.success("Planted on canvas", {
+      description: "The analysis was added to your board.",
+      action: {
+        label: "View Board",
+        onClick: () => window.dispatchEvent(new CustomEvent("threadwise:view-canvas"))
+      }
+    });
   };
 
   const runInvestigation = async () => {

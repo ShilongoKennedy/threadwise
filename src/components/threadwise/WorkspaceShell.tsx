@@ -21,27 +21,23 @@ export function WorkspaceShell() {
     if (canvas) ws.updateSuite(canvas.id, { ...(canvas.suite ?? emptySuite()), ...patch }); 
   };
 
-  // RESPONSIVE LOGIC: Detect mobile and auto-switch layout
+  // RESPONSIVE LOGIC
   useEffect(() => {
     const checkMobile = () => {
-      const mobile = window.innerWidth < 1024; // Tablet and below
+      const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      if (mobile) {
-        // Force slide mode on small screens so the reading room is primary
-        setLayout("slide");
-      }
+      if (mobile) setLayout("slide");
     };
-    
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Listen for the "Open Lab" request from the Canvas Studio
+  // LISTEN FOR "OPEN LAB"
   useEffect(() => {
     const handleOpenLab = () => {
       if (isMobile) {
-        setSlideOpen(false); // Close the canvas slide to show the lab
+        setSlideOpen(false); 
         return;
       }
       if (layout === "split" || layout === "tabs") {
@@ -54,6 +50,24 @@ export function WorkspaceShell() {
     };
     window.addEventListener("threadwise:open-lab", handleOpenLab);
     return () => window.removeEventListener("threadwise:open-lab", handleOpenLab);
+  }, [layout, isMobile]);
+
+  // LISTEN FOR "VIEW CANVAS" (The "Planting Magic")
+  useEffect(() => {
+    const handleViewCanvas = () => {
+      if (isMobile) {
+        setSlideOpen(true);
+        return;
+      }
+      if (layout === "tabs") {
+        setActiveTab("canvas");
+      }
+      if (layout === "slide") {
+        setSlideOpen(true);
+      }
+    };
+    window.addEventListener("threadwise:view-canvas", handleViewCanvas);
+    return () => window.removeEventListener("threadwise:view-canvas", handleViewCanvas);
   }, [layout, isMobile]);
 
   const labContent = (
@@ -71,14 +85,12 @@ export function WorkspaceShell() {
 
   return (
     <div className="h-screen w-screen flex flex-col bg-background overflow-hidden">
-      {/* GLOBAL HEADER */}
       <div className="h-14 border-b flex items-center px-4 justify-between shrink-0 bg-card z-[60]">
         <div className="flex items-center gap-2 md:gap-3">
           <span className="font-display text-lg md:text-xl italic font-medium tracking-tight">Threadwise</span>
           <span className="hidden sm:inline-block font-mono text-[10px] uppercase tracking-widest text-muted-foreground bg-muted px-2 py-1 rounded-md">Workspace</span>
         </div>
         
-        {/* LAYOUT TOGGLES (Hidden on Mobile) */}
         {!isMobile && (
           <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl border">
             <Button 
@@ -108,7 +120,6 @@ export function WorkspaceShell() {
           </div>
         )}
 
-        {/* CONTEXTUAL ACTIONS */}
         <div className="flex justify-end shrink-0">
           {(layout === "slide" || isMobile) && (
              <Button size="sm" variant={slideOpen ? "default" : "outline"} onClick={() => setSlideOpen(!slideOpen)}>
@@ -123,10 +134,7 @@ export function WorkspaceShell() {
         </div>
       </div>
 
-      {/* LAYOUT RENDERING ENGINE */}
       <div className="flex-1 relative overflow-hidden flex">
-        
-        {/* Option A: SPLIT VIEW (Desktop only) */}
         {layout === "split" && !isMobile && (
           <>
             <div className="w-1/2 h-full border-r overflow-hidden flex flex-col relative z-10">
@@ -138,20 +146,17 @@ export function WorkspaceShell() {
           </>
         )}
 
-        {/* Option B: TABS VIEW (Desktop only) */}
         {layout === "tabs" && !isMobile && (
           <div className="w-full h-full relative">
             {activeTab === "lab" ? labContent : <Canvas />}
           </div>
         )}
 
-        {/* Option C: SLIDE VIEW (Desktop & Mobile) */}
         {(layout === "slide" || isMobile) && (
           <>
             <div className="w-full h-full relative z-0">
               {labContent}
             </div>
-            {/* The Sliding Canvas Overlay */}
             <div className={`absolute inset-y-0 right-0 w-full md:w-[70%] lg:w-[60%] border-l bg-background shadow-2xl transition-transform duration-300 ease-in-out z-50 flex flex-col ${slideOpen ? "translate-x-0" : "translate-x-full"}`}>
               <div className="h-10 border-b flex items-center justify-between px-4 bg-muted/20 shrink-0">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Canvas View</span>
