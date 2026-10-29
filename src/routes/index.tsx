@@ -126,10 +126,11 @@ function LandingPage() {
           transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
           position: relative;
           cursor: pointer;
+          z-index: 10;
         }
         .evidence-card:hover {
-          transform: translateY(-8px) rotate(1deg);
-          box-shadow: 6px 12px 24px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.5);
+          transform: translateY(-8px) rotate(0deg) !important;
+          box-shadow: 6px 12px 24px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.5);
           z-index: 50 !important;
         }
         
@@ -138,61 +139,71 @@ function LandingPage() {
           top: -10px;
           left: 50%;
           transform: translateX(-50%) rotate(-2deg);
-          width: 60px;
-          height: 20px;
-          background: rgba(255,255,255,0.4);
+          width: 80px;
+          height: 24px;
+          background: rgba(255,255,255,0.6);
           backdrop-filter: blur(2px);
-          border: 1px solid rgba(255,255,255,0.2);
+          border: 1px solid rgba(255,255,255,0.3);
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          z-index: 10;
+          z-index: 20;
+        }
+
+        .push-pin {
+          position: absolute;
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background: #C24A35;
+          box-shadow: inset -2px -2px 4px rgba(0,0,0,0.4), inset 2px 2px 4px rgba(255,255,255,0.4), 0 4px 8px rgba(0,0,0,0.5);
+          z-index: 30;
         }
 
         .thread-line {
           fill: none;
           stroke: #C24A35;
-          stroke-width: 2;
-          stroke-dasharray: 4 4;
-          opacity: 0.6;
-          filter: drop-shadow(0 0 4px #C24A35);
+          stroke-width: 1.5;
+          opacity: 0.7;
+          filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
         }
         .thread-pulse {
           fill: none;
           stroke: #FFFFFF;
           stroke-width: 2;
-          stroke-dasharray: 20 100;
-          animation: flow-thread 3s linear infinite;
+          stroke-dasharray: 20 150;
+          animation: flow-thread 4s linear infinite;
+          filter: drop-shadow(0 0 4px #FFFFFF);
         }
-        @keyframes flow-thread { 0% { stroke-dashoffset: 120; } 100% { stroke-dashoffset: 0; } }
+        @keyframes flow-thread { 0% { stroke-dashoffset: 170; } 100% { stroke-dashoffset: 0; } }
 
         .intel-node {
           position: relative;
-          width: 100px;
-          height: 100px;
+          width: 80px;
+          height: 80px;
           display: flex;
           align-items: center;
           justify-content: center;
         }
-        @media (min-width: 768px) { .intel-node { width: 140px; height: 140px; } }
+        @media (min-width: 768px) { .intel-node { width: 120px; height: 120px; } }
         
         .intel-core {
           position: absolute;
           inset: 0;
           border-radius: 50%;
-          background: radial-gradient(circle at 50% 50%, rgba(194, 74, 53, 0.2) 0%, transparent 70%);
+          background: radial-gradient(circle at 50% 50%, rgba(194, 74, 53, 0.3) 0%, transparent 70%);
           animation: pulse-core 4s ease-in-out infinite alternate;
         }
         @keyframes pulse-core { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
 
         .intel-ring {
           position: absolute;
-          inset: 20px;
+          inset: 15px;
           border-radius: 50%;
           border: 1px solid rgba(194, 74, 53, 0.4);
           animation: spin 15s linear infinite;
         }
         .intel-ring-2 {
           position: absolute;
-          inset: 30px;
+          inset: 25px;
           border-radius: 50%;
           border: 1px dashed rgba(194, 74, 53, 0.6);
           animation: spin-reverse 25s linear infinite;
@@ -204,7 +215,7 @@ function LandingPage() {
           position: relative;
           z-index: 10;
           color: #C24A35;
-          filter: drop-shadow(0 0 10px #C24A35);
+          filter: drop-shadow(0 0 15px #C24A35);
         }
       `}</style>
 
@@ -420,7 +431,7 @@ function LandingPage() {
           <div className="relative h-4 md:h-6 rounded-b-[1rem] md:rounded-b-[2rem] mx-auto w-[105%] md:w-[110%] -ml-[2.5%] md:-ml-[5%] z-[-1]" style={{ backgroundColor: laptopYellowDark, boxShadow: '0 30px 60px -15px rgba(0,0,0,0.3)' }}><div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 md:w-32 h-1 md:h-1.5 bg-black/10 rounded-b-lg" /></div>
         </div>
 
-        {/* THE WAR ROOM (NEW DESIGN) */}
+        {/* THE WAR ROOM (DETECTIVE BOARD) */}
         <section 
           id="features" 
           ref={commandCenterReveal.ref}
@@ -431,19 +442,35 @@ function LandingPage() {
             <p className="text-[#1A1A1A]/50 text-sm md:text-lg">Cross-reference sources, expose contradictions, and map the truth.</p>
           </div>
 
-          <div className="war-room-board w-full h-auto md:h-[700px] p-4 md:p-8">
+          <div className="war-room-board w-full h-auto md:h-[800px] p-4 md:p-8">
             <div className="relative w-full h-full flex flex-col md:block gap-8 md:gap-0">
               
-              {/* Red Thread Connections */}
-              <svg className="hidden md:block absolute inset-0 w-full h-full pointer-events-none z-0">
-                <path d="M 280 180 Q 400 200 600 350" className="thread-line" /><path d="M 280 180 Q 400 200 600 350" className="thread-pulse" />
-                <path d="M 920 180 Q 800 200 600 350" className="thread-line" /><path d="M 920 180 Q 800 200 600 350" className="thread-pulse" style={{ animationDelay: '0.5s' }} />
-                <path d="M 280 520 Q 400 500 600 350" className="thread-line" /><path d="M 280 520 Q 400 500 600 350" className="thread-pulse" style={{ animationDelay: '1s' }} />
-                <path d="M 920 520 Q 800 500 600 350" className="thread-line" /><path d="M 920 520 Q 800 500 600 350" className="thread-pulse" style={{ animationDelay: '1.5s' }} />
+              {/* Red Thread Connections (SVG) */}
+              <svg className="hidden md:block absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 100 100" preserveAspectRatio="none">
+                {/* Center is 50, 50 */}
+                {/* Card 1: Source Text (Top Left) */}
+                <path d="M 50 50 Q 30 35 15 15" className="thread-line" />
+                <path d="M 50 50 Q 30 35 15 15" className="thread-pulse" />
+                {/* Card 2: Entity Network (Mid Left) */}
+                <path d="M 50 50 Q 30 50 15 50" className="thread-line" />
+                <path d="M 50 50 Q 30 50 15 50" className="thread-pulse" style={{ animationDelay: '0.5s' }} />
+                {/* Card 3: Radar (Bottom Left) */}
+                <path d="M 50 50 Q 30 65 20 80" className="thread-line" />
+                <path d="M 50 50 Q 30 65 20 80" className="thread-pulse" style={{ animationDelay: '1s' }} />
+                
+                {/* Card 4: Gauge (Top Right) */}
+                <path d="M 50 50 Q 70 35 85 20" className="thread-line" />
+                <path d="M 50 50 Q 70 35 85 20" className="thread-pulse" style={{ animationDelay: '1.5s' }} />
+                {/* Card 5: Summary (Mid Right) */}
+                <path d="M 50 50 Q 70 50 85 50" className="thread-line" />
+                <path d="M 50 50 Q 70 50 85 50" className="thread-pulse" style={{ animationDelay: '2s' }} />
+                {/* Card 6: Margin Notes (Bottom Right) */}
+                <path d="M 50 50 Q 70 65 80 80" className="thread-line" />
+                <path d="M 50 50 Q 70 65 80 80" className="thread-pulse" style={{ animationDelay: '2.5s' }} />
               </svg>
 
               {/* Center Core Node */}
-              <div className="relative md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 flex flex-col items-center z-20 order-1 md:order-none my-6 md:my-0">
+              <div className="relative md:absolute md:top-[50%] md:left-[50%] md:-translate-x-1/2 md:-translate-y-1/2 flex flex-col items-center z-20 order-1 md:order-none my-6 md:my-0">
                 <div className="intel-node">
                   <div className="intel-core" />
                   <div className="intel-ring" />
@@ -452,25 +479,36 @@ function LandingPage() {
                 </div>
               </div>
 
-              {/* 1. Top Left: Entity Network */}
-              <div className="evidence-card relative md:absolute md:top-[10%] md:left-[5%] w-full md:w-72 h-auto p-4 md:p-5 z-10 order-2 md:order-none">
+              {/* CARD 1: Source Snippet (Top Left) */}
+              <div className="evidence-card relative md:absolute md:top-[5%] md:left-[2%] w-full md:w-72 p-4 md:p-5 transform -rotate-2 z-10 order-2 md:order-none">
                 <div className="tape" />
+                <div className="push-pin top-2 left-2" />
+                <div className="text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest mb-3 flex items-center gap-1.5"><FileText className="w-3 h-3 text-[#2D6A65]" /> Source Ingested</div>
+                <p className="font-serif text-xs leading-relaxed text-[#1A1A1A]/80">
+                  "You know what I said to him? <span className="bg-[#FDF0B6]/70 border-b border-[#E3D398] px-0.5">I said, you have three armies within 400 miles...</span>"
+                </p>
+              </div>
+
+              {/* CARD 2: Entity Network (Mid Left) */}
+              <div className="evidence-card relative md:absolute md:top-[40%] md:left-[5%] w-full md:w-64 p-4 md:p-5 transform rotate-1 z-10 order-3 md:order-none">
+                <div className="tape" />
+                <div className="push-pin top-2 left-2" />
                 <div className="text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest mb-3 flex items-center gap-1.5"><Globe className="w-3 h-3 text-[#2D6A65]" /> Entity Network</div>
                 <div className="flex flex-wrap gap-1.5">
-                  <span className="px-2.5 py-1 bg-[#CBE6F9]/40 border border-[#CBE6F9] rounded text-[10px] font-medium shadow-sm">Gaza</span>
-                  <span className="px-2.5 py-1 bg-[#FBD0D4]/40 border border-[#FBD0D4] rounded text-[10px] font-medium shadow-sm">Iran</span>
-                  <span className="px-2.5 py-1 bg-[#FDF0B6]/60 border border-[#FDF0B6] rounded text-[10px] font-medium shadow-sm">UN Report</span>
-                  <span className="px-2.5 py-1 bg-[#E8DAFB]/50 border border-[#E8DAFB] rounded text-[10px] font-medium shadow-sm">Military</span>
-                  <span className="px-2.5 py-1 bg-white border border-black/10 rounded text-[10px] font-medium shadow-sm">Sanctions</span>
+                  <span className="px-2 py-1 bg-[#CBE6F9]/40 border border-[#CBE6F9] rounded text-[10px] font-medium">Gaza</span>
+                  <span className="px-2 py-1 bg-[#FBD0D4]/40 border border-[#FBD0D4] rounded text-[10px] font-medium">Iran</span>
+                  <span className="px-2 py-1 bg-[#FDF0B6]/60 border border-[#FDF0B6] rounded text-[10px] font-medium">UN Report</span>
+                  <span className="px-2 py-1 bg-[#E8DAFB]/50 border border-[#E8DAFB] rounded text-[10px] font-medium">Military</span>
                 </div>
               </div>
 
-              {/* 2. Bottom Left: Narrative Radar */}
-              <div className="evidence-card relative md:absolute md:bottom-[10%] md:left-[8%] w-full md:w-72 p-4 md:p-5 z-10 order-4 md:order-none">
+              {/* CARD 3: Narrative Radar (Bottom Left) */}
+              <div className="evidence-card relative md:absolute md:bottom-[5%] md:left-[2%] w-full md:w-72 p-4 md:p-5 transform -rotate-1 z-10 order-4 md:order-none">
                 <div className="tape" />
-                <div className="flex items-center gap-1.5 mb-3 pb-2 border-b border-black/10 text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest"><Activity className="w-3 h-3 text-[#C24A35]" /> Narrative Radar</div>
-                <div className="flex items-center justify-center py-2 relative">
-                  <svg viewBox="0 0 120 120" className="w-32 h-32 md:w-40 md:h-40">
+                <div className="push-pin top-2 left-2" />
+                <div className="flex items-center gap-1.5 mb-2 pb-2 border-b border-black/10 text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest"><Activity className="w-3 h-3 text-[#C24A35]" /> Radar</div>
+                <div className="flex items-center justify-center py-2">
+                  <svg viewBox="0 0 120 120" className="w-32 h-32">
                     <polygon points="60,10 110,45 90,105 30,105 10,45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
                     <polygon points="60,30 90,55 75,90 45,90 30,55" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
                     <polygon points="60,5 105,45 80,110 40,110 15,45" fill="#C24A35" fillOpacity="0.15" stroke="#C24A35" strokeWidth="2" />
@@ -483,10 +521,11 @@ function LandingPage() {
                 </div>
               </div>
 
-              {/* 3. Top Right: Contradiction Gauge */}
-              <div className="evidence-card relative md:absolute md:top-[15%] md:right-[5%] w-full md:w-72 p-4 md:p-5 z-10 order-3 md:order-none">
+              {/* CARD 4: Contradiction Gauge (Top Right) */}
+              <div className="evidence-card relative md:absolute md:top-[8%] md:right-[2%] w-full md:w-72 p-4 md:p-5 transform rotate-2 z-10 order-5 md:order-none">
                 <div className="tape" />
-                <div className="text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest flex items-center gap-1.5 mb-4"><ShieldAlert className="w-3 h-3 text-[#C24A35]" /> Contradiction Index</div>
+                <div className="push-pin top-2 right-2" />
+                <div className="text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest flex items-center gap-1.5 mb-4"><ShieldAlert className="w-3 h-3 text-[#C24A35]" /> Contradiction</div>
                 <div className="relative w-full flex justify-center mt-2">
                    <svg viewBox="0 0 100 50" className="w-40 md:w-48 h-auto overflow-visible">
                       <path d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="10" strokeLinecap="round" />
@@ -501,20 +540,31 @@ function LandingPage() {
                 </div>
               </div>
 
-              {/* 4. Bottom Right: Analyst Margin Notes */}
-              <div className="evidence-card relative md:absolute md:bottom-[10%] md:right-[8%] w-full md:w-80 p-4 md:p-5 z-10 order-5 md:order-none">
+              {/* CARD 5: Executive Summary (Mid Right) */}
+              <div className="evidence-card relative md:absolute md:top-[40%] md:right-[5%] w-full md:w-80 p-4 md:p-5 transform -rotate-1 z-10 order-6 md:order-none">
                 <div className="tape" />
-                <div className="text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest mb-3 flex items-center gap-1.5"><Search className="w-3 h-3 text-[#6B4C7A]" /> Analyst Margin</div>
+                <div className="push-pin top-2 right-2" />
+                <div className="text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest mb-3 flex items-center gap-1.5"><BookOpen className="w-3 h-3 text-[#6B4C7A]" /> The Big Picture</div>
+                <p className="font-display text-sm leading-relaxed text-[#1A1A1A] first-letter:text-4xl first-letter:float-left first-letter:mr-2 first-letter:mt-1">
+                  The speaker is using implicit threats of military force to reassure foreign investors, revealing a systemic fragility in dollar hegemony.
+                </p>
+              </div>
+
+              {/* CARD 6: Analyst Margin (Bottom Right) */}
+              <div className="evidence-card relative md:absolute md:bottom-[5%] md:right-[2%] w-full md:w-80 p-4 md:p-5 transform rotate-1 z-10 order-7 md:order-none">
+                <div className="tape" />
+                <div className="push-pin top-2 right-2" />
+                <div className="text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest mb-3 flex items-center gap-1.5"><Search className="w-3 h-3 text-[#6B4C7A]" /> Margin Notes</div>
                 <div className="space-y-2">
-                  <div className="bg-[#FDFBF7] border-l-4 border-[#C24A35] border-y border-r border-black/5 p-2.5 rounded-r shadow-sm">
+                  <div className="bg-[#FDFBF7] border-l-4 border-[#C24A35] border-y border-r border-black/5 p-2 rounded-r shadow-sm">
                     <span className="text-[8px] font-mono uppercase text-[#C24A35] block mb-1 font-bold">Contradiction</span>
-                    <b className="text-[11px] font-display block mb-1">Rule of Law vs. Force</b>
-                    <p className="text-[9px] text-muted-foreground leading-tight">Citing 'rule of law' in the same breath as implicit military force reveals a protection-racket mentality.</p>
+                    <b className="text-[10px] font-display block mb-1">Rule of Law vs. Force</b>
+                    <p className="text-[8px] text-muted-foreground leading-tight">Citing 'rule of law' alongside implicit military force reveals a protection-racket mentality.</p>
                   </div>
-                  <div className="bg-[#FDFBF7] border-l-4 border-[#E3D398] border-y border-r border-black/5 p-2.5 rounded-r shadow-sm">
+                  <div className="bg-[#FDFBF7] border-l-4 border-[#E3D398] border-y border-r border-black/5 p-2 rounded-r shadow-sm">
                     <span className="text-[8px] font-mono uppercase text-[#E3D398] block mb-1 font-bold">Fallacy</span>
-                    <b className="text-[11px] font-display block mb-1">Appeal to Force</b>
-                    <p className="text-[9px] text-muted-foreground leading-tight">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
+                    <b className="text-[10px] font-display block mb-1">Appeal to Force</b>
+                    <p className="text-[8px] text-muted-foreground leading-tight">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
                   </div>
                 </div>
               </div>
