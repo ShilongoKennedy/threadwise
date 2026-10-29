@@ -209,14 +209,19 @@ Return ONLY a valid JSON object matching this exact schema:
     }
 
     // ---------------------------------------------------------
-    // SINGLE-SOURCE FORENSIC LINGUIST ANALYSIS
+    // UPGRADED: SINGLE-SOURCE FORENSIC LINGUIST ANALYSIS
     // ---------------------------------------------------------
     if (input.mode === "analyze-source") {
       if (!input.text?.trim()) {
         return Response.json({ message: "Provide text to analyze." }, { status: 400 });
       }
 
-      const systemPrompt = `You are a senior intelligence analyst and forensic linguist specializing in cognitive dissonance, implicit threats, and geopolitical strategy. Your goal is not to summarize the text, but to deconstruct it. Identify the literal facts, the unspoken assumptions, the hidden motives, and the structural contradictions.
+      const systemPrompt = `You are an elite intelligence analyst and forensic linguist. Your task is to deconstruct the provided text with surgical precision. Do not summarize. Expose the hidden architecture of the argument.
+Look for:
+- Logical Fallacies: (e.g., Appeal to Force, False Dilemma, Straw Man, Ad Hominem).
+- Cognitive Dissonance: Where the text contradicts its own premise or values.
+- Strategic Subtext: What is unsaid, implicitly threatened, or dog-whistled.
+- Loaded Language: Use of passive voice to obscure agency, or absolutes to shut down debate.
 
 Analyze the text and extract:
 1. "executive_summary": A 2-3 sentence breakdown of the speaker's true objective and the overarching strategic narrative.
