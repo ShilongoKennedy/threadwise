@@ -71,21 +71,6 @@ function LandingPage() {
 
   const laptopYellow = "#FDF0B6"; 
   const laptopYellowDark = "#E3D398";
-  const boardMint = "#75F09A"; 
-
-  const [time, setTime] = useState(new Date());
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  };
-
-  const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-  const currentMonth = monthNames[time.getMonth()];
-  const currentDate = time.getDate();
 
   const heroReveal = useScrollReveal();
   const laptopReveal = useScrollReveal();
@@ -115,63 +100,112 @@ function LandingPage() {
         .glass-reflection-2 { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); border-radius: 50%; filter: blur(4px); }
         .hinge-piece { background: ${laptopYellow}; box-shadow: inset 0 0 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
 
-        .board-container {
-          background-color: #1a1c1d;
+        /* NEW WAR ROOM BOARD STYLES */
+        .war-room-board {
+          background-color: #1C1E21;
+          background-image: 
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 70%),
+            linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+          background-size: 100% 100%, 40px 40px, 40px 40px;
           border: 8px solid ${laptopYellow};
           border-radius: 24px;
-          box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1), 0 40px 80px -20px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.1);
+          box-shadow: inset 0 0 100px rgba(0,0,0,0.8), 0 40px 80px -20px rgba(0,0,0,0.5);
           position: relative;
           padding: 4px;
         }
         @media (min-width: 768px) {
-          .board-container { border-width: 16px; padding: 8px; }
+          .war-room-board { border-width: 16px; padding: 8px; }
         }
 
-        .board-screen {
-          background-color: ${boardMint};
-          background-image: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 60%), radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.1) 100%), linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
-          background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
-          box-shadow: inset 0 0 80px rgba(0,0,0,0.1);
-          border-radius: 16px;
+        .evidence-card {
+          background: #FDFBF7;
+          border: 1px solid rgba(0,0,0,0.1);
+          border-radius: 8px;
+          box-shadow: 2px 4px 12px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.5);
+          transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
           position: relative;
-          overflow: hidden;
-          height: 100%;
+          cursor: pointer;
+        }
+        .evidence-card:hover {
+          transform: translateY(-8px) rotate(1deg);
+          box-shadow: 6px 12px 24px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.5);
+          z-index: 50 !important;
+        }
+        
+        .tape {
+          position: absolute;
+          top: -10px;
+          left: 50%;
+          transform: translateX(-50%) rotate(-2deg);
+          width: 60px;
+          height: 20px;
+          background: rgba(255,255,255,0.4);
+          backdrop-filter: blur(2px);
+          border: 1px solid rgba(255,255,255,0.2);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          z-index: 10;
         }
 
-        .data-stream-base { fill: none; stroke: rgba(255,255,255,0.4); stroke-width: 2; }
-        .data-stream-pulse {
-          fill: none; stroke: #ffffff; stroke-width: 3; stroke-dasharray: 20 250; animation: flow-data 3s linear infinite; filter: drop-shadow(0 0 10px #ffffff);
+        .thread-line {
+          fill: none;
+          stroke: #C24A35;
+          stroke-width: 2;
+          stroke-dasharray: 4 4;
+          opacity: 0.6;
+          filter: drop-shadow(0 0 4px #C24A35);
         }
-        @keyframes flow-data { 0% { stroke-dashoffset: 270; } 100% { stroke-dashoffset: 0; } }
-
-        .widget {
-          background: rgba(253, 251, 247, 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 15px 30px -10px rgba(0,0,0,0.15), inset 0 0 20px rgba(255,255,255,0.5); border-radius: 20px; transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer;
+        .thread-pulse {
+          fill: none;
+          stroke: #FFFFFF;
+          stroke-width: 2;
+          stroke-dasharray: 20 100;
+          animation: flow-thread 3s linear infinite;
         }
-        .widget:hover {
-          transform: scale(1.05) translateY(-5px) !important; box-shadow: 0 40px 80px -20px rgba(0,0,0,0.3), 0 0 50px rgba(117, 240, 154, 0.4), inset 0 0 30px rgba(255,255,255,0.8); border-color: #ffffff; z-index: 100 !important;
+        @keyframes flow-thread { 0% { stroke-dashoffset: 120; } 100% { stroke-dashoffset: 0; } }
+
+        .intel-node {
+          position: relative;
+          width: 100px;
+          height: 100px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
-        @media (min-width: 768px) {
-          .widget:hover { transform: scale(1.15) translateY(-10px) !important; }
+        @media (min-width: 768px) { .intel-node { width: 140px; height: 140px; } }
+        
+        .intel-core {
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          background: radial-gradient(circle at 50% 50%, rgba(194, 74, 53, 0.2) 0%, transparent 70%);
+          animation: pulse-core 4s ease-in-out infinite alternate;
         }
+        @keyframes pulse-core { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
 
-        .ai-core-container { position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 30px rgba(0, 240, 255, 0.4)); }
-        @media (min-width: 768px) { .ai-core-container { width: 220px; height: 220px; } }
-
-        .ai-outer-socket { position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, #2a2e33, #111, #333, #000); box-shadow: inset -8px -8px 20px rgba(0,0,0,0.9), inset 8px 8px 20px rgba(255,255,255,0.1), 0 15px 30px rgba(0,0,0,0.6); border: 2px solid #444; }
-        .ai-mech-ring { position: absolute; inset: 15px; border-radius: 50%; border: 2px dashed rgba(0, 240, 255, 0.4); animation: spin 20s linear infinite; }
-        @media (min-width: 768px) { .ai-mech-ring { inset: 25px; border-width: 3px; } }
-
-        .ai-blue-core { position: absolute; width: 60px; height: 60px; background: radial-gradient(circle at 40% 40%, #a6faff, #00f0ff, #004488, #000); border-radius: 50%; box-shadow: 0 0 30px #00f0ff, inset 0 0 10px #000; display: flex; align-items: center; justify-content: center; animation: pulse-blue 3s infinite alternate; z-index: 10; }
-        @media (min-width: 768px) { .ai-blue-core { width: 100px; height: 100px; box-shadow: 0 0 60px #00f0ff, inset 0 0 20px #000; } }
-
-        .ai-lens-inner { width: 24px; height: 24px; background: #001a33; border-radius: 50%; border: 1px solid rgba(0, 240, 255, 0.8); box-shadow: inset 0 0 8px #000, 0 0 5px #00f0ff; position: relative; display: flex; align-items: center; justify-content: center; }
-        @media (min-width: 768px) { .ai-lens-inner { width: 40px; height: 40px; border-width: 2px; box-shadow: inset 0 0 15px #000, 0 0 10px #00f0ff; } }
-
-        .ai-lens-glint { width: 6px; height: 6px; background: #fff; border-radius: 50%; box-shadow: 0 0 5px #fff; position: absolute; top: 3px; left: 3px; }
-        @media (min-width: 768px) { .ai-lens-glint { width: 12px; height: 12px; top: 6px; left: 6px; box-shadow: 0 0 10px #fff; } }
-
-        @keyframes pulse-blue { 0% { box-shadow: 0 0 20px #00f0ff, inset 0 0 10px #000; } 100% { box-shadow: 0 0 50px #00f0ff, inset 0 0 10px #000; } }
+        .intel-ring {
+          position: absolute;
+          inset: 20px;
+          border-radius: 50%;
+          border: 1px solid rgba(194, 74, 53, 0.4);
+          animation: spin 15s linear infinite;
+        }
+        .intel-ring-2 {
+          position: absolute;
+          inset: 30px;
+          border-radius: 50%;
+          border: 1px dashed rgba(194, 74, 53, 0.6);
+          animation: spin-reverse 25s linear infinite;
+        }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+        
+        .intel-icon {
+          position: relative;
+          z-index: 10;
+          color: #C24A35;
+          filter: drop-shadow(0 0 10px #C24A35);
+        }
       `}</style>
 
       {/* ARTISTIC AMBIENT BACKGROUND */}
@@ -386,7 +420,7 @@ function LandingPage() {
           <div className="relative h-4 md:h-6 rounded-b-[1rem] md:rounded-b-[2rem] mx-auto w-[105%] md:w-[110%] -ml-[2.5%] md:-ml-[5%] z-[-1]" style={{ backgroundColor: laptopYellowDark, boxShadow: '0 30px 60px -15px rgba(0,0,0,0.3)' }}><div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 md:w-32 h-1 md:h-1.5 bg-black/10 rounded-b-lg" /></div>
         </div>
 
-        {/* THE DETECTIVE'S COMMAND CENTER */}
+        {/* THE WAR ROOM (NEW DESIGN) */}
         <section 
           id="features" 
           ref={commandCenterReveal.ref}
@@ -397,82 +431,90 @@ function LandingPage() {
             <p className="text-[#1A1A1A]/50 text-sm md:text-lg">Cross-reference sources, expose contradictions, and map the truth.</p>
           </div>
 
-          <div className="board-container w-full h-auto md:h-[700px] p-2">
-            <div className="board-screen w-full h-full p-4 md:p-0 flex flex-col md:block gap-6 md:gap-0">
+          <div className="war-room-board w-full h-auto md:h-[700px] p-4 md:p-8">
+            <div className="relative w-full h-full flex flex-col md:block gap-8 md:gap-0">
               
+              {/* Red Thread Connections */}
               <svg className="hidden md:block absolute inset-0 w-full h-full pointer-events-none z-0">
-                <path d="M 280 180 Q 400 200 600 350" className="data-stream-base" /><path d="M 280 180 Q 400 200 600 350" className="data-stream-pulse" />
-                <path d="M 920 180 Q 800 200 600 350" className="data-stream-base" /><path d="M 920 180 Q 800 200 600 350" className="data-stream-pulse" style={{ animationDelay: '0.5s' }} />
-                <path d="M 280 520 Q 400 500 600 350" className="data-stream-base" /><path d="M 280 520 Q 400 500 600 350" className="data-stream-pulse" style={{ animationDelay: '1s' }} />
-                <path d="M 920 520 Q 800 500 600 350" className="data-stream-base" /><path d="M 920 520 Q 800 500 600 350" className="data-stream-pulse" style={{ animationDelay: '1.5s' }} />
+                <path d="M 280 180 Q 400 200 600 350" className="thread-line" /><path d="M 280 180 Q 400 200 600 350" className="thread-pulse" />
+                <path d="M 920 180 Q 800 200 600 350" className="thread-line" /><path d="M 920 180 Q 800 200 600 350" className="thread-pulse" style={{ animationDelay: '0.5s' }} />
+                <path d="M 280 520 Q 400 500 600 350" className="thread-line" /><path d="M 280 520 Q 400 500 600 350" className="thread-pulse" style={{ animationDelay: '1s' }} />
+                <path d="M 920 520 Q 800 500 600 350" className="thread-line" /><path d="M 920 520 Q 800 500 600 350" className="thread-pulse" style={{ animationDelay: '1.5s' }} />
               </svg>
 
-              {/* Center Core */}
+              {/* Center Core Node */}
               <div className="relative md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 flex flex-col items-center z-20 order-1 md:order-none my-6 md:my-0">
-                <div className="ai-core-container">
-                  <div className="ai-outer-socket" /><div className="ai-mech-ring" /><div className="ai-blue-core"><div className="ai-lens-inner"><div className="ai-lens-glint" /></div></div>
+                <div className="intel-node">
+                  <div className="intel-core" />
+                  <div className="intel-ring" />
+                  <div className="intel-ring-2" />
+                  <Network className="intel-icon w-10 h-10 md:w-14 md:h-14" />
                 </div>
               </div>
 
               {/* 1. Top Left: Entity Network */}
-              <div className="widget relative md:absolute md:top-[12%] md:left-[8%] w-full md:w-64 h-32 md:h-40 p-4 md:p-6 flex flex-col z-10 order-2 md:order-none">
-                <div className="text-[9px] md:text-[10px] font-mono text-black/40 uppercase tracking-widest mb-3 flex items-center gap-1.5 md:gap-2"><Globe className="w-3 h-3 text-[#2D6A65]" /> Entity Network</div>
+              <div className="evidence-card relative md:absolute md:top-[10%] md:left-[5%] w-full md:w-72 h-auto p-4 md:p-5 z-10 order-2 md:order-none">
+                <div className="tape" />
+                <div className="text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest mb-3 flex items-center gap-1.5"><Globe className="w-3 h-3 text-[#2D6A65]" /> Entity Network</div>
                 <div className="flex flex-wrap gap-1.5">
-                  <span className="px-2 py-1 bg-[#CBE6F9] border border-black/10 rounded text-[8px] md:text-[10px] font-medium shadow-sm">Gaza</span>
-                  <span className="px-2 py-1 bg-[#FBD0D4] border border-black/10 rounded text-[8px] md:text-[10px] font-medium shadow-sm">Iran</span>
-                  <span className="px-2 py-1 bg-[#FDF0B6] border border-black/10 rounded text-[8px] md:text-[10px] font-medium shadow-sm">UN Report</span>
-                  <span className="px-2 py-1 bg-[#E8DAFB] border border-black/10 rounded text-[8px] md:text-[10px] font-medium shadow-sm">Military</span>
-                  <span className="px-2 py-1 bg-white border border-black/10 rounded text-[8px] md:text-[10px] font-medium shadow-sm">Sanctions</span>
+                  <span className="px-2.5 py-1 bg-[#CBE6F9]/40 border border-[#CBE6F9] rounded text-[10px] font-medium shadow-sm">Gaza</span>
+                  <span className="px-2.5 py-1 bg-[#FBD0D4]/40 border border-[#FBD0D4] rounded text-[10px] font-medium shadow-sm">Iran</span>
+                  <span className="px-2.5 py-1 bg-[#FDF0B6]/60 border border-[#FDF0B6] rounded text-[10px] font-medium shadow-sm">UN Report</span>
+                  <span className="px-2.5 py-1 bg-[#E8DAFB]/50 border border-[#E8DAFB] rounded text-[10px] font-medium shadow-sm">Military</span>
+                  <span className="px-2.5 py-1 bg-white border border-black/10 rounded text-[10px] font-medium shadow-sm">Sanctions</span>
                 </div>
               </div>
 
               {/* 2. Bottom Left: Narrative Radar */}
-              <div className="widget relative md:absolute md:bottom-[12%] md:left-[10%] w-full md:w-64 h-40 md:h-56 p-3 md:p-4 flex flex-col z-10 order-4 md:order-none">
-                <div className="flex items-center gap-1.5 md:gap-2 mb-2 pb-1.5 border-b border-black/10 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Activity className="w-3 h-3 text-[#C24A35]" /> Narrative Radar</div>
-                <div className="flex-1 flex items-center justify-center relative">
-                  <svg viewBox="0 0 100 100" className="w-24 h-24 md:w-32 md:h-32">
-                    <polygon points="50,10 90,40 75,85 25,85 10,40" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
-                    <polygon points="50,25 75,45 65,75 35,75 25,45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
-                    <polygon points="50,5 85,45 60,80 40,80 15,45" fill="#C24A35" fillOpacity="0.2" stroke="#C24A35" strokeWidth="2" />
-                    <text x="50" y="3" fill="#1A1A1A" fontSize="5" textAnchor="middle" fontFamily="monospace">BIAS</text>
-                    <text x="95" y="45" fill="#1A1A1A" fontSize="5" textAnchor="start" fontFamily="monospace">OMISSION</text>
-                    <text x="65" y="90" fill="#1A1A1A" fontSize="5" textAnchor="middle" fontFamily="monospace">URGENCY</text>
-                    <text x="35" y="90" fill="#1A1A1A" fontSize="5" textAnchor="middle" fontFamily="monospace">MOTIVE</text>
-                    <text x="5" y="45" fill="#1A1A1A" fontSize="5" textAnchor="end" fontFamily="monospace">EVIDENCE</text>
+              <div className="evidence-card relative md:absolute md:bottom-[10%] md:left-[8%] w-full md:w-72 p-4 md:p-5 z-10 order-4 md:order-none">
+                <div className="tape" />
+                <div className="flex items-center gap-1.5 mb-3 pb-2 border-b border-black/10 text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest"><Activity className="w-3 h-3 text-[#C24A35]" /> Narrative Radar</div>
+                <div className="flex items-center justify-center py-2 relative">
+                  <svg viewBox="0 0 120 120" className="w-32 h-32 md:w-40 md:h-40">
+                    <polygon points="60,10 110,45 90,105 30,105 10,45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+                    <polygon points="60,30 90,55 75,90 45,90 30,55" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+                    <polygon points="60,5 105,45 80,110 40,110 15,45" fill="#C24A35" fillOpacity="0.15" stroke="#C24A35" strokeWidth="2" />
+                    <text x="60" y="5" fill="#1A1A1A" fontSize="6" textAnchor="middle" fontFamily="monospace" fontWeight="bold">BIAS</text>
+                    <text x="115" y="45" fill="#1A1A1A" fontSize="6" textAnchor="start" fontFamily="monospace" fontWeight="bold">OMISSION</text>
+                    <text x="90" y="115" fill="#1A1A1A" fontSize="6" textAnchor="middle" fontFamily="monospace" fontWeight="bold">URGENCY</text>
+                    <text x="30" y="115" fill="#1A1A1A" fontSize="6" textAnchor="middle" fontFamily="monospace" fontWeight="bold">MOTIVE</text>
+                    <text x="5" y="45" fill="#1A1A1A" fontSize="6" textAnchor="end" fontFamily="monospace" fontWeight="bold">EVIDENCE</text>
                   </svg>
                 </div>
               </div>
 
               {/* 3. Top Right: Contradiction Gauge */}
-              <div className="widget relative md:absolute md:top-[15%] md:right-[8%] w-full md:w-64 h-40 md:h-48 p-4 md:p-6 flex flex-col items-center justify-center z-10 order-3 md:order-none">
-                <div className="text-[9px] md:text-[10px] font-mono text-black/40 uppercase tracking-widest absolute top-4 left-4 md:top-6 md:left-6 flex items-center gap-1.5 md:gap-2"><ShieldAlert className="w-3 h-3 text-[#C24A35]" /> Contradiction</div>
-                <div className="relative mt-4 md:mt-6 w-full flex justify-center">
-                   <svg viewBox="0 0 100 50" className="w-32 md:w-40 h-auto">
-                      <path d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="8" strokeLinecap="round" />
-                      <path d="M 10 45 A 35 35 0 0 1 75 18" fill="none" stroke="#C24A35" strokeWidth="8" strokeLinecap="round" />
-                      <circle cx="50" cy="45" r="3" fill="#1A1A1A" />
-                      <line x1="50" y1="45" x2="75" y2="18" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" />
+              <div className="evidence-card relative md:absolute md:top-[15%] md:right-[5%] w-full md:w-72 p-4 md:p-5 z-10 order-3 md:order-none">
+                <div className="tape" />
+                <div className="text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest flex items-center gap-1.5 mb-4"><ShieldAlert className="w-3 h-3 text-[#C24A35]" /> Contradiction Index</div>
+                <div className="relative w-full flex justify-center mt-2">
+                   <svg viewBox="0 0 100 50" className="w-40 md:w-48 h-auto overflow-visible">
+                      <path d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="10" strokeLinecap="round" />
+                      <path d="M 10 45 A 35 35 0 0 1 75 18" fill="none" stroke="#C24A35" strokeWidth="10" strokeLinecap="round" />
+                      <circle cx="50" cy="45" r="4" fill="#1A1A1A" />
+                      <line x1="50" y1="45" x2="75" y2="18" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round" />
                    </svg>
-                   <div className="absolute -bottom-2 text-center">
+                   <div className="absolute -bottom-4 text-center bg-white px-3 py-1 rounded-full border border-black/5 shadow-sm">
                      <span className="font-display text-2xl md:text-3xl text-[#C24A35]">85</span>
-                     <span className="text-[10px] text-muted-foreground">/100</span>
+                     <span className="text-xs text-muted-foreground">/100</span>
                    </div>
                 </div>
               </div>
 
               {/* 4. Bottom Right: Analyst Margin Notes */}
-              <div className="widget relative md:absolute md:bottom-[15%] md:right-[10%] w-full md:w-72 h-48 md:h-56 p-4 md:p-5 flex flex-col z-10 order-5 md:order-none bg-[#FDFBF7]/90">
-                <div className="text-[9px] md:text-[10px] font-mono text-black/40 uppercase tracking-widest mb-3 flex items-center gap-1.5 md:gap-2"><Search className="w-3 h-3 text-[#6B4C7A]" /> Analyst Margin</div>
-                <div className="space-y-2 flex-1 overflow-hidden">
-                  <div className="bg-white border-l-4 border-[#C24A35] border-y border-r border-black/5 p-2 rounded-r shadow-sm">
-                    <span className="text-[7px] md:text-[8px] font-mono uppercase text-[#C24A35] block mb-1">Contradiction</span>
-                    <b className="text-[9px] md:text-[10px] font-display block mb-0.5">Rule of Law vs. Force</b>
-                    <p className="text-[7px] md:text-[8px] text-muted-foreground leading-tight">Citing 'rule of law' in the same breath as implicit military force reveals a protection-racket mentality.</p>
+              <div className="evidence-card relative md:absolute md:bottom-[10%] md:right-[8%] w-full md:w-80 p-4 md:p-5 z-10 order-5 md:order-none">
+                <div className="tape" />
+                <div className="text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-widest mb-3 flex items-center gap-1.5"><Search className="w-3 h-3 text-[#6B4C7A]" /> Analyst Margin</div>
+                <div className="space-y-2">
+                  <div className="bg-[#FDFBF7] border-l-4 border-[#C24A35] border-y border-r border-black/5 p-2.5 rounded-r shadow-sm">
+                    <span className="text-[8px] font-mono uppercase text-[#C24A35] block mb-1 font-bold">Contradiction</span>
+                    <b className="text-[11px] font-display block mb-1">Rule of Law vs. Force</b>
+                    <p className="text-[9px] text-muted-foreground leading-tight">Citing 'rule of law' in the same breath as implicit military force reveals a protection-racket mentality.</p>
                   </div>
-                  <div className="bg-white border-l-4 border-[#E3D398] border-y border-r border-black/5 p-2 rounded-r shadow-sm">
-                    <span className="text-[7px] md:text-[8px] font-mono uppercase text-[#E3D398] block mb-1">Fallacy</span>
-                    <b className="text-[9px] md:text-[10px] font-display block mb-0.5">Appeal to Force</b>
-                    <p className="text-[7px] md:text-[8px] text-muted-foreground leading-tight">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
+                  <div className="bg-[#FDFBF7] border-l-4 border-[#E3D398] border-y border-r border-black/5 p-2.5 rounded-r shadow-sm">
+                    <span className="text-[8px] font-mono uppercase text-[#E3D398] block mb-1 font-bold">Fallacy</span>
+                    <b className="text-[11px] font-display block mb-1">Appeal to Force</b>
+                    <p className="text-[9px] text-muted-foreground leading-tight">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
                   </div>
                 </div>
               </div>
