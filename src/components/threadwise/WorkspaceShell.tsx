@@ -4,8 +4,9 @@ import { DiscourseLab } from "./DiscourseLab";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
 import { emptySuite } from "@/lib/threadwise/advanced";
 import { Button } from "@/components/ui/button";
-import { Columns, LayoutPanelTop, PanelRight, X, Command } from "lucide-react";
+import { Columns, LayoutPanelTop, PanelRight, X, Command, Keyboard } from "lucide-react";
 import { CommandPalette } from "./CommandPalette";
+import { ShortcutsModal } from "./ShortcutsModal";
 
 export function WorkspaceShell() {
   const [layout, setLayout] = useState<"split" | "tabs" | "slide">("tabs");
@@ -13,7 +14,9 @@ export function WorkspaceShell() {
   const [slideOpen, setSlideOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  
   const [cmdOpen, setCmdOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
   useEffect(() => {
     const checkSize = () => {
@@ -27,12 +30,21 @@ export function WorkspaceShell() {
     return () => window.removeEventListener("resize", checkSize);
   }, [layout]);
 
-  // Global Cmd+K listener
+  // Global Keyboard Listeners
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      // Ignore if typing in an input/textarea
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
+
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setCmdOpen((open) => !open);
+      }
+      
+      if (e.key === "?") {
+        e.preventDefault();
+        setShortcutsOpen((open) => !open);
       }
     };
     document.addEventListener("keydown", down);
@@ -86,6 +98,7 @@ export function WorkspaceShell() {
         setActiveTab={setActiveTab} 
         setSlideOpen={setSlideOpen} 
       />
+      <ShortcutsModal open={shortcutsOpen} setOpen={setShortcutsOpen} />
       
       <div className="h-14 border-b flex items-center px-4 justify-between shrink-0 bg-card z-[60]">
         <div className="flex items-center gap-2 md:gap-3">
@@ -123,6 +136,16 @@ export function WorkspaceShell() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setShortcutsOpen(true)}
+            className="hidden md:flex h-8 w-8 text-muted-foreground bg-background rounded-lg border-black/10 shadow-sm hover:text-foreground"
+            title="Keyboard Shortcuts (?)"
+          >
+            <Keyboard className="w-4 h-4" />
+          </Button>
+
           <Button
             variant="outline"
             size="sm"
