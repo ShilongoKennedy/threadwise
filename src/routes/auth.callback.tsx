@@ -1,10 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getSupabaseClient } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth/callback")({ component: AuthCallback });
 
-/** Completes both Supabase PKCE (?code=…) and legacy implicit (#access_token=…) callbacks. */
 function AuthCallback() {
   const navigate = useNavigate();
   const [problem, setProblem] = useState("");
@@ -12,7 +11,6 @@ function AuthCallback() {
   useEffect(() => {
     let active = true;
     const finish = async () => {
-      const supabase = getSupabaseClient();
       const current = new URL(window.location.href);
       const providerError = current.searchParams.get("error_description") || current.searchParams.get("error");
       if (providerError) throw new Error(providerError);
@@ -42,12 +40,14 @@ function AuthCallback() {
     return () => { active = false; };
   }, [navigate]);
 
-  return <main className="grid min-h-screen place-items-center bg-[#FDFBF7] px-6 text-center">
-    <section className="max-w-md">
-      <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#C24A35]">Threadwise Intelligence OS</p>
-      <h1 className="mt-3 font-display text-4xl">{problem ? "Sign-in needs attention" : "Opening your workbench…"}</h1>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{problem || "Finishing your secure Google sign-in."}</p>
-      {problem && <a href="/login" className="mt-6 inline-flex rounded-md bg-[#1A1A1A] px-4 py-2 text-sm font-medium text-white">Return to login</a>}
-    </section>
-  </main>;
+  return (
+    <main className="grid min-h-screen place-items-center bg-[#FDFBF7] px-6 text-center">
+      <section className="max-w-md">
+        <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#C24A35]">Threadwise Intelligence OS</p>
+        <h1 className="mt-3 font-display text-4xl">{problem ? "Sign-in needs attention" : "Opening your workbench…"}</h1>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{problem || "Finishing your secure Google sign-in."}</p>
+        {problem && <a href="/login" className="mt-6 inline-flex rounded-md bg-[#1A1A1A] px-4 py-2 text-sm font-medium text-white">Return to login</a>}
+      </section>
+    </main>
+  );
 }
