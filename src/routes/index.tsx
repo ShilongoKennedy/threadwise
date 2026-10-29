@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
   ArrowUpRight, ArrowRight, Sparkles, FileText, Lightbulb, 
-  Activity, Cpu, Network, Layers, Target, 
+  Activity, Cpu, Network, Layers, Target, Globe,
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
