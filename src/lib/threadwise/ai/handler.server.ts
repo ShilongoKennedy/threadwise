@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 import { readWeb } from "./url.server";
 import { RELATIONS } from "../model";
-import { createDeepSeekProvider, deepSeekModelName } from "./deepseek.server";
+import { getModel, extractJson } from "./ai-providers.server";
 
 const inputSchema = z.object({
   mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source", "analyze-source", "compare"]),
@@ -34,12 +34,6 @@ export async function handleThreadwise(request: Request) {
     const isLoopback = host === "localhost" || host === "127.0.0.1" || host === "::1";
     const allowLocalTest = process.env["ALLOW_LOCAL_AI_UNAUTHENTICATED"] === "true" && isLoopback;
     
-    if (!process.env["DEEPSEEK_API_KEY"])
-      return Response.json(
-        { message: "DeepSeek is not configured yet. Add DEEPSEEK_API_KEY to .env.local and restart the local server." },
-        { status: 401 },
-      );
-
     const token = request.headers.get("Authorization")?.replace(/^Bearer /, "");
     let userId: string | undefined;
     
@@ -85,10 +79,8 @@ export async function handleThreadwise(request: Request) {
       return Response.json({ message: "The data sent was in the wrong format." }, { status: 400 });
     }
 
-    const provider = createDeepSeekProvider();
-
     // ---------------------------------------------------------
-    // NEW: COMPARATIVE ANALYSIS MODE
+    // COMPARATIVE ANALYSIS MODE
     // ---------------------------------------------------------
     if (input.mode === "compare") {
       if (!input.textA?.trim() || !input.textB?.trim()) {
@@ -121,19 +113,14 @@ Return ONLY a valid JSON object matching this exact schema:
 }`;
 
       try {
+        // Using DeepSeek for comparison
         const { text: aiText } = await generateText({
-          model: provider.chat(deepSeekModelName()),
+          model: getModel("deepseek"),
           system: systemPrompt,
           prompt: `TEXT A (${input.titleA || "Source A"}):\n${input.textA}\n\n---\n\nTEXT B (${input.titleB || "Source B"}):\n${input.textB}`,
         });
 
-        const firstBrace = aiText.indexOf('{');
-        const lastBrace = aiText.lastIndexOf('}');
-        if (firstBrace === -1 || lastBrace === -1) throw new Error("AI did not return JSON.");
-        
-        const jsonString = aiText.substring(firstBrace, lastBrace + 1);
-        const parsed = JSON.parse(jsonString);
-
+        const parsed = extractJson<any>(aiText);
         return Response.json({ analysis: parsed, error: null }, { status: 200 });
       } catch (e) {
         console.error("COMPARE ERROR:", e);
@@ -188,19 +175,14 @@ Return ONLY a valid JSON object matching this exact schema:
 }`;
 
       try {
+        // Using Gemini for massive context window (can handle many URLs)
         const { text: aiText } = await generateText({
-          model: provider.chat(deepSeekModelName()),
+          model: getModel("gemini"),
           system: systemPrompt,
           prompt: `Analyze these articles:\n\n${combinedText}`,
         });
 
-        const firstBrace = aiText.indexOf('{');
-        const lastBrace = aiText.lastIndexOf('}');
-        if (firstBrace === -1 || lastBrace === -1) throw new Error("AI did not return JSON.");
-        
-        const jsonString = aiText.substring(firstBrace, lastBrace + 1);
-        const parsed = JSON.parse(jsonString);
-
+        const parsed = extractJson<any>(aiText);
         return Response.json({ analysis: parsed, error: null }, { status: 200 });
       } catch (e) {
         console.error("CROSS-SOURCE ERROR:", e);
@@ -209,7 +191,7 @@ Return ONLY a valid JSON object matching this exact schema:
     }
 
     // ---------------------------------------------------------
-    // UPGRADED: SINGLE-SOURCE FORENSIC LINGUIST ANALYSIS
+    // SINGLE-SOURCE FORENSIC LINGUIST ANALYSIS
     // ---------------------------------------------------------
     if (input.mode === "analyze-source") {
       if (!input.text?.trim()) {
@@ -233,7 +215,7 @@ Analyze the text and extract:
    - "type": Choose one of "contradiction", "fallacy", or "motive".
    - "title": A short 2-4 word headline (e.g., "Appeal to Force" or "Rule of Law vs. Threat").
    - "analysis": A 2-3 sentence explanation of the hidden meaning, bias, or logical error.
-4. "unstated_assumptions": A list of 2-4 things the speaker assumes to be true but does not state (e.g., "The US will never weaponize the dollar against its allies").
+4. "unstated_assumptions": A list of 2-4 things the speaker assumes to be true but does not state.
 5. "questions_to_ask": A list of 2-4 "Dog That Didn't Bark" questions. What critical context is missing?
 
 Return ONLY a valid JSON object matching this exact schema:
@@ -249,19 +231,14 @@ Return ONLY a valid JSON object matching this exact schema:
 }`;
 
       try {
+        // Using DeepSeek for deep linguistic analysis
         const { text: aiText } = await generateText({
-          model: provider.chat(deepSeekModelName()),
+          model: getModel("deepseek"),
           system: systemPrompt,
           prompt: `Analyze this source text:\n\n${input.text}`,
         });
 
-        const firstBrace = aiText.indexOf('{');
-        const lastBrace = aiText.lastIndexOf('}');
-        if (firstBrace === -1 || lastBrace === -1) throw new Error("AI did not return JSON.");
-        
-        const jsonString = aiText.substring(firstBrace, lastBrace + 1);
-        const parsed = JSON.parse(jsonString);
-
+        const parsed = extractJson<any>(aiText);
         return Response.json({ analysis: parsed, error: null }, { status: 200 });
       } catch (e) {
         console.error("ANALYZE-SOURCE ERROR:", e);
@@ -339,7 +316,7 @@ Return ONLY a valid JSON object matching this exact schema:
     const safeError = "The thinking tool could not finish.";
     
     const result = streamText({
-      model: provider.chat(deepSeekModelName()),
+      model: getModel("deepseek"),
       messages,
       system: instructions,
       abortSignal: request.signal,
