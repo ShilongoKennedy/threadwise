@@ -13,7 +13,7 @@ export function getModel(provider: "deepseek" | "gemini" | "openai" | "anthropic
       const apiKey = process.env["GEMINI_API_KEY"] || process.env["GOOGLE_GENERATIVE_AI_API_KEY"];
       if (!apiKey) throw new Error("Gemini API key is missing. Add GEMINI_API_KEY to .env.");
       const google = createGoogleGenerativeAI({ apiKey });
-      return google(modelOverride || "gemini-2.5-flash");
+      return google(modelOverride || "gemini-3.8-flash");
     }
     
     case "anthropic": {
