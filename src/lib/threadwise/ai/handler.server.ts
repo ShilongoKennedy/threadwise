@@ -7,7 +7,7 @@ import { RELATIONS } from "../model";
 import { getModel, extractJson } from "./ai-providers.server";
 
 const inputSchema = z.object({
-  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source", "analyze-source", "compare"]),
+  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source", "analyze-source", "compare", "ask-archives"]),
   threadId: z.string().optional(),
   messages: z.array(z.unknown()).max(200).optional(),
   graph: z.unknown().optional(),
@@ -80,6 +80,57 @@ export async function handleThreadwise(request: Request) {
     }
 
     // ---------------------------------------------------------
+    // ASK THE ARCHIVES
+    // ---------------------------------------------------------
+    if (input.mode === "ask-archives") {
+      if (!input.text?.trim()) {
+        return Response.json({ message: "Ask a question to search the archives." }, { status: 400 });
+      }
+
+      try {
+        const workerResponse = await fetch("https://threadwise-archivist.kennedy-nam.workers.dev/query", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer super-secret-threadwise-key"
+          },
+          body: JSON.stringify({ query: input.text })
+        });
+
+        if (!workerResponse.ok) throw new Error("Could not connect to the Archivist database.");
+        const workerData = await workerResponse.json();
+        
+        const memories = workerData.matches?.map((m: any) => m.metadata?.text).filter(Boolean) || [];
+        const contextText = memories.join("\n\n---\n\n");
+
+        if (!memories.length) {
+           return Response.json({ analysis: { answer: "I couldn't find anything in the archives related to this query. Try planting more insights to the canvas.", sources: [] }, error: null }, { status: 200 });
+        }
+
+        const systemPrompt = `You are the Threadwise Archivist. You are answering a user's question based strictly on the archived intelligence provided below. 
+Do not invent information. If the archives do not contain the answer, say so. 
+Synthesize the findings into a concise, intelligent answer. If there are contradictions in the archives, highlight them.
+
+Return ONLY a valid JSON object matching this schema:
+{
+  "answer": string (The synthesized answer in markdown format)
+}`;
+
+        const { text: aiText } = await generateText({
+          model: getModel("deepseek"),
+          system: systemPrompt,
+          prompt: `ARCHIVED INTELLIGENCE:\n${contextText}\n\nUSER QUESTION: ${input.text}`,
+        });
+
+        const parsed = extractJson<any>(aiText);
+        return Response.json({ analysis: { ...parsed, sources: workerData.matches }, error: null }, { status: 200 });
+      } catch (e) {
+        console.error("ARCHIVE QUERY ERROR:", e);
+        return Response.json({ analysis: null, error: (e as Error).message }, { status: 200 });
+      }
+    }
+
+    // ---------------------------------------------------------
     // COMPARATIVE ANALYSIS MODE
     // ---------------------------------------------------------
     if (input.mode === "compare") {
@@ -147,7 +198,6 @@ Return ONLY a valid JSON object matching this exact schema:
       const scrapedDocs = await Promise.all(scrapePromises);
       const combinedText = scrapedDocs.join("\n\n---\n\n");
 
-      // UPGRADED PROMPT: Forces deep strategic reasoning, not just summarizing.
       const systemPrompt = `You are the Director of Strategic Intelligence. The provided text is a public narrative (media, reports, speeches). Your job is to pierce the veil. Do not just summarize what is said; deduce WHY it is said and WHAT is being hidden.
 
 Follow this analytical framework:
@@ -172,7 +222,6 @@ Return ONLY a valid JSON object matching this exact schema:
         let aiText = "";
         
         try {
-          // Primary: Gemini 3.8 Pro for heavy, deep reasoning
           const { text } = await generateText({
             model: getModel("gemini", "gemini-3.8-pro"),
             system: systemPrompt,
@@ -182,7 +231,6 @@ Return ONLY a valid JSON object matching this exact schema:
           aiText = text;
         } catch (primaryError) {
           console.warn("Gemini Pro failed. Falling back to DeepSeek Reasoner...", primaryError);
-          // Fallback: DeepSeek Reasoner (R1) - Incredible at logic and deduction
           const { text } = await generateText({
             model: getModel("deepseek", "deepseek-reasoner"), 
             system: systemPrompt,
@@ -241,7 +289,7 @@ Return ONLY a valid JSON object matching this exact schema:
 
       try {
         const { text: aiText } = await generateText({
-          model: getModel("deepseek", "deepseek-reasoner"), // Upgraded to Reasoner for deeper logic
+          model: getModel("deepseek", "deepseek-reasoner"),
           system: systemPrompt,
           prompt: `Analyze this source text:\n\n${input.text}`,
         });
@@ -316,9 +364,9 @@ Return ONLY a valid JSON object matching this exact schema:
         : input.mode === "redteam"
           ? `Act as an independent red team from the perspective of ${input.persona?.trim() || "a skeptical reviewer"}. Review the untrusted graph for failure modes, hidden assumptions, confirmation bias, anchoring, sunk cost, availability, planning fallacy and overconfidence. Return 3–8 specific challenges in the required JSON structure, each citing actual supplied node IDs. Bias labels are possible patterns, never psychological diagnoses. Include a concrete falsifiable suggested test.`
           : input.mode === "memo"
-            ? `Synthesize the supplied Threadwise graph into a ${input.format === "brief" ? "concise executive brief" : "structured Markdown memo"}. Use Markdown headings: Executive summary, Problem, Hypotheses and assumptions, Experiments, Outcomes, Decisions and next steps, Open questions, Sources. Follow semantic dependencies (depends_on/needs_evidence_from run prerequisite to dependent), preserve contradictions and uncertainty. Quote exact card titles and cite source URLs supplied in note metadata.`
+            ? `Synthesize the supplied Threadwise graph into a ${input.format === "brief" ? "concise executive brief" : "structured Markdown memo"}. Use Markdown headings: Executive summary, Problem, Hypotheses and assumptions, Experiments, Outcomes, Decisions and next steps, Open questions, Sources. Follow semantic dependencies (depends_on/needs_evidence_from run prerequisite to dependent), preserve contradictions and uncertainty.`
             : input.mode === "intake"
-              ? `Turn the supplied untrusted meeting transcript or conversation into a small, editable Threadwise canvas draft. Return ONLY valid JSON. Extract no more than 8 cards. Each card must use only information actually stated: choose note for observations, question for unresolved questions, action only for explicit commitments, idea for proposals, experiment only for a described test.`
+              ? `Turn the supplied untrusted meeting transcript or conversation into a small, editable Threadwise canvas draft. Return ONLY valid JSON. Extract no more than 8 cards.`
               : `Extract key takeaways from this untrusted source. Return ONLY a valid JSON object with exactly title (string), takeaways (array of 3-6 strings), source (string), sourceTitle (string), excerpt (a verbatim relevant quote).`;
 
     const safeError = "The thinking tool could not finish.";
