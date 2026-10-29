@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,22 +16,28 @@ const codeLabel = (code: CodeId) => CODES.find((item) => item.id === code)?.labe
 export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Corpus; update: (corpus: Corpus) => void; onClose: () => void }) {
   const corpus = stored ?? emptyCorpus();
   const s = useThread();
-  const [view, setView] = useState<View>("investigate");
+  const [view, setView] = useState<View>("read");
   const [activeId, setActiveId] = useState(corpus.docs[0]?.id ?? "");
   const [compareIds, setCompareIds] = useState<[string, string]>([corpus.docs[0]?.id ?? "", corpus.docs[1]?.id ?? ""]);
   const [draft, setDraft] = useState({ title: "", speaker: "", date: "", occasion: "", audience: "", text: "" });
   const [term, setTerm] = useState("");
   const [selection, setSelection] = useState<{ quote: string; doc: DiscourseDoc } | null>(null);
+  const [activeNote, setActiveNote] = useState<number | null>(null);
+  const [rawView, setRawView] = useState(false);
   
   const savedInv = (corpus as any).investigation || {};
+  const savedAnalyses = (corpus as any).analyses || {};
+  
   const [urls, setUrls] = useState<string[]>(savedInv.urls?.length ? savedInv.urls : [""]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isAnalyzingSource, setIsAnalyzingSource] = useState(false);
   const [analysisError, setAnalysisError] = useState("");
   const [analysis, setAnalysis] = useState<any>(savedInv.analysis || null);
   const [plantedIds, setPlantedIds] = useState<Record<string, boolean>>({});
 
   const docs = [...corpus.docs].sort((a, b) => a.date.localeCompare(b.date));
   const active = docs.find((doc) => doc.id === activeId) ?? docs[0];
+  const activeAnalysis = savedAnalyses[active?.id];
   const save = (patch: Partial<Corpus>) => update({ ...corpus, ...patch });
   
   const plant = (doc: DiscourseDoc, quote: string, label = "Discourse evidence") => {
@@ -68,6 +74,60 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     } catch (e: any) { setAnalysisError(e.message || "The investigation failed."); } finally { setIsAnalyzing(false); }
   };
 
+  const runSourceAnalysis = async () => {
+    if (!active?.text) return;
+    setIsAnalyzingSource(true); setAnalysisError(""); setActiveNote(null);
+    try {
+      const output = await streamTask({ mode: "analyze-source", text: active.text, source: active.title }, () => {});
+      const res = JSON.parse(output);
+      if (res.error) setAnalysisError(res.error);
+      else {
+        update({ ...corpus, analyses: { ...savedAnalyses, [active.id]: res.analysis } } as any);
+      }
+    } catch (e: any) { setAnalysisError(e.message || "The analysis failed."); } finally { setIsAnalyzingSource(false); }
+  };
+
+  // --- HIGHLIGHTING LOGIC ---
+  const escapeHtml = (unsafe: string) => unsafe.replace(/[&<"'>]/g, function(m) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m] as string; });
+  
+  const getHighlightedText = (text: string, notes: any[]) => {
+    if (!notes || !notes.length) return escapeHtml(text).replace(/\n/g, '<br/>');
+    let result = escapeHtml(text);
+    
+    // Map notes with their original index, then sort by quote length descending to prevent nested matching issues
+    const sortedNotes = notes.map((note, i) => ({ ...note, originalIndex: i }))
+                            .sort((a, b) => b.quote.length - a.quote.length);
+    
+    sortedNotes.forEach(note => {
+      const escapedQuote = escapeHtml(note.quote).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escapedQuote})`, 'gi');
+      
+      let bgClass = "";
+      let borderClass = "";
+      if (note.type === "contradiction") { bgClass = "bg-[#FBD0D4]/60"; borderClass = "border-b-2 border-[#C24A35]"; }
+      else if (note.type === "fallacy") { bgClass = "bg-[#FDF0B6]/70"; borderClass = "border-b-2 border-[#E3D398]"; }
+      else { bgClass = "bg-[#E8DAFB]/60"; borderClass = "border-b-2 border-[#6B4C7A]"; }
+
+      result = result.replace(regex, `<span id="hl-${note.originalIndex}" data-note-index="${note.originalIndex}" class="${bgClass} ${borderClass} px-1 rounded-sm cursor-pointer transition-all hover:bg-opacity-100 hover:shadow-sm" title="${note.title}">$1</span>`);
+    });
+    
+    return result.replace(/\n/g, '<br/>');
+  };
+
+  const handleTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'SPAN' && target.dataset.noteIndex) {
+      const index = Number(target.dataset.noteIndex);
+      setActiveNote(index);
+      document.getElementById(`margin-note-${index}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const handleMarginNoteClick = (index: number) => {
+    setActiveNote(index);
+    document.getElementById(`hl-${index}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
   const radarData = analysis?.quantData?.radar ? [
     { subject: "Bias", A: analysis.quantData.radar.bias },
     { subject: "Omission", A: analysis.quantData.radar.omission },
@@ -76,12 +136,20 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     { subject: "Evidence", A: analysis.quantData.radar.evidence },
   ] : [];
 
+  const sourceRadarData = activeAnalysis?.quantData?.radar ? [
+    { subject: "Bias", A: activeAnalysis.quantData.radar.bias },
+    { subject: "Omission", A: activeAnalysis.quantData.radar.omission },
+    { subject: "Urgency", A: activeAnalysis.quantData.radar.urgency },
+    { subject: "Motive", A: activeAnalysis.quantData.radar.motive },
+    { subject: "Evidence", A: activeAnalysis.quantData.radar.evidence },
+  ] : [];
+
   const compared = compareIds.map((id) => docs.find((doc) => doc.id === id)).filter(Boolean) as DiscourseDoc[];
   const terms = corpus.terms;
   const termCounts = useMemo(() => docs.map((doc) => ({ doc, values: terms.map((phrase) => ({ phrase, n: countPhrase(doc.text, phrase), rate: words(doc.text).length ? Math.round(countPhrase(doc.text, phrase) / words(doc.text).length * 10000) / 10 : 0 })) })), [docs, terms]);
 
   const ContradictionGauge = ({ score }: { score: number }) => {
-    const radius = 60, cx = 80, cy = 80, startAngle = -210, endAngle = 30;
+    const radius = 50, cx = 60, cy = 60, startAngle = -210, endAngle = 30;
     const angle = startAngle + (endAngle - startAngle) * (score / 100);
     const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
       const angleInRadians = (angleInDegrees * Math.PI) / 180.0;
@@ -93,18 +161,18 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       const largeArcFlag = end - start <= 180 ? "0" : "1";
       return ["M", startPt.x, startPt.y, "A", r, r, 0, largeArcFlag, 0, endPt.x, endPt.y].join(" ");
     };
-    const needle = polarToCartesian(cx, cy, radius - 15, angle);
+    const needle = polarToCartesian(cx, cy, radius - 10, angle);
     return (
-      <div className="relative flex flex-col items-center justify-center w-full h-full">
-        <svg width="160" height="130" viewBox="0 0 160 130" className="overflow-visible">
-          <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="var(--muted)" strokeWidth="12" strokeLinecap="round" />
-          <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#C24A35" strokeWidth="12" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
-          <circle cx={cx} cy={cy} r="6" fill="var(--foreground)" />
-          <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="var(--foreground)" strokeWidth="3" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
+      <div className="relative flex flex-col items-center justify-center w-full h-full min-h-[120px]">
+        <svg width="100" height="80" viewBox="0 0 120 100" className="overflow-visible">
+          <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="var(--muted)" strokeWidth="10" strokeLinecap="round" />
+          <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#C24A35" strokeWidth="10" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
+          <circle cx={cx} cy={cy} r="5" fill="var(--foreground)" />
+          <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="var(--foreground)" strokeWidth="2.5" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
         </svg>
         <div className="absolute bottom-0 text-center">
-          <span className="font-display text-6xl text-[#C24A35] tracking-tighter">{score}</span>
-          <span className="text-lg text-muted-foreground">/100</span>
+          <span className="font-display text-4xl text-[#C24A35] tracking-tighter">{score}</span>
+          <span className="text-xs text-muted-foreground">/100</span>
         </div>
       </div>
     );
@@ -123,7 +191,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           <h2 className="font-display text-3xl text-foreground">Discourse Lab</h2>
         </div>
         <nav className="flex gap-1 bg-muted/50 p-1 rounded-xl border">
-          {([ ["investigate", "Dossier", ShieldAlert], ["read", "Source Reading", BookOpenText], ["compare", "Text Diff", Columns2], ["count", "Metrics", Hash] ] as const).map(([id, label, Icon]) => (
+          {([ ["read", "Forensic Workbench", BookOpenText], ["investigate", "Cross-Source", Globe], ["compare", "Text Diff", Columns2], ["count", "Metrics", Hash] ] as const).map(([id, label, Icon]) => (
             <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`rounded-lg transition-all ${view === id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
               <Icon className="mr-2 h-4 w-4" />{label}
             </Button>
@@ -162,17 +230,177 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
         {/* MAIN CONTENT AREA */}
         <main className="flex-1 overflow-y-auto bg-background/50">
           
+          {/* FORENSIC WORKBENCH (READ VIEW) */}
+          {view === "read" && active && (
+            <div className="mx-auto max-w-7xl p-8 pb-24 h-full flex flex-col">
+              
+              <div className="mb-6 flex items-center justify-between shrink-0">
+                <div>
+                  <h3 className="mb-2 font-display text-3xl leading-tight">{active.title}</h3>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
+                </div>
+                <div className="flex gap-2">
+                  {activeAnalysis && (
+                    <>
+                      <Button variant="outline" size="icon" className={`h-9 w-9 ${rawView ? 'bg-muted' : ''}`} onClick={() => setRawView(!rawView)} title={rawView ? "Show Highlights" : "Show Raw Text"}>
+                        {rawView ? <Highlighter className="h-4 w-4" /> : <Type className="h-4 w-4" />}
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-9 border-dashed text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => { 
+                        const newAnalyses = { ...savedAnalyses };
+                        delete newAnalyses[active.id];
+                        update({ ...corpus, analyses: newAnalyses } as any); 
+                        setActiveNote(null);
+                      }}>
+                        Clear Analysis
+                      </Button>
+                    </>
+                  )}
+                  <Button onClick={runSourceAnalysis} disabled={isAnalyzingSource} className="h-9 px-6">
+                    {isAnalyzingSource ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...</> : <><Fingerprint className="mr-2 h-4 w-4" /> Analyze Source</>}
+                  </Button>
+                </div>
+              </div>
+
+              {analysisError && <p className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive shrink-0">{analysisError}</p>}
+
+              <div className="flex flex-1 gap-8 min-h-0">
+                {/* LEFT: Text with Highlights */}
+                <article className="flex-1 rounded-xl border bg-card p-10 shadow-sm overflow-y-auto relative">
+                  <div 
+                    className="font-serif text-lg leading-loose text-foreground/90 whitespace-pre-wrap selection:bg-[#CBE6F9]"
+                    onClick={handleTextClick}
+                    dangerouslySetInnerHTML={{ __html: (activeAnalysis && !rawView) ? getHighlightedText(active.text, activeAnalysis.margin_notes) : escapeHtml(active.text).replace(/\n/g, '<br/>') }}
+                    onMouseUp={() => { const q = window.getSelection()?.toString().trim() ?? ""; if (q.length > 3 && !window.getSelection()?.toString().includes('\n')) setSelection({ quote: q, doc: active }); }}
+                  />
+                </article>
+
+                {/* RIGHT: Analyst Margin */}
+                <aside className="w-[420px] shrink-0 flex flex-col gap-4 overflow-y-auto pr-2 pb-10">
+                  {!activeAnalysis && !isAnalyzingSource && (
+                    <div className="flex flex-col items-center justify-center h-full text-center p-8 border rounded-xl border-dashed bg-card/30">
+                      <Fingerprint className="h-10 w-10 text-muted-foreground/50 mb-4" />
+                      <h4 className="font-display text-xl mb-2">Awaiting Analysis</h4>
+                      <p className="text-sm text-muted-foreground">Click "Analyze Source" to run forensic linguistics and extract hidden motives, biases, and contradictions.</p>
+                    </div>
+                  )}
+
+                  {isAnalyzingSource && (
+                    <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                      <Loader2 className="h-8 w-8 text-[#C24A35] animate-spin mb-4" />
+                      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground animate-pulse">Extracting Motives → Mapping Fallacies → Measuring Bias</p>
+                    </div>
+                  )}
+
+                  {activeAnalysis && (
+                    <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-500">
+                      
+                      {/* Top Metrics Row */}
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Radar */}
+                        <div className="rounded-xl border bg-card p-4 shadow-sm">
+                          <h4 className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground mb-2">Narrative Profile</h4>
+                          <div className="h-32 w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <RadarChart cx="50%" cy="50%" outerRadius="65%" data={sourceRadarData} margin={{ top: 5, right: 15, bottom: 5, left: 15 }}>
+                                <PolarGrid stroke="var(--border)" strokeDasharray="2 2" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 8, fontFamily: 'var(--font-mono)' }} />
+                                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                                <Radar name="Analysis" dataKey="A" stroke="#C24A35" strokeWidth={1.5} fill="#C24A35" fillOpacity={0.15} />
+                              </RadarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                        {/* Gauge */}
+                        <div className="rounded-xl border bg-card p-4 shadow-sm flex flex-col items-center justify-center">
+                          <h4 className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground mb-1 w-full text-left">Contradiction</h4>
+                          <ContradictionGauge score={activeAnalysis.quantData?.contradictionIndex || 50} />
+                        </div>
+                      </div>
+
+                      {/* Executive Summary */}
+                      <div className="rounded-xl border bg-[#FDFBF7] p-5 shadow-sm border-l-4 border-l-[#C24A35]">
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-2">Executive Summary</h4>
+                        <p className="font-display text-base leading-relaxed text-foreground">{activeAnalysis.executive_summary}</p>
+                      </div>
+
+                      {/* Margin Notes */}
+                      <div>
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground border-b pb-2 mb-3">Forensic Margin Notes</h4>
+                        <div className="space-y-3">
+                          {activeAnalysis.margin_notes?.map((note: any, i: number) => {
+                            const isActive = activeNote === i;
+                            return (
+                              <div 
+                                key={i} 
+                                id={`margin-note-${i}`}
+                                onClick={() => handleMarginNoteClick(i)}
+                                className={`rounded-lg border bg-card p-4 shadow-sm cursor-pointer transition-all duration-300 ${isActive ? "ring-2 ring-[#C24A35] shadow-md scale-[1.02]" : "hover:border-border-strong"}`}
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  {note.type === "contradiction" && <AlertTriangle className="h-3 w-3 text-[#C24A35]" />}
+                                  {note.type === "fallacy" && <FileWarning className="h-3 w-3 text-[#E3D398]" />}
+                                  {note.type === "motive" && <Eye className="h-3 w-3 text-[#6B4C7A]" />}
+                                  <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{note.type}</span>
+                                </div>
+                                <b className="block font-display text-sm mb-1">{note.title}</b>
+                                <p className="text-xs text-muted-foreground leading-relaxed mb-3">"{note.analysis}"</p>
+                                <div className={`p-2 rounded text-[11px] font-serif italic text-foreground/70 border-l-2 ${isActive ? "border-[#C24A35] bg-[#FBD0D4]/20" : "border-muted-foreground/20 bg-muted/30"}`}>"{clip(note.quote, 60)}"</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Unstated Assumptions */}
+                      <div>
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground border-b pb-2 mb-3">Unstated Assumptions</h4>
+                        <div className="space-y-2">
+                          {activeAnalysis.unstated_assumptions?.map((text: string, i: number) => (
+                            <div key={i} className="flex flex-col gap-2 rounded-lg border bg-card p-3 shadow-sm">
+                              <p className="text-xs text-foreground leading-relaxed">{text}</p>
+                              <Button size="sm" variant="ghost" className="h-7 self-end text-[9px] uppercase tracking-wider text-muted-foreground hover:text-foreground" onClick={(e) => { e.stopPropagation(); plantAnalysis(`asm-${i}`, "hypothesis", "Unstated Assumption", text, active.title); }}>
+                                <MapPin className="mr-1 h-3 w-3" /> Plant
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Questions to Ask */}
+                      <div>
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground border-b pb-2 mb-3">The Dog That Didn't Bark</h4>
+                        <div className="space-y-2">
+                          {activeAnalysis.questions_to_ask?.map((text: string, i: number) => (
+                            <div key={i} className="flex flex-col gap-2 rounded-lg border bg-[#FDF6F4] border-[#C24A35]/20 p-3 shadow-sm">
+                              <div className="flex items-start gap-2">
+                                <HelpCircle className="h-3 w-3 text-[#C24A35] shrink-0 mt-0.5" />
+                                <p className="text-xs text-foreground leading-relaxed">{text}</p>
+                              </div>
+                              <Button size="sm" variant="ghost" className="h-7 self-end text-[9px] uppercase tracking-wider text-[#C24A35] hover:bg-[#C24A35]/10" onClick={(e) => { e.stopPropagation(); plantAnalysis(`q-${i}`, "question", "Missing Context", text, active.title); }}>
+                                <MapPin className="mr-1 h-3 w-3" /> Plant
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                    </div>
+                  )}
+                </aside>
+              </div>
+            </div>
+          )}
+
+          {/* INVESTIGATE VIEW (CROSS-SOURCE) */}
           {view === "investigate" && (
             <div className="mx-auto max-w-6xl p-8 pb-24">
-              
               <div className="mb-8 flex items-end justify-between">
                 <div>
-                  <h3 className="mb-2 font-display text-4xl tracking-tight text-foreground">Intelligence Dossier</h3>
+                  <h3 className="mb-2 font-display text-4xl tracking-tight text-foreground">Cross-Source Dossier</h3>
                   <p className="max-w-xl text-sm text-muted-foreground">Cross-reference global sources, extract quantitative sentiment signals, and map strategic blind spots.</p>
                 </div>
               </div>
 
-              {/* URL INPUT COMMAND BAR */}
               <div className="mb-10 flex items-center gap-2 rounded-xl border bg-card p-2 shadow-sm">
                 <div className="flex flex-1 gap-2">
                   {urls.map((url, i) => (
@@ -204,8 +432,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
               {analysis && !isAnalyzing && (
                 <div className="animate-in fade-in slide-in-from-bottom-8 space-y-6 duration-700">
-                  
-                  {/* THE BIG PICTURE - Hero Headline */}
                   <section className="relative rounded-xl border bg-card p-10 shadow-sm overflow-hidden">
                     <div className="absolute left-0 top-0 h-full w-1 bg-[#C24A35]" />
                     <div className="mb-4 flex items-center gap-3">
@@ -215,10 +441,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                     <p className="font-display text-2xl md:text-3xl leading-relaxed text-foreground first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:mt-1">{analysis.conclusion}</p>
                   </section>
 
-                  {/* QUANT DASHBOARD ROW - DENSE & PROPORTIONAL */}
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-12 items-stretch mt-8">
-                    
-                    {/* Narrative Radar */}
                     <div className="md:col-span-4 flex flex-col rounded-xl border bg-card p-5 shadow-sm h-[320px]">
                       <div className="mb-2 flex items-center justify-between relative z-10">
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Narrative Profile</h4>
@@ -236,7 +459,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       </div>
                     </div>
 
-                    {/* Key Actors (Grid Layout to avoid massive voids) */}
                     <div className="md:col-span-4 flex flex-col rounded-xl border bg-card p-5 shadow-sm h-[320px]">
                       <div className="mb-4 flex items-center justify-between relative z-10">
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Key Actors</h4>
@@ -257,7 +479,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       </div>
                     </div>
 
-                    {/* Contradiction Gauge */}
                     <div className="md:col-span-4 flex flex-col rounded-xl border bg-card p-5 shadow-sm h-[320px]">
                       <div className="mb-2 flex items-center justify-between relative z-10">
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Contradiction Index</h4>
@@ -271,7 +492,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   </div>
 
                   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 mt-8">
-                    {/* Evidence Trail */}
                     <section className="rounded-xl border bg-card p-6 shadow-sm">
                       <h4 className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><Check className="h-4 w-4" /> Documented Evidence</h4>
                       <div className="space-y-4">
@@ -290,7 +510,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       </div>
                     </section>
 
-                    {/* Hypotheses & Blind Spots */}
                     <div className="space-y-6">
                       <section className="rounded-xl border bg-card p-6 shadow-sm">
                         <h4 className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><Sparkles className="h-4 w-4" /> Strategic Hypotheses</h4>
@@ -324,33 +543,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   </div>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* READ VIEW, COMPARE VIEW, METRICS VIEW KEPT IDENTICAL */}
-          {view === "read" && active && (
-            <div className="mx-auto flex max-w-6xl gap-8 p-8 pb-24">
-              <article className="flex-1 rounded-xl border bg-card p-12 shadow-sm relative">
-                <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
-                <h3 className="mb-8 font-display text-4xl leading-tight">{active.title}</h3>
-                {active.audience && <p className="mb-8 rounded-lg bg-muted/50 p-4 text-sm"><b className="mb-1 block font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Addressed to</b> {active.audience}</p>}
-                <div className="font-serif text-lg leading-loose text-foreground/80" onMouseUp={() => { const q = window.getSelection()?.toString().trim() ?? ""; if (q.length > 3) setSelection({ quote: q, doc: active }); }}>
-                  {active.text}
-                </div>
-              </article>
-              <aside className="w-80 shrink-0">
-                <p className="mb-4 font-mono text-[10px] uppercase tracking-widest text-muted-foreground border-b pb-2">Margin Notes</p>
-                {corpus.annotations.filter((mark) => mark.docId === active.id).length === 0 && <p className="text-sm leading-relaxed text-muted-foreground italic mt-4">Select a passage to code it. Coded quotes become evidence you can place on the canvas.</p>}
-                <div className="space-y-3 mt-4">
-                  {corpus.annotations.filter((mark) => mark.docId === active.id).map((mark) => (
-                    <div className="rounded-xl border bg-card p-5 shadow-sm" key={mark.id} data-code={mark.code}>
-                      <small className="mb-3 block font-mono text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{codeLabel(mark.code)}</small>
-                      <blockquote className="mb-4 font-serif text-sm italic leading-relaxed text-foreground/80 border-l-2 border-[#C24A35] pl-3">“{clip(mark.quote, 150)}”</blockquote>
-                      <Button size="sm" variant="outline" className="h-8 w-full rounded-md text-[10px] uppercase tracking-wider font-bold" onClick={() => plant(active, mark.quote, codeLabel(mark.code))}><MapPin className="mr-1 h-3 w-3" />Plant on Canvas</Button>
-                    </div>
-                  ))}
-                </div>
-              </aside>
             </div>
           )}
 
