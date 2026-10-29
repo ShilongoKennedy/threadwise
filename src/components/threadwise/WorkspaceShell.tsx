@@ -22,8 +22,14 @@ export function WorkspaceShell() {
   // Listen for the "Open Lab" request from the Canvas Studio
   useEffect(() => {
     const handleOpenLab = () => {
-      if (layout === "tabs") setActiveTab("lab");
-      if (layout === "slide") setSlideOpen(false); // Keep slide closed to show full lab, or open it? Let's just close the slide so they see the lab.
+      // Force the user to see the Lab. If they are in split, switch to tabs so it takes over.
+      if (layout === "split" || layout === "tabs") {
+        setLayout("tabs");
+        setActiveTab("lab");
+      }
+      if (layout === "slide") {
+        setSlideOpen(false); // Close the canvas slide so the lab is fully visible
+      }
     };
     window.addEventListener("threadwise:open-lab", handleOpenLab);
     return () => window.removeEventListener("threadwise:open-lab", handleOpenLab);

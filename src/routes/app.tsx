@@ -3,7 +3,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
-const Canvas = lazy(() => import("@/components/threadwise/Canvas"));
+const WorkspaceShell = lazy(() => import("@/components/threadwise/WorkspaceShell").then(m => ({ default: m.WorkspaceShell })));
 
 export const Route = createFileRoute("/app")({
   component: AppPage,
@@ -14,10 +14,8 @@ function AppPage() {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        // If no session, kick them to the login page
         navigate({ to: "/login" });
       } else {
         setIsChecking(false);
@@ -38,7 +36,7 @@ function AppPage() {
     <main className="h-screen w-screen overflow-hidden bg-background">
       <ClientOnly fallback={loading}>
         <Suspense fallback={loading}>
-          <Canvas />
+          <WorkspaceShell />
         </Suspense>
       </ClientOnly>
     </main>
