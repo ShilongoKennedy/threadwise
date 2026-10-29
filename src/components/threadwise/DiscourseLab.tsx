@@ -32,7 +32,6 @@ const LOADING_STEPS = [
 
 const DEFAULT_RADAR = { bias: 50, omission: 50, urgency: 50, motive: 50, evidence: 50 };
 
-// SANITIZER: Ensures the AI never breaks the UI
 const sanitizeAnalysis = (res: any) => {
   if (!res) return null;
   const quantData = res.quantData || {};
@@ -65,6 +64,8 @@ const sanitizeAnalysis = (res: any) => {
 export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Corpus; update: (corpus: Corpus) => void; onClose: () => void }) {
   const corpus = stored ?? emptyCorpus();
   const s = useThread();
+  
+  // 1. ALL STATE DECLARATIONS GO FIRST
   const [view, setView] = useState<View>("read");
   const [activeId, setActiveId] = useState(corpus.docs[0]?.id ?? "");
   const [compareIds, setCompareIds] = useState<[string, string]>([corpus.docs[0]?.id ?? "", corpus.docs[1]?.id ?? ""]);
@@ -79,16 +80,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   
   const [loadingStep, setLoadingStep] = useState(0);
 
-  useEffect(() => {
-    if (isAnalyzingSource) {
-      setLoadingStep(0);
-      const interval = setInterval(() => {
-        setLoadingStep((prev) => (prev < LOADING_STEPS.length - 1 ? prev + 1 : prev));
-      }, 1200);
-      return () => clearInterval(interval);
-    }
-  }, [isAnalyzingSource]);
-  
   const savedInv = (corpus as any).investigation || {};
   const savedAnalyses = (corpus as any).analyses || {};
   const savedComparisons = (corpus as any).comparisons || {};
@@ -112,6 +103,17 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const comparisonAnalysis = savedComparisons[comparisonKey];
 
   const save = (patch: Partial<Corpus>) => update({ ...corpus, ...patch });
+
+  // 2. ALL EFFECTS GO SECOND
+  useEffect(() => {
+    if (isAnalyzingSource) {
+      setLoadingStep(0);
+      const interval = setInterval(() => {
+        setLoadingStep((prev) => (prev < LOADING_STEPS.length - 1 ? prev + 1 : prev));
+      }, 1200);
+      return () => clearInterval(interval);
+    }
+  }, [isAnalyzingSource]);
   
   const deleteDoc = (id: string) => {
     if (!confirm("Delete this document and its analyses?")) return;
