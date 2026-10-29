@@ -289,52 +289,101 @@ function LandingPage() {
 
             <div className="relative bg-[#FDFBF7] aspect-[16/10] flex overflow-hidden rounded-md md:rounded-lg">
               
-              {/* DISCOURSE LAB MOCKUP INSIDE LAPTOP */}
+              {/* FULL DASHBOARD MOCKUP INSIDE LAPTOP */}
               <div className="absolute inset-0 flex bg-[#FDFBF7]">
-                {/* Left Side: Speech Text */}
-                <div className="w-1/2 h-full border-r border-black/5 p-4 md:p-6 overflow-hidden relative">
-                  <div className="absolute top-0 left-0 w-full h-10 bg-gradient-to-b from-[#FDFBF7] to-transparent z-10" />
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[8px] md:text-[10px] font-mono tracking-widest uppercase text-[#C24A35]">Forensic Workbench</span>
-                  </div>
-                  <div className="font-serif text-[8px] md:text-[11px] leading-relaxed text-[#1A1A1A]/80">
-                    <p className="mb-2">
-                      "I was in a country somewhere in the Middle East... and the people said, we took our gold out of the vaults in New York City. You know what I said to him? <span className="bg-[#FDF0B6]/70 border-b-2 border-[#E3D398] px-0.5 rounded-sm">I said, you have three armies within 400 miles who can come take your gold.</span>"
-                    </p>
-                    <p className="mb-2">
-                      "That’s the real world. You’re not thinking clearly about safety. <span className="bg-[#FBD0D4]/60 border-b-2 border-[#C24A35] px-0.5 rounded-sm">That gold is protected by the Atlantic, the Pacific, the United States military, the rule of law.</span>"
-                    </p>
+                
+                {/* 1. Tiny Left Sidebar */}
+                <div className="w-[18%] h-full border-r border-black/5 p-2 md:p-3 flex flex-col bg-[#FDFBF7]">
+                  <div className="text-[6px] md:text-[8px] font-mono tracking-widest uppercase text-muted-foreground mb-2">Corpus · 3</div>
+                  <div className="space-y-1.5">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex flex-col gap-0.5 p-1 rounded bg-black/5 border border-black/5">
+                        <span className="text-[5px] md:text-[6px] text-muted-foreground font-mono">Oct 2026</span>
+                        <span className="text-[6px] md:text-[7px] font-medium text-[#1A1A1A] truncate">Al Jazeera {i}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* Right Side: Margin Notes */}
-                <div className="w-1/2 h-full p-4 md:p-6 bg-[#FDFBF7] flex flex-col gap-2 overflow-hidden relative">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[8px] md:text-[10px] font-mono tracking-widest uppercase text-muted-foreground">Analyst Margin</span>
-                    <span className="text-[8px] md:text-[10px] font-mono text-[#C24A35] font-bold">85/100 Friction</span>
-                  </div>
+                {/* 2. Main Content Area */}
+                <div className="w-[82%] h-full flex flex-col">
                   
-                  {/* Mini Margin Note Cards */}
-                  <div className="bg-white border border-black/10 rounded-lg p-2 md:p-3 shadow-sm">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <ShieldAlert className="w-2.5 h-2.5 text-[#C24A35]" />
-                      <span className="text-[7px] md:text-[9px] font-bold font-mono uppercase text-muted-foreground">Contradiction</span>
-                    </div>
-                    <b className="block text-[8px] md:text-[10px] font-display mb-1">Rule of Law vs. Force</b>
-                    <p className="text-[7px] md:text-[9px] text-muted-foreground leading-tight">Citing 'rule of law' in the same breath as implicit military force reveals a protection-racket mentality.</p>
+                  {/* Top Navigation Tabs */}
+                  <div className="h-6 md:h-8 border-b border-black/5 flex items-center px-2 gap-1 md:gap-2 shrink-0">
+                    <span className="text-[5px] md:text-[7px] font-mono tracking-wider uppercase text-[#1A1A1A] font-bold border-b-2 border-[#1A1A1A] py-1 px-1">Forensic Workbench</span>
+                    <span className="text-[5px] md:text-[7px] font-mono tracking-wider uppercase text-muted-foreground py-1 px-1">Cross-Source</span>
+                    <span className="text-[5px] md:text-[7px] font-mono tracking-wider uppercase text-muted-foreground py-1 px-1">Text Diff</span>
                   </div>
 
-                  <div className="bg-white border border-black/10 rounded-lg p-2 md:p-3 shadow-sm">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <FileWarning className="w-2.5 h-2.5 text-[#E3D398]" />
-                      <span className="text-[7px] md:text-[9px] font-bold font-mono uppercase text-muted-foreground">Fallacy</span>
+                  {/* Dashboard Body */}
+                  <div className="flex-1 flex overflow-hidden">
+                    
+                    {/* Left: Speech Text */}
+                    <div className="w-1/2 h-full border-r border-black/5 p-2 md:p-4 overflow-hidden relative">
+                      <div className="flex items-center gap-1 mb-2 md:mb-3">
+                        <span className="text-[6px] md:text-[8px] font-mono tracking-widest uppercase text-[#C24A35]">Forensic Workbench</span>
+                      </div>
+                      <div className="font-serif text-[6px] md:text-[9px] leading-relaxed text-[#1A1A1A]/80">
+                        <p className="mb-1.5">
+                          "I was in a country somewhere in the Middle East... and the people said, we took our gold out of the vaults in New York City. You know what I said to him? <span className="bg-[#FDF0B6]/70 border-b border-[#E3D398] px-0.5 rounded-sm">I said, you have three armies within 400 miles who can come take your gold.</span>"
+                        </p>
+                        <p className="mb-1.5">
+                          "That’s the real world. You’re not thinking clearly about safety. <span className="bg-[#FBD0D4]/60 border-b border-[#C24A35] px-0.5 rounded-sm">That gold is protected by the Atlantic, the Pacific, the United States military, the rule of law.</span>"
+                        </p>
+                      </div>
                     </div>
-                    <b className="block text-[8px] md:text-[10px] font-display mb-1">Appeal to Force</b>
-                    <p className="text-[7px] md:text-[9px] text-muted-foreground leading-tight">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
+
+                    {/* Right: Analyst Margin */}
+                    <div className="w-1/2 h-full p-2 md:p-4 flex flex-col gap-2 md:gap-3 overflow-hidden relative">
+                      
+                      {/* Top Metrics Row (Radar & Gauge) */}
+                      <div className="flex gap-2">
+                        <div className="flex-1 rounded border border-black/5 bg-white p-1.5 flex flex-col items-center">
+                          <span className="text-[5px] md:text-[6px] font-mono uppercase text-muted-foreground self-start mb-1">Radar</span>
+                          <svg viewBox="0 0 100 100" className="w-10 h-10 md:w-12 md:h-12">
+                            <polygon points="50,10 90,40 75,85 25,85 10,40" fill="none" stroke="#E5E5E5" strokeWidth="2" />
+                            <polygon points="50,25 75,45 65,75 35,75 25,45" fill="none" stroke="#E5E5E5" strokeWidth="1" />
+                            <polygon points="50,30 70,45 60,65 40,65 30,45" fill="#C24A35" fillOpacity="0.2" stroke="#C24A35" strokeWidth="2" />
+                          </svg>
+                        </div>
+                        <div className="flex-1 rounded border border-black/5 bg-white p-1.5 flex flex-col items-center justify-center relative">
+                          <span className="text-[5px] md:text-[6px] font-mono uppercase text-muted-foreground self-start absolute top-1.5 left-1.5">Friction</span>
+                          <div className="text-[10px] md:text-[14px] font-display text-[#C24A35] mt-2">85<span className="text-[5px] md:text-[6px] text-muted-foreground">/100</span></div>
+                        </div>
+                      </div>
+
+                      {/* Executive Summary */}
+                      <div className="bg-[#FDFBF7] border-l-2 border-[#C24A35] p-1.5 rounded-r shadow-sm">
+                        <span className="text-[5px] md:text-[6px] font-mono uppercase text-[#C24A35] block mb-0.5">Executive Summary</span>
+                        <p className="text-[6px] md:text-[7px] leading-tight text-[#1A1A1A] font-medium line-clamp-2">The speaker is using implicit threats of military force to reassure foreign investors, revealing a systemic fragility in dollar hegemony.</p>
+                      </div>
+
+                      {/* Margin Notes */}
+                      <div className="space-y-1.5">
+                        <div className="bg-white border border-black/10 rounded-lg p-1.5 md:p-2 shadow-sm">
+                          <div className="flex items-center gap-1 mb-0.5">
+                            <ShieldAlert className="w-2 h-2 md:w-2.5 md:h-2.5 text-[#C24A35]" />
+                            <span className="text-[5px] md:text-[6px] font-bold font-mono uppercase text-muted-foreground">Contradiction</span>
+                          </div>
+                          <b className="block text-[6px] md:text-[7px] font-display mb-0.5">Rule of Law vs. Force</b>
+                          <p className="text-[5px] md:text-[6px] text-muted-foreground leading-tight">Citing 'rule of law' alongside implicit military force reveals a protection-racket mentality.</p>
+                        </div>
+
+                        <div className="bg-white border border-black/10 rounded-lg p-1.5 md:p-2 shadow-sm">
+                          <div className="flex items-center gap-1 mb-0.5">
+                            <FileWarning className="w-2 h-2 md:w-2.5 md:h-2.5 text-[#E3D398]" />
+                            <span className="text-[5px] md:text-[6px] font-bold font-mono uppercase text-muted-foreground">Fallacy</span>
+                          </div>
+                          <b className="block text-[6px] md:text-[7px] font-display mb-0.5">Appeal to Force</b>
+                          <p className="text-[5px] md:text-[6px] text-muted-foreground leading-tight">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
+                        </div>
+                      </div>
+
+                      {/* Fade out bottom */}
+                      <div className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-[#FDFBF7] to-transparent z-10" />
+                    </div>
+
                   </div>
-                  
-                  {/* Fade out bottom */}
-                  <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#FDFBF7] to-transparent z-10" />
                 </div>
               </div>
 
