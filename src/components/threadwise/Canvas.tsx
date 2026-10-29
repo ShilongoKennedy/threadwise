@@ -104,7 +104,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
   const replay = s.replayIndex !== null;
   const snapshot = replay ? s.history[s.replayIndex ?? 0] : undefined;
   
-  // FIX: Added ?? [] to prevent crashes if arrays are temporarily undefined
   const visibleNodes = snapshot?.nodes ?? s.nodes ?? [];
   const visibleEdges = snapshot?.edges ?? s.edges ?? [];
   
@@ -282,14 +281,19 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
-      if (presentation || t.closest('[aria-label="Canvas studio"]')) return;
+      
+      // FIX: Safely ignore shortcuts if typing in a field or if a dialog is open
       if (
-        e.metaKey ||
-        e.ctrlKey ||
-        e.altKey ||
-        t.closest("input, textarea, [contenteditable], [role=listbox]")
-      )
-        return;
+        presentation || 
+        t.closest('[role="dialog"]') || 
+        t.closest('[aria-label="Canvas studio"]') ||
+        t.tagName === "INPUT" || 
+        t.tagName === "TEXTAREA" || 
+        t.isContentEditable
+      ) return;
+
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
       const n = Number(e.key);
       const kind = n >= 1 && n <= 5 ? NODE_TYPES[n - 1] : undefined;
       if (kind) {

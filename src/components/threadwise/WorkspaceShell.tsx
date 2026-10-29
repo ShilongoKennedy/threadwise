@@ -34,8 +34,13 @@ export function WorkspaceShell() {
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      // Ignore if typing in an input/textarea
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
+      // FIX: Ignore if typing in an input/textarea or if a modal is open
+      if (
+        target.tagName === "INPUT" || 
+        target.tagName === "TEXTAREA" || 
+        target.isContentEditable ||
+        target.closest('[role="dialog"]')
+      ) return;
 
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
