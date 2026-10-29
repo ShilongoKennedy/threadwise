@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,7 +7,7 @@ import { useThread } from "@/lib/threadwise/store";
 import { streamTask } from "@/lib/threadwise/ai-client";
 import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type CodeId, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
 import { toast } from "sonner";
-import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PolarRadiusAxis, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell } from "recharts";
+import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PolarRadiusAxis, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
 
 type View = "read" | "compare" | "count" | "investigate";
 const uid = () => crypto.randomUUID();
@@ -50,6 +50,73 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const comparisonAnalysis = savedComparisons[comparisonKey];
 
   const save = (patch: Partial<Corpus>) => update({ ...corpus, ...patch });
+  
+  const deleteDoc = (id: string) => {
+    if (!confirm("Delete this document and its analyses?")) return;
+    const newDocs = corpus.docs.filter(d => d.id !== id);
+    const newAnalyses = { ...savedAnalyses };
+    delete newAnalyses[id];
+    const newComparisons = { ...savedComparisons };
+    Object.keys(newComparisons).forEach(key => {
+      if (key.includes(id)) delete newComparisons[key];
+    });
+    
+    update({ ...corpus, docs: newDocs, analyses: newAnalyses, comparisons: newComparisons } as any);
+    if (activeId === id) setActiveId(newDocs[0]?.id ?? "");
+  };
+
+  const exportReport = (type: "forensic" | "cross-source" | "compare") => {
+    let content = "";
+    let filename = "";
+    
+    if (type === "forensic" && active && activeAnalysis) {
+      filename = `${active.title.replace(/\s+/g, '-')}-forensic-analysis.md`;
+      content = `# Forensic Analysis: ${active.title}\n\n`;
+      content += `**Source:** ${active.speaker || "Unknown"} (${active.date || "Undated"})\n\n`;
+      content += `## Executive Summary\n${activeAnalysis.executive_summary}\n\n`;
+      content += `## Metrics\n- Contradiction Index: ${activeAnalysis.quantData.contradictionIndex}/100\n`;
+      content += `- Bias: ${activeAnalysis.quantData.radar.bias}/100\n- Omission: ${activeAnalysis.quantData.radar.omission}/100\n- Urgency: ${activeAnalysis.quantData.radar.urgency}/100\n- Motive: ${activeAnalysis.quantData.radar.motive}/100\n- Evidence: ${activeAnalysis.quantData.radar.evidence}/100\n\n`;
+      content += `## Forensic Margin Notes\n`;
+      activeAnalysis.margin_notes.forEach((note: any) => {
+        content += `### ${note.title} (${note.type})\n**Analysis:** ${note.analysis}\n> "${note.quote}"\n\n`;
+      });
+      content += `## Unstated Assumptions\n${activeAnalysis.unstated_assumptions.map((a: string) => `- ${a}`).join("\n")}\n\n`;
+      content += `## The Dog That Didn't Bark\n${activeAnalysis.questions_to_ask.map((q: string) => `- ${q}`).join("\n")}\n`;
+    } else if (type === "cross-source" && analysis) {
+      filename = `cross-source-dossier.md`;
+      content = `# Cross-Source Intelligence Dossier\n\n`;
+      content += `## The Big Picture\n${analysis.conclusion}\n\n`;
+      content += `## Metrics\n- Contradiction Index: ${analysis.quantData.contradictionIndex}/100\n\n`;
+      content += `## Key Actors\n${analysis.entities.map((e: string) => `- ${e}`).join("\n")}\n\n`;
+      content += `## Documented Evidence\n`;
+      analysis.evidence.forEach((e: any) => { content += `### ${e.title}\n${e.body}\n*Source: ${e.source}*\n\n`; });
+      content += `## Strategic Hypotheses\n`;
+      analysis.hypotheses.forEach((h: any) => { content += `### ${h.title}\n${h.body}\n\n`; });
+      content += `## Blind Spots\n`;
+      analysis.questions.forEach((q: any) => { content += `### ${q.title}\n${q.body}\n\n`; });
+    } else if (type === "compare" && docA && docB && comparisonAnalysis) {
+      filename = `comparison-${docA.title.slice(0,10)}-vs-${docB.title.slice(0,10)}.md`;
+      content = `# Comparative Analysis\n\n`;
+      content += `**Source A:** ${docA.title}\n**Source B:** ${docB.title}\n\n`;
+      content += `## Divergence Score: ${comparisonAnalysis.divergenceScore}/100\n\n`;
+      content += `## Entity Matrix\n`;
+      content += `### Shared Focus\n${comparisonAnalysis.shared_entities.map((e: string) => `- ${e}`).join("\n")}\n`;
+      content += `### Only in A\n${comparisonAnalysis.unique_to_a.map((e: string) => `- ${e}`).join("\n")}\n`;
+      content += `### Only in B\n${comparisonAnalysis.unique_to_b.map((e: string) => `- ${e}`).join("\n")}\n\n`;
+      content += `## Flashpoints\n`;
+      comparisonAnalysis.flashpoints.forEach((fp: any) => {
+        content += `### ${fp.topic}\n**${docA.title}:** ${fp.text_a_view}\n**${docB.title}:** ${fp.text_b_view}\n\n`;
+      });
+    }
+
+    if (!content) return;
+    const blob = new Blob([content], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast.success("Report exported successfully");
+  };
   
   const plant = (doc: DiscourseDoc, quote: string, label = "Discourse evidence") => {
     const id = s.addNode("note", { x: 80 + s.nodes.length * 14, y: 90 + s.nodes.length * 12 });
@@ -217,9 +284,10 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           <h2 className="font-display text-3xl text-foreground">Discourse Lab</h2>
         </div>
         <nav className="flex gap-1 bg-muted/50 p-1 rounded-xl border">
-          {([ ["read", "Forensic Workbench", BookOpenText], ["investigate", "Cross-Source", Globe], ["compare", "Text Diff", Columns2], ["count", "Metrics", Hash] ] as const).map(([id, label, Icon]) => (
-            <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`rounded-lg transition-all ${view === id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+          {([ ["read", "Forensic Workbench", BookOpenText, !!activeAnalysis], ["investigate", "Cross-Source", Globe, !!analysis], ["compare", "Text Diff", Columns2, !!comparisonAnalysis], ["count", "Metrics", Hash, terms.length > 0] ] as const).map(([id, label, Icon, hasData]) => (
+            <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`relative rounded-lg transition-all ${view === id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
               <Icon className="mr-2 h-4 w-4" />{label}
+              {hasData && <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#C24A35]" />}
             </Button>
           ))}
         </nav>
@@ -242,11 +310,14 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           </div>
           <ol className="flex-1 space-y-1 overflow-y-auto p-3">
             {docs.map((doc) => (
-              <li key={doc.id} className={`group rounded-lg transition-all ${doc.id === active?.id ? "border bg-card shadow-sm" : "border border-transparent hover:bg-muted/50"}`}>
-                <button className="w-full p-4 text-left" onClick={() => { setActiveId(doc.id); setView("read"); }}>
+              <li key={doc.id} className={`group relative rounded-lg transition-all ${doc.id === active?.id ? "border bg-card shadow-sm" : "border border-transparent hover:bg-muted/50"}`}>
+                <button className="w-full p-4 pr-10 text-left" onClick={() => { setActiveId(doc.id); setView("read"); }}>
                   <small className="mb-1 block font-mono text-[10px] text-muted-foreground">{doc.date || "undated"}</small>
                   <b className="block truncate font-display text-sm text-foreground">{doc.title}</b>
                 </button>
+                <Button variant="ghost" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive" onClick={(e) => { e.stopPropagation(); deleteDoc(doc.id); }}>
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
               </li>
             ))}
           </ol>
@@ -264,6 +335,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                 <div className="flex gap-2">
                   {activeAnalysis && (
                     <>
+                      <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => exportReport("forensic")} title="Export Analysis"><Download className="h-4 w-4" /></Button>
                       <Button variant="outline" size="icon" className={`h-9 w-9 ${rawView ? 'bg-muted' : ''}`} onClick={() => setRawView(!rawView)} title={rawView ? "Show Highlights" : "Show Raw Text"}>
                         {rawView ? <Highlighter className="h-4 w-4" /> : <Type className="h-4 w-4" />}
                       </Button>
@@ -409,6 +481,11 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   <h3 className="mb-2 font-display text-4xl tracking-tight text-foreground">Cross-Source Dossier</h3>
                   <p className="max-w-xl text-sm text-muted-foreground">Cross-reference global sources, extract quantitative sentiment signals, and map strategic blind spots.</p>
                 </div>
+                {analysis && (
+                  <Button variant="outline" className="border-black/10" onClick={() => exportReport("cross-source")}>
+                    <Download className="mr-2 h-4 w-4" /> Export Dossier
+                  </Button>
+                )}
               </div>
 
               <div className="mb-10 flex items-center gap-2 rounded-xl border bg-card p-2 shadow-sm">
@@ -564,13 +641,18 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   <p className="max-w-xl text-sm text-muted-foreground">Cross-examine two narratives to reveal diverging framings, omissions, and direct contradictions.</p>
                 </div>
                 {comparisonAnalysis && (
-                  <Button variant="outline" size="sm" className="h-9 border-dashed text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => { 
-                    const newComparisons = { ...savedComparisons };
-                    delete newComparisons[comparisonKey];
-                    update({ ...corpus, comparisons: newComparisons } as any); 
-                  }}>
-                    Clear Comparison
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="h-9 border-dashed" onClick={() => exportReport("compare")}>
+                      <Download className="mr-2 h-4 w-4" /> Export
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-9 border-dashed text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => { 
+                      const newComparisons = { ...savedComparisons };
+                      delete newComparisons[comparisonKey];
+                      update({ ...corpus, comparisons: newComparisons } as any); 
+                    }}>
+                      Clear Comparison
+                    </Button>
+                  </div>
                 )}
               </div>
 
@@ -700,7 +782,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
             </div>
           )}
 
-          {/* METRICS VIEW (COUNT) - UPGRADED WITH BAR CHART */}
           {view === "count" && (
             <div className="mx-auto max-w-5xl p-8 pb-24">
               <div className="mb-10 flex items-end justify-between">
