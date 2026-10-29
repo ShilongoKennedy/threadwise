@@ -113,7 +113,6 @@ Return ONLY a valid JSON object matching this exact schema:
 }`;
 
       try {
-        // Using DeepSeek for comparison
         const { text: aiText } = await generateText({
           model: getModel("deepseek"),
           system: systemPrompt,
@@ -136,46 +135,42 @@ Return ONLY a valid JSON object matching this exact schema:
         return Response.json({ message: "Provide at least one article URL." }, { status: 400 });
       }
 
-      const scrapedDocs: string[] = [];
-      for (const targetUrl of input.urls) {
+      // FIX: Scrape all URLs in parallel so it doesn't take 5 minutes
+      const scrapePromises = input.urls.map(async (targetUrl) => {
         try {
           const page = await readWeb(targetUrl, request.signal);
-          scrapedDocs.push(`SOURCE: ${page.title} (${page.url})\n\n${page.text}`);
+          return `SOURCE: ${page.title} (${page.url})\n\n${page.text}`;
         } catch (e) {
-          scrapedDocs.push(`SOURCE FAILED TO LOAD: ${targetUrl}\nReason: ${(e as Error).message}`);
+          return `SOURCE FAILED TO LOAD: ${targetUrl}\nReason: ${(e as Error).message}`;
         }
-      }
+      });
 
+      const scrapedDocs = await Promise.all(scrapePromises);
       const combinedText = scrapedDocs.join("\n\n---\n\n");
 
-      const systemPrompt = `You are an investigative intelligence analyst. The user has provided several news articles or documents. 
-Your goal is to map the "bigger picture" by cross-referencing them and drawing a conclusion.
+      // FIX: Upgraded prompt to force real synthesis and cross-referencing
+      const systemPrompt = `You are an elite intelligence analyst. You are provided with several raw documents/sources. 
+Your mission is to synthesize them into a unified intelligence dossier. Do not just summarize them individually. You must cross-reference them to find the hidden connections, the strategic overlaps, and the contradictions.
 
-Analyze the text and extract:
-1. "conclusion": A 2-3 sentence executive summary explaining the BIGGER PICTURE.
-2. "entities": A list of the key actors (countries, organizations, people) involved.
-3. "evidence": The literal facts explicitly stated in the text. Do not guess.
-4. "hypotheses": Connections, strategic motives, or "bigger picture" theories.
-5. "questions": The "Dog That Didn't Bark" — what critical context is missing?
-6. "quantData": A quantitative analysis.
-   - "contradictionIndex": 0-100 score of internal inconsistencies.
-   - "radar": Scores 0-100 for "bias", "omission", "urgency", "motive", "evidence".
+Follow this analytical framework:
+1. Source Breakdown: Briefly note the core thesis of EACH source. 
+2. Cross-Reference Matrix: Where do these sources agree? Where do they conflict? What is one source saying that another is conveniently omitting?
+3. Synthesis (The Bigger Picture): Combine the signals into a single strategic conclusion.
 
 Return ONLY a valid JSON object matching this exact schema:
 {
-  "conclusion": string,
-  "entities": string[],
-  "evidence": { "title": string, "body": string, "source": string }[],
-  "hypotheses": { "title": string, "body": string }[],
-  "questions": { "title": string, "body": string }[],
+  "conclusion": string (The Bigger Picture - 2-3 sentences),
+  "entities": string[] (Key actors),
+  "evidence": { "title": string, "body": string, "source": string }[] (Literal facts explicitly stated, mapped to their source),
+  "hypotheses": { "title": string, "body": string }[] (Connections, strategic motives, or theories that span MULTIPLE sources),
+  "questions": { "title": string, "body": string }[] (The "Dog That Didn't Bark" — what context is missing across all sources?),
   "quantData": {
-    "contradictionIndex": number,
+    "contradictionIndex": number (0-100 score of internal inconsistencies ACROSS sources),
     "radar": { "bias": number, "omission": number, "urgency": number, "motive": number, "evidence": number }
   }
 }`;
 
       try {
-        // Using Gemini for massive context window (can handle many URLs)
         const { text: aiText } = await generateText({
           model: getModel("gemini"),
           system: systemPrompt,
@@ -231,7 +226,6 @@ Return ONLY a valid JSON object matching this exact schema:
 }`;
 
       try {
-        // Using DeepSeek for deep linguistic analysis
         const { text: aiText } = await generateText({
           model: getModel("deepseek"),
           system: systemPrompt,
