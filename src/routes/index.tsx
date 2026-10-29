@@ -5,7 +5,7 @@ import {
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  Mic, Terminal, Github, Twitter, Search
+  Mic, Terminal, Github, Twitter, Search, Fingerprint, ShieldAlert
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -216,7 +216,7 @@ function LandingPage() {
                 Sign in
               </Link>
               <Link to="/login" className="group flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 bg-[#1A1A1A] text-white hover:bg-[#333] transition-colors duration-300 font-mono text-[10px] md:text-[11px] uppercase tracking-widest shadow-lg rounded-full">
-                Start Free <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                Start an Investigation <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </Link>
             </>
           )}
@@ -260,7 +260,7 @@ function LandingPage() {
                 <div className="absolute bottom-[15%] left-[10%] w-[220px] h-[90px] glass-reflection-2 transform -rotate-[10deg] opacity-50" />
                 <div className="absolute top-[25%] right-[30%] w-5 h-5 rounded-full bg-[#FBD0D4] shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-10 border border-black/5" />
                 <div className="absolute bottom-[20%] right-[25%] w-5 h-5 rounded-full bg-[#CBE6F9] shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-10 border border-black/5" />
-                <h1 className="font-display text-[55px] md:text-[70px] tracking-tight text-[#8B5CF6] italic z-20 relative drop-shadow-sm">connects.</h1>
+                <h1 className="font-display text-[55px] md:text-[70px] tracking-tight text-[#8B5CF6] italic z-20 relative drop-shadow-sm">hides.</h1>
               </div>
 
               <div className="absolute -right-10 top-1/2 -translate-y-1/2 w-14 h-10 hinge-piece rounded-r-xl z-20 flex items-center justify-start pl-3">
@@ -270,7 +270,7 @@ function LandingPage() {
           </div>
 
           <p className="text-base md:text-xl text-[#1A1A1A]/50 leading-relaxed max-w-xl font-light mt-2 md:mt-6 px-4">
-            Uncover the hidden motives behind speeches, news, and complex events.
+            Paste a speech. Uncover the hidden motives, contradictions, and strategic blind spots in seconds.
           </p>
         </div>
 
@@ -288,78 +288,56 @@ function LandingPage() {
             </div>
 
             <div className="relative bg-[#FDFBF7] aspect-[16/10] flex overflow-hidden rounded-md md:rounded-lg">
-              <div className="absolute inset-0 bg-[#FDFBF7]">
-                <div className="absolute inset-0 pointer-events-none opacity-20" style={{ backgroundImage: `linear-gradient(to right, #A6917A 1px, transparent 1px), linear-gradient(to bottom, #A6917A 1px, transparent 1px)`, backgroundSize: '20px 20px' }} />
-                
-                <div className="hidden md:flex absolute top-4 left-4 items-center gap-2 z-10">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1A1A1A]">
-                    <circle cx="6" cy="18" r="2.5" fill="currentColor"/><path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2"/><circle cx="18" cy="6" r="2.5" fill="currentColor"/><path d="M18 6L12 12" stroke="currentColor" strokeWidth="1.5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/>
-                  </svg>
-                  <span className="font-display italic text-sm tracking-tight text-[#1A1A1A]">Threadwise</span>
-                </div>
-
-                <div className="hidden md:flex absolute top-12 left-4 flex-col gap-2 z-10">
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1A1A1A] text-white rounded-md text-[10px] font-mono tracking-widest uppercase cursor-pointer shadow-md"><Layers className="w-3 h-3" /> Studio</div>
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-black/5 text-[#1A1A1A] rounded-md text-[10px] font-mono tracking-widest uppercase cursor-pointer shadow-sm"><LayoutTemplate className="w-3 h-3" /> Plan</div>
-                </div>
-
-                <div className="absolute top-[20%] left-[10%] md:left-[25%] w-[80px] md:w-[110px] bg-[#CBE6F9] border border-black/5 shadow-md rounded-md p-1.5 md:p-2 z-10">
-                  <div className="flex justify-between items-center mb-1"><span className="text-[6px] md:text-[7px] font-mono font-bold text-[#1A1A1A]/60 uppercase tracking-widest">Evidence</span></div>
-                  <h4 className="font-display text-[8px] md:text-[10px] leading-tight text-[#1A1A1A]">UN Report</h4>
-                </div>
-                <div className="absolute top-[15%] left-[40%] md:left-[40%] w-[70px] md:w-[100px] bg-[#FBD0D4] border border-black/5 shadow-md rounded-md p-1.5 md:p-2 z-10">
-                  <div className="flex justify-between items-center mb-1"><span className="text-[6px] md:text-[7px] font-mono font-bold text-[#1A1A1A]/60 uppercase tracking-widest">Question</span></div>
-                  <h4 className="font-display text-[8px] md:text-[10px] leading-tight text-[#1A1A1A]">Policy work?</h4>
-                </div>
-                <div className="absolute top-[25%] right-[10%] md:left-[50%] w-[70px] md:w-[100px] bg-[#E8DAFB] border border-black/5 shadow-md rounded-md p-1.5 md:p-2 z-10">
-                  <div className="flex justify-between items-center mb-1"><span className="text-[6px] md:text-[7px] font-mono font-bold text-[#1A1A1A]/60 uppercase tracking-widest">Question</span></div>
-                  <h4 className="font-display text-[8px] md:text-[10px] leading-tight text-[#1A1A1A]">Violence?</h4>
-                </div>
-                <div className="absolute bottom-[20%] left-[20%] md:top-[35%] md:left-[35%] w-[80px] md:w-[110px] bg-[#C9E8C7] border border-black/5 shadow-md rounded-md p-1.5 md:p-2 z-10">
-                  <div className="flex justify-between items-center mb-1"><span className="text-[6px] md:text-[7px] font-mono font-bold text-[#1A1A1A]/60 uppercase tracking-widest">Evidence</span></div>
-                  <h4 className="font-display text-[8px] md:text-[10px] leading-tight text-[#1A1A1A]">US Trends</h4>
-                </div>
-                <div className="hidden md:block absolute top-[45%] left-[20%] w-[100px] bg-[#FDF0B6] border border-black/5 shadow-md rounded-md p-2 z-10">
-                  <div className="flex justify-between items-center mb-1"><span className="text-[7px] font-mono font-bold text-[#1A1A1A]/60 uppercase tracking-widest">Raw</span></div>
-                  <h4 className="font-display text-[10px] leading-tight text-[#1A1A1A]">Gang Violence</h4>
-                </div>
-              </div>
               
-              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-                <path d="M 280 150 L 350 120" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-                <path d="M 380 150 L 410 180" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-                <path d="M 400 200 L 420 250" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-                <path d="M 420 280 L 420 320" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-                <path d="M 400 350 L 300 350" fill="none" stroke="#1A1A1A" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-              </svg>
-
-              <div className="hidden sm:flex absolute top-[10%] bottom-[10%] right-[5%] w-[55%] bg-white rounded-xl shadow-2xl flex-col z-30 border border-black/5 overflow-hidden">
-                <div className="p-3 md:p-4 border-b border-black/5 flex justify-between items-start">
-                  <div>
-                    <span className="text-[6px] md:text-[8px] font-mono tracking-widest uppercase text-[#1A1A1A]/40 mb-1 block">The Workbench</span>
-                    <h2 className="font-display text-sm md:text-xl text-[#1A1A1A]">Canvas studio</h2>
+              {/* DISCOURSE LAB MOCKUP INSIDE LAPTOP */}
+              <div className="absolute inset-0 flex bg-[#FDFBF7]">
+                {/* Left Side: Speech Text */}
+                <div className="w-1/2 h-full border-r border-black/5 p-4 md:p-6 overflow-hidden relative">
+                  <div className="absolute top-0 left-0 w-full h-10 bg-gradient-to-b from-[#FDFBF7] to-transparent z-10" />
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-[8px] md:text-[10px] font-mono tracking-widest uppercase text-[#C24A35]">Forensic Workbench</span>
                   </div>
-                  <div className="p-1 hover:bg-black/5 rounded-md cursor-pointer transition-colors"><X className="w-3 h-3 md:w-4 md:h-4 text-[#1A1A1A]/40" /></div>
+                  <div className="font-serif text-[8px] md:text-[11px] leading-relaxed text-[#1A1A1A]/80">
+                    <p className="mb-2">
+                      "I was in a country somewhere in the Middle East... and the people said, we took our gold out of the vaults in New York City. You know what I said to him? <span className="bg-[#FDF0B6]/70 border-b-2 border-[#E3D398] px-0.5 rounded-sm">I said, you have three armies within 400 miles who can come take your gold.</span>"
+                    </p>
+                    <p className="mb-2">
+                      "That’s the real world. You’re not thinking clearly about safety. <span className="bg-[#FBD0D4]/60 border-b-2 border-[#C24A35] px-0.5 rounded-sm">That gold is protected by the Atlantic, the Pacific, the United States military, the rule of law.</span>"
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-1 overflow-hidden">
-                  <div className="w-[45%] border-r border-black/5 p-1 md:p-2 flex flex-col gap-0.5 overflow-y-auto custom-scrollbar">
-                    {[{ icon: Users, label: "Live room" }, { icon: TrendingUp, label: "Risk sim" }, { icon: BookOpen, label: "Discourse" }, { icon: FileCheck, label: "Dossier" }, { icon: GitMerge, label: "Contradiction" }].map((item, i) => (
-                      <div key={i} className="flex items-center gap-1.5 md:gap-2 px-1.5 md:px-2 py-1 md:py-1.5 rounded-md hover:bg-black/5 cursor-pointer text-[#1A1A1A]/70 transition-colors"><item.icon className="w-3 h-3 md:w-3.5 md:h-3.5" /><span className="text-[8px] md:text-[10px] font-medium">{item.label}</span></div>
-                    ))}
+
+                {/* Right Side: Margin Notes */}
+                <div className="w-1/2 h-full p-4 md:p-6 bg-[#FDFBF7] flex flex-col gap-2 overflow-hidden relative">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[8px] md:text-[10px] font-mono tracking-widest uppercase text-muted-foreground">Analyst Margin</span>
+                    <span className="text-[8px] md:text-[10px] font-mono text-[#C24A35] font-bold">85/100 Friction</span>
                   </div>
-                  <div className="flex-1 p-2 md:p-4 flex flex-col">
-                    <h3 className="font-display text-xs md:text-lg mb-2 md:mb-4 text-[#1A1A1A]">Document & evidence</h3>
-                    <button className="flex items-center justify-center gap-1.5 md:gap-2 w-full py-1.5 md:py-2 bg-[#1A1A1A] text-white rounded-md text-[8px] md:text-[10px] font-mono tracking-widest uppercase hover:bg-black transition-colors shadow-sm"><FileText className="w-3 h-3 md:w-3.5 md:h-3.5" /> Clipper</button>
+                  
+                  {/* Mini Margin Note Cards */}
+                  <div className="bg-white border border-black/10 rounded-lg p-2 md:p-3 shadow-sm">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <ShieldAlert className="w-2.5 h-2.5 text-[#C24A35]" />
+                      <span className="text-[7px] md:text-[9px] font-bold font-mono uppercase text-muted-foreground">Contradiction</span>
+                    </div>
+                    <b className="block text-[8px] md:text-[10px] font-display mb-1">Rule of Law vs. Force</b>
+                    <p className="text-[7px] md:text-[9px] text-muted-foreground leading-tight">Citing 'rule of law' in the same breath as implicit military force reveals a protection-racket mentality.</p>
                   </div>
+
+                  <div className="bg-white border border-black/10 rounded-lg p-2 md:p-3 shadow-sm">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <FileWarning className="w-2.5 h-2.5 text-[#E3D398]" />
+                      <span className="text-[7px] md:text-[9px] font-bold font-mono uppercase text-muted-foreground">Fallacy</span>
+                    </div>
+                    <b className="block text-[8px] md:text-[10px] font-display mb-1">Appeal to Force</b>
+                    <p className="text-[7px] md:text-[9px] text-muted-foreground leading-tight">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
+                  </div>
+                  
+                  {/* Fade out bottom */}
+                  <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#FDFBF7] to-transparent z-10" />
                 </div>
               </div>
 
-              <div className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 bg-[#1A1A1A] rounded-full px-2 md:px-4 py-1.5 md:py-2 flex items-center gap-2 md:gap-4 shadow-2xl z-40">
-                 <div className="flex items-center gap-1 text-[#FDFBF7]/70 cursor-pointer"><Lightbulb className="w-2.5 h-2.5 md:w-3 md:h-3 text-[#FDF0B6]" /><span className="text-[7px] md:text-[9px] font-mono uppercase tracking-wider">Idea</span></div>
-                 <div className="flex items-center gap-1 text-[#FDFBF7]/70 cursor-pointer"><FileText className="w-2.5 h-2.5 md:w-3 md:h-3 text-[#CBE6F9]" /><span className="text-[7px] md:text-[9px] font-mono uppercase tracking-wider">Note</span></div>
-                 <div className="w-px h-3 md:h-4 bg-white/20 mx-0.5 md:mx-1" />
-                 <div className="flex items-center gap-1 text-[#D96C39] cursor-pointer"><Sparkles className="w-2.5 h-2.5 md:w-3 md:h-3" /><span className="text-[7px] md:text-[9px] font-mono uppercase tracking-wider">Explore</span></div>
-              </div>
             </div>
             <div className="h-4 md:h-6 flex items-center justify-center" style={{ backgroundColor: laptopYellow }}><div className="w-12 md:w-16 h-1 rounded-full" style={{ backgroundColor: laptopYellowDark }} /></div>
           </div>
@@ -407,17 +385,17 @@ function LandingPage() {
               </div>
 
               <div className="widget relative md:absolute md:bottom-[12%] md:left-[10%] w-full md:w-72 h-40 md:h-56 p-3 md:p-4 flex flex-col z-10 overflow-hidden order-4 md:order-none">
-                <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 pb-1.5 md:pb-2 border-b border-black/10 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Terminal className="w-3 h-3 text-[#2D6A65]" /> Live Feed</div>
+                <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 pb-1.5 md:pb-2 border-b border-black/10 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Terminal className="w-3 h-3 text-[#2D6A65]" /> OSINT Feed</div>
                 <div className="font-mono text-[9px] md:text-[10px] text-[#1A1A1A] leading-relaxed overflow-hidden h-full relative">
                   <div className="terminal-scroll space-y-1.5 md:space-y-2">
-                    <p>&gt; INGESTING SPEECH...</p><p>&gt; EXTRACTING ENTITIES...</p><p>&gt; OMISSION DETECTED</p><p>&gt; ANALYZING TONE...</p><p>&gt; HIDDEN MOTIVE SUSPECTED</p><p>&gt; CROSS-REFERENCING NEWS...</p><p>&gt; INGESTING NEWS...</p><p>&gt; CONTRADICTION FOUND</p>
+                    <p>&gt; INGESTING SPEECH...</p><p>&gt; EXTRACTING ENTITIES...</p><p>&gt; MAPPING FALLACIES...</p><p>&gt; CONTRADICTION DETECTED</p><p>&gt; HIDDEN MOTIVE SUSPECTED</p><p>&gt; CROSS-REFERENCING NEWS...</p><p>&gt; INGESTING NEWS...</p><p>&gt; DRAFTING DOSSIER...</p>
                   </div>
                 </div>
               </div>
 
               <div className="widget relative md:absolute md:bottom-[15%] md:right-[10%] w-full md:w-72 h-36 md:h-48 p-4 md:p-6 flex flex-col z-10 order-5 md:order-none">
                 <div className="flex justify-between items-center mb-3 md:mb-6 border-b border-black/10 pb-2 md:pb-3">
-                  <div className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Mic className="w-3 h-3 md:w-4 md:h-4 text-[#6B4C7A]" /> Audio Log</div>
+                  <div className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Mic className="w-3 h-3 md:w-4 md:h-4 text-[#6B4C7A]" /> Audio Intercept</div>
                   <div className="flex items-center gap-1.5 md:gap-2"><div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_#ff0000]" /><span className="text-[9px] md:text-[10px] font-mono text-red-500 tracking-widest font-bold">REC</span></div>
                 </div>
                 <div className="flex-1 flex items-end justify-between gap-1 h-10 md:h-14 pb-1 md:pb-2 px-1 md:px-2">

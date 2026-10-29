@@ -12,8 +12,6 @@ function AuthCallback() {
   useEffect(() => {
     let active = true;
     const finish = async () => {
-      // This runs only after hydration and initializes from Vite's browser-side
-      // VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY values.
       const supabase = getSupabaseClient();
       const current = new URL(window.location.href);
       const providerError = current.searchParams.get("error_description") || current.searchParams.get("error");
@@ -34,7 +32,6 @@ function AuthCallback() {
 
       window.history.replaceState({}, document.title, "/auth/callback");
       
-      // FIXED: Navigate to /app instead of /
       if (active) await navigate({ to: "/app", replace: true });
     };
     
@@ -45,13 +42,12 @@ function AuthCallback() {
     return () => { active = false; };
   }, [navigate]);
 
-  return <main className="grid min-h-screen place-items-center bg-background px-6 text-center">
+  return <main className="grid min-h-screen place-items-center bg-[#FDFBF7] px-6 text-center">
     <section className="max-w-md">
-      <p className="font-mono text-xs uppercase tracking-[0.22em] text-accent-ink">Threadwise account</p>
-      <h1 className="mt-3 font-display text-4xl">{problem ? "Sign-in needs attention" : "Opening your desk…"}</h1>
+      <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#C24A35]">Threadwise Intelligence OS</p>
+      <h1 className="mt-3 font-display text-4xl">{problem ? "Sign-in needs attention" : "Opening your workbench…"}</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{problem || "Finishing your secure Google sign-in."}</p>
-      {/* FIXED: Send them back to login on error, not home */}
-      {problem && <a href="/login" className="mt-6 inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">Return to login</a>}
+      {problem && <a href="/login" className="mt-6 inline-flex rounded-md bg-[#1A1A1A] px-4 py-2 text-sm font-medium text-white">Return to login</a>}
     </section>
   </main>;
 }

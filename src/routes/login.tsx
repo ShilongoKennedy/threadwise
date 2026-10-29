@@ -12,7 +12,7 @@ function LoginPage() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Check for an existing session on load (this handles the OAuth redirect)
+  // Check for an existing session on load
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
@@ -20,7 +20,6 @@ function LoginPage() {
       }
     });
 
-    // Also listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         navigate({ to: "/app", replace: true });
@@ -37,7 +36,6 @@ function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          // THIS IS THE FIX: Point to the callback route, not /app
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
@@ -51,7 +49,7 @@ function LoginPage() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-[#FBD0D4]">
       
-      {/* Ambient Pastel Glows (Matching Landing Page) */}
+      {/* Ambient Pastel Glows */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#FDF0B6] opacity-30 blur-[120px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-[#CBE6F9] opacity-20 blur-[150px]" />
@@ -93,7 +91,7 @@ function LoginPage() {
           
           <div className="text-center mb-8">
             <h2 className="font-display text-3xl text-[#1A1A1A] mb-2">Welcome back.</h2>
-            <p className="text-[#1A1A1A]/50 text-sm">Sign in to access your spatial workbench.</p>
+            <p className="text-[#1A1A1A]/50 text-sm">Sign in to access your intelligence workbench.</p>
           </div>
 
           {error && (
