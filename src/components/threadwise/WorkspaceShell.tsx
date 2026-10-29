@@ -4,61 +4,64 @@ import { DiscourseLab } from "./DiscourseLab";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
 import { emptySuite } from "@/lib/threadwise/advanced";
 import { Button } from "@/components/ui/button";
-import { Columns, LayoutPanelTop, PanelRight, X } from "lucide-react";
+import { Columns, LayoutPanelTop, PanelRight, X, Command } from "lucide-react";
+import { CommandPalette } from "./CommandPalette";
 
 export function WorkspaceShell() {
-  // 1. DEFAULT IS NOW TABS
   const [layout, setLayout] = useState<"split" | "tabs" | "slide">("tabs");
   const [activeTab, setActiveTab] = useState<"lab" | "canvas">("lab");
   const [slideOpen, setSlideOpen] = useState(false);
-  
-  // Track screen size to prevent broken layouts
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
 
   useEffect(() => {
     const checkSize = () => {
       const width = window.innerWidth;
       setIsMobile(width < 1024);
-      setIsLargeScreen(width >= 1440); // Only allow Split on large monitors
-      
-      // Automatically kick out of Split view if the window gets too small
-      if (width < 1440 && layout === "split") {
-        setLayout("tabs");
-      }
+      setIsLargeScreen(width >= 1440);
+      if (width < 1440 && layout === "split") setLayout("tabs");
     };
     checkSize();
     window.addEventListener("resize", checkSize);
     return () => window.removeEventListener("resize", checkSize);
   }, [layout]);
 
+  // Global Cmd+K listener
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setCmdOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
   const ws = useWorkspaces();
   const w = ws.workspaces.find((w) => w.id === ws.activeId);
   const canvas = w?.document.canvases.find((c) => c.id === w.document.activeCanvasId);
-  
   const corpus = canvas?.suite?.discourse || undefined;
   const updateSuite = (patch: any) => { 
     if (canvas) ws.updateSuite(canvas.id, { ...(canvas.suite ?? emptySuite()), ...patch }); 
   };
 
-  // Listen for the "Open Lab" request from the Canvas Studio
   useEffect(() => {
     const handleOpenLab = () => {
       if (layout === "tabs") { setActiveTab("lab"); }
       if (layout === "slide") { setSlideOpen(false); }
     };
-    window.addEventListener("threadwise:open-lab", handleOpenLab);
-    return () => window.removeEventListener("threadwise:open-lab", handleOpenLab);
-  }, [layout]);
-
-  // Listen for the "View Canvas" request (the Planting Magic)
-  useEffect(() => {
     const handleViewCanvas = () => {
       if (layout === "tabs") { setActiveTab("canvas"); }
       if (layout === "slide") { setSlideOpen(true); }
     };
+    window.addEventListener("threadwise:open-lab", handleOpenLab);
     window.addEventListener("threadwise:view-canvas", handleViewCanvas);
-    return () => window.removeEventListener("threadwise:view-canvas", handleViewCanvas);
+    return () => {
+      window.removeEventListener("threadwise:open-lab", handleOpenLab);
+      window.removeEventListener("threadwise:view-canvas", handleViewCanvas);
+    };
   }, [layout]);
 
   const labContent = (
@@ -76,16 +79,21 @@ export function WorkspaceShell() {
 
   return (
     <div className="h-screen w-screen flex flex-col bg-background overflow-hidden">
-      {/* HEADER */}
+      <CommandPalette 
+        open={cmdOpen} 
+        setOpen={setCmdOpen} 
+        setLayout={setLayout} 
+        setActiveTab={setActiveTab} 
+        setSlideOpen={setSlideOpen} 
+      />
+      
       <div className="h-14 border-b flex items-center px-4 justify-between shrink-0 bg-card z-[60]">
         <div className="flex items-center gap-2 md:gap-3">
           <span className="font-display text-lg md:text-xl italic font-medium tracking-tight">Threadwise</span>
           <span className="hidden sm:inline-block font-mono text-[10px] uppercase tracking-widest text-muted-foreground bg-muted px-2 py-1 rounded-md">Workspace</span>
         </div>
         
-        {/* LAYOUT TOGGLES */}
         <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl border">
-          {/* Only show Split if the screen is wide enough to handle it */}
           {isLargeScreen && (
             <Button 
               size="sm" 
@@ -114,8 +122,20 @@ export function WorkspaceShell() {
           </Button>
         </div>
 
-        {/* CONTEXTUAL ACTIONS */}
-        <div className="flex justify-end shrink-0">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCmdOpen(true)}
+            className="hidden md:flex items-center gap-2 h-8 text-xs text-muted-foreground bg-background rounded-lg border-black/10 shadow-sm hover:text-foreground"
+          >
+            <Command className="w-3.5 h-3.5" />
+            <span>Search</span>
+            <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+              <span className="text-xs">⌘</span>K
+            </kbd>
+          </Button>
+
           {(layout === "slide" || isMobile) && (
              <Button size="sm" variant={slideOpen ? "default" : "outline"} onClick={() => setSlideOpen(!slideOpen)}>
                {slideOpen ? "Close Canvas" : "Open Canvas"}
@@ -129,44 +149,29 @@ export function WorkspaceShell() {
         </div>
       </div>
 
-      {/* LAYOUT RENDERING ENGINE */}
       <div className="flex-1 relative overflow-hidden flex">
-        
-        {/* OPTION A: SPLIT VIEW (Only on Large Screens) */}
         {layout === "split" && isLargeScreen && !isMobile && (
           <>
-            <div className="w-1/2 h-full border-r overflow-hidden flex flex-col relative z-10">
-              {labContent}
-            </div>
-            <div className="w-1/2 h-full overflow-hidden flex flex-col relative z-0">
-              <Canvas />
-            </div>
+            <div className="w-1/2 h-full border-r overflow-hidden flex flex-col relative z-10">{labContent}</div>
+            <div className="w-1/2 h-full overflow-hidden flex flex-col relative z-0"><Canvas /></div>
           </>
         )}
 
-        {/* OPTION B: TABS VIEW (Default) */}
         {layout === "tabs" && !isMobile && (
           <div className="w-full h-full relative">
             {activeTab === "lab" ? labContent : <Canvas />}
           </div>
         )}
 
-        {/* OPTION C: SLIDE VIEW (Overlays Canvas over Lab) */}
         {(layout === "slide" || isMobile) && (
           <>
-            <div className="w-full h-full relative z-0">
-              {labContent}
-            </div>
-            
-            {/* The Sliding Canvas Overlay */}
+            <div className="w-full h-full relative z-0">{labContent}</div>
             <div className={`absolute inset-y-0 right-0 w-full md:w-[75%] lg:w-[65%] border-l bg-background shadow-2xl transition-transform duration-300 ease-in-out z-50 flex flex-col ${slideOpen ? "translate-x-0" : "translate-x-full"}`}>
               <div className="h-10 border-b flex items-center justify-between px-4 bg-muted/20 shrink-0">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Canvas View</span>
                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSlideOpen(false)}><X className="h-3 w-3" /></Button>
               </div>
-              <div className="flex-1 relative overflow-hidden">
-                <Canvas />
-              </div>
+              <div className="flex-1 relative overflow-hidden"><Canvas /></div>
             </div>
           </>
         )}
