@@ -1,11 +1,12 @@
-import { useMemo, useState } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare } from "lucide-react";
+import { useMemo, useState, useRef } from "react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useThread } from "@/lib/threadwise/store";
 import { streamTask } from "@/lib/threadwise/ai-client";
 import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type CodeId, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
+import { readDocument } from "@/lib/threadwise/evidence";
 import { toast } from "sonner";
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PolarRadiusAxis, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
 
@@ -32,6 +33,9 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const [selection, setSelection] = useState<{ quote: string; doc: DiscourseDoc } | null>(null);
   const [activeNote, setActiveNote] = useState<number | null>(null);
   const [rawView, setRawView] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isReadingFile, setIsReadingFile] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
   
   const savedInv = (corpus as any).investigation || {};
   const savedAnalyses = (corpus as any).analyses || {};
@@ -69,6 +73,39 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     
     update({ ...corpus, docs: newDocs, analyses: newAnalyses, comparisons: newComparisons } as any);
     if (activeId === id) setActiveId(newDocs[0]?.id ?? "");
+  };
+
+  const handleFile = async (file: File | undefined) => {
+    if (!file) return;
+    setIsReadingFile(true);
+    try {
+      const text = await readDocument(file);
+      if (!text.trim()) throw new Error("No readable text found in this file.");
+      
+      const newDoc = { 
+        id: uid(), 
+        title: file.name.replace(/\.[^/.]+$/, ""), 
+        speaker: "", 
+        date: new Date().toISOString().split('T')[0], 
+        text: text.slice(0, 50000) // Cap at 50k chars to prevent overloading AI
+      };
+      
+      save({ docs: [...corpus.docs, newDoc] });
+      setActiveId(newDoc.id);
+      toast.success("Document indexed successfully");
+      
+      // Auto-run analysis
+      setTimeout(() => {
+        const btn = document.getElementById("analyze-source-btn");
+        if (btn) btn.click();
+      }, 100);
+      
+    } catch (err: any) {
+      toast.error(err.message || "Failed to read document");
+    } finally {
+      setIsReadingFile(false);
+      setIsDragging(false);
+    }
   };
 
   const loadSample = () => {
@@ -313,11 +350,28 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
       <div className="relative z-10 flex flex-1 overflow-hidden">
         <aside className="flex w-64 shrink-0 flex-col border-r bg-card/50">
-          <div className="border-b p-4">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground block mb-3">Indexed Sources · {docs.length}</span>
+          <div 
+            className={`border-b p-4 transition-colors ${isDragging ? "bg-[#CBE6F9]/50 border-[#CBE6F9]" : ""}`}
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
+            onDrop={(e) => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Indexed Sources · {docs.length}</span>
+              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => fileInput.current?.click()} title="Upload Document">
+                {isReadingFile ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileUp className="h-3.5 w-3.5" />}
+              </Button>
+              <input 
+                type="file" 
+                ref={fileInput} 
+                className="hidden" 
+                accept=".pdf,.docx,.txt,.md" 
+                onChange={(e) => handleFile(e.target.files?.[0])} 
+              />
+            </div>
             <div className="space-y-3">
               <Input placeholder="Document title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="h-9 text-xs font-medium" />
-              <Textarea rows={3} placeholder="Paste raw text..." value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} className="resize-none text-xs" />
+              <Textarea rows={3} placeholder={isDragging ? "Drop file to extract text..." : "Paste raw text or drag a file..."} value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} className="resize-none text-xs" />
               <Button size="sm" className="h-9 w-full text-xs" disabled={!draft.title.trim() || !draft.text.trim()} onClick={() => {
                 if (!draft.title.trim() || !draft.text.trim()) return; 
                 const doc = { id: uid(), ...draft, title: draft.title.trim(), text: draft.text.trim() }; 
