@@ -5,7 +5,7 @@ import {
   X, Users, TrendingUp, BookOpen, Sliders, 
   Calendar, FileCheck, PieChart, Map, GitMerge, 
   PenTool, MessageSquare, GitBranch, HelpCircle, LayoutTemplate,
-  Mic, Terminal, Github, Twitter, Search, Fingerprint, ShieldAlert
+  Mic, Terminal, Github, Twitter, Search, Fingerprint, ShieldAlert, FileWarning
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
