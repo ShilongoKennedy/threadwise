@@ -7,13 +7,13 @@ import { RELATIONS } from "../model";
 import { createDeepSeekProvider, deepSeekModelName } from "./deepseek.server";
 
 const inputSchema = z.object({
-  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source"]),
+  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source", "analyze-source"]),
   threadId: z.string().optional(),
   messages: z.array(z.unknown()).max(200).optional(),
   graph: z.unknown().optional(),
   text: z.string().max(80_000).optional(),
   url: z.string().url().optional(),
-  urls: z.array(z.string()).optional(), // NEW: Array of URLs for cross-source
+  urls: z.array(z.string()).optional(),
   source: z.string().max(2000).optional(),
   format: z.enum(["brief", "memo"]).optional(),
   persona: z.string().max(80).optional(),
@@ -84,7 +84,7 @@ export async function handleThreadwise(request: Request) {
     const provider = createDeepSeekProvider();
 
     // ---------------------------------------------------------
-    // NEW: Cross-Source Investigative Analysis
+    // CROSS-SOURCE INVESTIGATIVE ANALYSIS
     // ---------------------------------------------------------
     if (input.mode === "cross-source") {
       if (!input.urls || input.urls.length === 0) {
@@ -92,8 +92,6 @@ export async function handleThreadwise(request: Request) {
       }
 
       const scrapedDocs: string[] = [];
-      
-      // Scrape all URLs
       for (const targetUrl of input.urls) {
         try {
           const page = await readWeb(targetUrl, request.signal);
@@ -109,19 +107,14 @@ export async function handleThreadwise(request: Request) {
 Your goal is to map the "bigger picture" by cross-referencing them and drawing a conclusion.
 
 Analyze the text and extract:
-1. "conclusion": A 2-3 sentence executive summary explaining the BIGGER PICTURE. How do these events connect? What is the overarching strategic narrative?
+1. "conclusion": A 2-3 sentence executive summary explaining the BIGGER PICTURE.
 2. "entities": A list of the key actors (countries, organizations, people) involved.
 3. "evidence": The literal facts explicitly stated in the text. Do not guess.
-4. "hypotheses": Connections, strategic motives, or "bigger picture" theories that explain WHY these events are happening. (e.g., "El Salvador is deploying troops to secure US economic aid").
-5. "questions": The "Dog That Didn't Bark" — what critical context is missing, or what unanswered questions remain?
-6. "quantData": A quantitative analysis of the narrative.
-   - "contradictionIndex": A score from 0 to 100 indicating how much the sources contradict each other or hide underlying tensions (0 = total alignment, 100 = total contradiction).
-   - "radar": Scores from 0 to 100 for narrative signals across five dimensions:
-     - "bias": How one-sided is the reporting?
-     - "omission": How much critical context is missing?
-     - "urgency": How time-sensitive or panicked is the tone?
-     - "motive": How strongly are hidden strategic motives implied?
-     - "evidence": How well-sourced and grounded are the claims?
+4. "hypotheses": Connections, strategic motives, or "bigger picture" theories.
+5. "questions": The "Dog That Didn't Bark" — what critical context is missing?
+6. "quantData": A quantitative analysis.
+   - "contradictionIndex": 0-100 score of internal inconsistencies.
+   - "radar": Scores 0-100 for "bias", "omission", "urgency", "motive", "evidence".
 
 Return ONLY a valid JSON object matching this exact schema:
 {
@@ -132,13 +125,7 @@ Return ONLY a valid JSON object matching this exact schema:
   "questions": { "title": string, "body": string }[],
   "quantData": {
     "contradictionIndex": number,
-    "radar": {
-      "bias": number,
-      "omission": number,
-      "urgency": number,
-      "motive": number,
-      "evidence": number
-    }
+    "radar": { "bias": number, "omission": number, "urgency": number, "motive": number, "evidence": number }
   }
 }`;
 
@@ -149,7 +136,6 @@ Return ONLY a valid JSON object matching this exact schema:
           prompt: `Analyze these articles:\n\n${combinedText}`,
         });
 
-        // Parse JSON safely
         const firstBrace = aiText.indexOf('{');
         const lastBrace = aiText.lastIndexOf('}');
         if (firstBrace === -1 || lastBrace === -1) throw new Error("AI did not return JSON.");
@@ -160,6 +146,62 @@ Return ONLY a valid JSON object matching this exact schema:
         return Response.json({ analysis: parsed, error: null }, { status: 200 });
       } catch (e) {
         console.error("CROSS-SOURCE ERROR:", e);
+        return Response.json({ analysis: null, error: (e as Error).message }, { status: 200 });
+      }
+    }
+
+    // ---------------------------------------------------------
+    // NEW: SINGLE-SOURCE FORENSIC LINGUIST ANALYSIS
+    // ---------------------------------------------------------
+    if (input.mode === "analyze-source") {
+      if (!input.text?.trim()) {
+        return Response.json({ message: "Provide text to analyze." }, { status: 400 });
+      }
+
+      const systemPrompt = `You are a senior intelligence analyst and forensic linguist specializing in cognitive dissonance, implicit threats, and geopolitical strategy. Your goal is not to summarize the text, but to deconstruct it. Identify the literal facts, the unspoken assumptions, the hidden motives, and the structural contradictions.
+
+Analyze the text and extract:
+1. "executive_summary": A 2-3 sentence breakdown of the speaker's true objective and the overarching strategic narrative.
+2. "quantData": A quantitative analysis of the narrative.
+   - "contradictionIndex": A score from 0 to 100 indicating internal inconsistencies, cognitive dissonance, or hidden tensions within the text (0 = total alignment, 100 = total contradiction).
+   - "radar": Scores from 0 to 100 for narrative signals across five dimensions: "bias", "omission", "urgency", "motive", "evidence".
+3. "margin_notes": An array of deep-dive observations. For each note:
+   - "quote": The EXACT verbatim substring from the text that triggered the observation (must be a direct, unaltered copy-paste from the source).
+   - "type": Choose one of "contradiction", "fallacy", or "motive".
+   - "title": A short 2-4 word headline (e.g., "Appeal to Force" or "Rule of Law vs. Threat").
+   - "analysis": A 2-3 sentence explanation of the hidden meaning, bias, or logical error.
+4. "unstated_assumptions": A list of 2-4 things the speaker assumes to be true but does not state (e.g., "The US will never weaponize the dollar against its allies").
+5. "questions_to_ask": A list of 2-4 "Dog That Didn't Bark" questions. What critical context is missing?
+
+Return ONLY a valid JSON object matching this exact schema:
+{
+  "executive_summary": string,
+  "quantData": {
+    "contradictionIndex": number,
+    "radar": { "bias": number, "omission": number, "urgency": number, "motive": number, "evidence": number }
+  },
+  "margin_notes": { "quote": string, "type": "contradiction" | "fallacy" | "motive", "title": string, "analysis": string }[],
+  "unstated_assumptions": string[],
+  "questions_to_ask": string[]
+}`;
+
+      try {
+        const { text: aiText } = await generateText({
+          model: provider.chat(deepSeekModelName()),
+          system: systemPrompt,
+          prompt: `Analyze this source text:\n\n${input.text}`,
+        });
+
+        const firstBrace = aiText.indexOf('{');
+        const lastBrace = aiText.lastIndexOf('}');
+        if (firstBrace === -1 || lastBrace === -1) throw new Error("AI did not return JSON.");
+        
+        const jsonString = aiText.substring(firstBrace, lastBrace + 1);
+        const parsed = JSON.parse(jsonString);
+
+        return Response.json({ analysis: parsed, error: null }, { status: 200 });
+      } catch (e) {
+        console.error("ANALYZE-SOURCE ERROR:", e);
         return Response.json({ analysis: null, error: (e as Error).message }, { status: 200 });
       }
     }
