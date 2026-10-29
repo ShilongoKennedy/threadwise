@@ -7,6 +7,7 @@ import { useThread } from "@/lib/threadwise/store";
 import { streamTask } from "@/lib/threadwise/ai-client";
 import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type CodeId, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
 import { readDocument } from "@/lib/threadwise/evidence";
+import { archiveInsight } from "@/lib/threadwise/archivist";
 import { toast } from "sonner";
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PolarRadiusAxis, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
 
@@ -65,7 +66,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const corpus = stored ?? emptyCorpus();
   const s = useThread();
   
-  // 1. ALL STATE DECLARATIONS GO FIRST
   const [view, setView] = useState<View>("read");
   const [activeId, setActiveId] = useState(corpus.docs[0]?.id ?? "");
   const [compareIds, setCompareIds] = useState<[string, string]>([corpus.docs[0]?.id ?? "", corpus.docs[1]?.id ?? ""]);
@@ -104,7 +104,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
   const save = (patch: Partial<Corpus>) => update({ ...corpus, ...patch });
 
-  // 2. ALL EFFECTS GO SECOND
   useEffect(() => {
     if (isAnalyzingSource) {
       setLoadingStep(0);
@@ -220,7 +219,14 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   
   const plant = (doc: DiscourseDoc, quote: string, label = "Discourse evidence") => {
     const id = s.addNode("note", { x: 80 + s.nodes.length * 14, y: 90 + s.nodes.length * 12 });
-    s.updateNode(id, (data) => ({ ...data, title: `“${clip(quote, 82)}”`, body: `“${quote}”\n\n— ${doc.title}${doc.speaker ? ` · ${doc.speaker}` : ""}${doc.date ? ` · ${doc.date}` : ""}\n\n${label}`, epistemic: "evidence", meta: { ...data.meta, source: doc.title } }));
+    const nodeTitle = `“${clip(quote, 82)}”`;
+    const nodeBody = `“${quote}”\n\n— ${doc.title}${doc.speaker ? ` · ${doc.speaker}` : ""}${doc.date ? ` · ${doc.date}` : ""}\n\n${label}`;
+    
+    s.updateNode(id, (data) => ({ ...data, title: nodeTitle, body: nodeBody, epistemic: "evidence", meta: { ...data.meta, source: doc.title } }));
+    
+    // Send to Cloudflare Archivist
+    void archiveInsight(id, nodeBody, { source: doc.title, type: "evidence" });
+
     toast.success("Placed on canvas", {
       action: { label: "View Board", onClick: () => window.dispatchEvent(new CustomEvent("threadwise:view-canvas")) }
     });
@@ -229,11 +235,16 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const plantAnalysis = (id: string, kind: "evidence" | "hypothesis" | "question", title: string, body: string, source?: string) => {
     const nodeKind = kind === "evidence" ? "note" : kind === "hypothesis" ? "idea" : "question";
     const nodeId = s.addNode(nodeKind, { x: 80 + s.nodes.length * 14, y: 90 + s.nodes.length * 12 });
+    
     s.updateNode(nodeId, (data) => ({ 
       ...data, title, body, 
       epistemic: kind === "evidence" ? "evidence" : kind === "hypothesis" ? "hypothesis" : "unknown",
       meta: { ...data.meta, source: source || "Cross-Source Investigation" }
     }));
+
+    // Send to Cloudflare Archivist
+    void archiveInsight(nodeId, `${title}\n\n${body}`, { source: source || "Cross-Source", type: kind });
+
     setPlantedIds(prev => ({ ...prev, [id]: true }));
     toast.success("Planted on canvas", {
       action: { label: "View Board", onClick: () => window.dispatchEvent(new CustomEvent("threadwise:view-canvas")) }
@@ -283,7 +294,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     } catch (e: any) { setAnalysisError(e.message || "The comparison failed."); } finally { setIsComparing(false); }
   };
 
-  // --- HIGHLIGHTING LOGIC ---
   const escapeHtml = (unsafe: string) => unsafe.replace(/[&<"'>]/g, function(m) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m] as string; });
   
   const getHighlightedText = (text: string, notes: any[]) => {
