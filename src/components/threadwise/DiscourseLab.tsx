@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useEffect } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp, Terminal } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp, Terminal, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,7 +11,7 @@ import { archiveInsight } from "@/lib/threadwise/archivist";
 import { toast } from "sonner";
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PolarRadiusAxis, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
 
-type View = "read" | "compare" | "count" | "investigate";
+type View = "read" | "compare" | "count" | "investigate" | "archives";
 const uid = () => crypto.randomUUID();
 const codeLabel = (code: CodeId) => CODES.find((item) => item.id === code)?.label ?? code;
 
@@ -92,6 +92,11 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const [analysisError, setAnalysisError] = useState("");
   const [analysis, setAnalysis] = useState<any>(savedInv.analysis || null);
   const [plantedIds, setPlantedIds] = useState<Record<string, boolean>>({});
+
+  const [archiveQuery, setArchiveQuery] = useState("");
+  const [isSearchingArchive, setIsSearchingArchive] = useState(false);
+  const [archiveResult, setArchiveResult] = useState<any>(null);
+  const [archiveError, setArchiveError] = useState("");
 
   const docs = [...corpus.docs].sort((a, b) => a.date.localeCompare(b.date));
   const active = docs.find((doc) => doc.id === activeId) ?? docs[0];
@@ -224,7 +229,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     
     s.updateNode(id, (data) => ({ ...data, title: nodeTitle, body: nodeBody, epistemic: "evidence", meta: { ...data.meta, source: doc.title } }));
     
-    // Send to Cloudflare Archivist
     void archiveInsight(id, nodeBody, { source: doc.title, type: "evidence" });
 
     toast.success("Placed on canvas", {
@@ -242,7 +246,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       meta: { ...data.meta, source: source || "Cross-Source Investigation" }
     }));
 
-    // Send to Cloudflare Archivist
     void archiveInsight(nodeId, `${title}\n\n${body}`, { source: source || "Cross-Source", type: kind });
 
     setPlantedIds(prev => ({ ...prev, [id]: true }));
@@ -292,6 +295,21 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
         update({ ...corpus, comparisons: { ...savedComparisons, [comparisonKey]: res.analysis } } as any);
       }
     } catch (e: any) { setAnalysisError(e.message || "The comparison failed."); } finally { setIsComparing(false); }
+  };
+
+  const runArchiveSearch = async () => {
+    if (!archiveQuery.trim()) return;
+    setIsSearchingArchive(true); setArchiveError(""); setArchiveResult(null);
+    try {
+      const output = await streamTask({ mode: "ask-archives", text: archiveQuery }, () => {});
+      const res = JSON.parse(output);
+      if (res.error) setArchiveError(res.error);
+      else setArchiveResult(res.analysis);
+    } catch (e: any) {
+      setArchiveError(e.message || "The archive search failed.");
+    } finally {
+      setIsSearchingArchive(false);
+    }
   };
 
   const escapeHtml = (unsafe: string) => unsafe.replace(/[&<"'>]/g, function(m) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m] as string; });
@@ -399,7 +417,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
           <h2 className="font-display text-3xl text-foreground">Discourse Lab</h2>
         </div>
         <nav className="flex gap-1 bg-muted/50 p-1 rounded-xl border">
-          {([ ["read", "Forensic Workbench", BookOpenText, !!activeAnalysis], ["investigate", "Cross-Source", Globe, !!analysis], ["compare", "Text Diff", Columns2, !!comparisonAnalysis], ["count", "Metrics", Hash, terms.length > 0] ] as const).map(([id, label, Icon, hasData]) => (
+          {([ ["read", "Forensic Workbench", BookOpenText, !!activeAnalysis], ["investigate", "Cross-Source", Globe, !!analysis], ["compare", "Text Diff", Columns2, !!comparisonAnalysis], ["count", "Metrics", Hash, terms.length > 0], ["archives", "Ask Archives", Database, !!archiveResult] ] as const).map(([id, label, Icon, hasData]) => (
             <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`relative rounded-lg transition-all ${view === id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
               <Icon className="mr-2 h-4 w-4" />{label}
               {hasData && <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#C24A35]" />}
@@ -1052,6 +1070,66 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   ))}
                 </div>
               </section>
+            </div>
+          )}
+
+          {view === "archives" && (
+            <div className="mx-auto max-w-4xl p-6 pb-24">
+              <div className="mb-8">
+                <h3 className="mb-2 font-display text-4xl tracking-tight text-foreground">Ask the Archives</h3>
+                <p className="max-w-xl text-sm text-muted-foreground">Query your long-term memory. The AI will search across everything you have planted to the canvas and synthesize a historical intelligence report.</p>
+              </div>
+
+              <form className="mb-10 flex flex-col sm:flex-row gap-2" onSubmit={(e) => { e.preventDefault(); runArchiveSearch(); }}>
+                <div className="relative flex-1">
+                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input value={archiveQuery} onChange={(e) => setArchiveQuery(e.target.value)} placeholder="e.g. What did the UN say about Haiti's arms embargo?" className="h-11 border-transparent bg-card pl-11 font-mono text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring" />
+                </div>
+                <Button type="submit" disabled={isSearchingArchive || !archiveQuery.trim()} className="h-11 px-8">
+                  {isSearchingArchive ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Searching...</> : <><Database className="mr-2 h-4 w-4" /> Query Archives</>}
+                </Button>
+              </form>
+
+              {archiveError && <p className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{archiveError}</p>}
+
+              {archiveResult && !isSearchingArchive && (
+                <div className="animate-in fade-in slide-in-from-bottom-8 space-y-6 duration-700">
+                  <section className="relative rounded-xl border bg-card p-10 shadow-sm overflow-hidden">
+                    <div className="absolute left-0 top-0 h-full w-1 bg-foreground" />
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="bg-muted p-2 rounded-lg"><BookOpenText className="h-5 w-5 text-foreground" /></div>
+                      <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Synthesized Intelligence</h4>
+                    </div>
+                    <div className="font-serif text-lg leading-relaxed text-foreground whitespace-pre-wrap">{archiveResult.answer}</div>
+                  </section>
+
+                  {archiveResult.sources && archiveResult.sources.length > 0 && (
+                    <section className="rounded-xl border bg-card p-6 shadow-sm">
+                      <h4 className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><Database className="h-4 w-4" /> Raw Archive Sources</h4>
+                      <div className="space-y-3">
+                        {archiveResult.sources.map((source: any, i: number) => (
+                          <div key={i} className="flex flex-col rounded-lg border bg-background p-4 text-xs">
+                            <span className="font-mono text-[10px] uppercase text-muted-foreground mb-2">Match Score: {(source.score * 100).toFixed(1)}%</span>
+                            <p className="whitespace-pre-wrap text-muted-foreground">{source.metadata?.text || "No text recorded"}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+                </div>
+              )}
+              
+              {!archiveResult && !isSearchingArchive && (
+                <div className="flex flex-col items-center justify-center py-20 px-4 text-center border rounded-2xl border-dashed bg-card/20 mt-8">
+                  <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-black/5">
+                    <Database className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="font-display text-3xl mb-3">Search your memory.</h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    Every time you plant a card, it gets archived. Query the database to connect the dots across weeks of research.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </main>
