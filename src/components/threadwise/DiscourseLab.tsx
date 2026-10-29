@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2 } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,12 @@ const uid = () => crypto.randomUUID();
 const codeLabel = (code: CodeId) => CODES.find((item) => item.id === code)?.label ?? code;
 
 const COLORS = ["#C24A35", "#1A1A1A", "#E3D398", "#6B4C7A", "#2D6A65"];
+
+const SAMPLE_TEXT = `"I was in a country somewhere in the Middle East, and also in Europe, and the people said, we took our gold out of the vaults in New York City and moved it to our country. You know what I said to him? I said, you have three armies within 400 miles who can come take your gold."
+
+"That’s the real world. You’re not thinking clearly about safety. That gold is protected by the Atlantic, the Pacific, the United States military, the rule of law."
+
+"But if we are not the preeminent military and economy, you will see our reserve status come down."`;
 
 export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Corpus; update: (corpus: Corpus) => void; onClose: () => void }) {
   const corpus = stored ?? emptyCorpus();
@@ -63,6 +69,17 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     
     update({ ...corpus, docs: newDocs, analyses: newAnalyses, comparisons: newComparisons } as any);
     if (activeId === id) setActiveId(newDocs[0]?.id ?? "");
+  };
+
+  const loadSample = () => {
+    const newDoc = { id: uid(), title: "Jamie Dimon on Gold & Military", speaker: "Jamie Dimon", date: "2024-01-01", text: SAMPLE_TEXT };
+    save({ docs: [...corpus.docs, newDoc] });
+    setActiveId(newDoc.id);
+    // We trigger the analysis manually after a small delay to allow state to update
+    setTimeout(() => {
+      const btn = document.getElementById("analyze-source-btn");
+      if (btn) btn.click();
+    }, 100);
   };
 
   const exportReport = (type: "forensic" | "cross-source" | "compare") => {
@@ -121,14 +138,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const plant = (doc: DiscourseDoc, quote: string, label = "Discourse evidence") => {
     const id = s.addNode("note", { x: 80 + s.nodes.length * 14, y: 90 + s.nodes.length * 12 });
     s.updateNode(id, (data) => ({ ...data, title: `“${clip(quote, 82)}”`, body: `“${quote}”\n\n— ${doc.title}${doc.speaker ? ` · ${doc.speaker}` : ""}${doc.date ? ` · ${doc.date}` : ""}\n\n${label}`, epistemic: "evidence", meta: { ...data.meta, source: doc.title } }));
-    
-    // NEW: Actionable Toast
-    toast.success("Planted on canvas", {
-      description: "The evidence was added to your board.",
-      action: {
-        label: "View Board",
-        onClick: () => window.dispatchEvent(new CustomEvent("threadwise:view-canvas"))
-      }
+    toast.success("Placed on canvas", {
+      action: { label: "View Board", onClick: () => window.dispatchEvent(new CustomEvent("threadwise:view-canvas")) }
     });
   };
 
@@ -141,14 +152,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       meta: { ...data.meta, source: source || "Cross-Source Investigation" }
     }));
     setPlantedIds(prev => ({ ...prev, [id]: true }));
-    
-    // NEW: Actionable Toast
     toast.success("Planted on canvas", {
-      description: "The analysis was added to your board.",
-      action: {
-        label: "View Board",
-        onClick: () => window.dispatchEvent(new CustomEvent("threadwise:view-canvas"))
-      }
+      action: { label: "View Board", onClick: () => window.dispatchEvent(new CustomEvent("threadwise:view-canvas")) }
     });
   };
 
@@ -365,7 +370,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       </Button>
                     </>
                   )}
-                  <Button onClick={runSourceAnalysis} disabled={isAnalyzingSource} className="h-9 px-6">
+                  <Button id="analyze-source-btn" onClick={runSourceAnalysis} disabled={isAnalyzingSource} className="h-9 px-6">
                     {isAnalyzingSource ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...</> : <><Fingerprint className="mr-2 h-4 w-4" /> Analyze Source</>}
                   </Button>
                 </div>
@@ -385,15 +390,18 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
                 <aside className="w-full xl:w-[400px] shrink-0 flex flex-col gap-4 overflow-y-auto pr-2 pb-10">
                   {!activeAnalysis && !isAnalyzingSource && (
-                    <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-8 border rounded-xl border-dashed bg-card/30">
-                      <Fingerprint className="h-10 w-10 text-muted-foreground/50 mb-4" />
+                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center p-8 border rounded-xl border-dashed bg-card/30">
+                      <Wand2 className="h-10 w-10 text-[#C24A35] mb-4" />
                       <h4 className="font-display text-xl mb-2">Awaiting Analysis</h4>
-                      <p className="text-sm text-muted-foreground">Click "Analyze Source" to run forensic linguistics and extract hidden motives, biases, and contradictions.</p>
+                      <p className="text-sm text-muted-foreground mb-6">Click "Analyze Source" to run forensic linguistics and extract hidden motives, biases, and contradictions.</p>
+                      <Button onClick={loadSample} variant="outline" className="bg-white border-[#C24A35] text-[#C24A35] hover:bg-[#C24A35]/10">
+                        <Sparkles className="w-4 h-4 mr-2" /> Try a sample speech
+                      </Button>
                     </div>
                   )}
 
                   {isAnalyzingSource && (
-                    <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-8">
+                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center p-8">
                       <Loader2 className="h-8 w-8 text-[#C24A35] animate-spin mb-4" />
                       <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground animate-pulse">Extracting Motives → Mapping Fallacies → Measuring Bias</p>
                     </div>
