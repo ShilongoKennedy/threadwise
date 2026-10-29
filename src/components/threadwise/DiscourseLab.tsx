@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2 } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -75,11 +75,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     const newDoc = { id: uid(), title: "Jamie Dimon on Gold & Military", speaker: "Jamie Dimon", date: "2024-01-01", text: SAMPLE_TEXT };
     save({ docs: [...corpus.docs, newDoc] });
     setActiveId(newDoc.id);
-    // We trigger the analysis manually after a small delay to allow state to update
-    setTimeout(() => {
-      const btn = document.getElementById("analyze-source-btn");
-      if (btn) btn.click();
-    }, 100);
+    setTimeout(() => { document.getElementById("analyze-source-btn")?.click(); }, 100);
   };
 
   const exportReport = (type: "forensic" | "cross-source" | "compare") => {
@@ -543,6 +539,18 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                 </div>
               )}
 
+              {!analysis && !isAnalyzing && (
+                <div className="flex flex-col items-center justify-center py-20 px-4 text-center border rounded-2xl border-dashed bg-card/20 mt-8">
+                  <div className="w-16 h-16 bg-[#CBE6F9] rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-black/5">
+                    <Globe className="w-8 h-8 text-[#1A1A1A]" />
+                  </div>
+                  <h3 className="font-display text-3xl mb-3">Read the whole world.</h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    Paste URLs from different news sources, speeches, or reports. The AI will read them all and synthesize a unified intelligence dossier, highlighting where they agree and where they lie.
+                  </p>
+                </div>
+              )}
+
               {analysis && !isAnalyzing && (
                 <div className="animate-in fade-in slide-in-from-bottom-8 space-y-6 duration-700">
                   <section className="relative rounded-xl border bg-card p-10 shadow-sm overflow-hidden">
@@ -682,128 +690,143 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                 )}
               </div>
 
-              <div className="mb-8 flex flex-col md:flex-row items-end gap-4 rounded-xl border bg-card p-4 shadow-sm">
-                <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[0, 1].map((index) => (
-                    <div key={index}>
-                      <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-1 block">Source {index === 0 ? "A" : "B"}</label>
-                      <select className="w-full rounded-md border bg-background p-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
-                        <option value="" disabled>Select a document</option>
-                        {docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}
-                      </select>
-                    </div>
-                  ))}
-                </div>
-                <Button onClick={runComparison} disabled={isComparing || !docA || !docB || docA.id === docB.id} className="h-[38px] px-6 w-full md:w-auto shrink-0">
-                  {isComparing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Comparing...</> : <><GitMerge className="mr-2 h-4 w-4" /> Run Comparison</>}
-                </Button>
-              </div>
-
-              {analysisError && <p className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{analysisError}</p>}
-
-              {isComparing && (
-                <div className="py-24 text-center">
-                  <div className="relative mb-8 inline-block">
-                    <div className="h-16 w-16 animate-spin rounded-full border-2 border-muted border-t-foreground"></div>
-                    <Activity className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-foreground animate-pulse" />
+              {docs.length < 2 ? (
+                <div className="flex flex-col items-center justify-center py-20 px-4 text-center border rounded-2xl border-dashed bg-card/20 mt-8">
+                  <div className="w-16 h-16 bg-[#E8DAFB] rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-black/5">
+                    <Columns2 className="w-8 h-8 text-[#1A1A1A]" />
                   </div>
-                  <h4 className="mb-2 font-display text-2xl text-foreground">Cross-examining Narratives...</h4>
-                  <p className="animate-pulse font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Mapping Entities → Detecting Omissions → Measuring Divergence</p>
+                  <h3 className="font-display text-3xl mb-3">Find the friction.</h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    You need at least two indexed documents to run a comparison. Go back to the Forensic Workbench and index another source to see how their narratives diverge.
+                  </p>
                 </div>
-              )}
-
-              {comparisonAnalysis && !isComparing && docA && docB && (
-                <div className="animate-in fade-in slide-in-from-bottom-8 space-y-6 duration-700">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-                    <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col items-center justify-center h-[320px]">
-                      <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-4 text-center">Divergence Score</h4>
-                      <ContradictionGauge score={comparisonAnalysis.divergenceScore} />
-                      <p className="text-[10px] text-center font-mono uppercase tracking-widest text-muted-foreground mt-6 border border-border px-3 py-1 rounded-full bg-muted/30">
-                        {comparisonAnalysis.divergenceScore > 70 ? "Fundamentally Opposed" : comparisonAnalysis.divergenceScore > 40 ? "Moderate Friction" : "Broad Alignment"}
-                      </p>
-                    </div>
-
-                    <div className="md:col-span-2 rounded-xl border bg-card p-6 shadow-sm h-[320px]">
-                      <div className="mb-2 flex items-center justify-between">
-                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Comparative Narrative Profile</h4>
-                      </div>
-                      <div className="h-[240px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <RadarChart cx="50%" cy="50%" outerRadius="75%" data={compareRadarData} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
-                            <PolarGrid stroke="var(--border)" strokeDasharray="3 3" />
-                            <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: 'var(--font-mono)' }} />
-                            <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                            <Radar name={docA.title} dataKey="A" stroke="#C24A35" strokeWidth={2} fill="#C24A35" fillOpacity={0.2} />
-                            <Radar name={docB.title} dataKey="B" stroke="var(--foreground)" strokeWidth={2} fill="var(--foreground)" fillOpacity={0.1} />
-                            <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'var(--font-mono)', paddingTop: '10px' }} />
-                          </RadarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                  </div>
-
-                  <section className="rounded-xl border bg-card p-6 shadow-sm">
-                    <h4 className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><Target className="h-4 w-4" /> Entity Matrix</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div>
-                        <h5 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3 text-center">Shared Focus</h5>
-                        <div className="flex flex-col gap-2">
-                          {comparisonAnalysis.shared_entities?.map((e: string, i: number) => (
-                            <span key={i} className="w-full px-3 py-1.5 bg-muted text-foreground border rounded-md text-xs font-medium text-center truncate">{e}</span>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <h5 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-3 text-center">Only in {docA.title.slice(0, 15)}...</h5>
-                        <div className="flex flex-col gap-2">
-                          {comparisonAnalysis.unique_to_a?.map((e: string, i: number) => (
-                            <span key={i} className="w-full px-3 py-1.5 bg-[#FBD0D4]/40 text-foreground border border-[#C24A35]/20 rounded-md text-xs font-medium text-center truncate">{e}</span>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <h5 className="font-mono text-[10px] uppercase tracking-widest text-foreground mb-3 text-center">Only in {docB.title.slice(0, 15)}...</h5>
-                        <div className="flex flex-col gap-2">
-                          {comparisonAnalysis.unique_to_b?.map((e: string, i: number) => (
-                            <span key={i} className="w-full px-3 py-1.5 bg-[#CBE6F9]/40 text-foreground border border-foreground/20 rounded-md text-xs font-medium text-center truncate">{e}</span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-
-                  <section className="rounded-xl border bg-card p-6 shadow-sm">
-                    <h4 className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><AlertTriangle className="h-4 w-4" /> Flashpoints</h4>
-                    <div className="space-y-4">
-                      {comparisonAnalysis.flashpoints?.map((fp: any, i: number) => (
-                        <div key={i} className="rounded-lg border bg-background overflow-hidden">
-                          <div className="bg-muted/50 px-4 py-2 border-b font-display text-sm font-bold">{fp.topic}</div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x">
-                            <div className="p-4">
-                              <span className="font-mono text-[9px] uppercase tracking-wider text-[#C24A35] block mb-2">{docA.title}</span>
-                              <p className="text-xs leading-relaxed text-foreground/80">{fp.text_a_view}</p>
-                            </div>
-                            <div className="p-4">
-                              <span className="font-mono text-[9px] uppercase tracking-wider text-foreground block mb-2">{docB.title}</span>
-                              <p className="text-xs leading-relaxed text-foreground/80">{fp.text_b_view}</p>
-                            </div>
-                          </div>
+              ) : (
+                <>
+                  <div className="mb-8 flex flex-col md:flex-row items-end gap-4 rounded-xl border bg-card p-4 shadow-sm">
+                    <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {[0, 1].map((index) => (
+                        <div key={index}>
+                          <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-1 block">Source {index === 0 ? "A" : "B"}</label>
+                          <select className="w-full rounded-md border bg-background p-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
+                            <option value="" disabled>Select a document</option>
+                            {docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}
+                          </select>
                         </div>
                       ))}
                     </div>
-                  </section>
-                </div>
-              )}
+                    <Button onClick={runComparison} disabled={isComparing || !docA || !docB || docA.id === docB.id} className="h-[38px] px-6 w-full md:w-auto shrink-0">
+                      {isComparing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Comparing...</> : <><GitMerge className="mr-2 h-4 w-4" /> Run Comparison</>}
+                    </Button>
+                  </div>
 
-              {!comparisonAnalysis && !isComparing && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                  {[docA, docB].map((doc, i) => doc && (
-                    <article className="rounded-xl border bg-card p-8 shadow-sm" key={doc.id}>
-                      <h3 className="mb-4 font-display text-2xl">{doc.title}</h3>
-                      <p className="text-sm leading-relaxed text-muted-foreground line-clamp-[20]">{doc.text}</p>
-                    </article>
-                  ))}
-                </div>
+                  {analysisError && <p className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{analysisError}</p>}
+
+                  {isComparing && (
+                    <div className="py-24 text-center">
+                      <div className="relative mb-8 inline-block">
+                        <div className="h-16 w-16 animate-spin rounded-full border-2 border-muted border-t-foreground"></div>
+                        <Activity className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-foreground animate-pulse" />
+                      </div>
+                      <h4 className="mb-2 font-display text-2xl text-foreground">Cross-examining Narratives...</h4>
+                      <p className="animate-pulse font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Mapping Entities → Detecting Omissions → Measuring Divergence</p>
+                    </div>
+                  )}
+
+                  {comparisonAnalysis && !isComparing && docA && docB && (
+                    <div className="animate-in fade-in slide-in-from-bottom-8 space-y-6 duration-700">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                        <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col items-center justify-center h-[320px]">
+                          <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-4 text-center">Divergence Score</h4>
+                          <ContradictionGauge score={comparisonAnalysis.divergenceScore} />
+                          <p className="text-[10px] text-center font-mono uppercase tracking-widest text-muted-foreground mt-6 border border-border px-3 py-1 rounded-full bg-muted/30">
+                            {comparisonAnalysis.divergenceScore > 70 ? "Fundamentally Opposed" : comparisonAnalysis.divergenceScore > 40 ? "Moderate Friction" : "Broad Alignment"}
+                          </p>
+                        </div>
+
+                        <div className="md:col-span-2 rounded-xl border bg-card p-6 shadow-sm h-[320px]">
+                          <div className="mb-2 flex items-center justify-between">
+                            <h4 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Comparative Narrative Profile</h4>
+                          </div>
+                          <div className="h-[240px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <RadarChart cx="50%" cy="50%" outerRadius="75%" data={compareRadarData} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+                                <PolarGrid stroke="var(--border)" strokeDasharray="3 3" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: 'var(--font-mono)' }} />
+                                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                                <Radar name={docA.title} dataKey="A" stroke="#C24A35" strokeWidth={2} fill="#C24A35" fillOpacity={0.2} />
+                                <Radar name={docB.title} dataKey="B" stroke="var(--foreground)" strokeWidth={2} fill="var(--foreground)" fillOpacity={0.1} />
+                                <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'var(--font-mono)', paddingTop: '10px' }} />
+                              </RadarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      </div>
+
+                      <section className="rounded-xl border bg-card p-6 shadow-sm">
+                        <h4 className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><Target className="h-4 w-4" /> Entity Matrix</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <div>
+                            <h5 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3 text-center">Shared Focus</h5>
+                            <div className="flex flex-col gap-2">
+                              {comparisonAnalysis.shared_entities?.map((e: string, i: number) => (
+                                <span key={i} className="w-full px-3 py-1.5 bg-muted text-foreground border rounded-md text-xs font-medium text-center truncate">{e}</span>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <h5 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-3 text-center">Only in {docA.title.slice(0, 15)}...</h5>
+                            <div className="flex flex-col gap-2">
+                              {comparisonAnalysis.unique_to_a?.map((e: string, i: number) => (
+                                <span key={i} className="w-full px-3 py-1.5 bg-[#FBD0D4]/40 text-foreground border border-[#C24A35]/20 rounded-md text-xs font-medium text-center truncate">{e}</span>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <h5 className="font-mono text-[10px] uppercase tracking-widest text-foreground mb-3 text-center">Only in {docB.title.slice(0, 15)}...</h5>
+                            <div className="flex flex-col gap-2">
+                              {comparisonAnalysis.unique_to_b?.map((e: string, i: number) => (
+                                <span key={i} className="w-full px-3 py-1.5 bg-[#CBE6F9]/40 text-foreground border border-foreground/20 rounded-md text-xs font-medium text-center truncate">{e}</span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+
+                      <section className="rounded-xl border bg-card p-6 shadow-sm">
+                        <h4 className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground border-b pb-4"><AlertTriangle className="h-4 w-4" /> Flashpoints</h4>
+                        <div className="space-y-4">
+                          {comparisonAnalysis.flashpoints?.map((fp: any, i: number) => (
+                            <div key={i} className="rounded-lg border bg-background overflow-hidden">
+                              <div className="bg-muted/50 px-4 py-2 border-b font-display text-sm font-bold">{fp.topic}</div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x">
+                                <div className="p-4">
+                                  <span className="font-mono text-[9px] uppercase tracking-wider text-[#C24A35] block mb-2">{docA.title}</span>
+                                  <p className="text-xs leading-relaxed text-foreground/80">{fp.text_a_view}</p>
+                                </div>
+                                <div className="p-4">
+                                  <span className="font-mono text-[9px] uppercase tracking-wider text-foreground block mb-2">{docB.title}</span>
+                                  <p className="text-xs leading-relaxed text-foreground/80">{fp.text_b_view}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    </div>
+                  )}
+
+                  {!comparisonAnalysis && !isComparing && (
+                    <div className="flex flex-col items-center justify-center py-20 px-4 text-center border rounded-2xl border-dashed bg-card/20 mt-8">
+                      <div className="w-16 h-16 bg-[#FDF0B6] rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-black/5">
+                        <GitCompare className="w-8 h-8 text-[#1A1A1A]" />
+                      </div>
+                      <h3 className="font-display text-3xl mb-3">Ready to compare.</h3>
+                      <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                        Select two sources above and run the comparison to see the divergence score, entity matrix, and direct flashpoints.
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
@@ -830,6 +853,18 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   </button>
                 ))}
               </div>
+
+              {terms.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-24 px-4 text-center border rounded-2xl border-dashed bg-card/20">
+                  <div className="w-16 h-16 bg-[#CBE6F9] rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-black/5">
+                    <Hash className="w-8 h-8 text-[#1A1A1A]" />
+                  </div>
+                  <h3 className="font-display text-3xl mb-3">Measure the narrative.</h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    Type a word or phrase above (like "security" or "economy") to visualize how often it appears across your sources.
+                  </p>
+                </div>
+              )}
 
               {terms.length > 0 && docs.length > 0 && (
                 <div className="mb-12 rounded-xl border bg-card p-8 shadow-sm">
