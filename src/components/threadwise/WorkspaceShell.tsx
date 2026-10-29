@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Canvas from "./Canvas";
 import { DiscourseLab } from "./DiscourseLab";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
+import { emptySuite } from "@/lib/threadwise/advanced";
 import { Button } from "@/components/ui/button";
 import { Columns, LayoutPanelTop, PanelRight, X } from "lucide-react";
 
@@ -16,19 +17,17 @@ export function WorkspaceShell() {
   
   const corpus = canvas?.suite?.discourse || undefined;
   const updateSuite = (patch: any) => { 
-    if (canvas) ws.updateSuite(canvas.id, { ...canvas.suite, ...patch }); 
+    if (canvas) ws.updateSuite(canvas.id, { ...(canvas.suite ?? emptySuite()), ...patch }); 
   };
 
-  // Listen for the "Open Lab" request from the Canvas Studio
   useEffect(() => {
     const handleOpenLab = () => {
-      // Force the user to see the Lab. If they are in split, switch to tabs so it takes over.
       if (layout === "split" || layout === "tabs") {
         setLayout("tabs");
         setActiveTab("lab");
       }
       if (layout === "slide") {
-        setSlideOpen(false); // Close the canvas slide so the lab is fully visible
+        setSlideOpen(false); 
       }
     };
     window.addEventListener("threadwise:open-lab", handleOpenLab);
@@ -50,14 +49,12 @@ export function WorkspaceShell() {
 
   return (
     <div className="h-screen w-screen flex flex-col bg-background overflow-hidden">
-      {/* GLOBAL HEADER & LAYOUT TOGGLE */}
       <div className="h-14 border-b flex items-center px-4 justify-between shrink-0 bg-card z-[60]">
         <div className="flex items-center gap-3">
           <span className="font-display text-xl italic font-medium tracking-tight">Threadwise</span>
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground bg-muted px-2 py-1 rounded-md">Workspace</span>
         </div>
         
-        {/* Layout Toggles */}
         <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl border">
           <Button 
             size="sm" 
@@ -85,7 +82,6 @@ export function WorkspaceShell() {
           </Button>
         </div>
 
-        {/* Contextual Actions based on Layout */}
         <div className="w-48 flex justify-end">
           {layout === "slide" && (
              <Button size="sm" variant={slideOpen ? "default" : "outline"} onClick={() => setSlideOpen(!slideOpen)}>
@@ -100,10 +96,7 @@ export function WorkspaceShell() {
         </div>
       </div>
 
-      {/* LAYOUT RENDERING ENGINE */}
       <div className="flex-1 relative overflow-hidden flex">
-        
-        {/* Option A: SPLIT VIEW */}
         {layout === "split" && (
           <>
             <div className="w-1/2 h-full border-r overflow-hidden flex flex-col relative z-10">
@@ -115,20 +108,17 @@ export function WorkspaceShell() {
           </>
         )}
 
-        {/* Option B: TABS VIEW */}
         {layout === "tabs" && (
           <div className="w-full h-full relative">
             {activeTab === "lab" ? labContent : <Canvas />}
           </div>
         )}
 
-        {/* Option C: SLIDE VIEW */}
         {layout === "slide" && (
           <>
             <div className="w-full h-full relative z-0">
               {labContent}
             </div>
-            {/* The Sliding Canvas Overlay */}
             <div className={`absolute inset-y-0 right-0 w-full md:w-[60%] border-l bg-background shadow-2xl transition-transform duration-300 ease-in-out z-50 flex flex-col ${slideOpen ? "translate-x-0" : "translate-x-full"}`}>
               <div className="h-10 border-b flex items-center justify-between px-4 bg-muted/20 shrink-0">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Canvas View</span>

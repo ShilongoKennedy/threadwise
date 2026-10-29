@@ -83,16 +83,16 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
   const [exploreOpen, setExploreOpen] = useState(false);
   const [physics, setPhysics] = useState(false);
   const [audit, setAudit] = useState(false);
-  // The board is the product. Controls stay available, but do not permanently consume it.
   const [chromeOpen, setChromeOpen] = useState(false);
   const [dockOpen, setDockOpen] = useState(false);
-  const [spatial, setSpatial] = useState(false); // TURNED OFF BY DEFAULT
+  const [spatial, setSpatial] = useState(false);
   const [thoughtPortal, setThoughtPortal] = useState<string | null>(null);
   const [focusField, setFocusField] = useState(false);
   const onboarding = useOnboarding();
   const wrapper = useRef<HTMLDivElement>(null);
   const dragStart = useRef<Record<string, { x: number; y: number }>>({});
   const [kbd, setKbd] = useState(false);
+  
   const pt = (e: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent) => {
     const t = "changedTouches" in e ? e.changedTouches[0] : e;
     return { x: t?.clientX ?? 0, y: t?.clientY ?? 0 };
@@ -100,10 +100,14 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
   const sx = (x: number) => x / Math.max(1, window.innerWidth);
   const overDraft = (x: number, y: number) =>
     document.elementsFromPoint(x, y).some((el) => el.closest("[data-memo-drop]"));
+  
   const replay = s.replayIndex !== null;
   const snapshot = replay ? s.history[s.replayIndex ?? 0] : undefined;
-  const visibleNodes = snapshot?.nodes ?? s.nodes;
-  const visibleEdges = snapshot?.edges ?? s.edges;
+  
+  // FIX: Added ?? [] to prevent crashes if arrays are temporarily undefined
+  const visibleNodes = snapshot?.nodes ?? s.nodes ?? [];
+  const visibleEdges = snapshot?.edges ?? s.edges ?? [];
+  
   const focus = useMemo(
     () => neighborhood(s.selectedId, visibleEdges),
     [s.selectedId, visibleEdges],
@@ -308,7 +312,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
         const from = st.nodes.find((n) => n.id === st.selectedId);
         let next: string | null;
         if (!from) {
-          // No focus yet: start from the card nearest the middle of the view.
           const c = rf.screenToFlowPosition({
             x: window.innerWidth / 2,
             y: window.innerHeight / 2,
@@ -442,7 +445,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
       }}
       onPointerDown={() => setKbd(false)}
       onPointerMove={(e) => {
-        // The desk lamp follows the cursor; cards cast shadows away from it.
         const el = wrapper.current;
         if (!el) return;
         el.style.setProperty("--lx", ((e.clientX / window.innerWidth) * 2 - 1).toFixed(3));
@@ -512,7 +514,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           }
           document.querySelector("[data-memo-drop]")?.classList.remove("tw-transclude-target");
           if (memo && canvasId && n.type === "thread" && overDraft(p.x, p.y)) {
-            // Dropping into the draft embeds a live block; the card returns to its place.
             useDraft.getState().embed(canvasId, n.id);
             if (start) s.setPositions({ [n.id]: start });
             playSound("latch", sx(p.x));
@@ -749,7 +750,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </Button>
         </div>}
 
-        {/* Masthead */}
         <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between px-4 pt-4 sm:px-6 sm:pt-5">
           <div className="pointer-events-auto flex items-center gap-3">
             <svg viewBox="0 0 32 32" className="h-7 w-7 text-foreground" aria-hidden>
@@ -806,7 +806,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </div>
         </header>
 
-        {/* Dock */}
         <div
           className={`pointer-events-none absolute inset-x-0 bottom-[max(12px,env(safe-area-inset-bottom))] z-10 justify-center px-3 sm:bottom-5 ${threadId ? "hidden md:flex" : "flex"}`}
         >
@@ -882,7 +881,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
         </div>
         {onboarding.open && <Onboarding onClose={onboarding.close} />}
         
-        {/* NEW PREMIUM EMPTY STATE - DISCOURSE LAB FOCUS */}
         {s.nodes.length === 0 && (
           <div className="absolute inset-0 z-40 flex flex-col items-center justify-center pointer-events-none p-4">
             <div className="pointer-events-auto bg-[#FDFBF7]/90 backdrop-blur-2xl border border-white/40 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] rounded-3xl p-10 max-w-lg w-full text-center animate-in fade-in zoom-in-95 duration-500">

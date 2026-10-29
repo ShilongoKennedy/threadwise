@@ -81,7 +81,11 @@ const downloadSlug = (s: string) => s.replace(/[^a-z0-9]+/gi, "-").slice(0, 60) 
 
 export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () => void; onPresentChange: (v: boolean) => void; }) {
   const s = useThread(), ws = useWorkspaces(), user = useAccount((a) => a.user), rf = useReactFlow(), viewport = useViewport();
-  const w = ws.workspaces.find((w) => w.id === ws.activeId), canvas = w?.document.canvases.find((c) => c.id === w.document.activeCanvasId), suite = canvas?.suite ?? emptySuite();
+  const w = ws.workspaces.find((w) => w.id === ws.activeId), canvas = w?.document.canvases.find((c) => c.id === w.document.activeCanvasId);
+  
+  // FIX: Safely merge the default suite so stops, frames, etc. are never wiped out
+  const suite = { ...emptySuite(), ...(canvas?.suite ?? {}) };
+  
   const [open, setOpen] = useState(false), [tool, setTool] = useState("inbox"), [error, setError] = useState(""), [busy, setBusy] = useState(false), [message, setMessage] = useState(""), [live, setLive] = useState(false);
   const [ink, setInk] = useState<"laser" | "pen" | null>(null), [strokes, setStrokes] = useState<Stroke[]>([]), [laser, setLaser] = useState<{ x: number; y: number } | null>(null), currentStroke = useRef<string | null>(null);
   const [title, setTitle] = useState(""), [capture, setCapture] = useState(""), [ids, setIds] = useState<string[]>([]), [relation, setRelation] = useState<Relation>("depends_on"), [wireMode, setWireMode] = useState<"chain" | "fan" | "all">("chain");
