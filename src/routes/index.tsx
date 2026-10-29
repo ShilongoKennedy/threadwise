@@ -172,13 +172,6 @@ function LandingPage() {
 
         @keyframes pulse-blue { 0% { box-shadow: 0 0 20px #00f0ff, inset 0 0 10px #000; } 100% { box-shadow: 0 0 50px #00f0ff, inset 0 0 10px #000; } }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        .digital-time { font-family: 'Courier New', Courier, monospace; color: #1A1A1A; letter-spacing: 0.1em; }
-        .wave-bar { width: 3px; background-color: #C24A35; border-radius: 2px; animation: wave 1.2s ease-in-out infinite alternate; box-shadow: 0 0 8px rgba(194, 74, 53, 0.3); }
-        @media (min-width: 768px) { .wave-bar { width: 4px; } }
-        @keyframes wave { 0% { height: 10%; } 100% { height: 100%; } }
-        .terminal-scroll { animation: scroll-up 10s linear infinite; }
-        @keyframes scroll-up { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
       `}</style>
 
       {/* ARTISTIC AMBIENT BACKGROUND */}
@@ -414,41 +407,73 @@ function LandingPage() {
                 <path d="M 920 520 Q 800 500 600 350" className="data-stream-base" /><path d="M 920 520 Q 800 500 600 350" className="data-stream-pulse" style={{ animationDelay: '1.5s' }} />
               </svg>
 
+              {/* Center Core */}
               <div className="relative md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 flex flex-col items-center z-20 order-1 md:order-none my-6 md:my-0">
                 <div className="ai-core-container">
                   <div className="ai-outer-socket" /><div className="ai-mech-ring" /><div className="ai-blue-core"><div className="ai-lens-inner"><div className="ai-lens-glint" /></div></div>
                 </div>
               </div>
 
-              <div className="widget relative md:absolute md:top-[12%] md:left-[8%] w-full md:w-64 h-28 md:h-36 p-4 md:p-6 flex flex-col items-center justify-center z-10 order-2 md:order-none">
-                <div className="text-[9px] md:text-[10px] font-mono text-black/40 uppercase tracking-widest mb-1 md:mb-2 flex items-center gap-1.5 md:gap-2"><Activity className="w-3 h-3 text-[#C24A35]" /> Sys Time</div>
-                <div className="digital-time text-3xl md:text-4xl font-bold">{formatTime(time)}</div>
-              </div>
-
-              <div className="widget relative md:absolute md:top-[15%] md:right-[8%] w-full md:w-60 h-auto md:h-64 z-10 flex flex-col items-center py-4 md:pt-8 md:pb-0 rounded-xl md:rounded-b-xl order-3 md:order-none">
-                <div className="hidden md:block absolute top-0 left-1/4 -translate-y-1/2 w-4 h-8 rounded-full border-4 border-gray-400 bg-transparent" /><div className="hidden md:block absolute top-0 right-1/4 -translate-y-1/2 w-4 h-8 rounded-full border-4 border-gray-400 bg-transparent" />
-                <div className="w-40 md:w-48 h-36 md:h-52 bg-white shadow-lg border border-black/5 flex flex-col rounded-sm overflow-hidden">
-                  <div className="w-full h-8 md:h-12 bg-[#C24A35] text-white flex items-center justify-center font-mono text-sm md:text-lg tracking-[0.3em] uppercase">{currentMonth}</div>
-                  <div className="flex-1 flex items-center justify-center font-display text-5xl md:text-7xl text-[#1A1A1A]">{currentDate}</div>
+              {/* 1. Top Left: Entity Network */}
+              <div className="widget relative md:absolute md:top-[12%] md:left-[8%] w-full md:w-64 h-32 md:h-40 p-4 md:p-6 flex flex-col z-10 order-2 md:order-none">
+                <div className="text-[9px] md:text-[10px] font-mono text-black/40 uppercase tracking-widest mb-3 flex items-center gap-1.5 md:gap-2"><Globe className="w-3 h-3 text-[#2D6A65]" /> Entity Network</div>
+                <div className="flex flex-wrap gap-1.5">
+                  <span className="px-2 py-1 bg-[#CBE6F9] border border-black/10 rounded text-[8px] md:text-[10px] font-medium shadow-sm">Gaza</span>
+                  <span className="px-2 py-1 bg-[#FBD0D4] border border-black/10 rounded text-[8px] md:text-[10px] font-medium shadow-sm">Iran</span>
+                  <span className="px-2 py-1 bg-[#FDF0B6] border border-black/10 rounded text-[8px] md:text-[10px] font-medium shadow-sm">UN Report</span>
+                  <span className="px-2 py-1 bg-[#E8DAFB] border border-black/10 rounded text-[8px] md:text-[10px] font-medium shadow-sm">Military</span>
+                  <span className="px-2 py-1 bg-white border border-black/10 rounded text-[8px] md:text-[10px] font-medium shadow-sm">Sanctions</span>
                 </div>
               </div>
 
-              <div className="widget relative md:absolute md:bottom-[12%] md:left-[10%] w-full md:w-72 h-40 md:h-56 p-3 md:p-4 flex flex-col z-10 overflow-hidden order-4 md:order-none">
-                <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 pb-1.5 md:pb-2 border-b border-black/10 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Terminal className="w-3 h-3 text-[#2D6A65]" /> OSINT Feed</div>
-                <div className="font-mono text-[9px] md:text-[10px] text-[#1A1A1A] leading-relaxed overflow-hidden h-full relative">
-                  <div className="terminal-scroll space-y-1.5 md:space-y-2">
-                    <p>&gt; INGESTING SPEECH...</p><p>&gt; EXTRACTING ENTITIES...</p><p>&gt; MAPPING FALLACIES...</p><p>&gt; CONTRADICTION DETECTED</p><p>&gt; HIDDEN MOTIVE SUSPECTED</p><p>&gt; CROSS-REFERENCING NEWS...</p><p>&gt; INGESTING NEWS...</p><p>&gt; DRAFTING DOSSIER...</p>
+              {/* 2. Bottom Left: Narrative Radar */}
+              <div className="widget relative md:absolute md:bottom-[12%] md:left-[10%] w-full md:w-64 h-40 md:h-56 p-3 md:p-4 flex flex-col z-10 order-4 md:order-none">
+                <div className="flex items-center gap-1.5 md:gap-2 mb-2 pb-1.5 border-b border-black/10 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Activity className="w-3 h-3 text-[#C24A35]" /> Narrative Radar</div>
+                <div className="flex-1 flex items-center justify-center relative">
+                  <svg viewBox="0 0 100 100" className="w-24 h-24 md:w-32 md:h-32">
+                    <polygon points="50,10 90,40 75,85 25,85 10,40" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+                    <polygon points="50,25 75,45 65,75 35,75 25,45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+                    <polygon points="50,5 85,45 60,80 40,80 15,45" fill="#C24A35" fillOpacity="0.2" stroke="#C24A35" strokeWidth="2" />
+                    <text x="50" y="3" fill="#1A1A1A" fontSize="5" textAnchor="middle" fontFamily="monospace">BIAS</text>
+                    <text x="95" y="45" fill="#1A1A1A" fontSize="5" textAnchor="start" fontFamily="monospace">OMISSION</text>
+                    <text x="65" y="90" fill="#1A1A1A" fontSize="5" textAnchor="middle" fontFamily="monospace">URGENCY</text>
+                    <text x="35" y="90" fill="#1A1A1A" fontSize="5" textAnchor="middle" fontFamily="monospace">MOTIVE</text>
+                    <text x="5" y="45" fill="#1A1A1A" fontSize="5" textAnchor="end" fontFamily="monospace">EVIDENCE</text>
+                  </svg>
+                </div>
+              </div>
+
+              {/* 3. Top Right: Contradiction Gauge */}
+              <div className="widget relative md:absolute md:top-[15%] md:right-[8%] w-full md:w-64 h-40 md:h-48 p-4 md:p-6 flex flex-col items-center justify-center z-10 order-3 md:order-none">
+                <div className="text-[9px] md:text-[10px] font-mono text-black/40 uppercase tracking-widest absolute top-4 left-4 md:top-6 md:left-6 flex items-center gap-1.5 md:gap-2"><ShieldAlert className="w-3 h-3 text-[#C24A35]" /> Contradiction</div>
+                <div className="relative mt-4 md:mt-6 w-full flex justify-center">
+                   <svg viewBox="0 0 100 50" className="w-32 md:w-40 h-auto">
+                      <path d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="8" strokeLinecap="round" />
+                      <path d="M 10 45 A 35 35 0 0 1 75 18" fill="none" stroke="#C24A35" strokeWidth="8" strokeLinecap="round" />
+                      <circle cx="50" cy="45" r="3" fill="#1A1A1A" />
+                      <line x1="50" y1="45" x2="75" y2="18" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" />
+                   </svg>
+                   <div className="absolute -bottom-2 text-center">
+                     <span className="font-display text-2xl md:text-3xl text-[#C24A35]">85</span>
+                     <span className="text-[10px] text-muted-foreground">/100</span>
+                   </div>
+                </div>
+              </div>
+
+              {/* 4. Bottom Right: Analyst Margin Notes */}
+              <div className="widget relative md:absolute md:bottom-[15%] md:right-[10%] w-full md:w-72 h-48 md:h-56 p-4 md:p-5 flex flex-col z-10 order-5 md:order-none bg-[#FDFBF7]/90">
+                <div className="text-[9px] md:text-[10px] font-mono text-black/40 uppercase tracking-widest mb-3 flex items-center gap-1.5 md:gap-2"><Search className="w-3 h-3 text-[#6B4C7A]" /> Analyst Margin</div>
+                <div className="space-y-2 flex-1 overflow-hidden">
+                  <div className="bg-white border-l-4 border-[#C24A35] border-y border-r border-black/5 p-2 rounded-r shadow-sm">
+                    <span className="text-[7px] md:text-[8px] font-mono uppercase text-[#C24A35] block mb-1">Contradiction</span>
+                    <b className="text-[9px] md:text-[10px] font-display block mb-0.5">Rule of Law vs. Force</b>
+                    <p className="text-[7px] md:text-[8px] text-muted-foreground leading-tight">Citing 'rule of law' in the same breath as implicit military force reveals a protection-racket mentality.</p>
                   </div>
-                </div>
-              </div>
-
-              <div className="widget relative md:absolute md:bottom-[15%] md:right-[10%] w-full md:w-72 h-36 md:h-48 p-4 md:p-6 flex flex-col z-10 order-5 md:order-none">
-                <div className="flex justify-between items-center mb-3 md:mb-6 border-b border-black/10 pb-2 md:pb-3">
-                  <div className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[10px] font-mono text-black/50 uppercase tracking-widest"><Mic className="w-3 h-3 md:w-4 md:h-4 text-[#6B4C7A]" /> Audio Intercept</div>
-                  <div className="flex items-center gap-1.5 md:gap-2"><div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_#ff0000]" /><span className="text-[9px] md:text-[10px] font-mono text-red-500 tracking-widest font-bold">REC</span></div>
-                </div>
-                <div className="flex-1 flex items-end justify-between gap-1 h-10 md:h-14 pb-1 md:pb-2 px-1 md:px-2">
-                  {[...Array(16)].map((_, i) => (<div key={i} className="wave-bar" style={{ animationDelay: `${i * 0.1}s` }} />))}
+                  <div className="bg-white border-l-4 border-[#E3D398] border-y border-r border-black/5 p-2 rounded-r shadow-sm">
+                    <span className="text-[7px] md:text-[8px] font-mono uppercase text-[#E3D398] block mb-1">Fallacy</span>
+                    <b className="text-[9px] md:text-[10px] font-display block mb-0.5">Appeal to Force</b>
+                    <p className="text-[7px] md:text-[8px] text-muted-foreground leading-tight">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
+                  </div>
                 </div>
               </div>
 
