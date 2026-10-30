@@ -8,6 +8,7 @@ import { streamTask } from "@/lib/threadwise/ai-client";
 import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
 import { readDocument } from "@/lib/threadwise/evidence";
 import { archiveInsight } from "@/lib/threadwise/archivist";
+import { intelligentTidy } from "@/lib/threadwise/layout";
 import { toast } from "sonner";
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PolarRadiusAxis, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
 
@@ -330,6 +331,10 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
         }
     } catch (e) {
         toast.success("Planted. (Auto-wire unavailable)", { id: "autowire" });
+    } finally {
+        // THE MAGNETIC CANVAS: Auto-organize locally with zero AI pressure
+        const newPositions = intelligentTidy(useThread.getState().nodes, useThread.getState().edges);
+        s.setPositions(newPositions);
     }
   };
 
