@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useReactFlow } from "@xyflow/react";
-import { AlertTriangle, Check, Link2, Loader2, Sparkles, X } from "lucide-react";
+import { AlertTriangle, Check, Link2, Loader2, Network, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { relationLabel, type Relation, type ThreadNodeType } from "@/lib/threadwise/model";
 import { useThread } from "@/lib/threadwise/store";
@@ -14,9 +14,13 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
   const rf = useReactFlow();
   const [loading, setLoading] = useState(false);
   const [redTeamLoading, setRedTeamLoading] = useState(false);
+  const [bridgeLoading, setBridgeLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const focus = s.nodes.find((n) => n.id === s.selectedId);
   const title = (id: string | null) => s.nodes.find((n) => n.id === id)?.data.title ?? "?";
+
+  const [bridgeA, setBridgeA] = useState<string>("");
+  const [bridgeB, setBridgeB] = useState<string>("");
 
   const explore = async () => {
     setLoading(true);
@@ -86,22 +90,18 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
         const currentNodes = useThread.getState().nodes;
         
         res.omissions.forEach((om: any) => {
-          // Find the target node to calculate spawn position
           const target = currentNodes.find(n => n.id === om.targetId) || currentNodes[0];
           const x = target ? target.position.x + 400 : 0;
           const y = target ? target.position.y + 200 : 0;
           
-          // Spawn the Omission node
           const id = useThread.getState().addNode("omission", { x, y });
           useThread.getState().updateNode(id, { title: om.title, body: om.body, meta: { status: "open" } });
           
-          // Connect it to the target hypothesis
           if (om.targetId && currentNodes.some(n => n.id === om.targetId)) {
             useThread.getState().connect({ source: om.targetId, target: id, sourceHandle: null, targetHandle: null }, "needs_evidence_from");
           }
         });
         
-        // Instantly tidy the board to snap them into place
         const newPositions = intelligentTidy(useThread.getState().nodes, useThread.getState().edges);
         useThread.getState().setPositions(newPositions);
         
@@ -113,6 +113,55 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
       setError(e.message || "Red team failed.");
     } finally {
       setRedTeamLoading(false);
+    }
+  };
+
+  const runSynthesis = async () => {
+    if (!bridgeA || !bridgeB) return;
+    setBridgeLoading(true);
+    setError(null);
+    try {
+      const nodeA = s.nodes.find(n => n.id === bridgeA);
+      const nodeB = s.nodes.find(n => n.id === bridgeB);
+      if (!nodeA || !nodeB) throw new Error("Nodes not found.");
+
+      const output = await streamTask({
+        mode: "synthesize-bridge",
+        textA: `${nodeA.data.title}\n${nodeA.data.body}`,
+        textB: `${nodeB.data.title}\n${nodeB.data.body}`,
+        titleA: nodeA.data.title,
+        titleB: nodeB.data.title
+      }, () => {});
+      
+      const res = JSON.parse(output);
+      if (res.error) throw new Error(res.error);
+
+      if (res.bridge) {
+        const midX = (nodeA.position.x + nodeB.position.x) / 2;
+        const midY = (nodeA.position.y + nodeB.position.y) / 2;
+        
+        const newNodeId = useThread.getState().addNode(res.bridge.kind === "omission" ? "omission" : "idea", { x: midX, y: midY });
+        useThread.getState().updateNode(newNodeId, { 
+          title: res.bridge.title, 
+          body: res.bridge.body, 
+          epistemic: res.bridge.kind === "omission" ? "unknown" : "hypothesis",
+          meta: { source: "AI Synthesis" }
+        });
+        
+        useThread.getState().connect({ source: nodeA.id, target: newNodeId, sourceHandle: null, targetHandle: null }, "leads_to");
+        useThread.getState().connect({ source: nodeB.id, target: newNodeId, sourceHandle: null, targetHandle: null }, "leads_to");
+        
+        const newPositions = intelligentTidy(useThread.getState().nodes, useThread.getState().edges);
+        useThread.getState().setPositions(newPositions);
+        
+        toast.success("Synthesized a new bridge insight.");
+        setBridgeA("");
+        setBridgeB("");
+      }
+    } catch (e: any) {
+      setError(e.message || "Synthesis failed.");
+    } finally {
+      setBridgeLoading(false);
     }
   };
 
@@ -131,15 +180,34 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
           {focus ? <>Exploring around <span className="font-display text-foreground">{focus.data.title}</span></> : <span className="font-display text-[15px] italic text-foreground">Read the whole canvas, or select a card to focus.</span>}
         </p>
         <div className="flex flex-col gap-2">
-          <Button className="w-full" onClick={explore} disabled={loading || redTeamLoading}>
+          <Button className="w-full" onClick={explore} disabled={loading || redTeamLoading || bridgeLoading}>
             {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Reading your canvas…</> : <><Sparkles className="mr-2 h-4 w-4" /> Find questions, tests & links</>}
           </Button>
-          <Button variant="outline" className="w-full border-[#C24A35]/30 text-[#C24A35] hover:bg-[#C24A35]/5" onClick={runRedTeam} disabled={redTeamLoading || loading}>
+          <Button variant="outline" className="w-full border-[#C24A35]/30 text-[#C24A35] hover:bg-[#C24A35]/5" onClick={runRedTeam} disabled={redTeamLoading || loading || bridgeLoading}>
             {redTeamLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Red Teaming...</> : <><AlertTriangle className="mr-2 h-4 w-4" /> Red Team Board (Find Omissions)</>}
           </Button>
         </div>
         {error && <p className="text-xs text-destructive whitespace-pre-wrap">{error}</p>}
       </div>
+
+      <div className="space-y-3 border-b px-5 py-4 bg-muted/20">
+        <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+          <Network className="h-3.5 w-3.5" /> Synthesize Bridge
+        </div>
+        <p className="text-xs text-muted-foreground mb-3">Select two distinct nodes to find the hidden link between them.</p>
+        <select className="w-full rounded-md border border-black/10 bg-background p-2 text-xs mb-2" value={bridgeA} onChange={(e) => setBridgeA(e.target.value)}>
+          <option value="" disabled>Select Node A</option>
+          {s.nodes.map(n => <option key={n.id} value={n.id}>{n.data.title || "Untitled"}</option>)}
+        </select>
+        <select className="w-full rounded-md border border-black/10 bg-background p-2 text-xs mb-2" value={bridgeB} onChange={(e) => setBridgeB(e.target.value)}>
+          <option value="" disabled>Select Node B</option>
+          {s.nodes.map(n => <option key={n.id} value={n.id}>{n.data.title || "Untitled"}</option>)}
+        </select>
+        <Button className="w-full mt-2" variant="secondary" onClick={runSynthesis} disabled={!bridgeA || !bridgeB || bridgeA === bridgeB || bridgeLoading}>
+          {bridgeLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Synthesizing...</> : "Find Hidden Link"}
+        </Button>
+      </div>
+
       <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
         {s.ghosts.length === 0 && !loading && (
           <p className="px-2 py-6 text-center text-xs text-muted-foreground">Suggestions appear here and as faint cards on the canvas until you accept them.</p>
