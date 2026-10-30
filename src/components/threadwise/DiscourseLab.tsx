@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useEffect } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp, Terminal, Database } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp, Terminal, Database, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -79,6 +79,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const fileInput = useRef<HTMLInputElement>(null);
   
   const [loadingStep, setLoadingStep] = useState(0);
+  const [consensusMode, setConsensusMode] = useState(false);
 
   const savedInv = (corpus as any).investigation || {};
   const savedAnalyses = (corpus as any).analyses || {};
@@ -180,6 +181,13 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       content += `## Executive Summary\n${activeAnalysis.executive_summary}\n\n`;
       content += `## Metrics\n- Contradiction Index: ${activeAnalysis.quantData.contradictionIndex}/100\n`;
       content += `- Bias: ${activeAnalysis.quantData.radar.bias}/100\n- Omission: ${activeAnalysis.quantData.radar.omission}/100\n- Urgency: ${activeAnalysis.quantData.radar.urgency}/100\n- Motive: ${activeAnalysis.quantData.radar.motive}/100\n- Evidence: ${activeAnalysis.quantData.radar.evidence}/100\n\n`;
+      
+      if (activeAnalysis.consensus) {
+        content += `## Multi-Model Consensus\n`;
+        content += `**OpenAI Contradiction Index:** ${activeAnalysis.consensus.openai.quantData.contradictionIndex}/100\n\n`;
+        content += `### Disagreements:\n${activeAnalysis.consensus.disagreements.map((d: string) => `- ${d}`).join("\n")}\n\n`;
+      }
+
       content += `## Forensic Margin Notes\n`;
       activeAnalysis.margin_notes.forEach((note: any) => {
         content += `### ${note.title} (${note.type})\n**Analysis:** ${note.analysis}\n> "${note.quote}"\n\n`;
@@ -274,11 +282,15 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     if (!active?.text) return;
     setIsAnalyzingSource(true); setAnalysisError(""); setActiveNote(null);
     try {
-      const output = await streamTask({ mode: "analyze-source", text: active.text, source: active.title }, () => {});
+      const mode = consensusMode ? "analyze-source-consensus" : "analyze-source";
+      const output = await streamTask({ mode, text: active.text, source: active.title }, () => {});
       const res = JSON.parse(output);
       if (res.error) setAnalysisError(res.error);
       else {
         const clean = sanitizeAnalysis(res.analysis);
+        if (res.analysis.consensus) {
+            clean.consensus = res.analysis.consensus;
+        }
         update({ ...corpus, analyses: { ...savedAnalyses, [active.id]: clean } } as any);
       }
     } catch (e: any) { setAnalysisError(e.message || "The analysis failed."); } finally { setIsAnalyzingSource(false); }
@@ -375,7 +387,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     });
   }, [docs, terms]);
 
-  const ContradictionGauge = ({ score }: { score: number }) => {
+  const ContradictionGauge = ({ score, label = "Contradiction" }: { score: number, label?: string }) => {
     const radius = 50, cx = 60, cy = 60, startAngle = -210, endAngle = 30;
     const angle = startAngle + (endAngle - startAngle) * (score / 100);
     const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
@@ -482,7 +494,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   <h3 className="mb-2 font-display text-3xl leading-tight truncate">{active.title}</h3>
                   <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="flex gap-2 shrink-0 items-center">
                   {activeAnalysis && (
                     <>
                       <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => exportReport("forensic")} title="Export Analysis"><Download className="h-4 w-4" /></Button>
@@ -499,6 +511,21 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       </Button>
                     </>
                   )}
+                  
+                  <div className="flex items-center gap-2 border rounded-lg pl-3 pr-1 h-9 bg-card">
+                    <label htmlFor="consensus" className="text-xs font-medium cursor-pointer">Consensus Mode</label>
+                    <button
+                      id="consensus"
+                      type="button"
+                      role="switch"
+                      aria-checked={consensusMode}
+                      onClick={() => setConsensusMode(!consensusMode)}
+                      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 ${consensusMode ? 'bg-[#C24A35]' : 'bg-input'}`}
+                    >
+                      <span className={`pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform ${consensusMode ? 'translate-x-2' : '-translate-x-2'}`} />
+                    </button>
+                  </div>
+
                   <Button id="analyze-source-btn" onClick={runSourceAnalysis} disabled={isAnalyzingSource} className="h-9 px-6">
                     {isAnalyzingSource ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...</> : <><Fingerprint className="mr-2 h-4 w-4" /> Analyze Source</>}
                   </Button>
@@ -548,6 +575,39 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
                   {activeAnalysis && (
                     <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-500">
+                      
+                      {activeAnalysis.consensus && (
+                        <div className="rounded-xl border bg-[#FDF0B6]/30 border-[#E3D398] p-4 shadow-sm">
+                          <h4 className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A] mb-3">
+                            <Network className="h-4 w-4" /> Multi-Model Consensus
+                          </h4>
+                          
+                          <div className="grid grid-cols-2 gap-2 mb-4 text-center">
+                            <div className="bg-white/50 rounded p-2 border">
+                              <span className="block text-[10px] font-mono text-muted-foreground uppercase">DeepSeek</span>
+                              <span className="font-display text-2xl text-foreground">{activeAnalysis.quantData.contradictionIndex}</span>
+                            </div>
+                            <div className="bg-white/50 rounded p-2 border">
+                              <span className="block text-[10px] font-mono text-muted-foreground uppercase">OpenAI</span>
+                              <span className="font-display text-2xl text-foreground">{activeAnalysis.consensus.openai.quantData.contradictionIndex}</span>
+                            </div>
+                          </div>
+
+                          {activeAnalysis.consensus.disagreements.length > 0 ? (
+                             <ul className="space-y-2 text-xs text-foreground/80">
+                               {activeAnalysis.consensus.disagreements.map((d: string, i: number) => (
+                                 <li key={i} className="flex gap-2">
+                                   <AlertTriangle className="h-3 w-3 text-[#C24A35] shrink-0 mt-0.5" />
+                                   <span>{d}</span>
+                                 </li>
+                               ))}
+                             </ul>
+                          ) : (
+                            <p className="text-xs text-center text-muted-foreground">Both models broadly agree on the analysis.</p>
+                          )}
+                        </div>
+                      )}
+
                       <div className="grid grid-cols-2 gap-4">
                         <div className="rounded-xl border bg-card p-4 shadow-sm">
                           <h4 className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground mb-2">Narrative Profile</h4>
