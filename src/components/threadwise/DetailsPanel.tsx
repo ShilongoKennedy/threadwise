@@ -1,4 +1,4 @@
-import { Trash2, X } from "lucide-react";
+import { BookOpen, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,86 +52,128 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function NodeForm({ id }: { id: string }) {
-  const { nodes, edges, updateNode, deleteNode } = useThread();
+  const { nodes, edges, updateNode, deleteNode, select } = useThread();
   const node = nodes.find((n) => n.id === id);
   if (!node) return null;
   const d = node.data;
-  // Canvases stored before the lenses field existed have no `lenses` object.
-  // Fall back rather than throwing and unmounting the canvas (see ThreadNode).
   const lenses = d.lenses ?? { scarcity: 0, difficulty: 0, risk: 0 };
   const links = edges.filter((e) => e.source === id || e.target === id);
+  const source = d.meta["source"];
+  
+  // THE CRITICAL CHECK:
+  const isDossier = d.kind === "dossier";
+  const sourceIsUrl = !!source && /^https?:\/\//.test(source);
+
+  const onDelete = () => {
+    if (isDossier) {
+      const linked = links.length;
+      const msg = linked > 0
+        ? `Delete this source dossier? ${linked} linked card${linked === 1 ? "" : "s"} will be orphaned.`
+        : "Delete this source dossier?";
+      if (!confirm(msg)) return;
+    }
+    deleteNode(id);
+  };
+
+  const openInLab = () => {
+    if (!source) return;
+    window.dispatchEvent(new CustomEvent("threadwise:focus-source", { detail: { source } }));
+    select(null);
+  };
+
   return (
     <div className="space-y-5">
-      <Field label="Type">
-        <div className="grid grid-cols-5 gap-1">
-          {NODE_TYPES.filter((k) => k !== "portal").map((k) => {
-            const Icon = TYPE_ICON[k];
-            const active = d.kind === k;
-            return (
-              <button
-                key={k}
-                title={TYPE_INFO[k].hint}
-                onClick={() => updateNode(id, (data) => changeKind(data, k))}
-                className={cn(
-                  "flex flex-col items-center gap-1 rounded-lg border py-2 text-[10px] transition-colors",
-                  active ? "bg-muted text-foreground" : "border-transparent text-muted-foreground hover:bg-muted/60",
-                )}
-                style={active ? { borderColor: TYPE_COLOR[k] } : undefined}
-              >
-                <Icon className="h-4 w-4" style={{ color: TYPE_COLOR[k] }} />
-                {TYPE_INFO[k].label}
-              </button>
-            );
-          })}
+      {/* Type Switcher - Hidden for Dossiers */}
+      {!isDossier && (
+        <Field label="Type">
+          <div className="grid grid-cols-5 gap-1">
+            {NODE_TYPES.filter((k) => k !== "portal" && k !== "dossier").map((k) => {
+              const Icon = TYPE_ICON[k];
+              const active = d.kind === k;
+              return (
+                <button
+                  key={k}
+                  title={TYPE_INFO[k].hint}
+                  onClick={() => updateNode(id, (data) => changeKind(data, k))}
+                  className={cn(
+                    "flex flex-col items-center gap-1 rounded-lg border py-2 text-[10px] transition-colors",
+                    active ? "bg-muted text-foreground" : "border-transparent text-muted-foreground hover:bg-muted/60",
+                  )}
+                  style={active ? { borderColor: TYPE_COLOR[k] } : undefined}
+                >
+                  <Icon className="h-4 w-4" style={{ color: TYPE_COLOR[k] }} />
+                  {TYPE_INFO[k].label}
+                </button>
+              );
+            })}
+          </div>
+        </Field>
+      )}
+
+      {/* Dossier warning banner */}
+      {isDossier && (
+        <div className="rounded-lg border border-dashed px-3 py-2 text-[11px] text-muted-foreground" style={{ borderColor: "#8B6F47" }}>
+          <span className="font-mono uppercase tracking-wider" style={{ color: "#8B6F47" }}>Anchored source</span>
+          <p className="mt-1 leading-relaxed">Dossiers are managed automatically. Delete with confirmation to unlink.</p>
         </div>
-      </Field>
+      )}
+
       {d.kind === "portal" && <Button variant="outline" className="w-full" onClick={() => useWorkspaces.getState().switchCanvas(d.meta["childCanvasId"] ?? "")}>Open child canvas</Button>}
+      
       <Field label="Title">
         <Input className="h-auto border-0 bg-transparent px-0 py-0 font-display text-[22px] leading-tight md:text-[22px] shadow-none focus-visible:ring-0" value={d.title} onChange={(e) => updateNode(id, { title: e.target.value })} />
       </Field>
+      
       <Field label="Content">
         <Textarea rows={4} value={d.body} placeholder="What do you know, notice, or wonder?" onChange={(e) => updateNode(id, { body: e.target.value })} />
       </Field>
-      <Field label="Card color"><ColorPicker value={d.color} label="Card color" allowCustom onChange={(color) => updateNode(id, { color })} /></Field>
-      <Field label="Epistemic status">
-        <div className="flex flex-wrap gap-1">
-          {EPISTEMIC.map((s) => (
-            <button
-              key={s}
-              onClick={() => updateNode(id, { epistemic: s })}
-              className={cn(
-                "rounded-full border px-2.5 py-1 text-xs capitalize transition-colors",
-                d.epistemic === s ? "border-foreground bg-foreground text-background" : "text-muted-foreground hover:bg-muted",
-              )}
-            >
-              <span className="flex items-center gap-1.5"><EpistemicGlyph status={s} />{s}</span>
-            </button>
-          ))}
-        </div>
-      </Field>
-      <Field label="Analytical lenses">
-        <div className="space-y-2">
-          {LENSES.map((l) => (
-            <div key={l} className="flex items-center justify-between">
-              <span className="text-sm capitalize">{l}</span>
-              <div className="flex rounded-lg border p-0.5">
-                {LENS_LEVELS.map((lbl, i) => (
-                  <button
-                    key={lbl}
-                    onClick={() => updateNode(id, { lenses: { ...lenses, [l]: i as LensLevel } })}
-                    className={cn(
-                      "rounded-md px-2 py-0.5 text-[11px]",
-                      lenses[l] === i ? "bg-muted font-medium text-foreground" : "text-muted-foreground",
-                    )}
-                  >
-                    {lbl}
-                  </button>
-                ))}
-              </div>
+
+      {/* Color, Epistemic, and Lenses - Hidden for Dossiers */}
+      {!isDossier && (
+        <>
+          <Field label="Card color"><ColorPicker value={d.color} label="Card color" allowCustom onChange={(color) => updateNode(id, { color })} /></Field>
+          <Field label="Epistemic status">
+            <div className="flex flex-wrap gap-1">
+              {EPISTEMIC.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => updateNode(id, { epistemic: s })}
+                  className={cn(
+                    "rounded-full border px-2.5 py-1 text-xs capitalize transition-colors",
+                    d.epistemic === s ? "border-foreground bg-foreground text-background" : "text-muted-foreground hover:bg-muted",
+                  )}
+                >
+                  <span className="flex items-center gap-1.5"><EpistemicGlyph status={s} />{s}</span>
+                </button>
+              ))}
             </div>
-          ))}
-        </div>
-      </Field>
+          </Field>
+          <Field label="Analytical lenses">
+            <div className="space-y-2">
+              {LENSES.map((l) => (
+                <div key={l} className="flex items-center justify-between">
+                  <span className="text-sm capitalize">{l}</span>
+                  <div className="flex rounded-lg border p-0.5">
+                    {LENS_LEVELS.map((lbl, i) => (
+                      <button
+                        key={lbl}
+                        onClick={() => updateNode(id, { lenses: { ...lenses, [l]: i as LensLevel } })}
+                        className={cn(
+                          "rounded-md px-2 py-0.5 text-[11px]",
+                          lenses[l] === i ? "bg-muted font-medium text-foreground" : "text-muted-foreground",
+                        )}
+                      >
+                        {lbl}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Field>
+        </>
+      )}
+
       <div className="space-y-4 border-t pt-4">
         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{TYPE_INFO[d.kind].label} details</div>
         {TYPE_INFO[d.kind].fields.map((f) => {
@@ -155,6 +197,13 @@ function NodeForm({ id }: { id: string }) {
           );
         })}
       </div>
+
+      {source && !sourceIsUrl && (
+        <Button variant="outline" className="w-full" onClick={openInLab}>
+          <BookOpen className="mr-2 h-4 w-4" /> Open source in Discourse Lab
+        </Button>
+      )}
+
       {links.length > 0 && (
         <div className="space-y-2 border-t pt-4">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Connections</div>
@@ -170,8 +219,9 @@ function NodeForm({ id }: { id: string }) {
           })}
         </div>
       )}
-      <Button variant="ghost" className="w-full text-destructive hover:text-destructive" onClick={() => deleteNode(id)}>
-        <Trash2 className="mr-2 h-4 w-4" /> Delete node
+
+      <Button variant="ghost" className="w-full text-destructive hover:text-destructive" onClick={onDelete}>
+        <Trash2 className="mr-2 h-4 w-4" /> Delete {isDossier ? "dossier" : "node"}
       </Button>
     </div>
   );
