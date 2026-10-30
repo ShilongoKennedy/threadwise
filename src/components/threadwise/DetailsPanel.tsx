@@ -56,6 +56,9 @@ function NodeForm({ id }: { id: string }) {
   const node = nodes.find((n) => n.id === id);
   if (!node) return null;
   const d = node.data;
+  // Canvases stored before the lenses field existed have no `lenses` object.
+  // Fall back rather than throwing and unmounting the canvas (see ThreadNode).
+  const lenses = d.lenses ?? { scarcity: 0, difficulty: 0, risk: 0 };
   const links = edges.filter((e) => e.source === id || e.target === id);
   return (
     <div className="space-y-5">
@@ -115,10 +118,10 @@ function NodeForm({ id }: { id: string }) {
                 {LENS_LEVELS.map((lbl, i) => (
                   <button
                     key={lbl}
-                    onClick={() => updateNode(id, { lenses: { ...d.lenses, [l]: i as LensLevel } })}
+                    onClick={() => updateNode(id, { lenses: { ...lenses, [l]: i as LensLevel } })}
                     className={cn(
                       "rounded-md px-2 py-0.5 text-[11px]",
-                      d.lenses[l] === i ? "bg-muted font-medium text-foreground" : "text-muted-foreground",
+                      lenses[l] === i ? "bg-muted font-medium text-foreground" : "text-muted-foreground",
                     )}
                   >
                     {lbl}

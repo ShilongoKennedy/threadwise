@@ -523,26 +523,39 @@ export const useWorkspaces = create<State>()(
         }
         const workspaces = [...get().workspaces];
         let reload = false;
+        let changed = false;
         for (const row of rows) {
           const i = workspaces.findIndex((w) => w.id === row.id);
           const current = workspaces[i];
-          if (!current) workspaces.push(row);
-          else if (!current.dirty && current.revision < row.revision) {
+          if (!current) {
+            workspaces.push(row);
+            changed = true;
+          } else if (!current.dirty && current.revision < row.revision) {
             workspaces[i] = row;
+            changed = true;
             if (row.id === get().activeId) reload = true;
           }
         }
-        set({ workspaces });
+        // Only publish a new array when a row actually changed. Notifying on every
+        // poll re-arms the sync debounce in cloud-sync.ts, which turns the six-second
+        // poll into a continuous one-per-second fetch of every workspace document.
+        if (changed) set({ workspaces });
         if (reload) {
           const w = workspaces.find((w) => w.id === get().activeId);
           if (w) load(w.document);
         }
       },
       acknowledge: (id, revision, generation) =>
-        set({
-          workspaces: get().workspaces.map((w) =>
-            w.id === id ? { ...w, revision, dirty: w.generation !== generation } : w,
-          ),
+        set((state) => {
+          let changed = false;
+          const workspaces = state.workspaces.map((w) => {
+            if (w.id !== id) return w;
+            const dirty = w.generation !== generation;
+            if (w.revision === revision && w.dirty === dirty) return w;
+            changed = true;
+            return { ...w, revision, dirty };
+          });
+          return changed ? { workspaces } : {};
         }),
       preserveConflict: (id, remote) => {
         const local = get().workspaces.find((w) => w.id === id);

@@ -31,8 +31,6 @@ const LOADING_STEPS = [
   "DRAFTING EXECUTIVE SUMMARY..."
 ];
 
-const DEFAULT_RADAR = { bias: 50, omission: 50, urgency: 50, motive: 50, evidence: 50 };
-
 const sanitizeAnalysis = (res: any) => {
   if (!res) return null;
   const quantData = res.quantData || {};
@@ -329,7 +327,10 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const getHighlightedText = (text: string, notes: any[]) => {
     if (!notes || !notes.length) return escapeHtml(text).replace(/\n/g, '<br/>');
     let result = escapeHtml(text);
-    const sortedNotes = notes.map((note, i) => ({ ...note, originalIndex: i })).sort((a, b) => b.quote.length - a.quote.length);
+    const sortedNotes = notes
+      .filter((note) => typeof note.quote === "string" && note.quote.length > 0)
+      .map((note, i) => ({ ...note, originalIndex: i }))
+      .sort((a, b) => b.quote.length - a.quote.length);
     
     sortedNotes.forEach(note => {
       const escapedQuote = escapeHtml(note.quote).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -338,7 +339,13 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       if (note.type === "contradiction") { bgClass = "bg-[#FBD0D4]/60"; borderClass = "border-b-2 border-[#C24A35]"; }
       else if (note.type === "fallacy") { bgClass = "bg-[#FDF0B6]/70"; borderClass = "border-b-2 border-[#E3D398]"; }
       else { bgClass = "bg-[#E8DAFB]/60"; borderClass = "border-b-2 border-[#6B4C7A]"; }
-      result = result.replace(regex, `<span id="hl-${note.originalIndex}" data-note-index="${note.originalIndex}" class="${bgClass} ${borderClass} px-1 rounded-sm cursor-pointer transition-all hover:bg-opacity-100 hover:shadow-sm" title="${note.title}">$1</span>`);
+      
+      const escapedTitle = escapeHtml(note.title || "Observation");
+      
+      // Use function replacement to prevent $ sequence injection
+      result = result.replace(regex, (match) => 
+        `<span id="hl-${note.originalIndex}" data-note-index="${note.originalIndex}" class="${bgClass} ${borderClass} px-1 rounded-sm cursor-pointer transition-all hover:bg-opacity-100 hover:shadow-sm" title="${escapedTitle}">${match}</span>`
+      );
     });
     return result.replace(/\n/g, '<br/>');
   };
@@ -387,31 +394,107 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     });
   }, [docs, terms]);
 
-  const ContradictionGauge = ({ score, label = "Contradiction" }: { score: number, label?: string }) => {
-    const radius = 50, cx = 60, cy = 60, startAngle = -210, endAngle = 30;
-    const angle = startAngle + (endAngle - startAngle) * (score / 100);
+  const TacticalGauge = ({ score, label = "Contradiction" }: { score: number, label?: string }) => {
+    const radius = 46, cx = 60, cy = 60, startAngle = -210, endAngle = 30;
+    const angle = startAngle + (endAngle - startAngle) * (Math.max(0, Math.min(100, score)) / 100);
+    
     const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
       const angleInRadians = (angleInDegrees * Math.PI) / 180.0;
       return { x: centerX + radius * Math.cos(angleInRadians), y: centerY + radius * Math.sin(angleInRadians) };
     };
+    
     const describeArc = (x: number, y: number, r: number, start: number, end: number) => {
       const startPt = polarToCartesian(x, y, r, end);
       const endPt = polarToCartesian(x, y, r, start);
       const largeArcFlag = end - start <= 180 ? "0" : "1";
       return ["M", startPt.x, startPt.y, "A", r, r, 0, largeArcFlag, 0, endPt.x, endPt.y].join(" ");
     };
-    const needle = polarToCartesian(cx, cy, radius - 10, angle);
+    
+    const needle = polarToCartesian(cx, cy, radius - 8, angle);
+
+    // Generate tick marks
+    const ticks = Array.from({ length: 21 }).map((_, i) => {
+      const tickAngle = startAngle + (endAngle - startAngle) * (i / 20);
+      const isMajor = i % 5 === 0;
+      const p1 = polarToCartesian(cx, cy, radius + 6, tickAngle);
+      const p2 = polarToCartesian(cx, cy, radius + (isMajor ? 12 : 8), tickAngle);
+      return <line key={i} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={isMajor ? "var(--foreground)" : "var(--muted-foreground)"} strokeWidth={isMajor ? 2 : 1} />;
+    });
+
     return (
-      <div className="relative flex flex-col items-center justify-center w-full h-full min-h-[120px]">
-        <svg width="100" height="80" viewBox="0 0 120 100" className="overflow-visible">
-          <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="var(--muted)" strokeWidth="10" strokeLinecap="round" />
-          <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#C24A35" strokeWidth="10" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
-          <circle cx={cx} cy={cy} r="5" fill="var(--foreground)" />
-          <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="var(--foreground)" strokeWidth="2.5" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
+      <div className="relative flex flex-col items-center justify-center w-full h-full min-h-[160px] rounded-xl bg-gradient-to-b from-[#1A1A1A] to-[#0A0A0A] border border-black shadow-inner overflow-hidden">
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #fff 1px, transparent 1px)', backgroundSize: '4px 4px' }} />
+        
+        <svg width="100%" height="100%" viewBox="0 0 120 110" className="absolute inset-0 z-10">
+          <defs>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
+            <linearGradient id="needleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#C24A35" />
+              <stop offset="100%" stopColor="#FF5E3A" />
+            </linearGradient>
+          </defs>
+
+          {/* Danger zone */}
+          <path d={describeArc(cx, cy, radius, 75, endAngle)} fill="none" stroke="#C24A35" strokeWidth="10" strokeLinecap="round" opacity={0.6} />
+          
+          {/* Main track */}
+          <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="#333" strokeWidth="10" strokeLinecap="round" />
+          
+          {ticks}
+          
+          {/* Active track */}
+          <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#C24A35" strokeWidth="10" strokeLinecap="round" filter="url(#glow)" className="transition-all duration-1000 ease-out" />
+          
+          {/* Needle */}
+          <g className="transition-all duration-1000 ease-out">
+            <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="url(#needleGrad)" strokeWidth="3" strokeLinecap="round" filter="url(#glow)" />
+            <circle cx={cx} cy={cy} r="8" fill="#1A1A1A" stroke="#444" strokeWidth="2" />
+            <circle cx={cx} cy={cy} r="3" fill="#FF5E3A" filter="url(#glow)" />
+          </g>
         </svg>
-        <div className="absolute bottom-0 text-center">
-          <span className="font-display text-4xl text-[#C24A35] tracking-tighter">{score}</span>
-          <span className="text-xs text-muted-foreground">/100</span>
+        
+        <div className="absolute bottom-3 z-20 flex flex-col items-center">
+          <span className="font-mono text-[8px] uppercase tracking-widest text-[#C24A35]/80 mb-1">{label}</span>
+          <span className="font-display text-3xl text-[#FF5E3A] leading-none" style={{ textShadow: "0 0 15px rgba(255,94,58,0.6)" }}>{score}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const TacticalRadar = ({ data }: { data: any[] }) => {
+    return (
+      <div className="relative w-full h-full min-h-[160px] rounded-xl bg-[#0A0A0A] border border-black overflow-hidden flex items-center justify-center">
+        {/* Grid background */}
+        <div className="absolute inset-0 opacity-20" style={{ 
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', 
+          backgroundSize: '10px 10px' 
+        }} />
+        
+        {/* Scanning radar sweep */}
+        <div className="absolute inset-0 rounded-full border border-[#75F09A]/10 animate-[spin_4s_linear_infinite] origin-center" style={{ background: 'conic-gradient(from 0deg at 50% 50%, rgba(117,240,154,0.1) 0deg, transparent 90deg)' }} />
+
+        <div className="relative z-10 w-full h-full p-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart cx="50%" cy="50%" outerRadius="65%" data={data} margin={{ top: 10, right: 20, bottom: 10, left: 20 }}>
+              <PolarGrid stroke="#75F09A" strokeDasharray="1 4" opacity={0.3} />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: '#75F09A', fontSize: 8, fontFamily: 'var(--font-mono)', opacity: 0.7 }} />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+              <Radar name="Analysis" dataKey="A" stroke="#75F09A" strokeWidth={1.5} fill="#75F09A" fillOpacity={0.15} 
+                dot={{ r: 2, fill: '#0A0A0A', stroke: '#75F09A', strokeWidth: 1.5 }} 
+              />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
+        
+        <div className="absolute top-2 left-3 font-mono text-[8px] uppercase tracking-widest text-[#75F09A]/60">
+          SIGNAL_ACQ // NARRATIVE
+        </div>
+        <div className="absolute top-2 right-3 flex gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#75F09A] animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#75F09A]/40" />
         </div>
       </div>
     );
@@ -610,21 +693,10 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
 
                       <div className="grid grid-cols-2 gap-4">
                         <div className="rounded-xl border bg-card p-4 shadow-sm">
-                          <h4 className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground mb-2">Narrative Profile</h4>
-                          <div className="h-32 w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <RadarChart cx="50%" cy="50%" outerRadius="65%" data={sourceRadarData} margin={{ top: 5, right: 15, bottom: 5, left: 15 }}>
-                                <PolarGrid stroke="var(--border)" strokeDasharray="2 2" />
-                                <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 8, fontFamily: 'var(--font-mono)' }} />
-                                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                                <Radar name="Analysis" dataKey="A" stroke="#C24A35" strokeWidth={1.5} fill="#C24A35" fillOpacity={0.15} />
-                              </RadarChart>
-                            </ResponsiveContainer>
-                          </div>
+                          <TacticalRadar data={sourceRadarData} />
                         </div>
                         <div className="rounded-xl border bg-card p-4 shadow-sm flex flex-col items-center justify-center">
-                          <h4 className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground mb-1 w-full text-left">Contradiction</h4>
-                          <ContradictionGauge score={activeAnalysis.quantData?.contradictionIndex || 50} />
+                          <TacticalGauge score={activeAnalysis.quantData?.contradictionIndex || 50} />
                         </div>
                       </div>
 
@@ -809,7 +881,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                         <ShieldAlert className="h-3 w-3 text-[#C24A35]" />
                       </div>
                       <div className="flex-1 flex flex-col items-center justify-center min-h-0">
-                        <ContradictionGauge score={analysis.quantData?.contradictionIndex || 50} />
+                        <TacticalGauge score={analysis.quantData?.contradictionIndex || 50} />
                         <p className="text-[10px] text-center font-mono uppercase tracking-widest text-muted-foreground mt-4 border border-border px-3 py-1 rounded-full bg-muted/30">High friction detected</p>
                       </div>
                     </div>
@@ -940,7 +1012,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
                         <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col items-center justify-center h-[320px]">
                           <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#C24A35] mb-4 text-center">Divergence Score</h4>
-                          <ContradictionGauge score={comparisonAnalysis.divergenceScore} />
+                          <TacticalGauge score={comparisonAnalysis.divergenceScore} label="Divergence" />
                           <p className="text-[10px] text-center font-mono uppercase tracking-widest text-muted-foreground mt-6 border border-border px-3 py-1 rounded-full bg-muted/30">
                             {comparisonAnalysis.divergenceScore > 70 ? "Fundamentally Opposed" : comparisonAnalysis.divergenceScore > 40 ? "Moderate Friction" : "Broad Alignment"}
                           </p>

@@ -16,7 +16,7 @@ const inputSchema = z.object({
   titleA: z.string().optional(),
   titleB: z.string().optional(),
   url: z.string().url().optional(),
-  urls: z.array(z.string()).optional(),
+  urls: z.array(z.string().url()).max(5).optional(),
   source: z.string().max(2000).optional(),
   format: z.enum(["brief", "memo"]).optional(),
   persona: z.string().max(80).optional(),
@@ -30,8 +30,16 @@ export async function handleThreadwise(request: Request) {
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"] || process.env["SUPABASE_ANON_KEY"] || process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || process.env["VITE_SUPABASE_ANON_KEY"];
     const url = process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"];
     const host = new URL(request.url).hostname;
-    const isLoopback = host === "localhost" || host === "127.0.0.1" || host === "::1";
-    const allowLocalTest = process.env["ALLOW_ALL_UNAUTHENTICATED"] === "true";
+    const isLoopback = host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "[::1]";
+    // Local-only escape hatch. It must stay off on any deployed build, which is why
+    // the flag is gated on the environment and on a loopback host rather than being
+    // read on its own. The variable name matches README/.env.example.
+    const isDeployed =
+      process.env["NODE_ENV"] === "production" ||
+      process.env["VERCEL"] === "1" ||
+      !!process.env["VERCEL_ENV"];
+    const allowLocalTest =
+      process.env["ALLOW_LOCAL_AI_UNAUTHENTICATED"] === "true" && isLoopback && !isDeployed;
     
     const token = request.headers.get("Authorization")?.replace(/^Bearer /, "");
     let userId: string | undefined;
@@ -75,6 +83,12 @@ export async function handleThreadwise(request: Request) {
       input = inputSchema.parse(JSON.parse(raw));
     } catch (zodError) {
       console.error("Validation Error:", zodError);
+      const issue = zodError instanceof z.ZodError ? zodError.issues[0] : undefined;
+      if (issue?.path[0] === "urls")
+        return Response.json(
+          { message: "Add one to five complete https:// article URLs." },
+          { status: 400 },
+        );
       return Response.json({ message: "The data sent was in the wrong format." }, { status: 400 });
     }
 
@@ -280,7 +294,10 @@ Return ONLY a valid JSON object matching this exact schema:
         return Response.json({ message: "Provide at least one article URL." }, { status: 400 });
       }
 
-      const scrapePromises = input.urls.map(async (targetUrl) => {
+      // The schema caps the list at five URLs; de-duplicate so a repeated URL
+      // cannot multiply paid Firecrawl scrapes.
+      const targets = [...new Set(input.urls)].slice(0, 5);
+      const scrapePromises = targets.map(async (targetUrl) => {
         try {
           const page = await readWeb(targetUrl, request.signal);
           return `SOURCE: ${page.title} (${page.url})\n\n${page.text}`;
@@ -290,7 +307,7 @@ Return ONLY a valid JSON object matching this exact schema:
       });
 
       const scrapedDocs = await Promise.all(scrapePromises);
-      const combinedText = scrapedDocs.join("\n\n---\n\n");
+      const combinedText = scrapedDocs.join("\n\n---\n\n").slice(0, 200_000);
 
       const systemPrompt = `You are the Director of Strategic Intelligence. The provided text is a public narrative (media, reports, speeches). Your job is to pierce the veil. Do not just summarize what is said; deduce WHY it is said and WHAT is being hidden.
 

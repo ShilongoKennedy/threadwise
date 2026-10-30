@@ -218,4 +218,27 @@ describe("workspace and inquiry rules", () => {
     if (!document) throw new Error("missing");
     expect(cloudDocument(document).canvases[0]?.planning?.step).toBe(2);
   });
+  it("a sync pass that changes nothing leaves the workspace array untouched", () => {
+    const before = useWorkspaces.getState().workspaces;
+    useWorkspaces.getState().replaceRemote([]);
+    expect(useWorkspaces.getState().workspaces).toBe(before);
+  });
+  it("a newer remote revision still replaces a clean workspace", () => {
+    const row = useWorkspaces.getState().workspaces[0];
+    if (!row) throw new Error("No workspace");
+    useWorkspaces.setState({ workspaces: [{ ...row, dirty: false }] });
+    useWorkspaces.getState().replaceRemote([
+      { ...row, title: "Remote title", revision: row.revision + 1, dirty: false },
+    ]);
+    expect(useWorkspaces.getState().workspaces[0]?.title).toBe("Remote title");
+  });
+  it("acknowledging a settled save does not churn the workspace array", () => {
+    const row = useWorkspaces.getState().workspaces[0];
+    if (!row) throw new Error("No workspace");
+    const ws = useWorkspaces.getState();
+    ws.acknowledge(row.id, row.revision, row.generation);
+    const settled = useWorkspaces.getState().workspaces;
+    ws.acknowledge(row.id, row.revision, row.generation);
+    expect(useWorkspaces.getState().workspaces).toBe(settled);
+  });
 });
