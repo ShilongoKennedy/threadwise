@@ -26,6 +26,7 @@ import {
   Atom,
   BookOpen,
   CircleHelp,
+  FileDown,
   FileText,
   Orbit,
   RotateCcw,
@@ -62,6 +63,7 @@ import { PlanningSuite } from "./PlanningSuite";
 import { CanvasStudio } from "./CanvasStudio";
 import { SpatialAtmosphere } from "./SpatialAtmosphere";
 import { snapToLane } from "@/lib/threadwise/advanced";
+import { toast } from "sonner";
 
 const nodeTypes = { thread: ThreadNode, ghost: GhostNode };
 const edgeTypes = { relation: RelationEdge };
@@ -187,6 +189,72 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
     s.setPositions(newPositions);
     s.recordSnapshot("Intelligence tidy");
     setTimeout(() => rf.fitView({ padding: 0.25, duration: 800 }), 50);
+  };
+
+  const exportSitrep = () => {
+    const canvasTitle = workspace?.document.canvases.find((c) => c.id === canvasId)?.title || "Untitled Canvas";
+    
+    const dossiers = visibleNodes.filter(n => n.data.kind === "dossier");
+    const evidence = visibleNodes.filter(n => n.data.kind === "note");
+    const hypotheses = visibleNodes.filter(n => n.data.kind === "idea");
+    const omissions = visibleNodes.filter(n => n.data.kind === "omission" || n.data.kind === "question");
+    const actions = visibleNodes.filter(n => n.data.kind === "action" || n.data.kind === "experiment");
+
+    let md = `# SITREP: ${canvasTitle}\n\n`;
+    md += `**Date:** ${new Date().toLocaleDateString()}\n`;
+    md += `**Status:** UNCLASSIFIED // FOR OFFICIAL USE ONLY\n\n`;
+    md += `---\n\n`;
+
+    md += `## 1. INTELLIGENCE SOURCES (DOSSIERS)\n\n`;
+    if (dossiers.length === 0) md += `*No sources indexed.*\n\n`;
+    dossiers.forEach(d => {
+      md += `### ${d.data.title}\n${d.data.body}\n\n`;
+    });
+
+    md += `## 2. KEY FINDINGS (EVIDENCE & NOTES)\n\n`;
+    if (evidence.length === 0) md += `*No evidence logged.*\n\n`;
+    evidence.forEach(e => {
+      md += `- **${e.data.title}**: ${e.data.body}\n`;
+    });
+    md += `\n`;
+
+    md += `## 3. STRATEGIC HYPOTHESES\n\n`;
+    if (hypotheses.length === 0) md += `*No hypotheses generated.*\n\n`;
+    hypotheses.forEach(h => {
+      md += `### ${h.data.title}\n${h.data.body}\n\n`;
+    });
+
+    md += `## 4. BLIND SPOTS / OMISSIONS\n\n`;
+    if (omissions.length === 0) md += `*No omissions identified.*\n\n`;
+    omissions.forEach(o => {
+      const edgesTo = visibleEdges.filter(e => e.target === o.id || e.source === o.id);
+      const linkedNode = edgesTo.map(e => visibleNodes.find(n => n.id === (e.source === o.id ? e.target : e.source))).find(Boolean);
+      md += `- **${o.data.title}**\n  ${o.data.body}\n  *(Challenges: ${linkedNode?.data.title || "General context"})*\n\n`;
+    });
+
+    md += `## 5. RECOMMENDED ACTIONS\n\n`;
+    if (actions.length === 0) md += `*No actions assigned.*\n\n`;
+    actions.forEach(a => {
+      md += `- [ ] **${a.data.title}** (${a.data.kind})\n`;
+    });
+    md += `\n`;
+
+    md += `## 6. INTELLIGENCE GRAPH\n\n`;
+    visibleEdges.forEach(e => {
+      const source = visibleNodes.find(n => n.id === e.source)?.data.title || "Unknown";
+      const target = visibleNodes.find(n => n.id === e.target)?.data.title || "Unknown";
+      const rel = e.data?.relation || "leads_to";
+      md += `- ${source} ➔ *${rel}* ➔ ${target}\n`;
+    });
+
+    const blob = new Blob([md], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `SITREP-${canvasTitle.replace(/\s+/g, '-')}.md`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast.success("Sitrep exported successfully.");
   };
 
   const allNodes = useMemo(
@@ -730,6 +798,16 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
             onClick={openInquiry}
           >
             <BookOpen />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            disabled={replay}
+            aria-label="Export Sitrep"
+            title="Export Sitrep (Markdown)"
+            onClick={exportSitrep}
+          >
+            <FileDown />
           </Button>
           <Button
             size="icon"
