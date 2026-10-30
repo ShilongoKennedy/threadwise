@@ -1,6 +1,5 @@
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import { useDraft } from "@/lib/threadwise/draft";
 import { useNavigate } from "@tanstack/react-router";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
@@ -10,6 +9,7 @@ import { WorkspaceBar } from "./WorkspaceBar";
 import { EvidenceClipper } from "./EvidenceClipper";
 import { MemoGenerator } from "./MemoGenerator";
 import { SocraticDrawer } from "./SocraticDrawer";
+import { BriefingMode } from "./BriefingMode";
 import {
   Background,
   BackgroundVariant,
@@ -27,8 +27,7 @@ import {
   Atom,
   BookOpen,
   CircleHelp,
-  Copy,
-  FileDown,
+  MonitorPlay,
   FileText,
   Orbit,
   RotateCcw,
@@ -65,7 +64,6 @@ import { PlanningSuite } from "./PlanningSuite";
 import { CanvasStudio } from "./CanvasStudio";
 import { SpatialAtmosphere } from "./SpatialAtmosphere";
 import { snapToLane } from "@/lib/threadwise/advanced";
-import { toast } from "sonner";
 
 const nodeTypes = { thread: ThreadNode, ghost: GhostNode };
 const edgeTypes = { relation: RelationEdge };
@@ -82,6 +80,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
   const [clipper, setClipper] = useState(false);
   const [droppedFile, setDroppedFile] = useState<File | undefined>();
   const [presentation, setPresentation] = useState(false);
+  const [briefingOpen, setBriefingOpen] = useState(false);
   const [memo, setMemo] = useState(false);
   const rf = useReactFlow();
   const [pending, setPending] = useState<Pending | null>(null);
@@ -93,10 +92,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
   const [spatial, setSpatial] = useState(false);
   const [thoughtPortal, setThoughtPortal] = useState<string | null>(null);
   const [focusField, setFocusField] = useState(false);
-  
-  const [sitrepOpen, setSitrepOpen] = useState(false);
-  const [sitrepContent, setSitrepContent] = useState("");
-
   const onboarding = useOnboarding();
   const wrapper = useRef<HTMLDivElement>(null);
   const dragStart = useRef<Record<string, { x: number; y: number }>>({});
@@ -151,7 +146,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
     setMemo(false);
     setThoughtPortal(null);
     setFocusField(false);
-    setSitrepOpen(false);
+    setBriefingOpen(false);
     const timer = setTimeout(() => fitView({ padding: 0.3, duration: 300 }), 80);
     return () => clearTimeout(timer);
   }, [canvasId, fitView]);
@@ -199,78 +194,13 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
     setTimeout(() => rf.fitView({ padding: 0.25, duration: 800 }), 50);
   };
 
-  const generateSitrep = () => {
-    const canvasTitle = workspace?.document.canvases.find((c) => c.id === canvasId)?.title || "Untitled Canvas";
-    
-    const dossiers = visibleNodes.filter(n => n.data.kind === "dossier");
-    const evidence = visibleNodes.filter(n => n.data.kind === "note");
-    const hypotheses = visibleNodes.filter(n => n.data.kind === "idea");
-    const omissions = visibleNodes.filter(n => n.data.kind === "omission" || n.data.kind === "question");
-    const actions = visibleNodes.filter(n => n.data.kind === "action" || n.data.kind === "experiment");
-
-    let md = `# SITREP: ${canvasTitle}\n\n`;
-    md += `**Date:** ${new Date().toLocaleDateString()}\n`;
-    md += `**Status:** UNCLASSIFIED // FOR OFFICIAL USE ONLY\n\n`;
-    md += `---\n\n`;
-
-    md += `## 1. INTELLIGENCE SOURCES (DOSSIERS)\n\n`;
-    if (dossiers.length === 0) md += `*No sources indexed.*\n\n`;
-    dossiers.forEach(d => {
-      md += `### ${d.data.title}\n${d.data.body}\n\n`;
-    });
-
-    md += `## 2. KEY FINDINGS (EVIDENCE & NOTES)\n\n`;
-    if (evidence.length === 0) md += `*No evidence logged.*\n\n`;
-    evidence.forEach(e => {
-      md += `- **${e.data.title}**: ${e.data.body}\n`;
-    });
-    md += `\n`;
-
-    md += `## 3. STRATEGIC HYPOTHESES\n\n`;
-    if (hypotheses.length === 0) md += `*No hypotheses generated.*\n\n`;
-    hypotheses.forEach(h => {
-      md += `### ${h.data.title}\n${h.data.body}\n\n`;
-    });
-
-    md += `## 4. BLIND SPOTS / OMISSIONS\n\n`;
-    if (omissions.length === 0) md += `*No omissions identified.*\n\n`;
-    omissions.forEach(o => {
-      const edgesTo = visibleEdges.filter(e => e.target === o.id || e.source === o.id);
-      const linkedNode = edgesTo.map(e => visibleNodes.find(n => n.id === (e.source === o.id ? e.target : e.source))).find(Boolean);
-      md += `- **${o.data.title}**\n  ${o.data.body}\n  *(Challenges: ${linkedNode?.data.title || "General context"})*\n\n`;
-    });
-
-    md += `## 5. RECOMMENDED ACTIONS\n\n`;
-    if (actions.length === 0) md += `*No actions assigned.*\n\n`;
-    actions.forEach(a => {
-      md += `- [ ] **${a.data.title}** (${a.data.kind})\n`;
-    });
-    md += `\n`;
-
-    md += `## 6. INTELLIGENCE GRAPH\n\n`;
-    visibleEdges.forEach(e => {
-      const source = visibleNodes.find(n => n.id === e.source)?.data.title || "Unknown";
-      const target = visibleNodes.find(n => n.id === e.target)?.data.title || "Unknown";
-      const rel = e.data?.relation || "leads_to";
-      md += `- ${source} ➔ *${rel}* ➔ ${target}\n`;
-    });
-
-    setSitrepContent(md);
-    setSitrepOpen(true);
-  };
-
-  const copySitrep = () => {
-    navigator.clipboard.writeText(sitrepContent);
-    toast.success("Sitrep copied to clipboard.");
-  };
-
   const allNodes = useMemo(
     () =>
       [
         ...visibleNodes.map((n) => ({
           ...n,
           selected: !replay && s.selectedId === n.id,
-          className: `${(hasFocus || focusActive) && !focus.nodeIds.has(n.id) && !sources.has(n.id) ? "tw-fog" : ""} ${faultNodes.has(n.id) ? "tw-fault" : ""}`,
+          className: `${(hasFocus || focusActive) && !focus.nodeIds.has(n.id) && !sources.has(n.id) ? "tw-fog" : ""} ${faultNodes.has(n.id) ? "tw-fault" : ""} ${briefingOpen && n.id !== s.nodes[0]?.id ? "tw-fog" : ""}`,
         })),
         ...(replay ? [] : s.ghosts).map((g): GhostNodeT => ({
           id: `ghost-${g.id}`,
@@ -281,7 +211,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           selectable: true,
         })),
       ] as (TNode | GhostNodeT)[],
-    [visibleNodes, s.ghosts, replay, hasFocus, focusActive, focus, s.selectedId, activeGhost, faults],
+    [visibleNodes, s.ghosts, replay, hasFocus, focusActive, focus, s.selectedId, activeGhost, faults, briefingOpen],
   );
   const allEdges = useMemo(
     () => [
@@ -360,7 +290,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
       
       if (
         presentation || 
-        sitrepOpen ||
+        briefingOpen ||
         t.closest('[role="dialog"]') || 
         t.closest('[aria-label="Canvas studio"]') ||
         t.tagName === "INPUT" || 
@@ -469,7 +399,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [create, rf, presentation, focusField, sitrepOpen]);
+  }, [create, rf, presentation, focusField, briefingOpen]);
 
   const finish = (relation: Relation, label?: string) => {
     if (!pending) return;
@@ -545,8 +475,8 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
         onEdgesChange={(changes) => {
           if (!replay) s.onEdgesChange(changes);
         }}
-        nodesDraggable={!replay && !presentation}
-        nodesConnectable={!replay && !presentation}
+        nodesDraggable={!replay && !presentation && !briefingOpen}
+        nodesConnectable={!replay && !presentation && !briefingOpen}
         deleteKeyCode={replay || presentation ? null : "Backspace"}
         onConnect={(conn) => setTimeout(() => setPending({ conn, ...lastPointerRef.current }), 0)}
         onConnectEnd={(ev) => {
@@ -811,11 +741,11 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
             size="icon"
             variant="ghost"
             disabled={replay}
-            aria-label="View Sitrep"
-            title="View Sitrep (Intelligence Briefing)"
-            onClick={generateSitrep}
+            aria-label="Start Briefing Mode"
+            title="Start Briefing Mode"
+            onClick={() => setBriefingOpen(true)}
           >
-            <FileDown />
+            <MonitorPlay />
           </Button>
           <Button
             size="icon"
@@ -1075,61 +1005,8 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
         </svg>
         {threadId && !replay && <SocraticDrawer threadId={threadId} />}
         
-        {/* SITREP MODAL */}
-        {sitrepOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8">
-            <div className="relative flex w-full max-w-4xl max-h-[90vh] flex-col overflow-hidden rounded-[24px] border border-black/10 bg-[#FDFBF7] shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-              
-              <header className="flex shrink-0 items-center justify-between border-b border-black/10 bg-white/50 px-6 py-4 backdrop-blur-md">
-                <div className="flex items-center gap-3">
-                  <div className="bg-[#C24A35]/10 p-2 rounded-lg text-[#C24A35]">
-                    <FileDown className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="font-display text-2xl text-black leading-tight">Intelligence Briefing</h2>
-                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" onClick={copySitrep} className="hidden sm:flex border-black/10 bg-white hover:bg-black/5">
-                    <Copy className="mr-2 h-4 w-4" /> Copy
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => setSitrepOpen(false)} className="rounded-full hover:bg-black/5">
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
-              </header>
-
-              <div className="flex-1 overflow-y-auto px-8 py-10 md:px-12 selection:bg-[#CBE6F9]">
-                <div className="mx-auto max-w-3xl">
-                  <ReactMarkdown
-                    components={{
-                      h1: ({node, ...props}) => <h1 className="font-display text-4xl text-black border-b-2 border-black/10 pb-4 mb-8 mt-2" {...props} />,
-                      h2: ({node, ...props}) => <h2 className="font-mono text-sm tracking-widest uppercase text-[#C24A35] border-b border-black/10 pb-2 mt-10 mb-4" {...props} />,
-                      h3: ({node, ...props}) => <h3 className="font-display text-xl text-black mt-6 mb-2 font-bold" {...props} />,
-                      p: ({node, ...props}) => <p className="text-black/80 text-[16px] leading-relaxed mb-4 font-serif" {...props} />,
-                      li: ({node, ...props}) => <li className="ml-5 pl-1 text-black/80 text-[16px] leading-relaxed mb-2 font-serif list-disc marker:text-[#C24A35]" {...props} />,
-                      strong: ({node, ...props}) => <strong className="font-bold text-black" {...props} />,
-                      hr: ({node, ...props}) => <hr className="border-black/10 my-8" {...props} />,
-                    }}
-                  >
-                    {sitrepContent}
-                  </ReactMarkdown>
-                </div>
-              </div>
-
-              <footer className="shrink-0 border-t border-black/10 bg-white/50 px-6 py-4 backdrop-blur-md flex justify-between items-center">
-                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Live Document Generated
-                </span>
-                <Button onClick={() => setSitrepOpen(false)} className="bg-[#1A1A1A] text-white hover:bg-black">
-                  Close Briefing
-                </Button>
-              </footer>
-            </div>
-          </div>
-        )}
-        
+        {/* NEW BRIEFING MODE OVERLAY */}
+        {briefingOpen && <BriefingMode onExit={() => setBriefingOpen(false)} />}
       </div>
     </div>
   );
