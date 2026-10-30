@@ -76,9 +76,9 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
     try {
       const lightweightNodes = s.nodes.map(n => ({
         id: n.id,
-        kind: n.data.kind,
-        title: n.data.title,
-        body: n.data.body
+        kind: n.data?.kind || "idea",
+        title: n.data?.title || "",
+        body: n.data?.body || ""
       }));
 
       const output = await streamTask({ mode: "red-team-canvas", nodes: lightweightNodes }, () => {});
@@ -95,7 +95,7 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
           const y = target ? target.position.y + 200 : 0;
           
           const id = useThread.getState().addNode("omission", { x, y });
-          useThread.getState().updateNode(id, { title: om.title, body: om.body, meta: { status: "open" } });
+          useThread.getState().updateNode(id, { title: om.title || "Missing Context", body: om.body || "", meta: { status: "open" } });
           
           if (om.targetId && currentNodes.some(n => n.id === om.targetId)) {
             useThread.getState().connect({ source: om.targetId, target: id, sourceHandle: null, targetHandle: null }, "needs_evidence_from");
@@ -127,10 +127,11 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
 
       const output = await streamTask({
         mode: "synthesize-bridge",
-        textA: `${nodeA.data.title}\n${nodeA.data.body}`,
-        textB: `${nodeB.data.title}\n${nodeB.data.body}`,
-        titleA: nodeA.data.title,
-        titleB: nodeB.data.title
+        // SAFE TRUNCATION: Ensure we don't exceed the Zod schema limit
+        textA: `${nodeA.data.title || "Untitled"}\n${(nodeA.data.body || "").slice(0, 30000)}`,
+        textB: `${nodeB.data.title || "Untitled"}\n${(nodeB.data.body || "").slice(0, 30000)}`,
+        titleA: nodeA.data.title || "Node A",
+        titleB: nodeB.data.title || "Node B"
       }, () => {});
       
       const res = JSON.parse(output);
@@ -142,8 +143,8 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
         
         const newNodeId = useThread.getState().addNode(res.bridge.kind === "omission" ? "omission" : "idea", { x: midX, y: midY });
         useThread.getState().updateNode(newNodeId, { 
-          title: res.bridge.title, 
-          body: res.bridge.body, 
+          title: res.bridge.title || "Synthesis", 
+          body: res.bridge.body || "", 
           epistemic: res.bridge.kind === "omission" ? "unknown" : "hypothesis",
           meta: { source: "AI Synthesis" }
         });

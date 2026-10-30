@@ -6,7 +6,7 @@ import { readWeb } from "./url.server";
 import { getModel, extractJson } from "./ai-providers.server";
 
 const inputSchema = z.object({
-  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source", "analyze-source", "analyze-source-consensus", "compare", "ask-archives", "find-connections", "red-team-canvas"]),
+  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source", "analyze-source", "analyze-source-consensus", "compare", "ask-archives", "find-connections", "red-team-canvas", "synthesize-bridge"]),
   threadId: z.string().optional(),
   messages: z.array(z.unknown()).max(200).optional(),
   graph: z.unknown().optional(),
@@ -76,6 +76,40 @@ export async function handleThreadwise(request: Request) {
     } catch (zodError) {
       console.error("Validation Error:", zodError);
       return Response.json({ message: "The data sent was in the wrong format." }, { status: 400 });
+    }
+
+    // ---------------------------------------------------------
+    // SYNTHESIZE BRIDGE (Cross-Dossier Synthesis)
+    // ---------------------------------------------------------
+    if (input.mode === "synthesize-bridge") {
+      if (!input.textA?.trim() || !input.textB?.trim()) {
+        return Response.json({ message: "Provide two texts to synthesize." }, { status: 400 });
+      }
+
+      const systemPrompt = `You are an elite intelligence director. You are given two distinct pieces of intelligence. 
+Find the hidden connection, contradiction, or second-order effect that bridges them. 
+Generate exactly ONE powerful new insight that connects the two.
+
+Return ONLY a valid JSON object matching this exact schema:
+{
+  "title": string (A sharp, declarative headline for the new insight),
+  "body": string (A 2-3 sentence explanation of how these two pieces of intelligence connect, why they matter together, and what they imply),
+  "kind": "hypothesis" | "omission" (Choose "hypothesis" if it is a strategic theory, or "omission" if it highlights a critical missing context)
+}`;
+
+      try {
+        const { text: aiText } = await generateText({
+          model: getModel("deepseek", "deepseek-reasoner"),
+          system: systemPrompt,
+          prompt: `NODE A (${input.titleA || "Source A"}):\n${input.textA}\n\n---\n\nNODE B (${input.titleB || "Source B"}):\n${input.textB}`,
+        });
+
+        const parsed = extractJson<{ title: string, body: string, kind: "hypothesis" | "omission" }>(aiText);
+        return Response.json({ bridge: parsed, error: null }, { status: 200 });
+      } catch (e) {
+        console.error("SYNTHESIZE-BRIDGE ERROR:", e);
+        return Response.json({ bridge: null, error: (e as Error).message }, { status: 200 });
+      }
     }
 
     // ---------------------------------------------------------
