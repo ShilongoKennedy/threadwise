@@ -90,6 +90,8 @@ export async function handleThreadwise(request: Request) {
 Review the provided nodes. Identify the "Dog That Didn't Bark" - critical context that is missing, hidden assumptions, or potential blind spots. 
 Be ruthless, specific, and analytical.
 
+CRITICAL INSTRUCTION: Generate a MAXIMUM of 3 omissions. Only surface the most critical, game-changing blind spots. Do not overwhelm the board.
+
 Return ONLY a valid JSON object matching this exact schema:
 {
   "omissions": {

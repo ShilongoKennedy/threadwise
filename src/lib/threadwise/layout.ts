@@ -33,7 +33,7 @@ export async function layeredLayout(
 /**
  * The Semantic Intelligence Layout.
  * Arranges nodes into distinct semantic columns, anchored by their source dossiers.
- * This turns the canvas from a messy corkboard into a structured logical map.
+ * Omissions and Questions are intelligently clustered near the nodes they challenge.
  */
 export function intelligentTidy(nodes: TNode[], edges: TEdge[]): Record<string, { x: number, y: number }> {
   if (nodes.length === 0) return {};
@@ -89,7 +89,6 @@ export function intelligentTidy(nodes: TNode[], edges: TEdge[]): Record<string, 
   const layoutColumn = (colNodes: TNode[], x: number, startY: number = 0) => {
     let currentY = startY;
     
-    // Sort by their anchor Y so they align horizontally with their source Dossiers
     const sorted = [...colNodes].sort((a, b) => {
       const ya = getAnchorY(a);
       const yb = getAnchorY(b);
@@ -102,10 +101,10 @@ export function intelligentTidy(nodes: TNode[], edges: TEdge[]): Record<string, 
     sorted.forEach((n) => {
       let targetY = getAnchorY(n);
       if (targetY !== -1 && targetY > currentY) {
-        currentY = targetY; // snap to the dossier's Y level
+        currentY = targetY; 
       }
       positions[n.id] = { x, y: currentY };
-      currentY += 240; // spacing for next card in this column
+      currentY += 240; 
     });
     return currentY;
   };
@@ -122,12 +121,22 @@ export function intelligentTidy(nodes: TNode[], edges: TEdge[]): Record<string, 
     maxY = Math.max(maxY, endY);
   }
   
-  // Blind spots sit next to ideas (the "unknowns")
+  // 4. Blind spots sit NEXT TO the nodes they challenge, not in a giant tower
   const blindSpots = [...questions, ...omissions];
-  if (blindSpots.length > 0) {
-    const endY = layoutColumn(blindSpots, 1040);
-    maxY = Math.max(maxY, endY);
-  }
+  blindSpots.forEach((n, idx) => {
+    // Find if this blind spot is connected to an idea or evidence node
+    const edge = edges.find(e => e.source === n.id || e.target === n.id);
+    const otherId = edge ? (edge.source === n.id ? edge.target : edge.source) : null;
+    const otherPos = otherId ? positions[otherId] : null;
+
+    if (otherPos) {
+      // Snap it to the right of its target, slightly offset
+      positions[n.id] = { x: otherPos.x + 320, y: otherPos.y + 20 + (idx % 3) * 40 };
+    } else {
+      // If it's disconnected, put it in the far right column
+      positions[n.id] = { x: 1040, y: idx * 240 };
+    }
+  });
   
   if (experiments.length > 0) {
     const endY = layoutColumn(experiments, 1360);
@@ -138,7 +147,7 @@ export function intelligentTidy(nodes: TNode[], edges: TEdge[]): Record<string, 
     maxY = Math.max(maxY, endY);
   }
 
-  // 4. Handle portals and orphans (push to the bottom or far left)
+  // 5. Handle portals and orphans (push to the bottom or far left)
   let orphanY = maxY + 200;
   [...portals, ...others].forEach(n => {
     positions[n.id] = { x: -380, y: orphanY };
