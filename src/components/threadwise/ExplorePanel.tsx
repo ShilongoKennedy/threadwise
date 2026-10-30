@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { useReactFlow } from "@xyflow/react";
-import { Check, Link2, Loader2, Sparkles, X } from "lucide-react";
+import { AlertTriangle, Check, Link2, Loader2, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { relationLabel, type Relation, type ThreadNodeType } from "@/lib/threadwise/model";
 import { useThread } from "@/lib/threadwise/store";
 import { TYPE_COLOR, TYPE_ICON } from "./ThreadNode";
 import { streamTask } from "@/lib/threadwise/ai-client";
+import { intelligentTidy } from "@/lib/threadwise/layout";
+import { toast } from "sonner";
 
 export function ExplorePanel({ onClose }: { onClose: () => void }) {
   const s = useThread();
   const rf = useReactFlow();
   const [loading, setLoading] = useState(false);
+  const [redTeamLoading, setRedTeamLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const focus = s.nodes.find((n) => n.id === s.selectedId);
   const title = (id: string | null) => s.nodes.find((n) => n.id === id)?.data.title ?? "?";
@@ -19,7 +22,6 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
     setLoading(true);
     setError(null);
     try {
-      // Safe fallbacks to prevent validation crashes
       const payloadNodes = s.nodes.map((n) => ({
         id: n.id,
         kind: n.data?.kind || "idea",
@@ -36,7 +38,6 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
         relation: relationLabel(e.data?.relation ?? "leads_to", e.data?.customLabel),
       }));
 
-      // Use the same API route that Socratic and Evidence Clipper use
       const output = await streamTask(
         {
           mode: "explore",
@@ -65,6 +66,56 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
     }
   };
 
+  const runRedTeam = async () => {
+    setRedTeamLoading(true);
+    setError(null);
+    try {
+      const lightweightNodes = s.nodes.map(n => ({
+        id: n.id,
+        kind: n.data.kind,
+        title: n.data.title,
+        body: n.data.body
+      }));
+
+      const output = await streamTask({ mode: "red-team-canvas", nodes: lightweightNodes }, () => {});
+      const res = JSON.parse(output);
+      
+      if (res.error) {
+        setError(res.error);
+      } else if (res.omissions && res.omissions.length > 0) {
+        const currentNodes = useThread.getState().nodes;
+        
+        res.omissions.forEach((om: any) => {
+          // Find the target node to calculate spawn position
+          const target = currentNodes.find(n => n.id === om.targetId) || currentNodes[0];
+          const x = target ? target.position.x + 400 : 0;
+          const y = target ? target.position.y + 200 : 0;
+          
+          // Spawn the Omission node
+          const id = useThread.getState().addNode("omission", { x, y });
+          useThread.getState().updateNode(id, { title: om.title, body: om.body, meta: { status: "open" } });
+          
+          // Connect it to the target hypothesis
+          if (om.targetId && currentNodes.some(n => n.id === om.targetId)) {
+            useThread.getState().connect({ source: om.targetId, target: id, sourceHandle: null, targetHandle: null }, "needs_evidence_from");
+          }
+        });
+        
+        // Instantly tidy the board to snap them into place
+        const newPositions = intelligentTidy(useThread.getState().nodes, useThread.getState().edges);
+        useThread.getState().setPositions(newPositions);
+        
+        toast.success(`Red team found ${res.omissions.length} blind spot${res.omissions.length === 1 ? '' : 's'}. Planted.`);
+      } else {
+        toast.success("Red team found no obvious omissions. The board looks solid!");
+      }
+    } catch (e: any) {
+      setError(e.message || "Red team failed.");
+    } finally {
+      setRedTeamLoading(false);
+    }
+  };
+
   return (
     <aside className="tw-sheet-left absolute inset-x-0 bottom-0 z-20 flex max-h-[72dvh] flex-col md:inset-x-auto md:bottom-28 md:left-6 md:top-24 md:max-h-none md:w-[320px] overflow-hidden tw-sheet rounded-t-[22px] md:rounded-[18px] border bg-card shadow-[var(--shadow-lift)]">
       <div className="flex items-center justify-between border-b px-5 py-3">
@@ -79,9 +130,14 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
         <p className="text-xs text-muted-foreground">
           {focus ? <>Exploring around <span className="font-display text-foreground">{focus.data.title}</span></> : <span className="font-display text-[15px] italic text-foreground">Read the whole canvas, or select a card to focus.</span>}
         </p>
-        <Button className="w-full" onClick={explore} disabled={loading}>
-          {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Reading your canvas…</> : <><Sparkles className="mr-2 h-4 w-4" /> Find questions, tests & links</>}
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button className="w-full" onClick={explore} disabled={loading || redTeamLoading}>
+            {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Reading your canvas…</> : <><Sparkles className="mr-2 h-4 w-4" /> Find questions, tests & links</>}
+          </Button>
+          <Button variant="outline" className="w-full border-[#C24A35]/30 text-[#C24A35] hover:bg-[#C24A35]/5" onClick={runRedTeam} disabled={redTeamLoading || loading}>
+            {redTeamLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Red Teaming...</> : <><AlertTriangle className="mr-2 h-4 w-4" /> Red Team Board (Find Omissions)</>}
+          </Button>
+        </div>
         {error && <p className="text-xs text-destructive whitespace-pre-wrap">{error}</p>}
       </div>
       <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">

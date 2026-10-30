@@ -6,7 +6,7 @@ import { readWeb } from "./url.server";
 import { getModel, extractJson } from "./ai-providers.server";
 
 const inputSchema = z.object({
-  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source", "analyze-source", "analyze-source-consensus", "compare", "ask-archives", "find-connections"]),
+  mode: z.enum(["socratic", "memo", "clip", "redteam", "intake", "explore", "cross-source", "analyze-source", "analyze-source-consensus", "compare", "ask-archives", "find-connections", "red-team-canvas"]),
   threadId: z.string().optional(),
   messages: z.array(z.unknown()).max(200).optional(),
   graph: z.unknown().optional(),
@@ -76,6 +76,42 @@ export async function handleThreadwise(request: Request) {
     } catch (zodError) {
       console.error("Validation Error:", zodError);
       return Response.json({ message: "The data sent was in the wrong format." }, { status: 400 });
+    }
+
+    // ---------------------------------------------------------
+    // RED TEAM CANVAS (Find Blind Spots / Omissions)
+    // ---------------------------------------------------------
+    if (input.mode === "red-team-canvas") {
+      if (!input.nodes?.length) {
+        return Response.json({ message: "The canvas is empty." }, { status: 400 });
+      }
+
+      const systemPrompt = `You are an elite intelligence director red-teaming a strategic analysis board.
+Review the provided nodes. Identify the "Dog That Didn't Bark" - critical context that is missing, hidden assumptions, or potential blind spots. 
+Be ruthless, specific, and analytical.
+
+Return ONLY a valid JSON object matching this exact schema:
+{
+  "omissions": {
+    "title": string (A sharp question or statement of the missing context, e.g. "What about the UN's stance?"),
+    "body": string (A 2-3 sentence explanation of why this omission matters and what it might hide),
+    "targetId": string (The exact ID of the node from the provided list that this omission challenges or relates to)
+  }[]
+}`;
+
+      try {
+        const { text: aiText } = await generateText({
+          model: getModel("deepseek", "deepseek-reasoner"),
+          system: systemPrompt,
+          prompt: `CURRENT CANVAS NODES:\n${JSON.stringify(input.nodes)}`,
+        });
+
+        const parsed = extractJson<{ omissions: { title: string, body: string, targetId: string }[] }>(aiText);
+        return Response.json({ omissions: parsed.omissions || [] }, { status: 200 });
+      } catch (e) {
+        console.error("RED-TEAM-CANVAS ERROR:", e);
+        return Response.json({ omissions: [], error: (e as Error).message }, { status: 200 });
+      }
     }
 
     // ---------------------------------------------------------
