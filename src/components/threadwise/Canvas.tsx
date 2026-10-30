@@ -1,5 +1,6 @@
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { useDraft } from "@/lib/threadwise/draft";
 import { useNavigate } from "@tanstack/react-router";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
@@ -26,6 +27,7 @@ import {
   Atom,
   BookOpen,
   CircleHelp,
+  Copy,
   FileDown,
   FileText,
   Orbit,
@@ -91,6 +93,10 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
   const [spatial, setSpatial] = useState(false);
   const [thoughtPortal, setThoughtPortal] = useState<string | null>(null);
   const [focusField, setFocusField] = useState(false);
+  
+  const [sitrepOpen, setSitrepOpen] = useState(false);
+  const [sitrepContent, setSitrepContent] = useState("");
+
   const onboarding = useOnboarding();
   const wrapper = useRef<HTMLDivElement>(null);
   const dragStart = useRef<Record<string, { x: number; y: number }>>({});
@@ -145,9 +151,11 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
     setMemo(false);
     setThoughtPortal(null);
     setFocusField(false);
+    setSitrepOpen(false);
     const timer = setTimeout(() => fitView({ padding: 0.3, duration: 300 }), 80);
     return () => clearTimeout(timer);
   }, [canvasId, fitView]);
+  
   const openInquiry = () => {
     const id = useSocratic
       .getState()
@@ -191,7 +199,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
     setTimeout(() => rf.fitView({ padding: 0.25, duration: 800 }), 50);
   };
 
-  const exportSitrep = () => {
+  const generateSitrep = () => {
     const canvasTitle = workspace?.document.canvases.find((c) => c.id === canvasId)?.title || "Untitled Canvas";
     
     const dossiers = visibleNodes.filter(n => n.data.kind === "dossier");
@@ -247,14 +255,13 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
       md += `- ${source} ➔ *${rel}* ➔ ${target}\n`;
     });
 
-    const blob = new Blob([md], { type: "text/markdown" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `SITREP-${canvasTitle.replace(/\s+/g, '-')}.md`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    toast.success("Sitrep exported successfully.");
+    setSitrepContent(md);
+    setSitrepOpen(true);
+  };
+
+  const copySitrep = () => {
+    navigator.clipboard.writeText(sitrepContent);
+    toast.success("Sitrep copied to clipboard.");
   };
 
   const allNodes = useMemo(
@@ -353,6 +360,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
       
       if (
         presentation || 
+        sitrepOpen ||
         t.closest('[role="dialog"]') || 
         t.closest('[aria-label="Canvas studio"]') ||
         t.tagName === "INPUT" || 
@@ -461,7 +469,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [create, rf, presentation, focusField]);
+  }, [create, rf, presentation, focusField, sitrepOpen]);
 
   const finish = (relation: Relation, label?: string) => {
     if (!pending) return;
@@ -803,9 +811,9 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
             size="icon"
             variant="ghost"
             disabled={replay}
-            aria-label="Export Sitrep"
-            title="Export Sitrep (Markdown)"
-            onClick={exportSitrep}
+            aria-label="View Sitrep"
+            title="View Sitrep (Intelligence Briefing)"
+            onClick={generateSitrep}
           >
             <FileDown />
           </Button>
@@ -1066,6 +1074,62 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </filter>
         </svg>
         {threadId && !replay && <SocraticDrawer threadId={threadId} />}
+        
+        {/* SITREP MODAL */}
+        {sitrepOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8">
+            <div className="relative flex w-full max-w-4xl max-h-[90vh] flex-col overflow-hidden rounded-[24px] border border-black/10 bg-[#FDFBF7] shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+              
+              <header className="flex shrink-0 items-center justify-between border-b border-black/10 bg-white/50 px-6 py-4 backdrop-blur-md">
+                <div className="flex items-center gap-3">
+                  <div className="bg-[#C24A35]/10 p-2 rounded-lg text-[#C24A35]">
+                    <FileDown className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="font-display text-2xl text-black leading-tight">Intelligence Briefing</h2>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" onClick={copySitrep} className="hidden sm:flex border-black/10 bg-white hover:bg-black/5">
+                    <Copy className="mr-2 h-4 w-4" /> Copy
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => setSitrepOpen(false)} className="rounded-full hover:bg-black/5">
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+              </header>
+
+              <div className="flex-1 overflow-y-auto px-8 py-10 md:px-12 selection:bg-[#CBE6F9]">
+                <div className="mx-auto max-w-3xl">
+                  <ReactMarkdown
+                    components={{
+                      h1: ({node, ...props}) => <h1 className="font-display text-4xl text-black border-b-2 border-black/10 pb-4 mb-8 mt-2" {...props} />,
+                      h2: ({node, ...props}) => <h2 className="font-mono text-sm tracking-widest uppercase text-[#C24A35] border-b border-black/10 pb-2 mt-10 mb-4" {...props} />,
+                      h3: ({node, ...props}) => <h3 className="font-display text-xl text-black mt-6 mb-2 font-bold" {...props} />,
+                      p: ({node, ...props}) => <p className="text-black/80 text-[16px] leading-relaxed mb-4 font-serif" {...props} />,
+                      li: ({node, ...props}) => <li className="ml-5 pl-1 text-black/80 text-[16px] leading-relaxed mb-2 font-serif list-disc marker:text-[#C24A35]" {...props} />,
+                      strong: ({node, ...props}) => <strong className="font-bold text-black" {...props} />,
+                      hr: ({node, ...props}) => <hr className="border-black/10 my-8" {...props} />,
+                    }}
+                  >
+                    {sitrepContent}
+                  </ReactMarkdown>
+                </div>
+              </div>
+
+              <footer className="shrink-0 border-t border-black/10 bg-white/50 px-6 py-4 backdrop-blur-md flex justify-between items-center">
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Live Document Generated
+                </span>
+                <Button onClick={() => setSitrepOpen(false)} className="bg-[#1A1A1A] text-white hover:bg-black">
+                  Close Briefing
+                </Button>
+              </footer>
+            </div>
+          </div>
+        )}
+        
       </div>
     </div>
   );
