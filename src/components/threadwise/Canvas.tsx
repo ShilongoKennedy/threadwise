@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import { createPhysics } from "@/lib/threadwise/physics";
 import { auditGraph, neighborhood, raycast, type Direction } from "@/lib/threadwise/graph";
+import { intelligentTidy } from "@/lib/threadwise/layout";
 import { ExperimentOutcome } from "./ExperimentOutcome";
 import { Timeline } from "./Timeline";
 import { AuditPanel } from "./AuditPanel";
@@ -179,13 +180,13 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
       engine.simulation.stop();
     };
   }, [physics, replay, s.nodes.length, s.edges]);
+  
   const tidy = () => {
     setPhysics(false);
-    const engine = createPhysics(s.nodes, s.edges);
-    engine.simulation.tick(200);
-    s.setPositions(engine.positions());
-    s.recordSnapshot("Semantic tidy");
-    setTimeout(() => rf.fitView({ padding: 0.3, duration: 400 }), 50);
+    const newPositions = intelligentTidy(s.nodes, s.edges);
+    s.setPositions(newPositions);
+    s.recordSnapshot("Intelligence tidy");
+    setTimeout(() => rf.fitView({ padding: 0.25, duration: 800 }), 50);
   };
 
   const allNodes = useMemo(

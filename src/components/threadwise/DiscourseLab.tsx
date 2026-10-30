@@ -1,11 +1,11 @@
 import { useMemo, useState, useRef, useEffect } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp, Terminal, Database, Network, AlertOctagon, Share2 } from "lucide-react";
+import { BookOpenText, Columns2, Hash, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, GitCompare, FileUp, Terminal, Database, Network, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useThread } from "@/lib/threadwise/store";
 import { streamTask } from "@/lib/threadwise/ai-client";
-import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type CodeId, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
+import { CODES, clip, countPhrase, emptyCorpus, topTerms, words, type Corpus, type DiscourseDoc } from "@/lib/threadwise/discourse";
 import { readDocument } from "@/lib/threadwise/evidence";
 import { archiveInsight } from "@/lib/threadwise/archivist";
 import { toast } from "sonner";
@@ -13,7 +13,6 @@ import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Pola
 
 type View = "read" | "compare" | "count" | "investigate" | "archives";
 const uid = () => crypto.randomUUID();
-const codeLabel = (code: CodeId) => CODES.find((item) => item.id === code)?.label ?? code;
 
 const COLORS = ["#C24A35", "#1A1A1A", "#E3D398", "#6B4C7A", "#2D6A65"];
 
@@ -291,7 +290,6 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
     const nodeKind = kind === "evidence" ? "note" : kind === "hypothesis" ? "idea" : kind === "omission" ? "omission" : "question";
     const epistemic = kind === "evidence" ? "evidence" : kind === "hypothesis" ? "hypothesis" : "unknown";
     
-    // 1. Create / Find Dossier Anchor (recognizes both new dossier nodes and legacy notes)
     let dossierId = useThread.getState().nodes.find(
       (n) =>
         (n.data.kind === "dossier" || n.data.meta.dossier === "true") &&
@@ -302,17 +300,13 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
         s.updateNode(dossierId, { title: sourceTitle, body: "Source document anchor.", epistemic: "fact", meta: { source: sourceTitle } });
     }
 
-    // 2. Create Insight
     const nodeId = s.addNode(nodeKind, { x: 80 + useThread.getState().nodes.length * 14, y: 90 + useThread.getState().nodes.length * 12 });
     s.updateNode(nodeId, { title, body, epistemic, meta: { source: sourceTitle } });
 
-    // 3. Connect Insight to Dossier
     s.connect({ source: dossierId, target: nodeId, sourceHandle: null, targetHandle: null }, "leads_to");
 
-    // 4. Archive to Cloudflare
     void archiveInsight(nodeId, `${title}\n\n${body}`, { source: sourceTitle, type: kind });
 
-    // 5. Smart Wiring
     toast.loading("Planted. Auto-wiring...", { id: "autowire" });
     try {
         const others = useThread.getState().nodes.filter(n => n.id !== nodeId && n.id !== dossierId).map(n => ({ id: n.id, title: n.data.title, body: n.data.body }));
