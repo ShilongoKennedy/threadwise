@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useEffect } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp, Terminal, Database, Network } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp, Terminal, Database, Network, AlertOctagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -60,6 +60,67 @@ const sanitizeAnalysis = (res: any) => {
   };
 };
 
+const CinematicLoader = ({ mode }: { mode: "forensic" | "cross-source" }) => {
+  const [step, setStep] = useState(0);
+  const [hex, setHex] = useState<string[]>([]);
+  
+  useEffect(() => {
+    const interval = setInterval(() => setStep(s => Math.min(s + 1, 4)), 1200);
+    const hexInterval = setInterval(() => {
+      const newHex = Array.from({ length: 8 }).map(() => Math.floor(Math.random()*16777215).toString(16).toUpperCase().padStart(6, '0'));
+      setHex(newHex);
+    }, 100);
+    return () => { clearInterval(interval); clearInterval(hexInterval); };
+  }, []);
+
+  const isCross = mode === "cross-source";
+
+  return (
+    <div className="relative flex flex-col items-center justify-center w-full min-h-[400px] overflow-hidden rounded-xl bg-[#050505] border border-[#C24A35]/30 shadow-[inset_0_0_50px_rgba(194,74,53,0.1)]">
+      {/* CRT Scanlines */}
+      <div className="absolute inset-0 pointer-events-none opacity-20" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.75) 50%), linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06))', backgroundSize: '100% 4px, 3px 100%' }} />
+      
+      {/* Pulsing Halo */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="w-[300px] h-[300px] rounded-full bg-[#C24A35]/10 blur-[60px] animate-pulse" />
+      </div>
+
+      {/* Side Data Streams */}
+      <div className="absolute left-4 top-0 bottom-0 flex flex-col justify-center opacity-20 pointer-events-none">
+        {hex.map((h, i) => <span key={i} className="font-mono text-[8px] text-[#C24A35] leading-tight">{h}</span>)}
+      </div>
+      <div className="absolute right-4 top-0 bottom-0 flex flex-col justify-center opacity-20 pointer-events-none">
+        {hex.slice().reverse().map((h, i) => <span key={i} className="font-mono text-[8px] text-[#C24A35] leading-tight">{h}</span>)}
+      </div>
+
+      {/* Main Terminal */}
+      <div className="relative z-10 w-full max-w-sm text-left font-mono">
+        <div className="flex items-center gap-3 mb-6 pb-3 border-b border-[#C24A35]/30 text-[#C24A35]">
+          {isCross ? <Network className="w-5 h-5 animate-pulse" /> : <Terminal className="w-5 h-5 animate-pulse" />}
+          <span className="text-xs tracking-[0.2em] font-bold">
+            {isCross ? "CROSS-SOURCE INGESTION" : "FORENSIC MAINFRAME"}
+          </span>
+        </div>
+        
+        <div className="space-y-3">
+          {LOADING_STEPS.map((s, idx) => (
+            <div key={idx} className={`flex items-start gap-2 text-[10px] transition-all duration-500 ${idx > step ? 'opacity-0 translate-y-2' : idx === step ? 'opacity-100 text-[#C24A35]' : 'opacity-40 text-[#75F09A]'}`}>
+              <span className="shrink-0">{idx < step ? "[OK]" : idx === step ? "[>>]" : "[  ]"}</span>
+              <span className={idx === step ? "animate-pulse" : ""}>{s}</span>
+            </div>
+          ))}
+        </div>
+
+        {step >= 4 && (
+          <div className="mt-8 border border-[#C24A35]/50 bg-[#C24A35]/10 p-3 text-center text-xs font-bold tracking-widest text-[#C24A35] animate-pulse">
+            SYNTHESIS COMPLETE
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Corpus; update: (corpus: Corpus) => void; onClose: () => void }) {
   const corpus = stored ?? emptyCorpus();
   const s = useThread();
@@ -76,7 +137,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const [isReadingFile, setIsReadingFile] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   
-  const [loadingStep, setLoadingStep] = useState(0);
   const [consensusMode, setConsensusMode] = useState(false);
 
   const savedInv = (corpus as any).investigation || {};
@@ -107,16 +167,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const comparisonAnalysis = savedComparisons[comparisonKey];
 
   const save = (patch: Partial<Corpus>) => update({ ...corpus, ...patch });
-
-  useEffect(() => {
-    if (isAnalyzingSource) {
-      setLoadingStep(0);
-      const interval = setInterval(() => {
-        setLoadingStep((prev) => (prev < LOADING_STEPS.length - 1 ? prev + 1 : prev));
-      }, 1200);
-      return () => clearInterval(interval);
-    }
-  }, [isAnalyzingSource]);
   
   const deleteDoc = (id: string) => {
     if (!confirm("Delete this document and its analyses?")) return;
@@ -342,7 +392,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
       
       const escapedTitle = escapeHtml(note.title || "Observation");
       
-      // Use function replacement to prevent $ sequence injection
       result = result.replace(regex, (match) => 
         `<span id="hl-${note.originalIndex}" data-note-index="${note.originalIndex}" class="${bgClass} ${borderClass} px-1 rounded-sm cursor-pointer transition-all hover:bg-opacity-100 hover:shadow-sm" title="${escapedTitle}">${match}</span>`
       );
@@ -412,7 +461,6 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     
     const needle = polarToCartesian(cx, cy, radius - 8, angle);
 
-    // Generate tick marks
     const ticks = Array.from({ length: 21 }).map((_, i) => {
       const tickAngle = startAngle + (endAngle - startAngle) * (i / 20);
       const isMajor = i % 5 === 0;
@@ -437,18 +485,11 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
             </linearGradient>
           </defs>
 
-          {/* Danger zone */}
           <path d={describeArc(cx, cy, radius, 75, endAngle)} fill="none" stroke="#C24A35" strokeWidth="10" strokeLinecap="round" opacity={0.6} />
-          
-          {/* Main track */}
           <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="#333" strokeWidth="10" strokeLinecap="round" />
-          
           {ticks}
-          
-          {/* Active track */}
           <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#C24A35" strokeWidth="10" strokeLinecap="round" filter="url(#glow)" className="transition-all duration-1000 ease-out" />
           
-          {/* Needle */}
           <g className="transition-all duration-1000 ease-out">
             <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="url(#needleGrad)" strokeWidth="3" strokeLinecap="round" filter="url(#glow)" />
             <circle cx={cx} cy={cy} r="8" fill="#1A1A1A" stroke="#444" strokeWidth="2" />
@@ -467,13 +508,11 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const TacticalRadar = ({ data }: { data: any[] }) => {
     return (
       <div className="relative w-full h-full min-h-[160px] rounded-xl bg-[#0A0A0A] border border-black overflow-hidden flex items-center justify-center">
-        {/* Grid background */}
         <div className="absolute inset-0 opacity-20" style={{ 
           backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', 
           backgroundSize: '10px 10px' 
         }} />
         
-        {/* Scanning radar sweep */}
         <div className="absolute inset-0 rounded-full border border-[#75F09A]/10 animate-[spin_4s_linear_infinite] origin-center" style={{ background: 'conic-gradient(from 0deg at 50% 50%, rgba(117,240,154,0.1) 0deg, transparent 90deg)' }} />
 
         <div className="relative z-10 w-full h-full p-2">
@@ -640,19 +679,8 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                   )}
 
                   {isAnalyzingSource && (
-                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center p-8 bg-black rounded-xl border border-black/20 shadow-inner">
-                      <div className="w-full max-w-xs text-left font-mono text-[10px] text-[#75F09A]">
-                        <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[#75F09A]/20">
-                          <Terminal className="w-4 h-4" /> <span className="animate-pulse">LIVE OSINT FEED</span>
-                        </div>
-                        {LOADING_STEPS.map((step, idx) => (
-                          <div key={idx} className={`mb-2 transition-opacity duration-300 ${idx > loadingStep ? 'opacity-0' : idx === loadingStep ? 'opacity-100' : 'opacity-50'}`}>
-                            <span className="mr-2 text-[#75F09A]/50">&gt;</span>
-                            {step}
-                            {idx === loadingStep && <span className="inline-block w-2 h-3 bg-[#75F09A] animate-pulse ml-1 align-middle" />}
-                          </div>
-                        ))}
-                      </div>
+                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] w-full">
+                      <CinematicLoader mode="forensic" />
                     </div>
                   )}
 
@@ -804,13 +832,10 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
               {analysisError && <p className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{analysisError}</p>}
 
               {isAnalyzing && (
-                <div className="py-24 text-center">
-                  <div className="relative mb-8 inline-block">
-                    <div className="h-16 w-16 animate-spin rounded-full border-2 border-muted border-t-foreground"></div>
-                    <Fingerprint className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-foreground animate-pulse" />
+                <div className="py-12 w-full flex justify-center">
+                  <div className="w-full max-w-2xl">
+                    <CinematicLoader mode="cross-source" />
                   </div>
-                  <h4 className="mb-2 font-display text-2xl text-foreground">Deconstructing Narratives...</h4>
-                  <p className="animate-pulse font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Entity Extraction → Semantic Mapping → Contradiction Analysis</p>
                 </div>
               )}
 
