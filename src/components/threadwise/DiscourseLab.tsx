@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useEffect } from "react";
-import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp, Terminal, Database, Network, AlertOctagon } from "lucide-react";
+import { BookOpenText, Columns2, Hash, MapPin, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Cpu, ArrowRight, Fingerprint, Crosshair, FileWarning, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, FileSearch, GitCompare, FileUp, Terminal, Database, Network, AlertOctagon, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -269,36 +269,63 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     toast.success("Report exported successfully");
   };
   
+  const plantToCanvas = async (title: string, body: string, kind: "evidence" | "hypothesis" | "question", sourceTitle: string) => {
+    const nodeKind = kind === "evidence" ? "note" : kind === "hypothesis" ? "idea" : "question";
+    const epistemic = kind === "evidence" ? "evidence" : kind === "hypothesis" ? "hypothesis" : "unknown";
+    
+    // 1. Create / Find Dossier Anchor
+    let dossierId = useThread.getState().nodes.find(n => n.data.meta.dossier === "true" && n.data.meta.source === sourceTitle)?.id;
+    if (!dossierId) {
+        dossierId = s.addNode("note", { x: -450, y: 100 + useThread.getState().nodes.length * 200 });
+        s.updateNode(dossierId, { title: `DOSSIER: ${sourceTitle}`, body: "Source document anchor.", epistemic: "fact", meta: { dossier: "true", source: sourceTitle } });
+    }
+
+    // 2. Create Insight
+    const nodeId = s.addNode(nodeKind, { x: 80 + useThread.getState().nodes.length * 14, y: 90 + useThread.getState().nodes.length * 12 });
+    s.updateNode(nodeId, { title, body, epistemic, meta: { source: sourceTitle } });
+
+    // 3. Connect Insight to Dossier
+    s.connect({ source: dossierId, target: nodeId, sourceHandle: null, targetHandle: null }, "leads_to");
+
+    // 4. Archive to Cloudflare
+    void archiveInsight(nodeId, `${title}\n\n${body}`, { source: sourceTitle, type: kind });
+
+    // 5. Smart Wiring
+    toast.loading("Planted. Auto-wiring...", { id: "autowire" });
+    try {
+        const others = useThread.getState().nodes.filter(n => n.id !== nodeId && n.id !== dossierId).map(n => ({ id: n.id, title: n.data.title, body: n.data.body }));
+        if (others.length > 0) {
+            const output = await streamTask({ mode: "find-connections", text: `${title}\n\n${body}`, nodes: others }, () => {});
+            const res = JSON.parse(output);
+            if (res.connections && Array.isArray(res.connections)) {
+                let count = 0;
+                res.connections.forEach((c: any) => {
+                    if (useThread.getState().nodes.some(n => n.id === c.targetId) && c.targetId !== nodeId) {
+                        s.connect({ source: nodeId, target: c.targetId, sourceHandle: null, targetHandle: null }, c.relation);
+                        count++;
+                    }
+                });
+                toast.success(`Planted & wired ${count} connection${count === 1 ? '' : 's'}.`, { id: "autowire" });
+            } else {
+                toast.success("Planted.", { id: "autowire" });
+            }
+        } else {
+            toast.success("Planted.", { id: "autowire" });
+        }
+    } catch (e) {
+        toast.success("Planted. (Auto-wire unavailable)", { id: "autowire" });
+    }
+  };
+
   const plant = (doc: DiscourseDoc, quote: string, label = "Discourse evidence") => {
-    const id = s.addNode("note", { x: 80 + s.nodes.length * 14, y: 90 + s.nodes.length * 12 });
     const nodeTitle = `“${clip(quote, 82)}”`;
     const nodeBody = `“${quote}”\n\n— ${doc.title}${doc.speaker ? ` · ${doc.speaker}` : ""}${doc.date ? ` · ${doc.date}` : ""}\n\n${label}`;
-    
-    s.updateNode(id, (data) => ({ ...data, title: nodeTitle, body: nodeBody, epistemic: "evidence", meta: { ...data.meta, source: doc.title } }));
-    
-    void archiveInsight(id, nodeBody, { source: doc.title, type: "evidence" });
-
-    toast.success("Placed on canvas", {
-      action: { label: "View Board", onClick: () => window.dispatchEvent(new CustomEvent("threadwise:view-canvas")) }
-    });
+    void plantToCanvas(nodeTitle, nodeBody, "evidence", doc.title);
   };
 
   const plantAnalysis = (id: string, kind: "evidence" | "hypothesis" | "question", title: string, body: string, source?: string) => {
-    const nodeKind = kind === "evidence" ? "note" : kind === "hypothesis" ? "idea" : "question";
-    const nodeId = s.addNode(nodeKind, { x: 80 + s.nodes.length * 14, y: 90 + s.nodes.length * 12 });
-    
-    s.updateNode(nodeId, (data) => ({ 
-      ...data, title, body, 
-      epistemic: kind === "evidence" ? "evidence" : kind === "hypothesis" ? "hypothesis" : "unknown",
-      meta: { ...data.meta, source: source || "Cross-Source Investigation" }
-    }));
-
-    void archiveInsight(nodeId, `${title}\n\n${body}`, { source: source || "Cross-Source", type: kind });
-
     setPlantedIds(prev => ({ ...prev, [id]: true }));
-    toast.success("Planted on canvas", {
-      action: { label: "View Board", onClick: () => window.dispatchEvent(new CustomEvent("threadwise:view-canvas")) }
-    });
+    void plantToCanvas(title, body, kind, source || "Cross-Source Investigation");
   };
 
   const runInvestigation = async () => {
@@ -765,7 +792,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                             <div key={i} className="flex flex-col gap-2 rounded-lg border border-black/10 bg-white p-3 shadow-sm">
                               <p className="text-xs text-black/80 leading-relaxed">{text}</p>
                               <Button size="sm" variant="ghost" className="h-7 self-end text-[9px] uppercase tracking-wider text-black/40 hover:text-black hover:bg-black/5" onClick={(e) => { e.stopPropagation(); plantAnalysis(`asm-${i}`, "hypothesis", "Unstated Assumption", text, active.title); }}>
-                                <MapPin className="mr-1 h-3 w-3" /> Plant
+                                <Share2 className="mr-1 h-3 w-3" /> Plant & Wire
                               </Button>
                             </div>
                           ))}
@@ -782,7 +809,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                                 <p className="text-xs text-black/80 leading-relaxed">{text}</p>
                               </div>
                               <Button size="sm" variant="ghost" className="h-7 self-end text-[9px] uppercase tracking-wider text-[#C24A35] hover:bg-[#C24A35]/10" onClick={(e) => { e.stopPropagation(); plantAnalysis(`q-${i}`, "question", "Missing Context", text, active.title); }}>
-                                <MapPin className="mr-1 h-3 w-3" /> Plant
+                                <Share2 className="mr-1 h-3 w-3" /> Plant & Wire
                               </Button>
                             </div>
                           ))}
@@ -921,7 +948,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                             <div className="mt-auto flex items-center justify-between border-t border-black/10 pt-3">
                               <span className="max-w-[200px] truncate font-mono text-[9px] uppercase tracking-wider text-black/40">{item.source}</span>
                               <Button size="sm" variant={plantedIds[`ev-${i}`] ? "secondary" : "outline"} className={`h-8 rounded-md px-4 text-[10px] uppercase tracking-wider font-bold ${plantedIds[`ev-${i}`] ? "bg-black text-white" : "border-black/20"}`} onClick={() => plantAnalysis(`ev-${i}`, "evidence", item.title, item.body, item.source)}>
-                                {plantedIds[`ev-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
+                                {plantedIds[`ev-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><Share2 className="mr-1 h-3 w-3" /> Plant & Wire</>}
                               </Button>
                             </div>
                           </div>
@@ -938,7 +965,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                               <b className="mb-1 block font-display text-base text-black">{item.title}</b>
                               <p className="mb-3 text-xs leading-relaxed text-black/60">{item.body}</p>
                               <Button size="sm" variant="ghost" className={`h-8 self-end rounded-md text-[10px] font-bold uppercase tracking-wider ${plantedIds[`hyp-${i}`] ? "text-black bg-black/5" : "text-black/50 hover:text-black hover:bg-black/5"}`} onClick={() => plantAnalysis(`hyp-${i}`, "hypothesis", item.title, item.body)}>
-                                {plantedIds[`hyp-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
+                                {plantedIds[`hyp-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><Share2 className="mr-1 h-3 w-3" /> Plant & Wire</>}
                               </Button>
                             </div>
                           ))}
@@ -952,7 +979,7 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
                               <b className="mb-1 block font-display text-base text-[#C24A35]">{item.title}</b>
                               <p className="mb-3 text-xs leading-relaxed text-black/60">{item.body}</p>
                               <Button size="sm" variant="ghost" className={`h-8 self-end rounded-md text-[10px] font-bold uppercase tracking-wider ${plantedIds[`q-${i}`] ? "text-[#C24A35] bg-[#C24A35]/10" : "text-[#C24A35] hover:bg-[#C24A35]/10"}`} onClick={() => plantAnalysis(`q-${i}`, "question", item.title, item.body)}>
-                                {plantedIds[`q-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><MapPin className="mr-1 h-3 w-3" /> Plant</>}
+                                {plantedIds[`q-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><Share2 className="mr-1 h-3 w-3" /> Plant & Wire</>}
                               </Button>
                             </div>
                           ))}
