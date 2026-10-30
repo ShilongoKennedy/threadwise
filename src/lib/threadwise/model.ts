@@ -1,4 +1,4 @@
-export const NODE_TYPES = ["idea", "note", "question", "experiment", "action", "portal"] as const;
+export const NODE_TYPES = ["idea", "note", "question", "experiment", "action", "portal", "dossier"] as const;
 export type ThreadNodeType = (typeof NODE_TYPES)[number];
 
 export const EPISTEMIC = ["fact", "evidence", "assumption", "hypothesis", "unknown"] as const;
@@ -140,6 +140,15 @@ export const TYPE_INFO: Record<
     hint: "Open a dedicated child canvas",
     defaultEpistemic: "unknown",
     fields: [],
+  },
+  dossier: {
+    label: "Dossier",
+    hint: "Source document anchor for planted insights",
+    defaultEpistemic: "fact",
+    fields: [
+      { key: "source", label: "Source title", kind: "text" },
+      { key: "sourceUrl", label: "Source URL", kind: "text" },
+    ],
   },
 };
 

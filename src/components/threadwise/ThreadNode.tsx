@@ -4,6 +4,7 @@ import {
   Beaker,
   CheckSquare,
   DoorOpen,
+  FolderOpen,
   HelpCircle,
   Lightbulb,
   StickyNote,
@@ -30,6 +31,7 @@ export const TYPE_ICON: Record<ThreadNodeType, typeof Lightbulb> = {
   experiment: Beaker,
   action: CheckSquare,
   portal: DoorOpen,
+  dossier: FolderOpen,
 };
 
 export const TYPE_COLOR: Record<ThreadNodeType, string> = {
@@ -39,6 +41,7 @@ export const TYPE_COLOR: Record<ThreadNodeType, string> = {
   experiment: "var(--type-experiment)",
   action: "var(--type-action)",
   portal: "var(--foreground)",
+  dossier: "#8B6F47",
 };
 
 /** A small glyph that encodes how certain a card is — filled = known, hollow = assumed. */
@@ -82,12 +85,80 @@ export function EpistemicGlyph({ status, className }: { status: Epistemic; class
 
 const STATUS_DONE = new Set(["done", "complete", "completed", "answered"]);
 
+const isUrl = (v: string | undefined) => !!v && /^https?:\/\//.test(v);
+
+function focusInLab(source: string) {
+  window.dispatchEvent(new CustomEvent("threadwise:focus-source", { detail: { source } }));
+}
+
+/** The Source Dossier anchor: a distinct manila-folder visual that pins one document to the canvas. */
+function DossierCard({ id, data, selected }: NodeProps<TNode>) {
+  const sourceTitle = data.meta["source"] || data.title || "Untitled source";
+  const hasUrl = isUrl(data.meta["sourceUrl"]) || isUrl(data.meta["source"]);
+  const linkedCount = useThread((s) => s.edges.filter((e) => e.source === id || e.target === id).length);
+  return (
+    <div className={cn("tw-dossier group relative w-[272px]", selected && "is-selected")}>
+      <Handle type="target" position={Position.Left} className="tw-handle" />
+      <div
+        className="absolute -top-2 left-3 z-10 flex items-center gap-1.5 rounded-t-md border border-b-0 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.16em]"
+        style={{
+          background: "var(--card)",
+          borderColor: "#8B6F47",
+          color: "#8B6F47",
+        }}
+      >
+        <FolderOpen className="h-3 w-3" />
+        Source dossier
+      </div>
+      <div
+        className="mt-4 rounded-[14px] border bg-card p-4 text-card-foreground shadow-sm"
+        style={{ borderColor: "#8B6F47" }}
+      >
+        <div className="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+          <span>Anchor</span>
+          <span style={{ color: "#8B6F47" }}>● locked</span>
+        </div>
+        <div className="font-display text-[17px] font-bold leading-[1.2]">{sourceTitle}</div>
+        {data.body && data.body !== "Source document anchor." && (
+          <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">{data.body}</p>
+        )}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-dashed pt-2.5">
+          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+            {linkedCount} linked · {hasUrl ? "web" : "indexed"}
+          </span>
+          <button
+            type="button"
+            className="nodrag nopan rounded-md border px-2 py-1 text-[10px] font-bold uppercase tracking-wider hover:bg-muted"
+            style={{ borderColor: "#8B6F47", color: "#8B6F47" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              focusInLab(sourceTitle);
+            }}
+          >
+            ↗ Return to Lab
+          </button>
+        </div>
+      </div>
+      <Handle type="source" position={Position.Right} className="tw-handle" />
+    </div>
+  );
+}
+
 export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
   const landed = useThread((s) => s.landed === id);
+  const linkAnchor = useThread((s) => s.linkAnchor === id);
   const zoom = useStore((s) => s.transform[2]);
+  const noteHeight = useThread(
+    (s) => s.nodes.find((n) => n.id === id)?.height ?? NOTE_DEFAULT_HEIGHT,
+  );
+
+  // Dossier renders its own compact folder card and never uses the standard card chrome.
+  if (data.kind === "dossier") {
+    return <DossierCard id={id} data={data} selected={selected} width={0} height={0} dragging={false} zIndex={0} isConnectable={true} />;
+  }
+
   const lift = groundedLift(data);
   const clamp = (v: number) => Math.max(0, Math.min(1, v));
-  // Continuous detail: every layer is a function of zoom, never a hard switch.
   const full = clamp((zoom - 0.36) / 0.24);
   const label = clamp((zoom - 0.16) / 0.12);
   const unfold = clamp((zoom - 1.05) / 0.35);
@@ -98,21 +169,17 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
   const customHex = isCustomColor(data.color) ? data.color : undefined;
   const custom = customHex !== undefined;
   const ink = customHex ? paperInk(customHex) : undefined;
-  // On a custom card color, soften the type tint toward the ink so labels stay readable.
   const color = custom
     ? `color-mix(in oklab, ${TYPE_COLOR[data.kind]} 60%, ${ink})`
     : TYPE_COLOR[data.kind];
-  const noteHeight = useThread(
-    (s) => s.nodes.find((n) => n.id === id)?.height ?? NOTE_DEFAULT_HEIGHT,
-  );
   const tall = data.kind === "note";
   const status = data.meta["status"];
   const due = data.meta["dueDate"];
-  // Older local canvases predate the lenses field. Keep those saved ideas readable
-  // instead of letting a browser-stored shape crash the whole canvas on startup.
   const lenses = data.lenses ?? { scarcity: 0, difficulty: 0, risk: 0 };
   const lensed = LENSES.some((l) => lenses[l]);
   const riskPulse = lenses.risk >= 3;
+  const source = data.meta["source"];
+  const sourceIsUrl = isUrl(source);
   return (
     <div
       className={cn(
@@ -121,7 +188,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
         lift >= 0.6 && "is-floating",
         lift === 0 && "is-grounded",
         selected && "is-focus-ring",
-        useThread((s) => s.linkAnchor === id) && "is-link-anchor",
+        linkAnchor && "is-link-anchor",
         selected && "is-selected",
         landed && "is-landed",
         data.meta["reviewRequired"] && "is-fault",
@@ -272,16 +339,28 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
             <ArrowUpRight />
           </Button>
         )}
-        {data.kind === "note" && /^https?:\/\//.test(data.meta["source"] ?? "") && (
+        {data.kind === "note" && sourceIsUrl && (
           <a
             className="nodrag nopan mt-2 block truncate font-mono text-[10px] text-accent-ink underline"
-            href={data.meta["source"]}
+            href={source}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
           >
-            {data.meta["sourceTitle"] || data.meta["source"]}
+            {data.meta["sourceTitle"] || source}
           </a>
+        )}
+        {source && !sourceIsUrl && (
+          <button
+            type="button"
+            className="nodrag nopan mt-2 inline-flex items-center gap-1 rounded-md border border-dashed px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-foreground"
+            onClick={(e) => {
+              e.stopPropagation();
+              focusInLab(source);
+            }}
+          >
+            <ArrowUpRight className="h-2.5 w-2.5" /> Return to Lab
+          </button>
         )}
         {extras.length > 0 && (
           <div className="tw-unfold" aria-hidden={unfold === 0}>

@@ -112,7 +112,13 @@ const CinematicLoader = ({ mode }: { mode: "forensic" | "cross-source" }) => {
   );
 };
 
-export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Corpus; update: (corpus: Corpus) => void; onClose: () => void }) {
+export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onFocusHandled }: {
+  corpus?: Corpus;
+  update: (corpus: Corpus) => void;
+  onClose: () => void;
+  focusSource?: string | null;
+  onFocusHandled?: () => void;
+}) {
   const corpus = stored ?? emptyCorpus();
   const s = useThread();
   
@@ -147,6 +153,16 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
   const [isSearchingArchive, setIsSearchingArchive] = useState(false);
   const [archiveResult, setArchiveResult] = useState<any>(null);
   const [archiveError, setArchiveError] = useState("");
+
+  useEffect(() => {
+    if (!focusSource) return;
+    const doc = (stored ?? emptyCorpus()).docs.find((d) => d.title === focusSource);
+    if (doc) {
+      setActiveId(doc.id);
+      setView("read");
+    }
+    onFocusHandled?.();
+  }, [focusSource]);
 
   const docs = [...corpus.docs].sort((a, b) => a.date.localeCompare(b.date));
   const active = docs.find((doc) => doc.id === activeId) ?? docs[0];
@@ -273,11 +289,15 @@ export function DiscourseLab({ corpus: stored, update, onClose }: { corpus?: Cor
     const nodeKind = kind === "evidence" ? "note" : kind === "hypothesis" ? "idea" : "question";
     const epistemic = kind === "evidence" ? "evidence" : kind === "hypothesis" ? "hypothesis" : "unknown";
     
-    // 1. Create / Find Dossier Anchor
-    let dossierId = useThread.getState().nodes.find(n => n.data.meta.dossier === "true" && n.data.meta.source === sourceTitle)?.id;
+    // 1. Create / Find Dossier Anchor (recognizes both new dossier nodes and legacy notes)
+    let dossierId = useThread.getState().nodes.find(
+      (n) =>
+        (n.data.kind === "dossier" || n.data.meta.dossier === "true") &&
+        n.data.meta.source === sourceTitle
+    )?.id;
     if (!dossierId) {
-        dossierId = s.addNode("note", { x: -450, y: 100 + useThread.getState().nodes.length * 200 });
-        s.updateNode(dossierId, { title: `DOSSIER: ${sourceTitle}`, body: "Source document anchor.", epistemic: "fact", meta: { dossier: "true", source: sourceTitle } });
+        dossierId = s.addNode("dossier", { x: -450, y: 100 + useThread.getState().nodes.length * 200 });
+        s.updateNode(dossierId, { title: sourceTitle, body: "Source document anchor.", epistemic: "fact", meta: { source: sourceTitle } });
     }
 
     // 2. Create Insight
