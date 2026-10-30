@@ -282,7 +282,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       
-      // FIX: Safely ignore shortcuts if typing in a field or if a dialog is open
       if (
         presentation || 
         t.closest('[role="dialog"]') || 
@@ -818,7 +817,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
             aria-label="Add to canvas"
           >
             {!dockOpen ? <Button variant="ghost" disabled={replay} onClick={() => setDockOpen(true)} className="tw-press flex h-11 items-center gap-2 rounded-xl px-4 text-[13px] text-dock-foreground"><Plus className="h-4 w-4" />Add to canvas</Button> : <>
-            {NODE_TYPES.map((k, i) => {
+            {NODE_TYPES.filter(k => k !== "dossier").map((k, i) => {
               const Icon = TYPE_ICON[k];
               return (
                 <Button

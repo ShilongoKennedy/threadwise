@@ -1,4 +1,4 @@
-export const NODE_TYPES = ["idea", "note", "question", "experiment", "action", "portal", "dossier"] as const;
+export const NODE_TYPES = ["idea", "note", "question", "experiment", "action", "portal", "dossier", "omission"] as const;
 export type ThreadNodeType = (typeof NODE_TYPES)[number];
 
 export const EPISTEMIC = ["fact", "evidence", "assumption", "hypothesis", "unknown"] as const;
@@ -148,6 +148,14 @@ export const TYPE_INFO: Record<
     fields: [
       { key: "source", label: "Source title", kind: "text" },
       { key: "sourceUrl", label: "Source URL", kind: "text" },
+    ],
+  },
+  omission: {
+    label: "Omission",
+    hint: "The Dog That Didn't Bark - a blind spot, missing context, or hidden truth",
+    defaultEpistemic: "unknown",
+    fields: [
+      { key: "status", label: "Status", kind: "select", options: ["open", "filled", "dismissed"] },
     ],
   },
 };

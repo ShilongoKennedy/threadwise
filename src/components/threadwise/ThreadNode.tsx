@@ -4,6 +4,7 @@ import {
   Beaker,
   CheckSquare,
   DoorOpen,
+  EyeOff,
   FolderOpen,
   HelpCircle,
   Lightbulb,
@@ -32,6 +33,7 @@ export const TYPE_ICON: Record<ThreadNodeType, typeof Lightbulb> = {
   action: CheckSquare,
   portal: DoorOpen,
   dossier: FolderOpen,
+  omission: EyeOff,
 };
 
 export const TYPE_COLOR: Record<ThreadNodeType, string> = {
@@ -42,6 +44,7 @@ export const TYPE_COLOR: Record<ThreadNodeType, string> = {
   action: "var(--type-action)",
   portal: "var(--foreground)",
   dossier: "#8B6F47",
+  omission: "#8B1A1A", // Dark crimson for blind spots
 };
 
 /** A small glyph that encodes how certain a card is — filled = known, hollow = assumed. */
@@ -180,6 +183,10 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
   const riskPulse = lenses.risk >= 3;
   const source = data.meta["source"];
   const sourceIsUrl = isUrl(source);
+  
+  // The Omission gets a distinct dashed border and slightly darker background
+  const isOmission = data.kind === "omission";
+
   return (
     <div
       className={cn(
@@ -204,13 +211,17 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
         ["--full" as string]: full,
         ["--label" as string]: label,
         ["--unfold" as string]: unfold,
-        ...(custom
+        ...(custom && !isOmission
           ? {
               ["--paper-tone" as string]: data.color,
               ["--paper-ink" as string]: ink,
               ["--paper-muted" as string]: `color-mix(in oklab, ${ink} 62%, ${data.color})`,
             }
           : {}),
+        ...(isOmission ? {
+          border: "2px dashed #8B1A1A",
+          background: "linear-gradient(to bottom right, #FFFFFF, #FFF5F5)",
+        } : {})
       }}
       onPointerMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
@@ -220,7 +231,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
       }}
       onPointerLeave={(e) => e.currentTarget.style.setProperty("--near", "0")}
       data-lift={lift}
-      data-paper={custom ? "custom" : paperColor(data.color)}
+      data-paper={custom && !isOmission ? "custom" : paperColor(data.color)}
     >
       {data.kind === "note" && (
         <Button
@@ -268,7 +279,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
           <span className="tw-note-grip-pill" aria-hidden />
         </Button>
       )}
-      {lift >= 0.6 && <span className="tw-deckle" aria-hidden />}
+      {lift >= 0.6 && !isOmission && <span className="tw-deckle" aria-hidden />}
       <Handle type="target" position={Position.Left} className="tw-handle" />
       {data.meta["reactions"] && (
         <div className="tw-reaction-stamps" aria-label="Card reactions">
@@ -305,6 +316,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
           className={cn(
             "font-display text-[17px] leading-[1.25]",
             status && STATUS_DONE.has(status) && "text-muted-foreground",
+            isOmission && "text-[#8B1A1A] font-bold"
           )}
         >
           {data.title}
@@ -318,6 +330,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
             className={cn(
               "tw-body mt-1.5 text-[12.5px] leading-relaxed text-muted-foreground",
               tall && "nodrag nopan nowheel",
+              isOmission && "text-[#8B1A1A]/80"
             )}
             onClick={tall ? (e) => e.stopPropagation() : undefined}
           >
@@ -447,7 +460,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
           <EpistemicGlyph status={data.epistemic} className="h-full w-full" />
         </span>
         <span className="tw-compact-text">
-          <span className="block truncate font-display text-xl leading-tight">{data.title}</span>
+          <span className={cn("block truncate font-display text-xl leading-tight", isOmission && "text-[#8B1A1A]")}>{data.title}</span>
           <span className="tw-pill font-mono text-[10px] uppercase tracking-[0.12em]">
             {status ?? data.epistemic}
           </span>

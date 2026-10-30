@@ -161,7 +161,6 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
       setActiveId(doc.id);
       setView("read");
     } else {
-      // If the source is not a manually indexed document, it belongs to Cross-Source.
       setView("investigate");
     }
     onFocusHandled?.();
@@ -288,8 +287,8 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
     toast.success("Report exported successfully");
   };
   
-  const plantToCanvas = async (title: string, body: string, kind: "evidence" | "hypothesis" | "question", sourceTitle: string) => {
-    const nodeKind = kind === "evidence" ? "note" : kind === "hypothesis" ? "idea" : "question";
+  const plantToCanvas = async (title: string, body: string, kind: "evidence" | "hypothesis" | "question" | "omission", sourceTitle: string) => {
+    const nodeKind = kind === "evidence" ? "note" : kind === "hypothesis" ? "idea" : kind === "omission" ? "omission" : "question";
     const epistemic = kind === "evidence" ? "evidence" : kind === "hypothesis" ? "hypothesis" : "unknown";
     
     // 1. Create / Find Dossier Anchor (recognizes both new dossier nodes and legacy notes)
@@ -346,7 +345,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
     void plantToCanvas(nodeTitle, nodeBody, "evidence", doc.title);
   };
 
-  const plantAnalysis = (id: string, kind: "evidence" | "hypothesis" | "question", title: string, body: string, source?: string) => {
+  const plantAnalysis = (id: string, kind: "evidence" | "hypothesis" | "question" | "omission", title: string, body: string, source?: string) => {
     setPlantedIds(prev => ({ ...prev, [id]: true }));
     void plantToCanvas(title, body, kind, source || "Cross-Source Investigation");
   };
@@ -831,7 +830,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                                 <HelpCircle className="h-3 w-3 text-[#C24A35] shrink-0 mt-0.5" />
                                 <p className="text-xs text-black/80 leading-relaxed">{text}</p>
                               </div>
-                              <Button size="sm" variant="ghost" className="h-7 self-end text-[9px] uppercase tracking-wider text-[#C24A35] hover:bg-[#C24A35]/10" onClick={(e) => { e.stopPropagation(); plantAnalysis(`q-${i}`, "question", "Missing Context", text, active.title); }}>
+                              <Button size="sm" variant="ghost" className="h-7 self-end text-[9px] uppercase tracking-wider text-[#C24A35] hover:bg-[#C24A35]/10" onClick={(e) => { e.stopPropagation(); plantAnalysis(`q-${i}`, "omission", "Missing Context", text, active.title); }}>
                                 <Share2 className="mr-1 h-3 w-3" /> Plant & Wire
                               </Button>
                             </div>
@@ -1001,7 +1000,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                             <div key={i} className="flex flex-col rounded-lg border border-[#C24A35]/20 bg-[#FDF6F4] p-5">
                               <b className="mb-1 block font-display text-base text-[#C24A35]">{item.title}</b>
                               <p className="mb-3 text-xs leading-relaxed text-black/60">{item.body}</p>
-                              <Button size="sm" variant="ghost" className={`h-8 self-end rounded-md text-[10px] font-bold uppercase tracking-wider ${plantedIds[`q-${i}`] ? "text-[#C24A35] bg-[#C24A35]/10" : "text-[#C24A35] hover:bg-[#C24A35]/10"}`} onClick={() => plantAnalysis(`q-${i}`, "question", item.title, item.body)}>
+                              <Button size="sm" variant="ghost" className={`h-8 self-end rounded-md text-[10px] font-bold uppercase tracking-wider ${plantedIds[`q-${i}`] ? "text-[#C24A35] bg-[#C24A35]/10" : "text-[#C24A35] hover:bg-[#C24A35]/10"}`} onClick={() => plantAnalysis(`q-${i}`, "omission", item.title, item.body)}>
                                 {plantedIds[`q-${i}`] ? <><Check className="mr-1 h-3 w-3" /> Planted</> : <><Share2 className="mr-1 h-3 w-3" /> Plant & Wire</>}
                               </Button>
                             </div>
