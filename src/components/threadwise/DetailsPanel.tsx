@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { BookOpen, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
   changeKind,
@@ -53,26 +55,23 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function NodeForm({ id }: { id: string }) {
   const { nodes, edges, updateNode, deleteNode, select } = useThread();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
   const node = nodes.find((n) => n.id === id);
   if (!node) return null;
   const d = node.data;
   const lenses = d.lenses ?? { scarcity: 0, difficulty: 0, risk: 0 };
   const links = edges.filter((e) => e.source === id || e.target === id);
   const source = d.meta["source"];
-  
-  // THE CRITICAL CHECK:
   const isDossier = d.kind === "dossier";
   const sourceIsUrl = !!source && /^https?:\/\//.test(source);
 
-  const onDelete = () => {
+  const onDeleteClick = () => {
     if (isDossier) {
-      const linked = links.length;
-      const msg = linked > 0
-        ? `Delete this source dossier? ${linked} linked card${linked === 1 ? "" : "s"} will be orphaned.`
-        : "Delete this source dossier?";
-      if (!confirm(msg)) return;
+      setShowDeleteConfirm(true);
+    } else {
+      deleteNode(id);
     }
-    deleteNode(id);
   };
 
   const openInLab = () => {
@@ -83,7 +82,6 @@ function NodeForm({ id }: { id: string }) {
 
   return (
     <div className="space-y-5">
-      {/* Type Switcher - Hidden for Dossiers */}
       {!isDossier && (
         <Field label="Type">
           <div className="grid grid-cols-5 gap-1">
@@ -110,7 +108,6 @@ function NodeForm({ id }: { id: string }) {
         </Field>
       )}
 
-      {/* Dossier warning banner */}
       {isDossier && (
         <div className="rounded-lg border border-dashed px-3 py-2 text-[11px] text-muted-foreground" style={{ borderColor: "#8B6F47" }}>
           <span className="font-mono uppercase tracking-wider" style={{ color: "#8B6F47" }}>Anchored source</span>
@@ -128,7 +125,6 @@ function NodeForm({ id }: { id: string }) {
         <Textarea rows={4} value={d.body} placeholder="What do you know, notice, or wonder?" onChange={(e) => updateNode(id, { body: e.target.value })} />
       </Field>
 
-      {/* Color, Epistemic, and Lenses - Hidden for Dossiers */}
       {!isDossier && (
         <>
           <Field label="Card color"><ColorPicker value={d.color} label="Card color" allowCustom onChange={(color) => updateNode(id, { color })} /></Field>
@@ -220,9 +216,28 @@ function NodeForm({ id }: { id: string }) {
         </div>
       )}
 
-      <Button variant="ghost" className="w-full text-destructive hover:text-destructive" onClick={onDelete}>
+      <Button variant="ghost" className="w-full text-destructive hover:text-destructive" onClick={onDeleteClick}>
         <Trash2 className="mr-2 h-4 w-4" /> Delete {isDossier ? "dossier" : "node"}
       </Button>
+
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">Delete Source Dossier?</DialogTitle>
+            <DialogDescription className="text-sm leading-relaxed mt-2">
+              {links.length > 0
+                ? `This will orphan ${links.length} linked card${links.length === 1 ? "" : "s"}. The cards will remain on the canvas but lose their source anchor.`
+                : "This will permanently remove the source anchor from the canvas."}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6 flex gap-2 sm:justify-end">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={() => { deleteNode(id); setShowDeleteConfirm(false); }}>
+              <Trash2 className="mr-2 h-4 w-4" /> Delete Dossier
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

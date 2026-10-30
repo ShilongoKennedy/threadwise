@@ -160,6 +160,9 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
     if (doc) {
       setActiveId(doc.id);
       setView("read");
+    } else {
+      // If the source is not a manually indexed document, it belongs to Cross-Source.
+      setView("investigate");
     }
     onFocusHandled?.();
   }, [focusSource]);
