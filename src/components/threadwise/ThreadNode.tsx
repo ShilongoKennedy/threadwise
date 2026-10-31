@@ -99,23 +99,48 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
   const sourceTitle = data.meta["source"] || data.title || "Untitled source";
   const hasUrl = isUrl(data.meta["sourceUrl"]) || isUrl(data.meta["source"]);
   const linkedCount = useThread((s) => s.edges.filter((e) => e.source === id || e.target === id).length);
+  
+  // 3D Tilt handlers for the Dossier
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    e.currentTarget.style.setProperty("--rx", `${(py - 0.5) * -8}deg`);
+    e.currentTarget.style.setProperty("--ry", `${(px - 0.5) * 8}deg`);
+    e.currentTarget.style.setProperty("--near", "1");
+  };
+  const onPointerLeave = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.style.setProperty("--rx", "0deg");
+    e.currentTarget.style.setProperty("--ry", "0deg");
+    e.currentTarget.style.setProperty("--near", "0");
+  };
+
   return (
-    <div className={cn("tw-dossier group relative w-[272px]", selected && "is-selected")}>
+    <div 
+      className={cn("tw-dossier group relative w-[272px]", selected && "is-selected")}
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
+      style={{ perspective: "1000px" }}
+    >
       <Handle type="target" position={Position.Left} className="tw-handle" />
       <div
-        className="absolute -top-2 left-3 z-10 flex items-center gap-1.5 rounded-t-md border border-b-0 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.16em]"
+        className="absolute -top-2 left-3 z-10 flex items-center gap-1.5 rounded-t-md border border-b-0 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.16em] transition-transform"
         style={{
           background: "var(--card)",
           borderColor: "#8B6F47",
           color: "#8B6F47",
+          transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(24px)",
         }}
       >
         <FolderOpen className="h-3 w-3" />
         Source dossier
       </div>
       <div
-        className="mt-4 rounded-[14px] border bg-card p-4 text-card-foreground shadow-sm"
-        style={{ borderColor: "#8B6F47" }}
+        className="mt-4 rounded-[14px] border bg-card p-4 text-card-foreground shadow-sm transition-transform"
+        style={{ 
+          borderColor: "#8B6F47",
+          transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(12px)"
+        }}
       >
         <div className="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
           <span>Anchor</span>
@@ -211,6 +236,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
         ["--full" as string]: full,
         ["--label" as string]: label,
         ["--unfold" as string]: unfold,
+        perspective: "1200px",
         ...(custom && !isOmission
           ? {
               ["--paper-tone" as string]: data.color,
@@ -225,11 +251,22 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
       }}
       onPointerMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty("--hx", `${((e.clientX - r.left) / r.width) * 100}%`);
-        e.currentTarget.style.setProperty("--hy", `${((e.clientY - r.top) / r.height) * 100}%`);
+        const px = (e.clientX - r.left) / r.width;
+        const py = (e.clientY - r.top) / r.height;
+        
+        e.currentTarget.style.setProperty("--hx", `${px * 100}%`);
+        e.currentTarget.style.setProperty("--hy", `${py * 100}%`);
+        
+        // 3D Tilt: Max 6 degrees
+        e.currentTarget.style.setProperty("--rx", `${(py - 0.5) * -6}deg`);
+        e.currentTarget.style.setProperty("--ry", `${(px - 0.5) * 6}deg`);
         e.currentTarget.style.setProperty("--near", "1");
       }}
-      onPointerLeave={(e) => e.currentTarget.style.setProperty("--near", "0")}
+      onPointerLeave={(e) => {
+        e.currentTarget.style.setProperty("--rx", "0deg");
+        e.currentTarget.style.setProperty("--ry", "0deg");
+        e.currentTarget.style.setProperty("--near", "0");
+      }}
       data-lift={lift}
       data-paper={custom && !isOmission ? "custom" : paperColor(data.color)}
     >

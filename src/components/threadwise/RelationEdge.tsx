@@ -47,10 +47,15 @@ export function RelationEdge(p: EdgeProps<TEdge>) {
   const dist = Math.hypot(tx - sx, ty - sy);
   const sag = cordSag(dist, spring.tension);
   const reach = Math.min(160, Math.max(40, dist * 0.35));
+  
   // Ports leave horizontally; gravity pulls the belly of the cord down.
   const c1x = sx + reach + spring.ox * 0.6, c1y = sy + sag + spring.oy * 0.6;
   const c2x = tx - reach + spring.ox * 0.6, c2y = ty + sag + spring.oy * 0.6;
   const path = `M${sx},${sy} C${c1x},${c1y} ${c2x},${c2y} ${tx},${ty}`;
+  
+  // Offset path for the 3D shadow
+  const shadowPath = `M${sx},${sy + 2} C${c1x},${c1y + 4} ${c2x},${c2y + 4} ${tx},${ty + 2}`;
+  
   const lx = 0.125 * sx + 0.375 * c1x + 0.375 * c2x + 0.125 * tx;
   const ly = 0.125 * sy + 0.375 * c1y + 0.375 * c2y + 0.125 * ty;
   const rel = p.data?.relation ?? "leads_to";
@@ -60,8 +65,21 @@ export function RelationEdge(p: EdgeProps<TEdge>) {
   const provenance = !!p.data?.provenance;
   const fault = !!p.data?.fault;
   const width = (provenance ? 2.5 : traced || fault ? 2 : p.selected ? 1.75 : 1.1) * (1 - spring.tension * 0.35);
+
   return (
     <>
+      {/* 3D Shadow Path */}
+      {!ghost && (
+        <path 
+          d={shadowPath} 
+          fill="none" 
+          stroke="var(--foreground)" 
+          strokeWidth={width + 1} 
+          opacity={0.05} 
+          style={{ pointerEvents: "none" }}
+        />
+      )}
+
       <BaseEdge
         className={cn("tw-cord", traced && "tw-thread-traced", provenance && "tw-provenance", fault && "tw-fault-thread", snapping && "tw-ink-snap")}
         id={p.id}

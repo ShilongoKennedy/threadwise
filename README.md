@@ -1,7 +1,13 @@
-# Threadwise — local development
+# Threadwise — Spatial Intelligence OS
 
 Threadwise runs locally as a TanStack Start / Vite app. Supabase supplies
-accounts and cloud sync; DeepSeek powers all AI features.
+accounts and cloud sync; DeepSeek, Gemini, and OpenAI power all AI features.
+
+## The Architecture
+Threadwise is an AI-powered intelligence machine consisting of:
+1. **The Discourse Lab (Reading Room):** Ingests documents/URLs and uses AI to perform forensic linguistics, find logical fallacies, run Cross-Source synthesis, and identify "Blind Spots" (The Dog That Didn't Bark).
+2. **The Canvas (War Room):** A React Flow spatial graph. It handles smart-wiring (auto-connecting insights), semantic auto-layout (`intelligentTidy`), and AI Red Teaming. Sources are anchored as "Dossier" nodes, and blind spots as dashed "Omission" nodes.
+3. **Briefing Mode:** A cinematic presentation tool that glides the camera across the canvas, dimming the background and showing the active node's intelligence in a frosted-glass side panel.
 
 ## Start locally
 
@@ -16,11 +22,12 @@ accounts and cloud sync; DeepSeek powers all AI features.
 Use `bun run build` for a production build and `bun run preview` to serve it
 locally. Never use `VITE_DEEPSEEK_API_KEY`: browser variables are public.
 
-## DeepSeek configuration
+## AI Configuration
 
 The default is `deepseek-chat`. Set `DEEPSEEK_MODEL` to choose a different
 DeepSeek chat model. The app calls DeepSeek's OpenAI-compatible
-`https://api.deepseek.com/v1` endpoint from server routes only.
+`https://api.deepseek.com/v1` endpoint from server routes only. 
+Gemini and OpenAI are used for specific multi-model consensus and cross-source tasks.
 
 ## Google sign-in and cloud sync
 

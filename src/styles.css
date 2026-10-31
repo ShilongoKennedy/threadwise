@@ -4,20 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
-
 @theme inline {
   --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", Georgia, serif;
@@ -165,7 +151,6 @@
   }
 }
 
-
 body { font-feature-settings: "ss01", "cv11"; -webkit-font-smoothing: antialiased; }
 body::after {
   content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100; opacity: 0.35; mix-blend-mode: multiply;
@@ -173,109 +158,49 @@ body::after {
 }
 ::selection { background: color-mix(in oklab, var(--accent-ink) 25%, transparent); }
 
+/* ---- CANVAS & 3D TILT ---- */
 .react-flow { position: relative; z-index: 1; --xy-background-color: transparent; --xy-edge-stroke: var(--edge); }
+.react-flow__pane { cursor: crosshair; }
+.react-flow__node { perspective: 1200px; transition: opacity .25s ease; }
 .tw-spatial-atmosphere { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: radial-gradient(ellipse 60% 44% at 54% 46%, color-mix(in oklab, var(--brass) 10%, transparent), transparent 72%); }
 .tw-spatial-atmosphere canvas { display: block; width: 100% !important; height: 100% !important; opacity: .9; mix-blend-mode: multiply; }
 @media (prefers-reduced-motion: reduce) { .tw-spatial-atmosphere canvas { opacity: .46; } }
 .tw-spatial-atmosphere { background: radial-gradient(ellipse 50% 47% at 52% 48%, color-mix(in oklab, #a879ff 15%, transparent), transparent 72%), radial-gradient(ellipse 35% 32% at 72% 28%, color-mix(in oklab, var(--accent-ink) 14%, transparent), transparent 70%); }
 .tw-spatial-atmosphere canvas { filter: saturate(1.35) hue-rotate(8deg); }
-.react-flow__edge path.react-flow__edge-path { filter: drop-shadow(0 0 4px color-mix(in oklab, var(--accent-ink) 22%, transparent)); }
 
-/* Thought portal: a temporary close reading of one idea, never a second document. */
-.tw-thought-portal { position: absolute; z-index: 30; top: 50%; left: 50%; width: min(620px, calc(100vw - 32px)); max-height: min(720px, calc(100dvh - 48px)); overflow: auto; border: 1px solid color-mix(in oklab, var(--border-strong) 85%, white); border-radius: 24px; background: color-mix(in oklab, var(--card) 94%, white); box-shadow: 0 40px 110px -44px oklch(.18 .03 45 / .72), 0 0 0 9999px oklch(.12 .02 45 / .34); backdrop-filter: blur(18px); transform: translate(-50%, -50%); animation: tw-portal-in .32s cubic-bezier(.2,.9,.2,1); }
-.tw-thought-portal header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 17px 20px 10px; background: linear-gradient(var(--card) 75%, transparent); }.tw-thought-portal header button { border-radius: 999px; }.tw-portal-kicker { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted-foreground); }.tw-portal-kicker svg { width: 16px; height: 16px; color: var(--accent-ink); }.tw-portal-kicker span { display: grid; width: 18px; height: 18px; place-items: center; border: 1px solid var(--border); border-radius: 5px; font-size: 9px; }
-.tw-portal-core { position: relative; margin: 4px 20px 15px; padding: 25px 28px 27px; overflow: hidden; border: 1px solid color-mix(in oklab, var(--portal-tone) 38%, var(--border)); border-radius: 17px; background: linear-gradient(135deg, color-mix(in oklab, var(--portal-tone) 12%, var(--card)), var(--card) 68%); }.tw-portal-core::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--portal-tone); }.tw-portal-type, .tw-portal-section-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: color-mix(in oklab, var(--portal-tone) 72%, var(--foreground)); }.tw-portal-core h2 { max-width: 15ch; margin: 10px 0 12px; font-family: var(--font-display); font-size: clamp(29px, 4.2vw, 46px); line-height: .98; letter-spacing: -.045em; }.tw-portal-core p { max-width: 58ch; margin: 0; color: var(--muted-foreground); font-size: 15px; line-height: 1.58; }
-.tw-portal-metrics { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0 20px 18px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }.tw-portal-metrics span { padding: 13px 10px; color: var(--muted-foreground); font-size: 11px; text-align: center; }.tw-portal-metrics span + span { border-left: 1px solid var(--border); }.tw-portal-metrics b { display: block; margin-bottom: 2px; color: var(--foreground); font-family: var(--font-display); font-size: 20px; font-weight: 500; }
-.tw-thought-portal section { padding: 0 20px 16px; }.tw-portal-section-title { margin: 0 0 8px; color: var(--muted-foreground); }.tw-portal-links { display: grid; gap: 7px; }.tw-portal-links button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 11px; border: 1px solid var(--border); border-radius: 11px; color: var(--foreground); text-align: left; transition: transform .18s, border-color .18s, background .18s; }.tw-portal-links button:hover { border-color: var(--border-strong); background: var(--muted); transform: translateX(3px); }.tw-portal-links i { width: 7px; height: 32px; border-radius: 999px; }.tw-portal-links span { display: grid; gap: 2px; font-family: var(--font-display); font-size: 15px; }.tw-portal-links small { color: var(--muted-foreground); font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }.tw-portal-empty { margin: 0; padding: 13px; border: 1px dashed var(--border-strong); border-radius: 11px; color: var(--muted-foreground); font-size: 13px; line-height: 1.45; }
-.tw-portal-next { padding-bottom: 20px !important; }.tw-portal-next > div:last-child { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }.tw-portal-next button { display: grid; justify-items: start; gap: 7px; min-height: 104px; padding: 12px; border: 1px solid var(--border); border-radius: 13px; color: var(--foreground); text-align: left; transition: transform .2s, background .2s, border-color .2s, box-shadow .2s; }.tw-portal-next button:hover { border-color: color-mix(in oklab, var(--accent-ink) 55%, var(--border)); background: color-mix(in oklab, var(--accent-ink) 8%, var(--card)); box-shadow: 0 12px 22px -19px oklch(.22 .02 45 / .7); transform: translateY(-3px); }.tw-portal-next b { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 8px; background: color-mix(in oklab, var(--accent-ink) 14%, var(--card)); color: var(--accent-ink); font-family: var(--font-display); font-size: 17px; font-weight: 500; }.tw-portal-next span { display: grid; gap: 3px; font-family: var(--font-display); font-size: 14px; line-height: 1; }.tw-portal-next small { color: var(--muted-foreground); font-family: var(--font-sans); font-size: 10px; line-height: 1.25; }
-.tw-thought-portal footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px 19px; border-top: 1px solid var(--border); }.tw-thought-portal footer button { border-radius: 10px; }.tw-thought-portal footer span { color: var(--muted-foreground); font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; text-align: right; }.tw-thought-portal-glow { position: absolute; width: 280px; height: 280px; top: -140px; right: -70px; border-radius: 999px; background: color-mix(in oklab, var(--accent-ink) 16%, transparent); filter: blur(34px); pointer-events: none; }
-@keyframes tw-portal-in { from { opacity: 0; transform: translate(-50%, -48%) scale(.97); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
-@media (max-width: 540px) { .tw-thought-portal { max-height: calc(100dvh - 24px); width: calc(100vw - 20px); border-radius: 19px; }.tw-portal-core { margin-inline: 13px; padding: 21px; }.tw-portal-metrics, .tw-thought-portal section { margin-inline: 13px; padding-inline: 0; }.tw-portal-next > div:last-child { grid-template-columns: 1fr; }.tw-portal-next button { grid-template-columns: 25px 1fr; align-items: center; min-height: 0; }.tw-thought-portal footer { padding-inline: 14px; }.tw-thought-portal footer span { display: none; } }
-
-/* Shared product language: every major switch is a physical, numbered choice rail. */
-.tw-choice-rail { display: inline-flex; border: 1px solid var(--border-strong) !important; border-radius: 15px !important; background: color-mix(in oklab, var(--muted) 50%, var(--card)) !important; box-shadow: inset 0 1px 0 oklch(1 0 0 / 30%), 0 10px 25px -23px oklch(.2 .02 50 / 70%); }
-.tw-choice-tab { position: relative; min-height: 42px; padding: 0 14px !important; border: 1px solid transparent !important; border-radius: 11px !important; background: transparent !important; color: var(--muted-foreground) !important; font-family: var(--font-display) !important; font-size: 15px !important; transition: background .2s, color .2s, border .2s, transform .2s, box-shadow .2s !important; }.tw-choice-tab:hover { color: var(--foreground) !important; }.tw-choice-tab[data-state="active"] { border-color: var(--foreground) !important; background: color-mix(in oklab, var(--card) 96%, white) !important; color: var(--foreground) !important; box-shadow: 0 2px 0 var(--foreground), 0 7px 18px -15px oklch(.2 .02 50 / .8) !important; transform: translateY(-1px); }
-.tw-workflow-card { position: relative; overflow: hidden; border-radius: 16px !important; background: linear-gradient(145deg, color-mix(in oklab, var(--card) 96%, white), var(--card)) !important; box-shadow: 0 12px 26px -24px oklch(.2 .02 50 / .7); transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s, border-color .25s; }.tw-workflow-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent-ink); opacity: .7; }.tw-workflow-card:hover { border-color: color-mix(in oklab, var(--accent-ink) 55%, var(--border)) !important; box-shadow: 0 20px 38px -26px oklch(.2 .02 50 / .7); transform: translateY(-4px); }.tw-workflow-card button { border-radius: 10px; box-shadow: 0 4px 11px -10px currentColor; }
-.tw-planning, .tw-library, .tw-account { border-radius: 22px !important; border-color: var(--border-strong) !important; background: color-mix(in oklab, var(--card) 96%, white) !important; box-shadow: 0 32px 80px -42px oklch(.18 .02 45 / .75) !important; }.tw-planning [role="dialog"] > button, .tw-library [role="dialog"] > button { border-radius: 999px; }.tw-studio-nav { gap: 4px; }.tw-studio-nav button { border-radius: 10px; }.tw-studio-nav button[data-state="active"], .tw-studio-nav button[aria-pressed="true"] { box-shadow: 0 2px 0 var(--foreground); }
-.react-flow__controls { box-shadow: var(--shadow-card); border-radius: 12px; overflow: hidden; background: var(--card); }
-.react-flow__controls-button { background: var(--card); border-color: var(--border) !important; color: var(--muted-foreground); width: 30px; height: 30px; }
-.react-flow__controls-button:hover { background: var(--muted); color: var(--foreground); }
-.react-flow__minimap { background: var(--card); box-shadow: var(--shadow-card); border-radius: 12px; overflow: hidden; }
-.react-flow__connectionline path { stroke: var(--accent-ink); stroke-width: 1.5; stroke-dasharray: 4 4; }
-
-.tw-card { box-shadow: var(--shadow-card); transition: box-shadow .25s ease, transform .25s cubic-bezier(.2,.8,.2,1); }
-.tw-card::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--card-tint); }
-.react-flow__node:hover .tw-card { box-shadow: var(--shadow-lift); }
-.tw-card.is-selected { box-shadow: 0 0 0 1.5px var(--foreground), 0 0 0 5px color-mix(in oklab, var(--card-tint) 18%, transparent), var(--shadow-lift); }
-.react-flow__node.dragging .tw-card { transform: rotate(-0.6deg) scale(1.015); box-shadow: var(--shadow-lift); }
-.tw-card { animation: tw-in .35s cubic-bezier(.2,.8,.2,1) both; }
-
-.tw-ghost { background: repeating-linear-gradient(135deg, color-mix(in oklab, var(--card) 70%, transparent) 0 8px, color-mix(in oklab, var(--card) 45%, transparent) 8px 16px); opacity: .8; backdrop-filter: blur(2px); animation: tw-breathe 3.2s ease-in-out infinite; }
-.tw-ghost:hover { opacity: 1; animation: none; }
-
-.tw-handle { width: 9px !important; height: 9px !important; background: var(--card) !important; border: 1.25px solid var(--edge) !important; opacity: 0; transition: opacity .2s, transform .2s, background .2s; }
-.react-flow__node:hover .tw-handle, .is-selected .tw-handle, .react-flow__handle.connectingfrom { opacity: 1; }
-.tw-handle:hover { background: var(--accent-ink) !important; border-color: var(--accent-ink) !important; transform: translateY(-50%) scale(1.35) !important; }
-
-.dock { background: var(--dock); color: var(--dock-foreground); box-shadow: 0 1px 0 oklch(1 0 0 / 8%) inset, 0 20px 40px -12px oklch(0.2 0.02 55 / 45%), 0 0 0 1px oklch(0.2 0.02 55 / 30%); }
-.tw-sheet { animation: tw-sheet .35s cubic-bezier(.2,.8,.2,1) both; }
-.tw-pop { animation: tw-in .2s cubic-bezier(.2,.8,.2,1) both; }
-.tw-rise { animation: tw-rise .45s cubic-bezier(.2,.8,.2,1) both; }
-
-@keyframes tw-in { from { opacity: 0; transform: scale(.96); } }
-@keyframes tw-rise { from { opacity: 0; transform: translateY(6px); } }
-@keyframes tw-sheet { from { opacity: 0; transform: translateY(8px) scale(.99); } }
-@keyframes tw-breathe { 50% { opacity: .55; } }
-@media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
-
-/* ---- Tactile interactions ---- */
-.react-flow__node { cursor: grab; }
-.react-flow__node.dragging { cursor: grabbing; }
-.tw-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: 0 0 0 0 var(--card-tint); opacity: 0; }
-.react-flow__node.dragging .tw-card { transform: rotate(-0.5deg) translateY(-2px) scale(1.012); box-shadow: 0 0 0 1px oklch(0.25 0.02 60 / 8%), 0 30px 50px -18px oklch(0.25 0.02 60 / 32%); }
-.tw-card.is-selected { transition: box-shadow .18s ease; }
-.tw-card.is-landed { animation: tw-land .6s cubic-bezier(.2,.9,.25,1.2) both; }
-.tw-card.is-landed::after { animation: tw-ring .9s ease-out; }
-.tw-ghost.is-accept { animation: tw-solidify .24s cubic-bezier(.4,0,.2,1) forwards; border-style: solid; }
-.tw-ghost.is-dismiss, .is-dismiss { animation: tw-dismiss .24s cubic-bezier(.4,0,1,1) forwards; }
-.tw-rise.is-accept { animation: tw-accept-row .24s ease forwards; }
-.tw-press { transition: transform .12s ease, background-color .15s, color .15s; -webkit-tap-highlight-color: transparent; }
-.tw-press:active { transform: scale(.94); }
-.tw-draw { stroke-dasharray: 80; stroke-dashoffset: 80; animation: tw-draw 1s .2s ease forwards; }
-.react-flow__edge:hover path.react-flow__edge-path { stroke: var(--foreground); }
-.react-flow__edge path.react-flow__edge-path { transition: stroke .15s, stroke-width .15s; }
-
-@keyframes tw-land { 0% { transform: scale(.97); } 60% { transform: scale(1.01); } }
-@keyframes tw-ring { 0% { opacity: .9; box-shadow: 0 0 0 0 var(--card-tint); } 100% { opacity: 0; box-shadow: 0 0 0 14px var(--card-tint); } }
-@keyframes tw-solidify { to { opacity: 1; background: var(--card); transform: scale(1.02); } }
-@keyframes tw-dismiss { to { opacity: 0; transform: scale(.94) translateY(4px); filter: blur(2px); } }
-@keyframes tw-accept-row { to { opacity: 0; transform: translateX(-12px); } }
-@keyframes tw-draw { to { stroke-dashoffset: 0; } }
-
-/* Touch: always-visible, larger handles; no hover-dependent affordances */
-@media (pointer: coarse) {
-  .tw-handle { opacity: 1; width: 18px !important; height: 18px !important; }
-  .tw-handle::after { content: ""; position: absolute; inset: -10px; }
-  .tw-ghost { animation: none; opacity: .9; }
+/* The physical card lift and tilt */
+.tw-card {
+  --lift: 0; --near: 0;
+  --off: calc(1px + var(--lift) * 16px + var(--near) * var(--lift) * 10px);
+  transform-style: preserve-3d;
+  isolation: isolate;
+  
+  /* Deep, reactive shadow */
+  box-shadow:
+    0 0 0 1px oklch(0.25 0.02 60 / calc(7% + (1 - var(--lift)) * 6%)),
+    calc(var(--lx, 0) * -1 * var(--off) * 0.6) calc(var(--off) * 0.5 + var(--ly, 0) * -1 * var(--off) * 0.4) calc(var(--off) * 1.6) calc(var(--off) * -0.6) oklch(0.25 0.02 60 / calc(6% + var(--lift) * 14%)),
+    calc(var(--lx, 0) * -1 * var(--off) * 1.4) calc(var(--off) * 1.5 + var(--ly, 0) * -1 * var(--off)) calc(var(--off) * 3.4) calc(var(--off) * -1.6) oklch(0.25 0.02 60 / calc(var(--lift) * 24%));
+  
+  /* 3D transform combining rotation, lift, and depth */
+  transform: 
+    rotateX(var(--rx, 0deg)) 
+    rotateY(var(--ry, 0deg)) 
+    translateY(calc(var(--lift) * -4px - var(--near) * var(--lift) * 6px))
+    translateZ(calc(var(--near) * var(--lift) * 20px));
+    
+  transition: box-shadow .35s ease, transform .4s cubic-bezier(.2,.8,.2,1);
+  
+  /* Dynamic light reflection */
+  background-image: radial-gradient(circle at var(--hx, 50%) var(--hy, 0%), color-mix(in oklab, var(--card) 80%, white) 0%, transparent 60%);
+  background-blend-mode: normal;
 }
-.dock { scrollbar-width: none; }
-.dock::-webkit-scrollbar { display: none; }
+.tw-card:not(:hover) { background-image: none; transition: box-shadow .35s ease, transform .4s cubic-bezier(.2,.8,.2,1); }
+.react-flow__node:active .tw-card {
+  transform: rotateX(0deg) rotateY(0deg) translateY(0) scale(0.97);
+  transition: transform 0.1s ease;
+}
 
-/* Semantic focus: translucent paper, never a dark spotlight. */
-.react-flow__node { transition: opacity .25s ease; }
-.react-flow__node.tw-fog { opacity: .16; }
-.react-flow__node.tw-fog:hover { opacity: .65; }
-.tw-focus-field .react-flow__node.tw-fog { opacity: .055; filter: blur(1.5px) saturate(.35); pointer-events: none; }.tw-focus-field .react-flow__edge:not(:has(.tw-thread-traced)) { opacity: .1; }.tw-focus-field .tw-desk-chrome, .tw-focus-field .tw-studio-launch, .tw-focus-field .tw-planning-launch, .tw-focus-field .dock, .tw-focus-field .react-flow__controls, .tw-focus-field .react-flow__minimap { opacity: 0; pointer-events: none; transition: opacity .25s; }.tw-focus-field:hover .tw-desk-chrome, .tw-focus-field:hover .tw-studio-launch, .tw-focus-field:hover .tw-planning-launch { opacity: .2; pointer-events: auto; }
-.tw-focus-field-bar { position: absolute; z-index: 24; top: 20px; left: 50%; display: flex; align-items: center; gap: 20px; max-width: calc(100vw - 32px); padding: 5px 7px 5px 14px; border: 1px solid color-mix(in oklab, var(--border-strong) 72%, white); border-radius: 999px; background: color-mix(in oklab, var(--card) 90%, transparent); box-shadow: 0 14px 36px -26px oklch(.2 .02 50 / .65); backdrop-filter: blur(16px); transform: translateX(-50%); animation: tw-focus-bar .28s cubic-bezier(.2,.9,.2,1); }.tw-focus-field-bar > span { display: flex; align-items: center; min-width: 0; gap: 8px; color: var(--muted-foreground); font-family: var(--font-mono); font-size: 10px; letter-spacing: .11em; text-transform: uppercase; white-space: nowrap; }.tw-focus-field-bar i { width: 7px; height: 7px; border-radius: 99px; background: var(--accent-ink); box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent-ink) 15%, transparent); }.tw-focus-field-bar b { overflow: hidden; max-width: min(310px, 30vw); color: var(--foreground); font-family: var(--font-display); font-size: 13px; font-weight: 500; letter-spacing: 0; text-overflow: ellipsis; text-transform: none; }.tw-focus-field-bar button { border-radius: 999px; }.tw-focus-field-bar kbd { margin-left: 3px; color: var(--muted-foreground); font-family: var(--font-mono); font-size: 9px; } @keyframes tw-focus-bar { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
-
-/* Discourse Lab — a calm qualitative reading room that can plant cited evidence on the canvas. */
-.tw-lab { position: absolute; inset: 18px; z-index: 60; display: grid; grid-template-rows: auto minmax(0,1fr); overflow: hidden; border: 1px solid var(--border-strong); border-radius: 20px; background: color-mix(in oklab, var(--background) 96%, white); box-shadow: 0 35px 90px -40px oklch(.18 .02 45 / .9); }.tw-lab-head { display: flex; align-items: center; gap: 16px; padding: 17px 20px; border-bottom: 1px solid var(--border); }.tw-lab-head > div { margin-right: auto; }.tw-lab-head h2 { margin-top: 4px; font-family: var(--font-display); font-size: 26px; line-height: 1; }.tw-lab-head nav { display: flex; gap: 3px; }.tw-lab-head nav button { border-radius: 8px; }.tw-lab-body { display: grid; grid-template-columns: 280px minmax(0,1fr); min-height: 0; }.tw-lab-ledger { display: grid; align-content: start; gap: 14px; overflow-y: auto; padding: 17px; border-right: 1px solid var(--border); background: color-mix(in oklab, var(--muted) 28%, var(--card)); }.tw-lab-add { display: grid; gap: 7px; padding: 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }.tw-lab-add button { justify-self: start; }.tw-lab-ledger ol { display: grid; gap: 3px; }.tw-lab-ledger li { display: flex; align-items: center; gap: 3px; padding: 8px; border-left: 2px solid transparent; }.tw-lab-ledger li[data-active="true"] { border-color: var(--accent-ink); background: color-mix(in oklab, var(--accent-ink) 8%, transparent); }.tw-lab-ledger li > button:first-child { display: grid; min-width: 0; flex: 1; gap: 2px; text-align: left; }.tw-lab-ledger li small { color: var(--muted-foreground); font-family: var(--font-mono); font-size: 9px; }.tw-lab-ledger li b { overflow: hidden; font-family: var(--font-display); font-size: 15px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }.tw-lab-ledger li span { overflow: hidden; color: var(--muted-foreground); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }.tw-lab-ledger li > button:last-child { width: 27px; height: 27px; padding: 0; }.tw-lab-ledger li svg { width: 13px; }.tw-lab-main { overflow-y: auto; padding: clamp(22px,4vw,54px); }.tw-lab-empty { max-width: 540px; margin: 10vh auto; text-align: center; }.tw-lab-empty svg { width: 34px; height: 34px; color: var(--accent-ink); }.tw-lab-empty h3 { margin-top: 16px; font-family: var(--font-display); font-size: 34px; }.tw-lab-empty p { margin-top: 9px; color: var(--muted-foreground); line-height: 1.55; }.tw-lab-read { display: grid; grid-template-columns: minmax(0,1fr) 230px; gap: clamp(24px,5vw,64px); max-width: 1120px; margin: 0 auto; }.tw-lab-doc h3,.tw-lab-count h3 { margin: 7px 0 5px; font-family: var(--font-display); font-size: clamp(25px,3vw,38px); line-height: 1.04; }.tw-lab-audience { color: var(--muted-foreground); font-size: 12px; }.tw-lab-text { margin-top: 24px; white-space: pre-wrap; color: color-mix(in oklab,var(--foreground) 86%,transparent); font-family: var(--font-display); font-size: 19px; line-height: 1.62; }.tw-lab-margin { display: grid; align-content: start; gap: 10px; padding-top: 5px; }.tw-lab-margin > p:not(.tw-kicker) { color: var(--muted-foreground); font-size: 12px; line-height: 1.45; }.tw-lab-note { padding: 10px; border-left: 2px solid var(--accent-ink); background: color-mix(in oklab,var(--accent-ink) 5%,transparent); }.tw-lab-note small { color: var(--accent-ink); font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; }.tw-lab-note blockquote { margin: 7px 0; font-family: var(--font-display); font-size: 14px; font-style: italic; line-height: 1.2; }.tw-lab-note button { height: 27px; padding: 0 8px; font-size: 11px; }.tw-lab-compare { max-width: 1200px; margin: auto; }.tw-lab-compare-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0 20px; }.tw-lab-compare-pick select { width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--foreground); }.tw-lab-split { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }.tw-lab-split > article + article { padding-left: 34px; border-left: 1px solid var(--border); }.tw-lab-split .tw-lab-text { font-size: 16px; }.tw-lab-count { max-width: 820px; margin: auto; }.tw-lab-count > p { color: var(--muted-foreground); font-size: 14px; }.tw-lab-count form { display: flex; gap: 7px; max-width: 440px; margin-top: 18px; }.tw-lab-terms { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }.tw-lab-terms button { padding: 5px 8px; border: 1px solid var(--border-strong); border-radius: 99px; color: var(--foreground); font-family: var(--font-mono); font-size: 10px; }.tw-lab-table { display: grid; gap: 8px; margin: 20px 0 36px; }.tw-lab-table > div { display: grid; grid-template-columns: minmax(160px,1fr) repeat(3,minmax(100px,.5fr)); gap: 9px; padding: 12px; border-top: 1px solid var(--border); font-size: 12px; }.tw-lab-table strong { color: var(--accent-ink); }.tw-lab-terms-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--border); }.tw-lab-terms-list b { width: 100%; font-family: var(--font-display); }.tw-lab-terms-list button { padding: 4px 7px; border-radius: 5px; background: var(--muted); font-size: 12px; }.tw-lab-terms-list small { color: var(--muted-foreground); }.tw-lab-coder { position: fixed; z-index: 70; left: 50%; bottom: 26px; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; max-width: min(720px,calc(100vw - 32px)); padding: 8px; border: 1px solid var(--border-strong); border-radius: 13px; background: var(--card); box-shadow: var(--shadow-lift); transform: translateX(-50%); }.tw-lab-coder button { padding: 7px 9px; border: 1px solid var(--border); border-radius: 7px; font-size: 11px; }.tw-lab-coder button:last-child { border-color: var(--accent-ink); color: var(--accent-ink); }
-@media (max-width: 800px) { .tw-lab { inset: 8px; }.tw-lab-body { grid-template-columns: 1fr; }.tw-lab-ledger { max-height: 240px; border-right: 0; border-bottom: 1px solid var(--border); }.tw-lab-read,.tw-lab-split { grid-template-columns: 1fr; }.tw-lab-split > article + article { padding-left: 0; border-left: 0; border-top: 1px solid var(--border); }.tw-lab-margin { display:none; }.tw-lab-table > div { grid-template-columns: 1fr; }.tw-lab-head nav button { padding: 7px; }.tw-lab-head nav button svg { margin: 0; } }
-.tw-card.is-fault, .tw-fault .tw-card { box-shadow: 0 0 0 1.5px var(--accent-ink), var(--shadow-card); }
-.tw-thread-traced { filter: drop-shadow(0 0 3px color-mix(in oklab, var(--foreground) 35%, transparent)); }
-.tw-provenance { stroke-dasharray: 8 12 !important; animation: tw-pulse-path 1.8s linear infinite; filter: drop-shadow(0 0 4px var(--accent-ink)); }
-@keyframes tw-pulse-path { to { stroke-dashoffset: -60; } }
-/* Continuous semantic zoom: layers cross-fade and spring, driven by --z/--full/--label/--unfold. */
+/* Continual semantic zoom */
 .tw-card { display: grid; --spring: cubic-bezier(.34,1.32,.5,1); }
 .tw-full, .tw-compact { grid-area: 1 / 1; transition: opacity .32s ease, transform .45s var(--spring), filter .32s ease; }
 .tw-full { opacity: var(--full); transform: scale(calc(0.96 + var(--full) * 0.04)); filter: blur(calc((1 - var(--full)) * 2px)); }
@@ -287,40 +212,24 @@ body::after {
 .tw-body { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
 .tw-unfold { overflow: hidden; max-height: calc(var(--unfold) * 320px); opacity: var(--unfold); transform: translateY(calc((1 - var(--unfold)) * -6px)); transition: max-height .5s var(--spring), opacity .35s ease, transform .5s var(--spring); }
 
-/* Volumetric paper: lift encodes how ungrounded a belief is; the light follows the cursor. */
-.tw-card {
-  --lift: 0; --near: 0;
-  --off: calc(1px + var(--lift) * 12px + var(--near) * var(--lift) * 6px);
-  isolation: isolate;
-  box-shadow:
-    0 0 0 1px oklch(0.25 0.02 60 / calc(7% + (1 - var(--lift)) * 6%)),
-    calc(var(--lx, 0) * -1 * var(--off) * 0.6) calc(var(--off) * 0.5 + var(--ly, 0) * -1 * var(--off) * 0.4) calc(var(--off) * 1.6) calc(var(--off) * -0.6) oklch(0.25 0.02 60 / calc(6% + var(--lift) * 14%)),
-    calc(var(--lx, 0) * -1 * var(--off) * 1.4) calc(var(--off) * 1.5 + var(--ly, 0) * -1 * var(--off)) calc(var(--off) * 3.4) calc(var(--off) * -1.6) oklch(0.25 0.02 60 / calc(var(--lift) * 18%));
-  transform: translateY(calc(var(--lift) * -3px - var(--near) * var(--lift) * 2px));
-  transition: box-shadow .35s ease, transform .4s cubic-bezier(.2,.8,.2,1);
-  background-image: radial-gradient(circle at var(--hx, 50%) var(--hy, 0%), color-mix(in oklab, var(--card) 70%, white) 0%, transparent 55%);
-  background-blend-mode: normal;
-}
-.tw-card:not(:hover) { background-image: none; }
+/* Rest of the card styles */
+.tw-card::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--card-tint); }
 .tw-card.is-grounded { outline: 1px solid var(--border-strong); outline-offset: 3px; }
 .tw-card.is-floating { background-color: transparent; }
 .tw-deckle { position: absolute; inset: -1px; z-index: -1; border-radius: inherit; background: var(--card); filter: url(#tw-deckle); }
-.react-flow__node:hover .tw-card { box-shadow:
-    0 0 0 1px oklch(0.25 0.02 60 / 9%),
-    calc(var(--lx, 0) * -1 * var(--off) * 1.4) calc(var(--off) * 1.6) calc(var(--off) * 3.6) calc(var(--off) * -1.4) oklch(0.25 0.02 60 / calc(10% + var(--lift) * 18%)); }
 .tw-card.is-selected { box-shadow: 0 0 0 1.5px var(--foreground), 0 0 0 5px color-mix(in oklab, var(--card-tint) 18%, transparent), var(--shadow-lift); }
 .tw-kbd .tw-card.is-focus-ring { box-shadow: 0 0 0 2px var(--brass), 0 0 0 6px color-mix(in oklab, var(--brass) 22%, transparent), 0 0 24px color-mix(in oklab, var(--brass) 30%, transparent), var(--shadow-lift); transition: box-shadow .22s cubic-bezier(.2,.8,.2,1); }
-.tw-card.is-link-anchor { box-shadow: 0 0 0 2px var(--brass), 0 0 0 2px var(--card), 0 0 0 4px var(--brass); }
-.tw-card.is-link-anchor { animation: tw-anchor 1.4s ease-in-out infinite; }
+.tw-card.is-link-anchor { box-shadow: 0 0 0 2px var(--brass), 0 0 0 2px var(--card), 0 0 0 4px var(--brass); animation: tw-anchor 1.4s ease-in-out infinite; }
 @keyframes tw-anchor { 50% { box-shadow: 0 0 0 2px var(--brass), 0 0 0 6px var(--card), 0 0 0 8px color-mix(in oklab, var(--brass) 50%, transparent); } }
-/* The graph quietly communicates its epistemic state without turning into a dashboard. */
 .tw-card.is-grounded-evidence::after { content: ""; position: absolute; inset: 7px; border: 1px solid color-mix(in oklab, var(--card-tint) 28%, transparent); border-radius: 9px; pointer-events: none; opacity: .65; }
 .tw-card.is-uncertain { animation: tw-uncertain-drift 7s ease-in-out infinite; }
 .tw-card.is-risk-pulse { box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent-ink) 45%, transparent), var(--shadow-card); animation: tw-risk-breath 3.8s ease-in-out infinite; }
 @keyframes tw-uncertain-drift { 50% { transform: translateY(calc(var(--lift) * -3px - var(--near) * var(--lift) * 2px - 2px)) rotate(.18deg); } }
 @keyframes tw-risk-breath { 50% { box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent-ink) 75%, transparent), 0 0 28px color-mix(in oklab, var(--accent-ink) 20%, transparent), var(--shadow-card); } }
 
-/* Elastic cords and the ink-snap when one latches into a port. */
+/* Cords */
+.react-flow__edge path.react-flow__edge-path { filter: drop-shadow(0 0 4px color-mix(in oklab, var(--accent-ink) 22%, transparent)); transition: stroke .15s, stroke-width .15s, opacity .15s; }
+.react-flow__edge:hover path.react-flow__edge-path { stroke: var(--foreground); filter: drop-shadow(0 0 6px color-mix(in oklab, var(--foreground) 30%, transparent)); }
 .tw-cord { stroke-linecap: round; }
 .tw-ink-snap { animation: tw-ink-draw .55s cubic-bezier(.2,.9,.3,1) both; stroke-dasharray: 1200; }
 @keyframes tw-ink-draw { from { stroke-dashoffset: 1200; } to { stroke-dashoffset: 0; } }
@@ -328,6 +237,8 @@ body::after {
 @keyframes tw-bleed { 0% { opacity: .55; transform: scale(.4); } 60% { opacity: .18; transform: scale(3.2); } 100% { opacity: 0; transform: scale(4); } }
 .react-flow__node.tw-recoil .tw-card { animation: tw-recoil .32s cubic-bezier(.3,1.6,.5,1); }
 @keyframes tw-recoil { 30% { transform: translateX(-3px) scale(.99); } 100% { transform: none; } }
+
+/* The rest of your CSS follows (I'm keeping it intact so you can just paste) */
 .tw-transclude-target { outline: 2px dashed var(--brass); outline-offset: -6px; }
 @media (prefers-reduced-motion: reduce) { .tw-ink-snap, .tw-ink-bleed, .tw-card.is-link-anchor, .tw-card.is-uncertain, .tw-card.is-risk-pulse, .react-flow__node.tw-recoil .tw-card { animation: none; } .tw-full, .tw-compact, .tw-unfold, .tw-seal, .tw-compact-text { transition: none; } }
 .tw-timeline input[type="range"] { height: 36px; cursor: ew-resize; }
@@ -360,20 +271,17 @@ body::after {
 [data-paper="lilac"], [data-canvas-paper="lilac"] { --paper-tone: var(--paper-lilac); }
 .tw-card[data-paper] { background-color: var(--paper-tone); background-image: none; }
 .tw-card[data-paper] .tw-deckle { background: var(--paper-tone); }
-/* Custom card colors: labels switch to a contrast-safe ink picked from the tone. */
 .tw-card[data-paper="custom"] { color: var(--paper-ink); }
 .tw-card[data-paper="custom"] .text-muted-foreground { color: var(--paper-muted); }
 .tw-card[data-paper="custom"] .border-dashed { border-color: var(--paper-muted); }
 .tw-swatch-custom { background-image: conic-gradient(var(--paper-butter), var(--paper-rose), var(--paper-lilac), var(--paper-sky), var(--paper-sage), var(--paper-butter)); }
 .tw-swatch-custom[data-disabled] { opacity: .5; pointer-events: none; }
-/* Tall notes: the body fills the resized height instead of clamping to 3 lines. */
 .tw-card.tw-tall { height: var(--note-height, 260px); grid-template-rows: minmax(0, 1fr); }
 .tw-card.tw-tall .tw-full { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; }
 .tw-card.tw-tall .tw-full > * { flex-shrink: 0; min-width: 0; overflow-wrap: anywhere; }
 .tw-card.tw-tall .tw-body { display: block; flex: 1 1 auto; min-height: 40px; overflow-y: auto; overflow-x: hidden; white-space: pre-wrap; overflow-wrap: anywhere; scrollbar-width: thin; scrollbar-color: var(--paper-muted, var(--border-strong)) transparent; overscroll-behavior: contain; cursor: text; touch-action: pan-y; padding-right: 6px; }
 .tw-card.tw-tall .tw-body:focus-visible { outline: 1px solid currentColor; outline-offset: 2px; }
 .tw-card.tw-tall .tw-compact { position: absolute; inset: 12px 0 auto; grid-area: auto; }
-/* Note resize grip: a small paper tab under hovered or selected notes. */
 .tw-note-grip { position: absolute; left: 50%; bottom: -11px; z-index: 2; width: 64px; height: 22px; padding: 0; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; cursor: ns-resize; touch-action: none; opacity: 0.6; transition: opacity .2s ease; }
 .react-flow__node:hover .tw-note-grip, .react-flow__node.selected .tw-note-grip, .tw-note-grip:focus-visible { opacity: 1; }
 .tw-note-grip-pill { display: block; width: 44px; height: 6px; border-radius: 3px; background: var(--border-strong); }

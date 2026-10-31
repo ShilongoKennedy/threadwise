@@ -1,15 +1,24 @@
 # Threadwise upgrades
+
+## Spatial Intelligence Engine (Current)
+- [x] Dossier nodes (manila folder anchors for sources)
+- [x] Omission nodes (dark crimson, dashed blind-spot detection)
+- [x] AI Red Team (scans canvas, spawns up to 3 Omission nodes connected to hypotheses)
+- [x] Cross-Dossier Synthesis (select two nodes to generate a bridge insight)
+- [x] Semantic Auto-Layout (`intelligentTidy` clusters insights near their source dossiers)
+- [x] Cinematic Briefing Mode (glass overlay, camera glide, left-to-right logic flow)
+- [x] In-app Sitrep Markdown generation
+- [x] Direct document drop and personal signature seal
+
 ## Advanced canvas suite
 - [x] Live member presence and opt-in audio huddle (network relay not configured)
 - [x] Monte Carlo risk simulation with explicit probabilities
 - [ ] External sync bridge — blocked: Linear/GitHub/Slack OAuth clients need workspace-admin setup; Jira has no available per-user connector. Setup states and execution export are present, not live sync.
 - [x] Three-way canvas branches and explicit merge conflicts
-- [x] Presentation walkthrough with camera stops
-- [x] AI red-team and bias audit with cited cards
 - [x] Laser and temporary ink, swimlanes/frames, reaction stamps
 - [x] Quick-capture inbox, critical path/depth, batch wiring
-- [x] Layered auto-layout, direct document drop, personal signature seal
 - [x] Vector/narrative export and signed-in checks (AI audit, merging, signature, layout, captures, two-device presence, audio controls)
+
 ## Leadership and deep planning suite
 - [x] Live facilitated sessions, silent ideation, voting and affinity grouping
 - [x] Evidence-aware conclusions, recorded sign-offs and execution plans
@@ -17,6 +26,7 @@
 - [x] Five guided starter templates
 - [x] Diagnose save failures, retry and idempotent browser migration
 - [x] Rule tests and signed-in end-to-end verification (two devices, offline recovery, 50 tests)
+
 ## Product workspace polish
 - [x] Immediate file creation and organized workspace library
 - [x] Persisted organizing colors for cards and canvases
@@ -39,6 +49,7 @@
 - [x] Optional tactile sounds
 - [x] Rule tests and public browser flows
 - [x] Signed-in multi-device workspace sync verified; live AI checks remain outside this workspace-polish task
+
 ## Tactile desk
 - [x] Paper depth and lighting by confidence
 - [x] Elastic cords with ink-snap
@@ -46,6 +57,7 @@
 - [x] Live draft with two-way embedded cards
 - [x] Desk foley with stereo placement
 - [x] Arrow-key travel and keyboard rewiring (L, Enter, Shift+L)
+
 ## Strategy & presentation
 - [x] Scenario stress-tester with break-even and sensitivity charts
 - [x] Resource & runway matrix tied to canvas actions
