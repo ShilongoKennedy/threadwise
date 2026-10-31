@@ -905,8 +905,8 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           <div className="absolute inset-0 z-40 flex flex-col items-center justify-center pointer-events-none p-4">
             <div className="pointer-events-auto bg-[#FDFBF7]/90 backdrop-blur-2xl border border-white/40 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] rounded-3xl p-10 max-w-lg w-full text-center animate-in fade-in zoom-in-95 duration-500">
               
-              <div className="mx-auto w-16 h-16 bg-[#CBE6F9] rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-black/5">
-                 <Search className="w-8 h-8 text-[#1A1A1A]" />
+              <div className="mx-auto w-16 h-16 bg-[#1A4BFF]/10 rounded-sm flex items-center justify-center mb-6 shadow-inner border border-black/5">
+                 <Search className="w-8 h-8 text-[#1A4BFF]" />
               </div>
               
               <h2 className="font-display text-4xl mb-3 text-foreground tracking-tight">Uncover the bigger picture.</h2>

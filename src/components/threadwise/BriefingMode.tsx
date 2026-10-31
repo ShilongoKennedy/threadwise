@@ -67,7 +67,7 @@ export function BriefingMode({ onExit }: { onExit: () => void }) {
       {/* TOP BAR */}
       <header className="relative z-10 flex items-center justify-between px-10 py-8 pointer-events-auto">
         <div>
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#C24A35] flex items-center gap-2">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A4BFF] flex items-center gap-2">
             <Fingerprint className="w-3.5 h-3.5" /> Live Intelligence Briefing
           </span>
           <h2 className="font-display text-2xl text-black mt-1">Threadwise Command</h2>
@@ -80,20 +80,20 @@ export function BriefingMode({ onExit }: { onExit: () => void }) {
       {/* RIGHT GLASS PANEL */}
       <aside 
         key={activeNode.id}
-        className="absolute right-12 top-1/2 -translate-y-1/2 w-[420px] max-h-[70vh] flex flex-col overflow-hidden rounded-[24px] border border-white/40 bg-white/60 backdrop-blur-3xl shadow-[0_20px_80px_-20px_rgba(0,0,0,0.15)] pointer-events-auto animate-in slide-in-from-right-12 fade-in duration-700"
+        className="absolute right-12 top-1/2 -translate-y-1/2 w-[420px] max-h-[70vh] flex flex-col overflow-hidden rounded-[2px] border border-white/40 bg-white/60 backdrop-blur-3xl shadow-[0_20px_80px_-20px_rgba(0,0,0,0.15)] pointer-events-auto animate-in slide-in-from-right-12 fade-in duration-700"
       >
         <div className="p-8 pb-6 border-b border-black/5 flex items-start gap-4">
           <div 
             className="p-3 rounded-2xl shrink-0"
-            style={{ backgroundColor: `color-mix(in srgb, ${activeNode.data.kind === "omission" ? "#C24A35" : "var(--foreground)"} 10%, transparent)` }}
+            style={{ backgroundColor: `color-mix(in srgb, ${activeNode.data.kind === "omission" ? "#1A4BFF" : "var(--foreground)"} 10%, transparent)` }}
           >
-            <Icon className="w-6 h-6" style={{ color: activeNode.data.kind === "omission" ? "#C24A35" : "var(--foreground)" }} />
+            <Icon className="w-6 h-6" style={{ color: activeNode.data.kind === "omission" ? "#1A4BFF" : "var(--foreground)" }} />
           </div>
           <div>
             <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground block mb-1">
               {TYPE_INFO[activeNode.data.kind].label} · {activeNode.data.epistemic}
             </span>
-            <h3 className={cn("font-display text-2xl leading-tight", activeNode.data.kind === "omission" ? "text-[#C24A35]" : "text-black")}>
+            <h3 className={cn("font-display text-2xl leading-tight", activeNode.data.kind === "omission" ? "text-[#1A4BFF]" : "text-black")}>
               {activeNode.data.title}
             </h3>
           </div>
@@ -128,7 +128,7 @@ export function BriefingMode({ onExit }: { onExit: () => void }) {
               title={n.data.title}
               className={cn(
                 "h-2 rounded-full transition-all duration-500",
-                i === index ? "w-8 bg-[#C24A35]" : 
+                i === index ? "w-8 bg-[#1A4BFF]" : 
                 i < index ? "w-2 bg-black/40 hover:bg-black/60" : "w-2 bg-black/10 hover:bg-black/30"
               )}
             />

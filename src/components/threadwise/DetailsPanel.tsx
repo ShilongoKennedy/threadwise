@@ -30,7 +30,7 @@ export function DetailsPanel() {
   const edge = !node ? edges.find((e) => e.id === selectedId) : undefined;
   if (!node && !edge) return null;
   return (
-    <aside className="absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col overflow-hidden tw-sheet rounded-t-[22px] md:inset-x-auto md:right-6 md:top-6 md:bottom-6 md:max-h-none md:w-[360px] md:rounded-[18px] border bg-card shadow-[var(--shadow-lift)]">
+    <aside className="absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col overflow-hidden tw-sheet rounded-t-[22px] md:inset-x-auto md:right-6 md:top-6 md:bottom-6 md:max-h-none md:w-[360px] md:rounded-[2px] border bg-card shadow-[var(--shadow-lift)]">
       <div className="flex items-center justify-between border-b px-5 py-3">
         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
           {node ? "Node details" : "Relationship"}
@@ -109,8 +109,8 @@ function NodeForm({ id }: { id: string }) {
       )}
 
       {isDossier && (
-        <div className="rounded-lg border border-dashed px-3 py-2 text-[11px] text-muted-foreground" style={{ borderColor: "#8B6F47" }}>
-          <span className="font-mono uppercase tracking-wider" style={{ color: "#8B6F47" }}>Anchored source</span>
+        <div className="rounded-lg border border-dashed px-3 py-2 text-[11px] text-muted-foreground" style={{ borderColor: "var(--type-dossier)" }}>
+          <span className="font-mono uppercase tracking-wider" style={{ color: "var(--type-dossier)" }}>Anchored source</span>
           <p className="mt-1 leading-relaxed">Dossiers are managed automatically. Delete with confirmation to unlink.</p>
         </div>
       )}

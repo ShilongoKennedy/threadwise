@@ -1,8 +1,8 @@
 # Threadwise upgrades
 
 ## Spatial Intelligence Engine (Current)
-- [x] Dossier nodes (manila folder anchors for sources)
-- [x] Omission nodes (dark crimson, dashed blind-spot detection)
+- [x] Dossier nodes (cobalt folder anchors for sources)
+- [x] Omission nodes (cobalt, dashed blind-spot detection)
 - [x] AI Red Team (scans canvas, spawns up to 3 Omission nodes connected to hypotheses)
 - [x] Cross-Dossier Synthesis (select two nodes to generate a bridge insight)
 - [x] Semantic Auto-Layout (`intelligentTidy` clusters insights near their source dossiers)

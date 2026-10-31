@@ -21,7 +21,7 @@ export function GhostNode({ data }: NodeProps<GhostNodeT>) {
   const Icon = g.kind === "connection" ? Link2 : TYPE_ICON[kind];
   return (
     <div
-      className={`tw-ghost group w-[272px] rounded-[14px] border-[1.25px] border-dashed ${leaving ? `is-${leaving}` : ""}`}
+      className={`tw-ghost group w-[272px] rounded-[2px] border-[1.25px] border-dashed ${leaving ? `is-${leaving}` : ""}`}
       style={{ borderColor: TYPE_COLOR[kind] }}
       onMouseEnter={() => setActive(g.id)}
       onMouseLeave={() => { if (!editing) setActive(null); }}

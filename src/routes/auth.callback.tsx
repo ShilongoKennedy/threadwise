@@ -43,7 +43,7 @@ function AuthCallback() {
   return (
     <main className="grid min-h-screen place-items-center bg-[#FDFBF7] px-6 text-center">
       <section className="max-w-md">
-        <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#C24A35]">Threadwise Intelligence OS</p>
+        <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#1A4BFF]">Threadwise Intelligence OS</p>
         <h1 className="mt-3 font-display text-4xl">{problem ? "Sign-in needs attention" : "Opening your workbench…"}</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{problem || "Finishing your secure Google sign-in."}</p>
         {problem && <a href="/login" className="mt-6 inline-flex rounded-md bg-[#1A1A1A] px-4 py-2 text-sm font-medium text-white">Return to login</a>}

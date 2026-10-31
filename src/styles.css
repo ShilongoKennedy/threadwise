@@ -89,8 +89,8 @@
   --type-question: oklch(0.6 0.11 205);
   --type-experiment: oklch(0.48 0.09 172);
   --type-action: oklch(0.3 0.02 262);
-  --type-dossier: oklch(0.38 0.035 250);
-  --type-omission: oklch(0.46 0.2 262);
+  --type-dossier: #1A4BFF;
+  --type-omission: #1A4BFF;
   --shadow-card: 0 0 0 1px oklch(0.25 0.02 60 / 7%), 0 1px 1px oklch(0.25 0.02 60 / 4%), 0 6px 16px -8px oklch(0.25 0.02 60 / 14%);
   --shadow-lift: 0 0 0 1px oklch(0.25 0.02 60 / 8%), 0 2px 4px oklch(0.25 0.02 60 / 5%), 0 24px 48px -16px oklch(0.25 0.02 60 / 26%);
   --chart-1: oklch(0.646 0.222 41.116);

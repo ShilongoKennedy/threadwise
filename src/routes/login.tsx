@@ -47,13 +47,13 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-[#FBD0D4]">
+    <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-[#1A4BFF]/20">
       
       {/* Ambient Pastel Glows */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#FDF0B6] opacity-30 blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-[#CBE6F9] opacity-20 blur-[150px]" />
-        <div className="absolute top-[20%] right-[10%] w-[40vw] h-[40vw] rounded-full bg-[#E8DAFB] opacity-20 blur-[100px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#1A4BFF]/10 opacity-30 blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-[#1A4BFF]/10 opacity-20 blur-[150px]" />
+        <div className="absolute top-[20%] right-[10%] w-[40vw] h-[40vw] rounded-full bg-[#1A4BFF]/10 opacity-20 blur-[100px]" />
       </div>
 
       {/* Subtle Grid */}

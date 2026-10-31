@@ -131,7 +131,7 @@ export function Onboarding({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/15 p-3 backdrop-blur-[2px] sm:items-center" role="dialog" aria-modal aria-label="Welcome to Threadwise">
-      <div className="tw-sheet w-full max-w-[440px] overflow-hidden rounded-[22px] border bg-card shadow-[var(--shadow-lift)]">
+      <div className="tw-sheet w-full max-w-[440px] overflow-hidden rounded-[2px] border bg-card shadow-[var(--shadow-lift)]">
         <div className="border-b border-dashed bg-background/60 px-6 py-5" key={`art-${step}`}>
           <div className="tw-rise">{s.art()}</div>
         </div>
