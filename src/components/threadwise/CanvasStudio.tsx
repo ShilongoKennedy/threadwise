@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useReactFlow, useViewport } from "@xyflow/react";
 import {
   ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Check, Download, GitBranch, GitFork,
-  Inbox, Layers, Link2, Maximize, MousePointer2, PenLine, Play, Plus, ScanLine,
-  ShieldCheck, Stamp, Trash2, Users, Wand2, X, FileUp, ChartNoAxesCombined,
+  Inbox, Layers, Maximize, MousePointer2, PenLine, Play, Plus, ScanLine,
+  ShieldCheck, Trash2, Wand2, X, FileUp, ChartNoAxesCombined,
   PanelTop, Presentation, Square, Pause, SlidersHorizontal, Wallet, FileBadge,
   BookOpenText, Target,
 } from "lucide-react";
@@ -20,9 +20,6 @@ import { layeredLayout } from "@/lib/threadwise/layout";
 import { streamTask } from "@/lib/threadwise/ai-client";
 import { validateFindings, type RedTeamResult } from "@/lib/threadwise/redteam";
 import { RELATIONS, type Relation, type ThreadNodeType } from "@/lib/threadwise/model";
-import { LivePresence, LiveRoomDialog } from "./LiveRoom";
-import { accountLabel } from "@/lib/threadwise/account-label";
-import { readReactions } from "@/lib/threadwise/reactions";
 import { PresentationMode } from "./PresentationMode";
 import { ThoughtPlayback } from "./ThoughtPlayback";
 import { DecisionTheatre } from "./DecisionTheatre";
@@ -61,12 +58,7 @@ const TOOL_GROUPS = [
     { id: "playback", label: "Thought playback", icon: Play },
     { id: "theatre", label: "Decision theatre", icon: Square },
     { id: "consequences", label: "Consequence map", icon: GitFork },
-    { id: "presence", label: "Live room & audio", icon: Users },
-    { id: "stamps", label: "Reaction stamps", icon: Stamp },
-    { id: "pointer", label: "Laser & temporary ink", icon: MousePointer2 },
-    { id: "seal", label: "Decision signature", icon: Check },
     { id: "export", label: "Vector & narrative export", icon: Download },
-    { id: "bridge", label: "External bridge", icon: Link2 },
   ]},
 ];
 
@@ -86,10 +78,9 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
   // FIX: Safely merge the default suite so stops, frames, etc. are never wiped out
   const suite = { ...emptySuite(), ...(canvas?.suite ?? {}) };
   
-  const [open, setOpen] = useState(false), [tool, setTool] = useState("inbox"), [error, setError] = useState(""), [busy, setBusy] = useState(false), [message, setMessage] = useState(""), [live, setLive] = useState(false);
-  const [ink, setInk] = useState<"laser" | "pen" | null>(null), [strokes, setStrokes] = useState<Stroke[]>([]), [laser, setLaser] = useState<{ x: number; y: number } | null>(null), currentStroke = useRef<string | null>(null);
+  const [open, setOpen] = useState(false), [tool, setTool] = useState("inbox"), [error, setError] = useState(""), [busy, setBusy] = useState(false), [message, setMessage] = useState("");
   const [title, setTitle] = useState(""), [capture, setCapture] = useState(""), [ids, setIds] = useState<string[]>([]), [relation, setRelation] = useState<Relation>("depends_on"), [wireMode, setWireMode] = useState<"chain" | "fan" | "all">("chain");
-  const [prob, setProb] = useState<Record<string, number>>({}), [results, setResults] = useState<ReturnType<typeof simulate> | null>(null), [findings, setFindings] = useState<RedTeamResult | null>(null), [choices, setChoices] = useState<Record<string, "ours" | "theirs">>({}), [signature, setSignature] = useState(""), [digest, setDigest] = useState("");
+  const [prob, setProb] = useState<Record<string, number>>({}), [results, setResults] = useState<ReturnType<typeof simulate> | null>(null), [findings, setFindings] = useState<RedTeamResult | null>(null), [choices, setChoices] = useState<Record<string, "ours" | "theirs">>({}), [digest, setDigest] = useState("");
   const [present, setPresent] = useState(false), [stop, setStop] = useState(0), [auto, setAuto] = useState(false), [pace, setPace] = useState(7000), [playback, setPlayback] = useState(false), [theatre, setTheatre] = useState(false);
   const [consequences, setConsequences] = useState(false), [redTeamPersona, setRedTeamPersona] = useState("skeptical investor");
   const [tensionFrom, setTensionFrom] = useState(""), [tensionTo, setTensionTo] = useState(""), [fieldKind, setFieldKind] = useState<ThreadNodeType>("note"), [fieldText, setFieldText] = useState(""), [intakeText, setIntakeText] = useState("");
@@ -106,7 +97,7 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
   const merged = branch && source ? mergeGraph({ nodes: branch.baseNodes, edges: branch.baseEdges }, { nodes: source.nodes, edges: source.edges }, { nodes: s.nodes, edges: s.edges }, choices) : null;
 
   useEffect(() => {
-    setIds([]); setResults(null); setFindings(null); setProb({}); setChoices({}); setStrokes([]); setInk(null); setPresent(false); setPlayback(false); setTheatre(false); setAuto(false); setStop(0); onPresentChange(false); abort.current?.abort(); revision.current++;
+    setIds([]); setResults(null); setFindings(null); setProb({}); setChoices({}); setPresent(false); setPlayback(false); setTheatre(false); setAuto(false); setStop(0); onPresentChange(false); abort.current?.abort(); revision.current++;
   }, [canvas?.id]);
 
   useEffect(() => {
@@ -120,7 +111,6 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
     return () => window.removeEventListener("threadwise:present-from", beginFromThought);
   }, [canvas?.id, s.nodes, s.replayIndex, suite.stops, onPresentChange]);
 
-  useEffect(() => { const timer = setInterval(() => setStrokes((v) => v.filter((s) => Date.now() - s.at < 12000)), 1000); return () => clearInterval(timer); }, []);
   useEffect(() => { let active = true; void graphDigest(s.nodes, s.edges).then((v) => { if (active) setDigest(v); }); return () => { active = false; }; }, [s.nodes, s.edges]);
   
   useEffect(() => {
@@ -140,7 +130,7 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
 
   useEffect(() => () => abort.current?.abort(), []);
   useEffect(() => {
-    if (s.replayIndex !== null) { setOpen(false); setInk(null); setPresent(false); setPlayback(false); setTheatre(false); setAuto(false); onPresentChange(false); abort.current?.abort(); }
+    if (s.replayIndex !== null) { setOpen(false); setPresent(false); setPlayback(false); setTheatre(false); setAuto(false); onPresentChange(false); abort.current?.abort(); }
   }, [s.replayIndex]);
 
   const exitPresent = () => { setPresent(false); setAuto(false); onPresentChange(false); };
@@ -202,15 +192,8 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
     </div>
   );
 
-  const draw = (e: React.PointerEvent<SVGSVGElement>) => {
-    const point = rf.screenToFlowPosition({ x: e.clientX, y: e.clientY });
-    if (ink === "laser") setLaser(point);
-    else if (currentStroke.current) setStrokes((v) => v.map((s) => s.id === currentStroke.current ? { ...s, points: [...s.points, point], at: Date.now() } : s));
-  };
-
   return (
     <>
-      <LivePresence />
       {!present && (
         <Button className="tw-studio-launch" size="sm" variant={open ? "default" : "outline"} aria-label="Open canvas studio" title="Canvas studio" disabled={s.replayIndex !== null} onClick={() => { s.select(null); setOpen((v) => !v); }}>
           <Layers /><span>Studio</span>
@@ -225,21 +208,6 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
           </g>
         </svg>
       )}
-      {(ink || strokes.length > 0) && (
-        <svg className={`tw-ink-layer ${ink ? "is-drawing" : ""}`} aria-label="Temporary canvas ink" onPointerDown={(e) => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); if (ink === "pen") { const id = crypto.randomUUID(); currentStroke.current = id; setStrokes((v) => [...v, { id, points: [rf.screenToFlowPosition({ x: e.clientX, y: e.clientY })], at: Date.now() }]); } draw(e); }} onPointerMove={draw} onPointerUp={() => { currentStroke.current = null; }} onPointerCancel={() => { currentStroke.current = null; }} onPointerLeave={() => setLaser(null)}>
-          <g transform={`translate(${viewport.x} ${viewport.y}) scale(${viewport.zoom})`}>
-            {strokes.map((s) => <polyline key={s.id} points={s.points.map((p) => `${p.x},${p.y}`).join(" ")} fill="none" className="tw-ink-stroke" />)}
-            {laser && ink === "laser" && <circle cx={laser.x} cy={laser.y} r={6 / viewport.zoom} className="tw-laser-dot" />}
-          </g>
-        </svg>
-      )}
-      {ink && (
-        <div className="tw-ink-controls">
-          <Button variant="outline" size="sm" onClick={() => { setInk(null); setLaser(null); }}>Done</Button>
-          <Button variant="outline" size="icon" aria-label="Clear temporary ink" onClick={() => setStrokes([])}><Trash2 /></Button>
-        </div>
-      )}
-      {live && <LiveRoomDialog onClose={() => setLive(false)} />}
       {present && <PresentationMode stops={validStops} index={Math.min(stop, Math.max(0, validStops.length - 1))} setIndex={setStop} auto={auto} setAuto={setAuto} pace={pace} setPace={setPace} title={canvas?.title ?? "Walkthrough"} onExit={exitPresent} />}
       {playback && <ThoughtPlayback history={s.history} title={canvas?.title ?? "Thought playback"} onExit={() => setPlayback(false)} />}
       {theatre && <DecisionTheatre onExit={() => setTheatre(false)} />}
@@ -259,7 +227,6 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
                   {group.tools.map((t) => (
                     <Button key={t.id} variant={tool === t.id ? "secondary" : "ghost"} title={t.label} className="w-full justify-start text-xs h-9 px-2" onClick={() => {
                       setTool(t.id); setError(""); setMessage("");
-                      if (t.id === "presence") setLive(true);
                       if (t.id === "discourse") { setOpen(false); window.dispatchEvent(new CustomEvent("threadwise:open-lab")); }
                       if (t.id === "evidence") onEvidence();
                     }}>
@@ -271,13 +238,6 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
             </nav>
             <section className="tw-studio-content">
               <h3 className="mb-5 flex items-center gap-2 font-display text-xl">{ALL_TOOLS.find((t) => t.id === tool)?.label}</h3>
-              {tool === "presence" && <Button onClick={() => setLive(true)}><Users />Host or join a live room</Button>}
-              {tool === "pointer" && (
-                <div className="flex gap-2">
-                  <Button onClick={() => { setInk("laser"); setOpen(false); }}><MousePointer2 />Laser</Button>
-                  <Button variant="outline" onClick={() => { setInk("pen"); setOpen(false); }}><PenLine />Ink</Button>
-                </div>
-              )}
               {tool === "inbox" && (
                 <>
                   <Textarea aria-label="Quick capture" placeholder="A thought worth keeping…" value={capture} onChange={(e) => setCapture(e.target.value)} className="mb-3" />
@@ -378,13 +338,6 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
                   ))}
                 </>
               )}
-              {tool === "stamps" && (
-                <>
-                  <Select value={s.selectedId ?? ""} onValueChange={s.select}><SelectTrigger aria-label="Card to stamp"><SelectValue placeholder="Choose a card" /></SelectTrigger><SelectContent>{s.nodes.map((n) => <SelectItem key={n.id} value={n.id}>{n.data.title}</SelectItem>)}</SelectContent></Select>
-                  <div className="mt-5 flex flex-wrap gap-2">{["agree", "challenge", "important", "celebrate"].map((stamp) => (<Button variant="outline" key={stamp} disabled={!selected} onClick={() => { if (!selected) return; const entries = readReactions(selected.data.meta["reactions"]); s.updateNode(selected.id, (d) => ({ ...d, meta: { ...d.meta, reactions: JSON.stringify({ ...entries, [stamp]: (entries[stamp] ?? 0) + 1 }) } })); }}><Stamp />{stamp}</Button>))}</div>
-                  {selected && <Button className="mt-4" variant="ghost" onClick={() => s.updateNode(selected.id, (d) => ({ ...d, meta: { ...d.meta, reactions: "" } }))}>Clear stamps</Button>}
-                </>
-              )}
               {tool === "risk" && (
                 <>
                   <p className="mb-4 text-xs text-muted-foreground">5,000 trials · independent card outcomes · every prerequisite must succeed. Estimates are yours, not inferred facts.</p>
@@ -453,23 +406,7 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
                   {findings?.findings.map((f, i) => (<article className="mt-5 border-t pt-4" key={i}><span className="font-mono text-[10px] uppercase text-accent-ink">{f.severity} · possible {f.bias.replaceAll("_", " ")}</span><h4 className="my-2 font-display text-xl">{f.title}</h4><p className="text-sm leading-relaxed">{f.challenge}</p><p className="my-3 text-xs text-muted-foreground">Test: {f.suggestedTest}</p><div className="flex flex-wrap gap-1">{f.nodeIds.map((id) => (<Button variant="ghost" size="sm" className="max-w-full whitespace-normal text-left" key={id} onClick={() => void rf.fitView({ nodes: s.nodes.filter((n) => n.id === id), padding: 0.8, duration: 400 })}>{s.nodes.find((n) => n.id === id)?.data.title}</Button>))}</div><Button variant="outline" size="sm" className="mt-2" onClick={() => { const anchor = s.nodes.find((n) => n.id === f.nodeIds[0]); const id = s.addNode("question", { x: (anchor?.position.x ?? 0) + 360, y: (anchor?.position.y ?? 0) + 280 }); s.updateNode(id, { title: f.title, body: f.challenge + "\n\nTest: " + f.suggestedTest }); if (anchor) s.connect({ source: anchor.id, target: id, sourceHandle: null, targetHandle: null }, "needs_evidence_from"); setMessage("Challenge added as a question."); }}>Add challenge to canvas</Button></article>))}
                 </>
               )}
-              {tool === "bridge" && (
-                <>
-                  <p className="mb-4 text-sm text-muted-foreground">Per-user connections need workspace setup before live synchronization can be enabled.</p>
-                  {["Linear", "GitHub", "Slack", "Jira"].map((provider) => (<div key={provider} className="flex justify-between gap-4 border-b py-4"><h4 className="font-display text-lg">{provider}</h4><span className="text-xs text-muted-foreground">{provider === "Jira" ? "Per-user connector unavailable" : "OAuth client not configured"}</span></div>))}
-                  <Button variant="outline" className="mt-5" onClick={() => saveFile(narrative(s.nodes.filter((n) => ["action", "experiment"].includes(n.data.kind)), s.edges, canvas?.title ?? "Execution plan"), "execution-plan.md", "text/markdown")}><Download />Export execution plan</Button>
-                </>
-              )}
               {tool === "evidence" && <Button onClick={onEvidence}><FileUp />Open evidence clipper</Button>}
-              {tool === "seal" && (
-                <>
-                  <p className="mb-4 text-xs text-muted-foreground">Personal sign-off records the account, timestamp and a fingerprint of this graph. Not a legal electronic signature.</p>
-                  <Textarea aria-label="Decision sign-off statement" placeholder="I approve this decision, subject to…" value={signature} onChange={(e) => setSignature(e.target.value)} />
-                  <Button className="mt-4" disabled={!user || !signature.trim() || busy} onClick={() => void act(async () => { if (!user) return; const hash = await graphDigest(s.nodes, s.edges); update({ seals: [...suite.seals, { id: crypto.randomUUID(), signer: accountLabel(user.user_metadata, "Account holder"), userId: user.id, at: new Date().toISOString(), digest: hash, note: signature.trim() }] }); setSignature(""); })}><Stamp />Sign decision</Button>
-                  {!user && <p className="mt-3 text-xs text-muted-foreground">Sign in to record a signature.</p>}
-                  {suite.seals.map((seal) => (<div className="tw-decision-seal mt-5" key={seal.id}><ShieldCheck className="h-6 w-6" /><div><h4 className="font-display text-lg">{seal.signer}</h4><p className="text-sm whitespace-pre-wrap break-words">{seal.note}</p><p className="mt-2 font-mono text-[10px] text-muted-foreground">{new Date(seal.at).toLocaleString()} · {seal.digest === digest ? "Current graph" : "Graph changed since signing"}</p><p className="mt-1 break-all font-mono text-[9px] text-muted-foreground">SHA-256 {seal.digest}</p></div></div>))}
-                </>
-              )}
               {tool === "export" && (
                 <div className="flex flex-col items-start gap-3">
                   <Button onClick={() => saveFile(graphSvg(s.nodes, s.edges, canvas?.title ?? "Threadwise canvas"), downloadSlug(canvas?.title ?? "canvas") + ".svg", "image/svg+xml")}><Download />Vector SVG</Button>

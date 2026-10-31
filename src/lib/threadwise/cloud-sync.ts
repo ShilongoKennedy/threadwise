@@ -137,7 +137,8 @@ export function useCloudSync() {
     const unsubscribe = useWorkspaces.subscribe((s, previous) => {
       if (s.workspaces === previous.workspaces) return;
       if (timer) clearTimeout(timer);
-      timer = setTimeout(() => void syncWorkspaces(), 1000);
+      // Typing coalesces for five seconds: one save per pause, not per keystroke.
+      timer = setTimeout(() => void syncWorkspaces(), 5000);
     });
     return () => {
       data.subscription.unsubscribe();
