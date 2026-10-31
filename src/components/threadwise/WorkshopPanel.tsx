@@ -83,7 +83,10 @@ export function WorkshopPanel() {
         });
     };
     load();
-    const poll = setInterval(load, 2500);
+    const poll = setInterval(() => {
+      if (document.hidden) return;
+      load();
+    }, 10000);
     const clock = setInterval(() => setNow(Date.now()), 1000);
     return () => {
       live = false;

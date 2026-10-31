@@ -132,7 +132,12 @@ export function useCloudSync() {
     window.addEventListener("online", online);
     window.addEventListener("offline", offline);
     window.addEventListener("pagehide", capture);
-    const interval = setInterval(() => void syncWorkspaces(), 6000);
+    // Background sync: once a minute, and never for a hidden tab. Local edits still
+    // save through the debounce below, so this only refreshes cross-device state.
+    const interval = setInterval(() => {
+      if (document.hidden) return;
+      void syncWorkspaces();
+    }, 60000);
     let timer: ReturnType<typeof setTimeout> | undefined;
     const unsubscribe = useWorkspaces.subscribe((s, previous) => {
       if (s.workspaces === previous.workspaces) return;
