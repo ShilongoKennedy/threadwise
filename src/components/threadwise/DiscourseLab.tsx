@@ -485,60 +485,45 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
   const TacticalGauge = ({ score, label = "Contradiction" }: { score: number, label?: string }) => {
     const radius = 46, cx = 60, cy = 60, startAngle = -210, endAngle = 30;
     const angle = startAngle + (endAngle - startAngle) * (Math.max(0, Math.min(100, score)) / 100);
-    
+
     const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
       const angleInRadians = (angleInDegrees * Math.PI) / 180.0;
       return { x: centerX + radius * Math.cos(angleInRadians), y: centerY + radius * Math.sin(angleInRadians) };
     };
-    
+
     const describeArc = (x: number, y: number, r: number, start: number, end: number) => {
       const startPt = polarToCartesian(x, y, r, end);
       const endPt = polarToCartesian(x, y, r, start);
       const largeArcFlag = end - start <= 180 ? "0" : "1";
       return ["M", startPt.x, startPt.y, "A", r, r, 0, largeArcFlag, 0, endPt.x, endPt.y].join(" ");
     };
-    
-    const needle = polarToCartesian(cx, cy, radius - 8, angle);
+
+    const tip = polarToCartesian(cx, cy, radius, angle);
 
     const ticks = Array.from({ length: 21 }).map((_, i) => {
       const tickAngle = startAngle + (endAngle - startAngle) * (i / 20);
       const isMajor = i % 5 === 0;
-      const p1 = polarToCartesian(cx, cy, radius + 6, tickAngle);
-      const p2 = polarToCartesian(cx, cy, radius + (isMajor ? 12 : 8), tickAngle);
-      return <line key={i} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={isMajor ? "var(--foreground)" : "var(--muted-foreground)"} strokeWidth={isMajor ? 2 : 1} />;
+      const p1 = polarToCartesian(cx, cy, radius + 7, tickAngle);
+      const p2 = polarToCartesian(cx, cy, radius + (isMajor ? 12 : 9), tickAngle);
+      return <line key={i} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#1A1A1A" strokeOpacity={isMajor ? 0.45 : 0.15} strokeWidth={isMajor ? 1.5 : 1} />;
     });
 
     return (
-      <div className="relative flex flex-col items-center justify-center w-full h-full min-h-[160px] rounded-xl bg-gradient-to-b from-[#1A1A1A] to-[#0A0A0A] border border-black shadow-inner overflow-hidden">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #fff 1px, transparent 1px)', backgroundSize: '4px 4px' }} />
-        
-        <svg width="100%" height="100%" viewBox="0 0 120 110" className="absolute inset-0 z-10">
-          <defs>
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-            </filter>
-            <linearGradient id="needleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#1A4BFF" />
-              <stop offset="100%" stopColor="#5B6B8C" />
-            </linearGradient>
-          </defs>
-
-          <path d={describeArc(cx, cy, radius, 75, endAngle)} fill="none" stroke="#1A4BFF" strokeWidth="10" strokeLinecap="round" opacity={0.6} />
-          <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="#333" strokeWidth="10" strokeLinecap="round" />
+      <div className="relative flex h-full w-full items-center justify-center">
+        <svg
+          viewBox="0 0 120 110"
+          className="w-full max-w-[200px]"
+          role="img"
+          aria-label={`${label}: ${Math.round(score)} out of 100`}
+        >
+          <path d={describeArc(cx, cy, radius, startAngle, endAngle)} fill="none" stroke="#1A1A1A" strokeOpacity={0.08} strokeWidth={7} />
+          <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#1A4BFF" strokeWidth={7} className="transition-all duration-1000 ease-out" />
           {ticks}
-          <path d={describeArc(cx, cy, radius, startAngle, angle)} fill="none" stroke="#1A4BFF" strokeWidth="10" strokeLinecap="round" filter="url(#glow)" className="transition-all duration-1000 ease-out" />
-          
-          <g className="transition-all duration-1000 ease-out">
-            <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="url(#needleGrad)" strokeWidth="3" strokeLinecap="round" filter="url(#glow)" />
-            <circle cx={cx} cy={cy} r="8" fill="#1A1A1A" stroke="#444" strokeWidth="2" />
-            <circle cx={cx} cy={cy} r="3" fill="#1A4BFF" filter="url(#glow)" />
-          </g>
+          <circle cx={tip.x} cy={tip.y} r={3.5} fill="#FFFFFF" stroke="#1A4BFF" strokeWidth={2.5} />
         </svg>
-        
-        <div className="absolute bottom-3 z-20 flex flex-col items-center">
-          <span className="font-mono text-[8px] uppercase tracking-widest text-[#1A4BFF]/80 mb-1">{label}</span>
-          <span className="font-display text-3xl text-[#1A4BFF] leading-none" style={{ textShadow: "0 0 15px rgba(26,75,255,0.6)" }}>{score}</span>
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-display text-[38px] leading-none text-[#1A1A1A]">{Math.round(score)}</span>
+          <span className="mt-1 font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/45">{label}</span>
         </div>
       </div>
     );
@@ -908,52 +893,65 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                     <p className="font-display text-2xl md:text-3xl leading-relaxed text-black/90 first-letter:text-7xl first-letter:float-left first-letter:mr-4 first-letter:mt-1">{analysis.conclusion}</p>
                   </section>
 
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-12 items-stretch mt-8">
-                    <div className="md:col-span-4 flex flex-col rounded-xl border border-black/10 bg-white p-5 shadow-sm h-[320px]">
-                      <div className="mb-2 flex items-center justify-between relative z-10">
-                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-black/50">Narrative Profile</h4>
-                        <Activity className="h-3 w-3 text-[#1A4BFF]" />
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-12 items-stretch mt-8">
+                    {/* 1. Narrative Profile (Span 4) */}
+                    <div className="md:col-span-4 flex flex-col border-2 border-[#1A1A1A] bg-white p-5 rounded-sm relative overflow-hidden">
+                      <div className="flex items-center justify-between mb-4 border-b border-[#1A1A1A]/10 pb-2">
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A] font-bold flex items-center gap-2">
+                          <Crosshair className="h-3.5 w-3.5 text-[#1A4BFF]" /> Narrative Profile
+                        </h4>
+                        <span className="font-mono text-[9px] text-[#1A4BFF]">LIVE_TELEMETRY</span>
                       </div>
-                      <div className="flex-1 w-full relative z-10 min-h-0">
+                      <div className="flex-1 w-full min-h-[220px] relative z-10">
                         <ResponsiveContainer width="100%" height="100%">
-                          <RadarChart cx="50%" cy="50%" outerRadius="75%" data={sourceRadarData} margin={{ top: 10, right: 20, bottom: 10, left: 20 }}>
-                            <PolarGrid stroke="var(--border)" strokeDasharray="3 3" />
-                            <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: 'var(--font-mono)' }} />
+                          <RadarChart cx="50%" cy="50%" outerRadius="75%" data={sourceRadarData}>
+                            <PolarGrid stroke="#1A1A1A" strokeOpacity={0.1} strokeDasharray="2 2" />
+                            <PolarAngleAxis dataKey="subject" tick={{ fill: '#1A1A1A', fontSize: 9, fontFamily: 'JetBrains Mono, monospace', fontWeight: 'bold' }} />
                             <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                            <Radar name="Analysis" dataKey="A" stroke="#1A4BFF" strokeWidth={2} fill="#1A4BFF" fillOpacity={0.15} />
+                            <Radar name="Analysis" dataKey="A" stroke="#1A4BFF" strokeWidth={2.5} fill="#1A4BFF" fillOpacity={0.15} dot={{ r: 3, fill: '#FFFFFF', stroke: '#1A4BFF', strokeWidth: 2 }} />
                           </RadarChart>
                         </ResponsiveContainer>
                       </div>
                     </div>
 
-                    <div className="md:col-span-4 flex flex-col rounded-xl border border-black/10 bg-white p-5 shadow-sm h-[320px]">
-                      <div className="mb-4 flex items-center justify-between relative z-10">
-                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-black/50">Key Actors</h4>
-                        <Globe className="h-3 w-3 text-black/40" />
+                    {/* 2. Key Actors (Span 4) */}
+                    <div className="md:col-span-4 flex flex-col border-2 border-[#1A1A1A] bg-white p-5 rounded-sm">
+                      <div className="flex items-center justify-between mb-4 border-b border-[#1A1A1A]/10 pb-2">
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A] font-bold flex items-center gap-2">
+                          <Globe className="h-3.5 w-3.5 text-[#1A4BFF]" /> Key Actors
+                        </h4>
+                        <span className="font-mono text-[9px] text-[#1A4BFF]">{analysis.entities?.length || 0} IDENTIFIED</span>
                       </div>
-                      <div className="flex-1 overflow-y-auto pr-2 relative z-10">
-                        <div className="flex flex-col gap-2">
-                          {analysis.entities?.map((entity: string, i: number) => {
-                            const isCentral = i < 2;
-                            const color = isCentral ? "bg-foreground text-background border-transparent" : "bg-black/5 text-black border-black/10";
-                            return (
-                              <span key={i} className={`w-full px-3 py-2 ${color} border rounded-md text-xs font-medium truncate`} title={entity}>
-                                {entity}
-                              </span>
-                            );
-                          })}
-                        </div>
+                      <div className="flex-1 overflow-y-auto pr-2 space-y-2 max-h-[240px]">
+                        {analysis.entities?.map((entity: string, i: number) => {
+                          const isCentral = i < 2;
+                          return (
+                            <div key={i} className="flex items-center gap-3 p-2 border border-[#1A1A1A]/10 rounded-sm bg-[#FDFBF7] hover:border-[#1A4BFF]/50 transition-colors group">
+                              <span className={`h-2 w-2 rounded-full shrink-0 ${isCentral ? 'bg-[#1A4BFF] shadow-[0_0_8px_rgba(26,75,255,0.6)]' : 'bg-[#1A1A1A]/20'}`} />
+                              <span className="font-display text-sm leading-tight text-[#1A1A1A] truncate flex-1 font-medium group-hover:text-[#1A4BFF] transition-colors">{entity}</span>
+                              <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground shrink-0">{isCentral ? 'PRIMARY' : 'SECONDARY'}</span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
 
-                    <div className="md:col-span-4 flex flex-col rounded-xl border border-black/10 bg-white p-5 shadow-sm h-[320px]">
-                      <div className="mb-2 flex items-center justify-between relative z-10">
-                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-black/50">Contradiction Index</h4>
-                        <ShieldAlert className="h-3 w-3 text-[#1A4BFF]" />
+                    {/* 3. Contradiction Index (Span 4) */}
+                    <div className="md:col-span-4 flex flex-col border-2 border-[#1A1A1A] bg-white p-5 rounded-sm relative">
+                      <div className="flex items-center justify-between mb-4 border-b border-[#1A1A1A]/10 pb-2">
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A] font-bold flex items-center gap-2">
+                          <ShieldAlert className="h-3.5 w-3.5 text-[#1A4BFF]" /> Contradiction Index
+                        </h4>
+                        <span className="font-mono text-[9px] uppercase text-[#1A1A1A]/50">METRIC_04</span>
                       </div>
-                      <div className="flex-1 flex flex-col items-center justify-center min-h-0">
+                      <div className="flex-1 flex flex-col items-center justify-center min-h-[220px]">
                         <TacticalGauge score={analysis.quantData?.contradictionIndex || 50} />
-                        <p className="text-[10px] text-center font-mono uppercase tracking-widest text-black/50 mt-4 border border-black/10 px-3 py-1 rounded-full bg-black/5">High friction detected</p>
+                        <div className="mt-4 w-full flex items-center justify-between border-t border-[#1A1A1A]/10 pt-3">
+                          <span className="font-mono text-[9px] uppercase tracking-widest text-[#1A1A1A]/60">STATUS</span>
+                          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A4BFF] border border-[#1A4BFF]/30 bg-[#1A4BFF]/5 px-2 py-0.5 rounded-sm">
+                            {analysis.quantData?.contradictionIndex > 70 ? "CRITICAL" : analysis.quantData?.contradictionIndex > 40 ? "ELEVATED" : "NOMINAL"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -28,6 +28,14 @@ export function WorkspaceBar() {
       </nav>
       <span role="status" className={`hidden max-w-48 truncate font-mono text-[9px] sm:block ${s.status.includes('Retry') ? 'text-accent-ink' : 'text-muted-foreground'}`} title={s.status}><Cloud className="mr-1 inline h-3 w-3" />{s.status}</span>
       <Button size="sm" variant="outline" disabled={replay} aria-label="Create new canvas" onClick={() => newCanvas()}><Plus /><span className="hidden sm:inline">New canvas</span></Button>
+      <div className="hidden items-center border-l border-[#1A1A1A]/15 pl-1 md:flex">
+        <ColorPicker
+          value={c?.color}
+          label="Canvas color"
+          disabled={replay || !c}
+          onChange={(color) => { if (c) s.setCanvasColor(c.id, paperColor(color)); }}
+        />
+      </div>
       <Button size="icon" variant={s.status.includes('Retry') ? 'outline' : 'ghost'} title="Retry cloud sync" aria-label="Retry cloud sync" disabled={!user || s.status === 'Saving…'} onClick={() => void syncWorkspaces()}><RefreshCw className={s.status === 'Saving…' ? 'animate-spin' : ''} /></Button>
       <Button size="icon" variant="ghost" title={user ? "Your account" : "Sign in to sync"} aria-label="Workspace account" onClick={() => setAccount(true)}><UserRound /></Button>
     </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, Trash2, X, LayoutTemplate } from "lucide-react";
+import { BookOpen, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,43 +23,15 @@ import { useThread } from "@/lib/threadwise/store";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
 import { EpistemicGlyph, TYPE_COLOR, TYPE_ICON } from "./ThreadNode";
 import { ColorPicker } from "./ColorPicker";
-import { paperColor } from "@/lib/threadwise/paper";
 
 export function DetailsPanel() {
   const { selectedId, nodes, edges, select } = useThread();
-  const ws = useWorkspaces();
-  const w = ws.workspaces.find((w) => w.id === ws.activeId);
-  const c = w?.document.canvases.find((c) => c.id === w.document.activeCanvasId);
-  
   const node = nodes.find((n) => n.id === selectedId);
   const edge = !node ? edges.find((e) => e.id === selectedId) : undefined;
 
-  if (!node && !edge) {
-    return (
-      <aside className="absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col overflow-hidden tw-sheet rounded-t-sm md:inset-x-auto md:right-6 md:top-6 md:bottom-6 md:max-h-none md:w-[360px] md:rounded-sm border bg-card shadow-[var(--shadow-lift)]">
-        <div className="flex items-center justify-between border-b px-5 py-3">
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            Canvas Settings
-          </span>
-        </div>
-        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
-          <div className="space-y-3">
-            <Label className="font-mono text-[10px] font-normal uppercase tracking-[0.16em] text-muted-foreground">Canvas Paper</Label>
-            <ColorPicker 
-              value={c?.color} 
-              label="Canvas color" 
-              disabled={!c} 
-              onChange={(color) => { if (c) ws.setCanvasColor(c.id, paperColor(color)); }} 
-            />
-          </div>
-          <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-            <LayoutTemplate className="h-5 w-5 mb-2 opacity-50" />
-            Select a card to inspect its intelligence, or use the tools in the Studio to analyze the board.
-          </div>
-        </div>
-      </aside>
-    );
-  }
+  // Nothing selected means nothing to inspect: the panel must not sit open on a
+  // default "settings" state. Canvas colour now lives in the workspace bar.
+  if (!node && !edge) return null;
 
   return (
     <aside className="absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col overflow-hidden tw-sheet rounded-t-sm md:inset-x-auto md:right-6 md:top-6 md:bottom-6 md:max-h-none md:w-[360px] md:rounded-sm border bg-card shadow-[var(--shadow-lift)]">
