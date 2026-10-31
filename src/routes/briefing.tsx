@@ -31,6 +31,22 @@ type NewsBrief = {
   created_at: string;
 };
 
+/** The assessment arrives as 3–4 paragraphs separated by blank lines. */
+const toParagraphs = (text: string): string[] => {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+  const blocks = trimmed
+    .split(/\n\s*\n/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (blocks.length > 1) return blocks;
+  // Some models separate paragraphs with single newlines instead.
+  return trimmed
+    .split(/\n+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+};
+
 /** Legacy rows stored these as plain text; keep them renderable as one bullet. */
 const toBullets = (value: unknown): string[] => {
   if (Array.isArray(value)) return value.filter((item): item is string => typeof item === "string");
@@ -116,6 +132,7 @@ function BriefingPage() {
   const threat = brief ? threatOf(brief.threat_level) : FALLBACK_THREAT;
   const level = (brief?.threat_level ?? "MODERATE").toUpperCase();
   const dossier = brief ? `D-${brief.id.slice(0, 6).toUpperCase()}` : "D-000000";
+  const assessment = toParagraphs(brief?.bluf ?? "");
   const framing = brief ? toBullets(brief.framing) : [];
   const omission = brief ? toBullets(brief.omission) : [];
 
@@ -258,26 +275,37 @@ function BriefingPage() {
               <div className="border-b-2 border-[#1A1A1A] px-5 py-5 md:px-7 md:py-6">
                 <div className="mb-3 flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.3em] text-[#1A1A1A]/40">
                   <span className="h-1.5 w-1.5 bg-[#1A4BFF]" />
-                  Executive assessment
+                  Target headline
                 </div>
                 <h1 className="max-w-[24ch] font-display text-[clamp(30px,4.2vw,62px)] leading-[0.95] tracking-[-0.02em]">
                   {brief.headline}
                 </h1>
               </div>
 
-              {/* BLUF */}
-              <section className="border-b-2 border-[#1A1A1A]">
-                <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 px-5 py-1.5">
+              {/* Executive assessment */}
+              <section className="border-y-2 border-[#1A4BFF] bg-white">
+                <div className="flex items-center justify-between border-b border-[#1A4BFF]/25 px-5 py-1.5">
                   <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.26em] text-[#1A4BFF]">
-                    BLUF · Bottom line up front
+                    Executive Assessment
                   </h2>
                   <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
                     01
                   </span>
                 </div>
-                <p className="px-5 py-5 font-serif text-[22px] font-semibold leading-[1.4] text-[#1A1A1A] md:px-7 md:text-[26px]">
-                  {brief.bluf}
-                </p>
+                <div className="px-5 py-6 md:px-7 md:py-7">
+                  {assessment.map((paragraph, index) => (
+                    <p
+                      key={index}
+                      className={`font-serif text-xl leading-relaxed text-[#1A1A1A]/90 md:text-2xl ${
+                        index === 0
+                          ? "first-letter:float-left first-letter:mr-4 first-letter:mt-1 first-letter:font-display first-letter:text-7xl first-letter:text-[#1A4BFF]"
+                          : "mt-5"
+                      }`}
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
               </section>
 
               {/* Findings grid */}

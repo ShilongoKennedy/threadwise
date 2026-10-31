@@ -164,7 +164,7 @@ const bullets = z.array(z.string().trim().min(4)).min(1).max(6);
 
 const briefSchema = z.object({
   headline: z.string().trim().min(3).max(90),
-  bluf: z.string().trim().min(20).max(320),
+  bluf: z.string().trim().min(300).max(3000),
   framing: bullets,
   omission: bullets,
   historical_echo: z.string().trim().min(20).max(320),
@@ -188,7 +188,11 @@ Voice: cold, flat, declarative. Present tense, active voice. Short words. No hed
 
 Hard limits — break these and the dossier is rejected:
 - headline: MAXIMUM 6 WORDS. Count them before you answer. A judgement, not an event description, and never a reworded version of the published headline.
-- bluf: MAXIMUM 2 SENTENCES. What actually happened, stripped of spin. Actors, action, consequence.
+- bluf: THE EXECUTIVE ASSESSMENT. 3 to 4 paragraphs, 200–300 words total, separated by a single blank line. Structure it exactly:
+  ¶1 THE EVENT — what actually happened, stripped of every adjective and emotional term. Actors, action, consequence.
+  ¶2 THE SPIN — the narrative the source is pushing, how it frames blame and legitimacy, what it wants you to feel.
+  ¶3 THE REALITY — the hidden geopolitical or financial truth: who gains, who pays, what the stakes actually are beneath the story.
+  ¶4 (optional) — what to watch next, and the condition that would falsify this reading.
 - framing: EXACTLY 3 bullets, each MAXIMUM 18 words. Name the technique mechanically: loaded adjectives, passive voice hiding agency, unnamed sources, false dilemma, selective quotation. Describe the technique, never the author's soul.
 - omission: EXACTLY 3 bullets, each MAXIMUM 18 words. The dog that didn't bark: missing numbers, absent parties, questions the piece never answers.
 - historical_echo: MAXIMUM 2 SENTENCES. One concrete precedent, and where the comparison breaks.
@@ -196,13 +200,13 @@ Hard limits — break these and the dossier is rejected:
 
 Rules:
 - Only the supplied article may be cited. Never import outside facts.
-- No markdown asterisks, no numbering, no trailing periods on bullets unless the bullet is a full sentence.
+- bluf is the only field that may contain paragraph breaks (blank lines). No markdown asterisks, no numbering, no trailing periods on bullets unless the bullet is a full sentence.
 - If the evidence is thin, say so in one clause and move on.
 
 Return ONLY this JSON shape:
 {
   "headline": "six words maximum",
-  "bluf": "two sentences maximum",
+  "bluf": "¶1 The event.\\n\\n¶2 The spin.\\n\\n¶3 The reality.",
   "framing": ["bullet", "bullet", "bullet"],
   "omission": ["bullet", "bullet", "bullet"],
   "historical_echo": "two sentences maximum",
