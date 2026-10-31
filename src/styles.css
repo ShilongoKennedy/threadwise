@@ -286,6 +286,26 @@ body::after {
 .tw-toolstrip { scrollbar-width: none; }
 .tw-toolstrip::-webkit-scrollbar { display: none; }
 
+/* ---- Bottom dock ---- */
+.dock {
+  background: var(--dock);
+  color: var(--dock-foreground);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 8%) inset,
+    0 20px 40px -12px oklch(0.2 0.02 55 / 45%),
+    0 0 0 1px oklch(0.2 0.02 55 / 30%);
+  scrollbar-width: none;
+}
+.dock::-webkit-scrollbar { display: none; }
+.tw-press {
+  transition: transform .12s ease, background-color .15s, color .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tw-press:active { transform: scale(.94); }
+/* The focus-field dims desk furniture while the reader is inside a thought. */
+.tw-focus-field .dock { opacity: 0; pointer-events: none; transition: opacity .25s; }
+@media (prefers-reduced-motion: reduce) { .tw-press { transition: none; } }
+
 /* Organizing papers retain the same ink and epistemic spine. */
 .tw-card.tw-tall { height: var(--note-height, 260px); grid-template-rows: minmax(0, 1fr); }
 .tw-card.tw-tall .tw-full { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; }

@@ -827,7 +827,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
         </header>
 
         <div
-          className={`pointer-events-none absolute inset-x-0 bottom-[max(12px,env(safe-area-inset-bottom))] z-10 justify-center px-3 sm:bottom-5 ${threadId ? "hidden md:flex" : "flex"}`}
+          className={`pointer-events-none absolute inset-x-0 bottom-[max(12px,env(safe-area-inset-bottom))] z-50 justify-center px-3 sm:bottom-5 ${threadId ? "hidden md:flex" : "flex"}`}
         >
           <nav
             className="dock pointer-events-auto flex max-w-full items-center gap-0.5 overflow-x-auto rounded-2xl p-1.5"
