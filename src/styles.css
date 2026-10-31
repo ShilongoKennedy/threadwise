@@ -171,30 +171,30 @@ body::after {
 /* The physical card lift and tilt */
 .tw-card {
   --lift: 0; --near: 0;
-  --off: calc(1px + var(--lift) * 16px + var(--near) * var(--lift) * 10px);
+  --off: calc(1px + var(--lift) * 20px + var(--near) * var(--lift) * 15px);
   transform-style: preserve-3d;
   isolation: isolate;
   
   /* Deep, reactive shadow */
   box-shadow:
     0 0 0 1px oklch(0.25 0.02 60 / calc(7% + (1 - var(--lift)) * 6%)),
-    calc(var(--lx, 0) * -1 * var(--off) * 0.6) calc(var(--off) * 0.5 + var(--ly, 0) * -1 * var(--off) * 0.4) calc(var(--off) * 1.6) calc(var(--off) * -0.6) oklch(0.25 0.02 60 / calc(6% + var(--lift) * 14%)),
-    calc(var(--lx, 0) * -1 * var(--off) * 1.4) calc(var(--off) * 1.5 + var(--ly, 0) * -1 * var(--off)) calc(var(--off) * 3.4) calc(var(--off) * -1.6) oklch(0.25 0.02 60 / calc(var(--lift) * 24%));
+    calc(var(--lx, 0) * -1 * var(--off) * 0.8) calc(var(--off) * 0.8 + var(--ly, 0) * -1 * var(--off) * 0.6) calc(var(--off) * 2) calc(var(--off) * -0.8) oklch(0.25 0.02 60 / calc(8% + var(--lift) * 18%)),
+    calc(var(--lx, 0) * -1 * var(--off) * 1.6) calc(var(--off) * 2 + var(--ly, 0) * -1 * var(--off) * 1.2) calc(var(--off) * 4.2) calc(var(--off) * -2.2) oklch(0.25 0.02 60 / calc(var(--lift) * 32%));
   
   /* 3D transform combining rotation, lift, and depth */
   transform: 
     rotateX(var(--rx, 0deg)) 
     rotateY(var(--ry, 0deg)) 
-    translateY(calc(var(--lift) * -4px - var(--near) * var(--lift) * 6px))
-    translateZ(calc(var(--near) * var(--lift) * 20px));
+    translateY(calc(var(--lift) * -6px - var(--near) * var(--lift) * 8px))
+    translateZ(calc(var(--near) * var(--lift) * 40px));
     
-  transition: box-shadow .35s ease, transform .4s cubic-bezier(.2,.8,.2,1);
+  transition: box-shadow .4s ease, transform .5s cubic-bezier(.2,.8,.2,1);
   
   /* Dynamic light reflection */
-  background-image: radial-gradient(circle at var(--hx, 50%) var(--hy, 0%), color-mix(in oklab, var(--card) 80%, white) 0%, transparent 60%);
+  background-image: radial-gradient(circle at var(--hx, 50%) var(--hy, 0%), color-mix(in oklab, var(--card) 85%, white) 0%, transparent 65%);
   background-blend-mode: normal;
 }
-.tw-card:not(:hover) { background-image: none; transition: box-shadow .35s ease, transform .4s cubic-bezier(.2,.8,.2,1); }
+.tw-card:not(:hover) { background-image: none; transition: box-shadow .4s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
 .react-flow__node:active .tw-card {
   transform: rotateX(0deg) rotateY(0deg) translateY(0) scale(0.97);
   transition: transform 0.1s ease;

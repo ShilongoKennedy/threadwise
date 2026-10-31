@@ -100,13 +100,12 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
   const hasUrl = isUrl(data.meta["sourceUrl"]) || isUrl(data.meta["source"]);
   const linkedCount = useThread((s) => s.edges.filter((e) => e.source === id || e.target === id).length);
   
-  // 3D Tilt handlers for the Dossier
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width;
     const py = (e.clientY - r.top) / r.height;
-    e.currentTarget.style.setProperty("--rx", `${(py - 0.5) * -8}deg`);
-    e.currentTarget.style.setProperty("--ry", `${(px - 0.5) * 8}deg`);
+    e.currentTarget.style.setProperty("--rx", `${(py - 0.5) * -12}deg`);
+    e.currentTarget.style.setProperty("--ry", `${(px - 0.5) * 12}deg`);
     e.currentTarget.style.setProperty("--near", "1");
   };
   const onPointerLeave = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -124,22 +123,22 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
     >
       <Handle type="target" position={Position.Left} className="tw-handle" />
       <div
-        className="absolute -top-2 left-3 z-10 flex items-center gap-1.5 rounded-t-md border border-b-0 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.16em] transition-transform"
+        className="absolute -top-2 left-3 z-10 flex items-center gap-1.5 rounded-t-md border border-b-0 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.16em] transition-transform duration-200"
         style={{
           background: "var(--card)",
           borderColor: "#8B6F47",
           color: "#8B6F47",
-          transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(24px)",
+          transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(32px)",
         }}
       >
         <FolderOpen className="h-3 w-3" />
         Source dossier
       </div>
       <div
-        className="mt-4 rounded-[14px] border bg-card p-4 text-card-foreground shadow-sm transition-transform"
+        className="mt-4 rounded-[14px] border bg-card p-4 text-card-foreground shadow-sm transition-transform duration-200"
         style={{ 
           borderColor: "#8B6F47",
-          transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(12px)"
+          transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(16px)"
         }}
       >
         <div className="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
@@ -209,7 +208,6 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
   const source = data.meta["source"];
   const sourceIsUrl = isUrl(source);
   
-  // The Omission gets a distinct dashed border and slightly darker background
   const isOmission = data.kind === "omission";
 
   return (
@@ -257,9 +255,9 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
         e.currentTarget.style.setProperty("--hx", `${px * 100}%`);
         e.currentTarget.style.setProperty("--hy", `${py * 100}%`);
         
-        // 3D Tilt: Max 6 degrees
-        e.currentTarget.style.setProperty("--rx", `${(py - 0.5) * -6}deg`);
-        e.currentTarget.style.setProperty("--ry", `${(px - 0.5) * 6}deg`);
+        // 3D Tilt: Cranked up to 15 degrees for maximum physical feel
+        e.currentTarget.style.setProperty("--rx", `${(py - 0.5) * -15}deg`);
+        e.currentTarget.style.setProperty("--ry", `${(px - 0.5) * 15}deg`);
         e.currentTarget.style.setProperty("--near", "1");
       }}
       onPointerLeave={(e) => {
