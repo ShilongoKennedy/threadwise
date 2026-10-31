@@ -297,6 +297,42 @@ export type Database = {
         }
         Relationships: []
       }
+      news_briefs: {
+        Row: {
+          analysis: Json
+          created_at: string
+          headline: string
+          id: string
+          model: string | null
+          sources: Json
+          story_count: number | null
+          summary: string
+          tags: string[]
+        }
+        Insert: {
+          analysis?: Json
+          created_at?: string
+          headline: string
+          id?: string
+          model?: string | null
+          sources?: Json
+          story_count?: number | null
+          summary: string
+          tags?: string[]
+        }
+        Update: {
+          analysis?: Json
+          created_at?: string
+          headline?: string
+          id?: string
+          model?: string | null
+          sources?: Json
+          story_count?: number | null
+          summary?: string
+          tags?: string[]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

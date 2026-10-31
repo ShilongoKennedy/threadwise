@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { Link } from "@tanstack/react-router";
 import Canvas from "./Canvas";
 import { DiscourseLab } from "./DiscourseLab";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
 import { emptySuite } from "@/lib/threadwise/advanced";
 import { Button } from "@/components/ui/button";
-import { Columns, LayoutPanelTop, PanelRight, X, Command, Keyboard } from "lucide-react";
+import { Columns, LayoutPanelTop, PanelRight, X, Command, Keyboard, Newspaper } from "lucide-react";
 import { CommandPalette } from "./CommandPalette";
 import { ShortcutsModal } from "./ShortcutsModal";
 
@@ -185,6 +186,14 @@ export function WorkspaceShell() {
                Switch to {activeTab === "lab" ? "Canvas" : "Lab"}
              </Button>
           )}
+          <Link
+            to="/briefing"
+            title="Read today's Morning Brief"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-white shadow-[2px_2px_0_0_#1A1A1A] transition-all hover:bg-[#1A1A1A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+          >
+            <Newspaper className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Morning Brief</span>
+          </Link>
         </div>
       </div>
 
