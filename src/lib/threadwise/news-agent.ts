@@ -1,9 +1,9 @@
 /**
  * Autonomous News Agent — server only.
  *
- * Pulls three world-news feeds, reads the top story from each through Jina's
- * reader, and asks DeepSeek for a single forensic brief. Never import this from
- * a component: it reads server environment variables and calls paid APIs.
+ * Single-target deep dive: take the first usable story from the feeds, clean it
+ * through Jina's reader, and let DeepSeek dissect it as an intelligence dossier.
+ * Never import this from a component: it reads server env and calls paid APIs.
  */
 import { XMLParser } from "fast-xml-parser";
 import { generateText } from "ai";
@@ -12,7 +12,7 @@ import { extractJson, getModel } from "./ai/ai-providers.server";
 
 export type FeedSource = { name: string; url: string };
 
-/** Free, no-key world-news feeds. Order matters: it drives source diversity. */
+/** Free, no-key world-news feeds. Order is priority: the first usable story wins. */
 export const NEWS_FEEDS: FeedSource[] = [
   { name: "BBC World", url: "http://feeds.bbci.co.uk/news/world/rss.xml" },
   { name: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml" },
@@ -70,11 +70,11 @@ function linkOf(value: unknown): string {
 const normaliseUrl = (url: string) => url.replace(/[?#].*$/, "").replace(/\/$/, "");
 
 /**
- * Reads every feed in parallel and interleaves them one story at a time, so the
- * three picks always span three publishers where the feeds cooperate. Individual
- * feed failures degrade to "fewer stories" rather than a failed run.
+ * Reads every feed in parallel, then interleaves them one story at a time so a
+ * dead feed degrades to the next publisher rather than an empty run. The default
+ * limit of 1 makes this a single-target pick.
  */
-export async function fetchTopStories(limit = 3): Promise<Story[]> {
+export async function fetchTopStories(limit = 1): Promise<Story[]> {
   const perFeed = await Promise.all(
     NEWS_FEEDS.map(async (feed): Promise<Story[]> => {
       try {
@@ -137,85 +137,76 @@ export async function fetchArticleText(url: string): Promise<string> {
 
   const text = (await response.text()).replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
   if (text.length < 400) throw new Error(`Reader returned too little text for ${url}`);
-  return text.slice(0, 12_000);
+  return text.slice(0, 14_000);
 }
 
 const briefSchema = z.object({
   headline: z.string().trim().min(8).max(160),
-  summary: z.string().trim().min(40),
-  sources: z.array(z.string()).default([]),
-  analysis: z.array(z.string().trim().min(20)).min(2),
-  tags: z.array(z.string().trim().min(2)).max(20).default([]),
+  bluf: z.string().trim().min(40),
+  framing: z.string().trim().min(40),
+  omission: z.string().trim().min(30),
+  historical_echo: z.string().trim().min(30),
+  source_url: z.string().trim().default(""),
 });
 
 export type NewsBriefDraft = {
   headline: string;
-  summary: string;
-  sources: string[];
-  analysis: string[];
-  tags: string[];
+  bluf: string;
+  framing: string;
+  omission: string;
+  historical_echo: string;
+  source_url: string;
 };
 
-const SYSTEM = `You are a forensic intelligence analyst writing a daily geopolitical brief. You are not a news summariser and you are not an advocate.
+const SYSTEM = `You are a ruthless intelligence analyst. You are given ONE news article. You are not a summariser, a commentator, or a moralist. You produce a single-target dossier that a decision-maker reads in ninety seconds.
 
-Method:
-1. Read every source. Establish what is asserted, by whom, and on what evidence.
-2. Compare sources. Where do they agree, and where does the same event get incompatible explanations?
-3. Name what none of them say: the missing actor, the uncosted assumption, the question the framing avoids.
-4. Separate observation from inference. Never invent a fact, figure, name or quote.
+Framework, in this order:
+
+1. BLUF — Bottom Line Up Front. What actually happened, stripped of emotion and media spin. Actors, action, consequence. If the article asserts something it cannot support, say so in one clause.
+
+2. FRAMING — How the author is steering the reader. Be specific and mechanical: loaded adjectives, passive voice hiding agency, unnamed sources, rhetorical questions, false dilemmas, appeals to fear or authority, selective quotation, what is foregrounded versus buried. Quote at most six words at a time. Never accuse the author of motives you cannot evidence from the text; describe the technique instead.
+
+3. OMISSION — The dog that didn't bark. Which context, numbers, counter-claims, affected parties or obvious follow-up questions are absent? What would a hostile editor ask first that this piece never answers?
+
+4. HISTORICAL ECHO — The precedent this story invokes, repeats, or conveniently forgets. Name a concrete historical analogue and say precisely how it maps on, and where it breaks down.
 
 Rules:
-- Only the supplied articles may be cited. Do not add outside sources.
-- No hedging filler ("it remains to be seen", "only time will tell").
-- Attribute contested claims to the source making them.
-- The headline is stark and analytical, not sensational.
+- Only the supplied article may be cited. Never import outside facts you cannot verify from it.
+- No hedging filler. No "it remains to be seen", no "only time will tell", no both-sides throat-clearing.
+- No markdown, no bullet lists inside the fields; each field is one tight paragraph.
+- If the evidence for a claim is thin, say so plainly and move on.
+- Write in the present tense, active voice.
 
-Return ONLY a JSON object:
+Return ONLY a JSON object with exactly these keys:
 {
-  "headline": "a stark, analytical title",
-  "summary": "one paragraph: the actual state of play and why it matters",
-  "sources": ["the exact URLs supplied"],
-  "analysis": [
-    "paragraph 1 — cross-source synthesis",
-    "paragraph 2 — contradictions between sources",
-    "paragraph 3 — omissions and what is not being asked"
-  ],
-  "tags": ["geopolitics", "…"]
+  "headline": "a stark, analytical title — not the article's headline",
+  "bluf": "one paragraph: what actually happened and why it matters",
+  "framing": "one paragraph: the specific linguistic and rhetorical techniques at work",
+  "omission": "one paragraph: the missing context and the questions nobody asked",
+  "historical_echo": "one paragraph: the precedent invoked or ignored",
+  "source_url": "the exact URL of the supplied article"
 }`;
 
-/** Turns the day's article texts into one validated brief via DeepSeek. */
+/** Turns one article into a validated dossier via DeepSeek. */
 export async function generateBrief(stories: StoryText[]): Promise<NewsBriefDraft> {
-  if (!stories.length) throw new Error("No articles were supplied to the brief generator.");
-
-  const corpus = stories
-    .map(
-      (story, index) =>
-        `### SOURCE ${index + 1} — ${story.source}\nTITLE: ${story.title}\nURL: ${story.url}\n\n${story.text}`,
-    )
-    .join("\n\n---\n\n");
+  const story = stories[0];
+  if (!story) throw new Error("No article was supplied to the brief generator.");
 
   const { text } = await generateText({
     model: getModel("deepseek"),
     system: SYSTEM,
-    prompt: `Today's source pack contains ${stories.length} articles.\n\n${corpus}\n\nWrite the brief now.`,
-    temperature: 0.3,
+    prompt: `PUBLISHER: ${story.source}\nHEADLINE AS PUBLISHED: ${story.title}\nURL: ${story.url}\n\nARTICLE (cleaned markdown):\n${story.text}\n\nProduce the dossier now.`,
+    temperature: 0.2,
     maxRetries: 1,
   });
 
   const parsed = briefSchema.safeParse(extractJson<unknown>(text));
   if (!parsed.success) {
-    throw new Error(`The model returned an unusable brief: ${parsed.error.issues[0]?.message ?? "unknown shape"}`);
+    throw new Error(
+      `The model returned an unusable dossier: ${parsed.error.issues[0]?.message ?? "unknown shape"}`,
+    );
   }
 
-  const allowed = new Set(stories.map((story) => story.url));
-  const cited = parsed.data.sources.filter((url) => allowed.has(url));
-
-  return {
-    headline: parsed.data.headline,
-    summary: parsed.data.summary,
-    // Trust the model's citations when they are real; otherwise fall back to what we actually read.
-    sources: cited.length ? [...new Set(cited)] : [...allowed],
-    analysis: parsed.data.analysis,
-    tags: [...new Set(parsed.data.tags.map((tag) => tag.toLowerCase()))].slice(0, 6),
-  };
+  // The source must be the article we actually read, whatever the model echoed back.
+  return { ...parsed.data, source_url: story.url };
 }

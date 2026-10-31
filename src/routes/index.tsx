@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
-  ArrowUpRight, FileText, Activity, ShieldAlert, 
+  ArrowUpRight, ArrowRight, FileText, Activity, ShieldAlert, 
   FileWarning, Search, Github, Twitter, Crosshair
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
@@ -177,6 +177,17 @@ function LandingPage() {
             <p className="text-lg md:text-2xl text-[#1A1A1A]/60 leading-relaxed max-w-xl font-light">
               Paste a speech. Uncover the hidden motives, contradictions, and strategic blind spots in seconds.
             </p>
+
+            <Link
+              to="/briefing"
+              className="group mt-8 inline-flex items-center gap-3 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-5 py-3.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white shadow-[6px_6px_0_0_#1A1A1A] transition-all duration-150 hover:bg-[#1A1A1A] hover:shadow-[3px_3px_0_0_#1A1A1A] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none md:px-6 md:text-[11px]"
+            >
+              Read Today&rsquo;s Intelligence Brief
+              <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1" />
+            </Link>
+            <span className="mt-3 font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/35">
+              Updated daily by the autonomous agent
+            </span>
           </div>
 
           {/* Right Side: Technical Annotations */}

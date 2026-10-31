@@ -299,37 +299,37 @@ export type Database = {
       }
       news_briefs: {
         Row: {
-          analysis: Json
+          bluf: string
           created_at: string
+          framing: string
           headline: string
+          historical_echo: string
           id: string
           model: string | null
-          sources: Json
-          story_count: number | null
-          summary: string
-          tags: string[]
+          omission: string
+          source_url: string
         }
         Insert: {
-          analysis?: Json
+          bluf: string
           created_at?: string
+          framing: string
           headline: string
+          historical_echo: string
           id?: string
           model?: string | null
-          sources?: Json
-          story_count?: number | null
-          summary: string
-          tags?: string[]
+          omission: string
+          source_url: string
         }
         Update: {
-          analysis?: Json
+          bluf?: string
           created_at?: string
+          framing?: string
           headline?: string
+          historical_echo?: string
           id?: string
           model?: string | null
-          sources?: Json
-          story_count?: number | null
-          summary?: string
-          tags?: string[]
+          omission?: string
+          source_url?: string
         }
         Relationships: []
       }

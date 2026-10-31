@@ -44,7 +44,8 @@ export const Route = createFileRoute("/api/news-brief")({
               import("@supabase/supabase-js"),
             ]);
 
-          const stories = await fetchTopStories(3);
+          // Single target: one story, one dossier.
+          const stories = await fetchTopStories(1);
           if (!stories.length) return json({ error: "No stories were found in the feeds." }, 502);
 
           stage = "read";
@@ -75,12 +76,12 @@ export const Route = createFileRoute("/api/news-brief")({
             .from("news_briefs")
             .insert({
               headline: brief.headline,
-              summary: brief.summary,
-              sources: brief.sources,
-              analysis: brief.analysis,
-              tags: brief.tags,
+              bluf: brief.bluf,
+              framing: brief.framing,
+              omission: brief.omission,
+              historical_echo: brief.historical_echo,
+              source_url: brief.source_url,
               model: process.env["DEEPSEEK_MODEL"] ?? "deepseek-chat",
-              story_count: readable.length,
             })
             .select("id")
             .single();
@@ -90,8 +91,7 @@ export const Route = createFileRoute("/api/news-brief")({
             {
               ok: true,
               id: data.id,
-              stories: readable.length,
-              sources: brief.sources,
+              source: brief.source_url,
               ms: Date.now() - startedAt,
             },
             200,
