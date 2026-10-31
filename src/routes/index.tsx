@@ -101,8 +101,8 @@ function LandingPage() {
         }
 
         .stamp {
-          border: 2px solid #C24A35;
-          color: #C24A35;
+          border: 2px solid #1A4BFF;
+          color: #1A4BFF;
           padding: 2px 8px;
           font-family: monospace;
           font-weight: bold;
@@ -217,7 +217,7 @@ function LandingPage() {
               <div className="w-2 h-2 rounded-full bg-black/60 shadow-inner" />
             </div>
 
-            <div className="relative bg-[#FDFBF7] aspect-[16/10] flex overflow-hidden rounded-t-md">
+            <div className="relative bg-[#FDFBF7] aspect-[16/10] min-h-[380px] flex overflow-hidden rounded-t-md">
               {/* INTERACTIVE DEMO COMPONENT */}
               <InteractiveLaptop />
             </div>
@@ -327,8 +327,8 @@ function LandingPage() {
                   <b className="text-[15px] font-display block mb-2">Rule of Law vs. Force</b>
                   <p className="text-[12px] text-[#1A1A1A]/60 leading-relaxed">Citing 'rule of law' alongside implicit military force reveals a protection-racket mentality.</p>
                 </div>
-                <div className="bg-[#FDFBF7] border border-[#1A1A1A]/10 p-5 rounded-sm shadow-sm border-l-4 border-l-[#E3D398]">
-                  <span className="text-[9px] font-mono uppercase text-[#E3D398] block mb-2 font-bold tracking-widest">Fallacy</span>
+                <div className="bg-[#FDFBF7] border border-[#1A1A1A]/10 p-5 rounded-sm shadow-sm border-l-4 border-l-[#1A1A1A]">
+                  <span className="text-[9px] font-mono uppercase text-[#1A1A1A]/60 block mb-2 font-bold tracking-widest">Fallacy</span>
                   <b className="text-[15px] font-display block mb-2">Appeal to Force</b>
                   <p className="text-[12px] text-[#1A1A1A]/60 leading-relaxed">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
                 </div>

@@ -43,8 +43,8 @@ export const TYPE_COLOR: Record<ThreadNodeType, string> = {
   experiment: "var(--type-experiment)",
   action: "var(--type-action)",
   portal: "var(--foreground)",
-  dossier: "#8B6F47",
-  omission: "#8B1A1A", // Dark crimson for blind spots
+  dossier: "var(--type-dossier)",
+  omission: "var(--type-omission)",
 };
 
 /** A small glyph that encodes how certain a card is — filled = known, hollow = assumed. */
@@ -126,8 +126,8 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
         className="absolute -top-2 left-3 z-10 flex items-center gap-1.5 rounded-t-md border border-b-0 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.16em] transition-transform duration-200"
         style={{
           background: "var(--card)",
-          borderColor: "#8B6F47",
-          color: "#8B6F47",
+          borderColor: "var(--type-dossier)",
+          color: "var(--type-dossier)",
           transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(32px)",
         }}
       >
@@ -135,15 +135,15 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
         Source dossier
       </div>
       <div
-        className="mt-4 rounded-[14px] border bg-card p-4 text-card-foreground shadow-sm transition-transform duration-200"
+        className="mt-4 rounded-[2px] border bg-card p-4 text-card-foreground shadow-sm transition-transform duration-200"
         style={{ 
-          borderColor: "#8B6F47",
+          borderColor: "var(--type-dossier)",
           transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(16px)"
         }}
       >
         <div className="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
           <span>Anchor</span>
-          <span style={{ color: "#8B6F47" }}>● locked</span>
+          <span style={{ color: "var(--type-dossier)" }}>● locked</span>
         </div>
         <div className="font-display text-[17px] font-bold leading-[1.2]">{sourceTitle}</div>
         {data.body && data.body !== "Source document anchor." && (
@@ -156,7 +156,7 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
           <button
             type="button"
             className="nodrag nopan rounded-md border px-2 py-1 text-[10px] font-bold uppercase tracking-wider hover:bg-muted"
-            style={{ borderColor: "#8B6F47", color: "#8B6F47" }}
+            style={{ borderColor: "var(--type-dossier)", color: "var(--type-dossier)" }}
             onClick={(e) => {
               e.stopPropagation();
               focusInLab(sourceTitle);
@@ -213,7 +213,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
   return (
     <div
       className={cn(
-        "tw-card group relative h-full w-[272px] rounded-[14px] bg-card text-card-foreground",
+        "tw-card group relative h-full w-[272px] rounded-[2px] bg-card text-card-foreground",
         tall && "tw-tall",
         lift >= 0.6 && "is-floating",
         lift === 0 && "is-grounded",
@@ -243,8 +243,8 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
             }
           : {}),
         ...(isOmission ? {
-          border: "2px dashed #8B1A1A",
-          background: "linear-gradient(to bottom right, #FFFFFF, #FFF5F5)",
+          border: "2px dashed var(--type-omission)",
+          background: "linear-gradient(to bottom right, #FFFFFF, color-mix(in oklab, var(--accent-ink) 7%, #FFFFFF))",
         } : {})
       }}
       onPointerMove={(e) => {
@@ -343,7 +343,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
             className="flex items-center gap-1 text-muted-foreground"
             title={`Epistemic status: ${data.epistemic}`}
           >
-            <EpistemicGlyph status={data.epistemic} />
+            <EpistemicGlyph status={data.epistemic} className="text-[color:var(--accent-ink)]" />
             {data.epistemic}
           </span>
         </div>
@@ -351,7 +351,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
           className={cn(
             "font-display text-[17px] leading-[1.25]",
             status && STATUS_DONE.has(status) && "text-muted-foreground",
-            isOmission && "text-[#8B1A1A] font-bold"
+            isOmission && "text-[color:var(--type-omission)] font-bold"
           )}
         >
           {data.title}
@@ -365,7 +365,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
             className={cn(
               "tw-body mt-1.5 text-[12.5px] leading-relaxed text-muted-foreground",
               tall && "nodrag nopan nowheel",
-              isOmission && "text-[#8B1A1A]/80"
+              isOmission && "text-[color:var(--type-omission)] opacity-80"
             )}
             onClick={tall ? (e) => e.stopPropagation() : undefined}
           >
@@ -495,7 +495,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
           <EpistemicGlyph status={data.epistemic} className="h-full w-full" />
         </span>
         <span className="tw-compact-text">
-          <span className={cn("block truncate font-display text-xl leading-tight", isOmission && "text-[#8B1A1A]")}>{data.title}</span>
+          <span className={cn("block truncate font-display text-xl leading-tight", isOmission && "text-[color:var(--type-omission)]")}>{data.title}</span>
           <span className="tw-pill font-mono text-[10px] uppercase tracking-[0.12em]">
             {status ?? data.epistemic}
           </span>
