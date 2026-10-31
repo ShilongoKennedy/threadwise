@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { AlertTriangle, ArrowUpRight } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { AlertTriangle, ArrowUpRight, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/briefing")({
@@ -20,6 +20,7 @@ export const Route = createFileRoute("/briefing")({
 });
 
 type NewsBrief = {
+  id: string;
   headline: string;
   bluf: string;
   framing: unknown;
@@ -37,14 +38,14 @@ const toBullets = (value: unknown): string[] => {
   return [];
 };
 
-const THREAT_STYLE: Record<string, { bg: string; fg: string }> = {
-  CRITICAL: { bg: "#C1121F", fg: "#FFFFFF" },
-  ELEVATED: { bg: "#1A4BFF", fg: "#FFFFFF" },
-  MODERATE: { bg: "#1A1A1A", fg: "#FDFBF7" },
-  LOW: { bg: "#FFFFFF", fg: "#1A1A1A" },
+const THREAT_STYLE: Record<string, { bg: string; fg: string; rank: number }> = {
+  LOW: { bg: "#1A1A1A", fg: "#FDFBF7", rank: 1 },
+  MODERATE: { bg: "#1A1A1A", fg: "#FDFBF7", rank: 2 },
+  ELEVATED: { bg: "#1A4BFF", fg: "#FFFFFF", rank: 3 },
+  CRITICAL: { bg: "#C1121F", fg: "#FFFFFF", rank: 4 },
 };
 
-const FALLBACK_THREAT = { bg: "#1A1A1A", fg: "#FDFBF7" };
+const FALLBACK_THREAT = { bg: "#1A1A1A", fg: "#FDFBF7", rank: 2 };
 
 const threatOf = (value: string | null) =>
   THREAT_STYLE[(value ?? "MODERATE").toUpperCase()] ?? FALLBACK_THREAT;
@@ -57,15 +58,24 @@ const hostOf = (url: string) => {
   }
 };
 
-const longDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+const filedDate = (iso: string) =>
+  new Date(iso)
+    .toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+    .toUpperCase();
 
-const clock = (iso: string) =>
+const filedTime = (iso: string) =>
   new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+
+function RailField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="border-b border-[#1A1A1A]/12 pb-3 last:border-0 last:pb-0">
+      <div className="mb-1 font-mono text-[8px] uppercase tracking-[0.28em] text-[#1A1A1A]/35">
+        {label}
+      </div>
+      {children}
+    </div>
+  );
+}
 
 function BriefingPage() {
   const [status, setStatus] = useState<"loading" | "ready" | "empty" | "error">("loading");
@@ -78,7 +88,7 @@ function BriefingPage() {
         const { data, error } = await supabase
           .from("news_briefs")
           .select(
-            "headline, bluf, framing, omission, historical_echo, threat_level, source_url, created_at",
+            "id, headline, bluf, framing, omission, historical_echo, threat_level, source_url, created_at",
           )
           .order("created_at", { ascending: false })
           .limit(1)
@@ -104,19 +114,33 @@ function BriefingPage() {
   }, []);
 
   const threat = brief ? threatOf(brief.threat_level) : FALLBACK_THREAT;
+  const level = (brief?.threat_level ?? "MODERATE").toUpperCase();
+  const dossier = brief ? `D-${brief.id.slice(0, 6).toUpperCase()}` : "D-000000";
+  const framing = brief ? toBullets(brief.framing) : [];
+  const omission = brief ? toBullets(brief.omission) : [];
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A]">
-      {/* ── Terminal bar ────────────────────────────────────────── */}
+    <div className="relative min-h-screen bg-[#FDFBF7] text-[#1A1A1A]">
+      {/* faint instrument grid, same language as the canvas */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.035]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+      />
+
       <header className="sticky top-0 z-20 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]/95 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between gap-3 px-4 py-2.5 md:px-8">
+        <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3 px-4 py-2.5 md:px-6">
           <span className="font-mono text-[9px] font-bold uppercase leading-tight tracking-[0.26em] text-[#1A1A1A] md:text-[10px]">
             Threadwise Intelligence <span className="text-[#1A4BFF]">//</span> Target Dossier
           </span>
 
           <div className="flex shrink-0 items-center gap-2 md:gap-3">
-            <span className="inline-flex items-center gap-1.5 border border-[#C1121F] bg-[#C1121F]/10 px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.22em] text-[#C1121F] shadow-[0_0_18px_rgba(193,18,31,0.45)] md:text-[9px]">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#C1121F]" />
+            <span className="inline-flex items-center gap-1.5 border border-[#C1121F] bg-[#C1121F]/10 px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.22em] text-[#C1121F] shadow-[0_0_18px_rgba(193,18,31,0.4)] md:text-[9px]">
+              <Lock className="h-2.5 w-2.5" />
               Classified
             </span>
             <Link
@@ -130,7 +154,10 @@ function BriefingPage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1320px] px-4 py-8 md:px-8 md:py-12">
+      {/* threat rail — the page's only colour until the content starts */}
+      <div className="h-1 w-full" style={{ backgroundColor: threat.bg }} />
+
+      <main className="relative z-10 mx-auto w-full max-w-[1400px] px-4 py-6 md:px-6 md:py-9">
         {status === "loading" && (
           <div className="flex min-h-[64vh] flex-col items-center justify-center gap-3 border-2 border-dashed border-[#1A1A1A]/20">
             <span className="h-2.5 w-2.5 animate-pulse bg-[#1A4BFF]" />
@@ -141,7 +168,7 @@ function BriefingPage() {
         )}
 
         {status === "empty" && (
-          <div className="mx-auto flex min-h-[64vh] max-w-xl flex-col items-start justify-center gap-4 border-2 border-dashed border-[#1A1A1A]/25 p-9">
+          <div className="mx-auto flex min-h-[64vh] max-w-xl flex-col items-start justify-center gap-4 border-2 border-dashed border-[#1A1A1A]/25 bg-white/60 p-9">
             <span className="font-mono text-[9px] uppercase tracking-[0.28em] text-[#1A4BFF]">
               No target acquired
             </span>
@@ -155,7 +182,7 @@ function BriefingPage() {
         )}
 
         {status === "error" && (
-          <div className="mx-auto flex min-h-[64vh] max-w-xl flex-col items-start justify-center gap-3 border-2 border-[#1A1A1A] p-9">
+          <div className="mx-auto flex min-h-[64vh] max-w-xl flex-col items-start justify-center gap-3 border-2 border-[#1A1A1A] bg-white p-9">
             <span className="font-mono text-[9px] uppercase tracking-[0.28em] text-[#C1121F]">
               Signal lost
             </span>
@@ -167,146 +194,167 @@ function BriefingPage() {
         )}
 
         {status === "ready" && brief && (
-          <article>
-            {/* ── Metadata strip ─────────────────────────────────── */}
-            <div className="grid grid-cols-1 divide-y divide-[#1A1A1A] border-2 border-[#1A1A1A] sm:grid-cols-[1fr_1fr_auto] sm:divide-x sm:divide-y-0">
-              <div className="flex flex-col justify-center px-4 py-2.5">
-                <span className="font-mono text-[8px] uppercase tracking-[0.24em] text-[#1A1A1A]/40">
-                  Filed
-                </span>
-                <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-[#1A1A1A]">
-                  {longDate(brief.created_at)} · {clock(brief.created_at)}
-                </span>
-              </div>
+          <article className="grid grid-cols-1 border-2 border-[#1A1A1A] bg-white lg:grid-cols-[228px_minmax(0,1fr)]">
+            {/* ── Cover rail ─────────────────────────────────────── */}
+            <aside className="flex flex-col gap-4 border-b-2 border-[#1A1A1A] bg-[#FDFBF7] p-4 lg:border-b-0 lg:border-r-2">
+              <RailField label="Dossier">
+                <div className="font-display text-[26px] leading-none tracking-tight">{dossier}</div>
+                <div className="mt-1 font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
+                  Single target
+                </div>
+              </RailField>
 
-              <div className="flex min-w-0 flex-col justify-center px-4 py-2.5">
-                <span className="font-mono text-[8px] uppercase tracking-[0.24em] text-[#1A1A1A]/40">
-                  Source
-                </span>
+              <RailField label="Filed">
+                <div className="font-mono text-[11px] tracking-[0.08em]">{filedDate(brief.created_at)}</div>
+                <div className="font-mono text-[11px] tracking-[0.08em] text-[#1A1A1A]/45">
+                  {filedTime(brief.created_at)} local
+                </div>
+              </RailField>
+
+              <RailField label="Source">
                 <a
                   href={brief.source_url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="truncate font-mono text-[11px] uppercase tracking-[0.12em] text-[#1A4BFF] underline decoration-[#1A4BFF]/40 underline-offset-2 hover:decoration-[#1A4BFF]"
+                  className="inline-flex max-w-full items-center gap-1 font-mono text-[11px] uppercase tracking-[0.06em] text-[#1A4BFF] underline decoration-[#1A4BFF]/40 underline-offset-2 hover:decoration-[#1A4BFF]"
                   title={brief.source_url}
                 >
-                  {hostOf(brief.source_url)}
+                  <span className="truncate">{hostOf(brief.source_url)}</span>
+                  <ArrowUpRight className="h-3 w-3 shrink-0" />
                 </a>
+              </RailField>
+
+              <RailField label="Threat level">
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4].map((step) => (
+                    <span
+                      key={step}
+                      className="h-3.5 flex-1"
+                      style={{
+                        backgroundColor: step <= threat.rank ? threat.bg : "#1A1A1A",
+                        opacity: step <= threat.rank ? 1 : 0.12,
+                      }}
+                    />
+                  ))}
+                </div>
+                <div
+                  className="mt-2 inline-block px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em]"
+                  style={{ backgroundColor: threat.bg, color: threat.fg }}
+                >
+                  {level}
+                </div>
+              </RailField>
+
+              <RailField label="Confidence">
+                <div className="font-mono text-[11px] tracking-[0.08em]">SINGLE SOURCE</div>
+                <p className="mt-1 text-[11px] leading-snug text-[#1A1A1A]/45">
+                  One article, no independent corroboration in this run.
+                </p>
+              </RailField>
+            </aside>
+
+            {/* ── Assessment ─────────────────────────────────────── */}
+            <div className="flex min-w-0 flex-col">
+              <div className="border-b-2 border-[#1A1A1A] px-5 py-5 md:px-7 md:py-6">
+                <div className="mb-3 flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.3em] text-[#1A1A1A]/40">
+                  <span className="h-1.5 w-1.5 bg-[#1A4BFF]" />
+                  Executive assessment
+                </div>
+                <h1 className="max-w-[24ch] font-display text-[clamp(30px,4.2vw,62px)] leading-[0.95] tracking-[-0.02em]">
+                  {brief.headline}
+                </h1>
               </div>
 
-              <div
-                className="flex min-w-[168px] flex-col items-start justify-center px-4 py-2.5"
-                style={{ backgroundColor: threat.bg, color: threat.fg }}
-              >
-                <span className="font-mono text-[8px] uppercase tracking-[0.24em] opacity-60">
-                  Threat level
-                </span>
-                <span className="font-mono text-[13px] font-bold uppercase tracking-[0.18em]">
-                  {(brief.threat_level ?? "MODERATE").toUpperCase()}
-                </span>
-              </div>
-            </div>
-
-            {/* ── Headline ───────────────────────────────────────── */}
-            <h1 className="mt-7 max-w-[26ch] font-display text-[42px] leading-[0.9] tracking-[-0.02em] md:text-[88px]">
-              {brief.headline}
-            </h1>
-
-            {/* ── BLUF ───────────────────────────────────────────── */}
-            <section className="mt-7 border-2 border-[#1A1A1A] bg-white">
-              <div className="flex items-center justify-between border-b-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2">
-                <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.26em] text-[#FDFBF7]">
-                  BLUF
-                </h2>
-                <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A4BFF]">
-                  Bottom line up front
-                </span>
-              </div>
-              <p className="px-5 py-5 font-serif text-2xl font-semibold leading-[1.35] text-[#1A1A1A] md:px-7 md:py-6 md:text-[30px]">
-                {brief.bluf}
-              </p>
-            </section>
-
-            {/* ── Three-column analysis ──────────────────────────── */}
-            <div className="mt-4 grid grid-cols-1 divide-y divide-[#1A1A1A] border-2 border-[#1A1A1A] md:grid-cols-3 md:divide-x md:divide-y-0">
-              {/* FRAMING */}
-              <section className="flex flex-col bg-white">
-                <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 px-4 py-2">
-                  <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
-                    Framing
+              {/* BLUF */}
+              <section className="border-b-2 border-[#1A1A1A]">
+                <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 px-5 py-1.5">
+                  <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.26em] text-[#1A4BFF]">
+                    BLUF · Bottom line up front
                   </h2>
                   <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
                     01
                   </span>
                 </div>
-                <ul className="flex-1 space-y-3 px-4 py-4">
-                  {toBullets(brief.framing).map((bullet, index) => (
-                    <li key={index} className="flex gap-2.5">
-                      <span className="mt-[7px] h-2 w-2 shrink-0 rotate-45 bg-[#1A4BFF]" />
-                      <span className="font-serif text-[15px] leading-[1.55] text-[#1A1A1A]/90">
-                        {bullet}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              {/* OMISSION */}
-              <section className="flex flex-col bg-[#FDFBF7]">
-                <div className="flex items-center justify-between border-b border-dashed border-[#1A1A1A]/25 px-4 py-2">
-                  <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]">
-                    Omission
-                  </h2>
-                  <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
-                    02
-                  </span>
-                </div>
-                <ul className="flex-1 space-y-3 px-4 py-4">
-                  {toBullets(brief.omission).map((bullet, index) => (
-                    <li
-                      key={index}
-                      className="flex gap-2.5 border-l-2 border-dashed border-[#C1121F]/45 pl-2.5"
-                    >
-                      <AlertTriangle className="mt-[3px] h-3.5 w-3.5 shrink-0 text-[#C1121F]" />
-                      <span className="font-serif text-[15px] leading-[1.55] text-[#1A1A1A]/90">
-                        {bullet}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              {/* HISTORICAL ECHO */}
-              <section className="flex flex-col bg-[#1A1A1A] text-[#FDFBF7]">
-                <div className="flex items-center justify-between border-b border-[#FDFBF7]/20 px-4 py-2">
-                  <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
-                    Historical Echo
-                  </h2>
-                  <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#FDFBF7]/30">
-                    03
-                  </span>
-                </div>
-                <p className="flex-1 px-4 py-4 font-serif text-[15px] leading-[1.6] text-[#FDFBF7]/85">
-                  {brief.historical_echo}
+                <p className="px-5 py-5 font-serif text-[22px] font-semibold leading-[1.4] text-[#1A1A1A] md:px-7 md:text-[26px]">
+                  {brief.bluf}
                 </p>
               </section>
-            </div>
 
-            {/* ── Footer ─────────────────────────────────────────── */}
-            <footer className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t-2 border-[#1A1A1A] pt-3">
-              <span className="font-mono text-[9px] uppercase tracking-[0.24em] text-[#1A1A1A]/40">
-                End of dossier · single-source assessment
-              </span>
-              <a
-                href={brief.source_url}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="group inline-flex max-w-full items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/40 underline-offset-4 hover:decoration-[#1A4BFF]"
-              >
-                <span className="truncate">{brief.source_url}</span>
-                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </a>
-            </footer>
+              {/* Findings grid */}
+              <div className="grid grid-cols-1 divide-y divide-[#1A1A1A] md:grid-cols-3 md:divide-x md:divide-y-0">
+                <section className="flex flex-col">
+                  <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 px-4 py-1.5">
+                    <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+                      Framing
+                    </h2>
+                    <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
+                      02
+                    </span>
+                  </div>
+                  <ul className="flex-1 divide-y divide-[#1A1A1A]/10">
+                    {framing.map((bullet, index) => (
+                      <li key={index} className="flex gap-2.5 px-4 py-2.5">
+                        <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rotate-45 bg-[#1A4BFF]" />
+                        <span className="font-serif text-[14px] leading-[1.55] text-[#1A1A1A]/85">
+                          {bullet}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+
+                <section className="flex flex-col">
+                  <div className="flex items-center justify-between border-b border-dashed border-[#1A1A1A]/25 px-4 py-1.5">
+                    <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]">
+                      Omission
+                    </h2>
+                    <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
+                      03
+                    </span>
+                  </div>
+                  <ul className="flex-1 divide-y divide-dashed divide-[#1A1A1A]/12">
+                    {omission.map((bullet, index) => (
+                      <li key={index} className="flex gap-2.5 px-4 py-2.5">
+                        <AlertTriangle className="mt-[3px] h-3.5 w-3.5 shrink-0 text-[#C1121F]" />
+                        <span className="font-serif text-[14px] leading-[1.55] text-[#1A1A1A]/85">
+                          {bullet}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+
+                <section className="flex flex-col bg-[#1A1A1A] text-[#FDFBF7]">
+                  <div className="flex items-center justify-between border-b border-[#FDFBF7]/20 px-4 py-1.5">
+                    <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+                      Historical echo
+                    </h2>
+                    <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#FDFBF7]/30">
+                      04
+                    </span>
+                  </div>
+                  <p className="flex-1 px-4 py-3 font-serif text-[14px] leading-[1.6] text-[#FDFBF7]/85">
+                    {brief.historical_echo}
+                  </p>
+                </section>
+              </div>
+
+              {/* Footer */}
+              <footer className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t-2 border-[#1A1A1A] px-5 py-2.5">
+                <span className="font-mono text-[8px] uppercase tracking-[0.24em] text-[#1A1A1A]/35">
+                  End of dossier · machine assessment · verify before action
+                </span>
+                <a
+                  href={brief.source_url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="group inline-flex items-center gap-1.5 border border-[#1A1A1A]/20 px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/60 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
+                >
+                  Open source
+                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </a>
+              </footer>
+            </div>
           </article>
         )}
       </main>
