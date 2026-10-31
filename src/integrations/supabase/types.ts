@@ -301,35 +301,38 @@ export type Database = {
         Row: {
           bluf: string
           created_at: string
-          framing: string
+          framing: string[]
           headline: string
           historical_echo: string
           id: string
           model: string | null
-          omission: string
+          omission: string[]
           source_url: string
+          threat_level: string
         }
         Insert: {
           bluf: string
           created_at?: string
-          framing: string
+          framing: string[]
           headline: string
           historical_echo: string
           id?: string
           model?: string | null
-          omission: string
+          omission: string[]
           source_url: string
+          threat_level?: string
         }
         Update: {
           bluf?: string
           created_at?: string
-          framing?: string
+          framing?: string[]
           headline?: string
           historical_echo?: string
           id?: string
           model?: string | null
-          omission?: string
+          omission?: string[]
           source_url?: string
+          threat_level?: string
         }
         Relationships: []
       }
