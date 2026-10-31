@@ -11,14 +11,13 @@
   --color-dock: var(--dock);
   --color-dock-foreground: var(--dock-foreground);
   --color-accent-ink: var(--accent-ink);
-  /* Brutalist scale: every derived step stays between 1px and 6px. */
-  --radius-sm: 0.0625rem;
-  --radius-md: 0.125rem;
-  --radius-lg: 0.125rem;
-  --radius-xl: 0.1875rem;
-  --radius-2xl: 0.25rem;
-  --radius-3xl: 0.3125rem;
-  --radius-4xl: 0.375rem;
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -75,22 +74,21 @@
   --border: oklch(0.885 0.012 78);
   --border-strong: oklch(0.82 0.014 75);
   --input: oklch(0.885 0.012 78);
-  --ring: oklch(0.54 0.25 262);
-  --accent-ink: oklch(0.54 0.25 262);
+  --ring: oklch(0.54 0.25 262); /* Cobalt */
+  --accent-ink: oklch(0.54 0.25 262); /* Cobalt */
   --brass: oklch(0.68 0.11 78);
   --edge: oklch(0.58 0.014 60);
-  --grid-minor: oklch(0.915 0.012 80);
-  --grid-major: oklch(0.88 0.014 78);
+  --grid-minor: oklch(0.54 0.25 262 / 3%); /* Faint Cobalt */
+  --grid-major: oklch(0.54 0.25 262 / 6%); /* Faint Cobalt */
   --dock: oklch(0.2 0.012 55);
   --dock-foreground: oklch(0.96 0.01 85);
-  /* Node tints: one cobalt-to-charcoal ramp, no pastel reds or purples. */
-  --type-idea: oklch(0.55 0.22 262);
-  --type-note: oklch(0.5 0.09 232);
-  --type-question: oklch(0.6 0.11 205);
-  --type-experiment: oklch(0.48 0.09 172);
-  --type-action: oklch(0.3 0.02 262);
-  --type-dossier: #1A4BFF;
-  --type-omission: #1A4BFF;
+  --type-idea: oklch(0.54 0.25 262);
+  --type-note: oklch(0.52 0.06 240);
+  --type-question: oklch(0.52 0.1 330);
+  --type-experiment: oklch(0.52 0.08 160);
+  --type-action: oklch(0.6 0.18 36);
+  --type-dossier: oklch(0.54 0.25 262);
+  --type-omission: oklch(0.54 0.25 262);
   --shadow-card: 0 0 0 1px oklch(0.25 0.02 60 / 7%), 0 1px 1px oklch(0.25 0.02 60 / 4%), 0 6px 16px -8px oklch(0.25 0.02 60 / 14%);
   --shadow-lift: 0 0 0 1px oklch(0.25 0.02 60 / 8%), 0 2px 4px oklch(0.25 0.02 60 / 5%), 0 24px 48px -16px oklch(0.25 0.02 60 / 26%);
   --chart-1: oklch(0.646 0.222 41.116);
@@ -162,25 +160,53 @@ body::after {
 }
 ::selection { background: color-mix(in oklab, var(--accent-ink) 25%, transparent); }
 
-/* ---- CANVAS & 3D TILT ---- */
+/* ---- PAPER COLORS ---- */
+:root {
+  --paper-paper: var(--card);
+  --paper-butter: oklch(0.955 0.075 96);
+  --paper-rose: oklch(0.944 0.045 15);
+  --paper-sage: oklch(0.932 0.045 153);
+  --paper-sky: oklch(0.943 0.035 235);
+  --paper-lilac: oklch(0.937 0.038 305);
+}
+.dark {
+  --paper-paper: var(--card);
+  --paper-butter: oklch(0.32 0.05 96);
+  --paper-rose: oklch(0.32 0.04 15);
+  --paper-sage: oklch(0.32 0.04 153);
+  --paper-sky: oklch(0.32 0.04 235);
+  --paper-lilac: oklch(0.32 0.04 305);
+}
+[data-paper="paper"], [data-canvas-paper="paper"] { --paper-tone: var(--paper-paper); }
+[data-paper="butter"], [data-canvas-paper="butter"] { --paper-tone: var(--paper-butter); }
+[data-paper="rose"], [data-canvas-paper="rose"] { --paper-tone: var(--paper-rose); }
+[data-paper="sage"], [data-canvas-paper="sage"] { --paper-tone: var(--paper-sage); }
+[data-paper="sky"], [data-canvas-paper="sky"] { --paper-tone: var(--paper-sky); }
+[data-paper="lilac"], [data-canvas-paper="lilac"] { --paper-tone: var(--paper-lilac); }
+
+.tw-card[data-paper] { background-color: var(--paper-tone) !important; background-image: none; }
+.tw-card[data-paper] .tw-deckle { background: var(--paper-tone); }
+.tw-card[data-paper="custom"] { color: var(--paper-ink); }
+.tw-card[data-paper="custom"] .text-muted-foreground { color: var(--paper-muted); }
+.tw-card[data-paper="custom"] .border-dashed { border-color: var(--paper-muted); }
+.tw-swatch-custom { background-image: conic-gradient(var(--paper-butter), var(--paper-rose), var(--paper-lilac), var(--paper-sky), var(--paper-sage), var(--paper-butter)); }
+.tw-swatch-custom[data-disabled] { opacity: .5; pointer-events: none; }
+.tw-swatch, .tw-file-preview { background-color: var(--paper-tone); color: var(--foreground); }
+.tw-swatch:hover, .tw-file-preview:hover { background-color: var(--paper-tone); }
+.tw-swatch[aria-pressed="true"] { outline: 1px solid var(--foreground); outline-offset: 2px; }
+[data-canvas-paper]:not([data-canvas-paper="paper"]) .react-flow { --xy-background-color: color-mix(in oklab, var(--paper-tone) 55%, var(--background)); }
+.tw-file-preview { background-image: linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px); background-size: 24px 24px; }
+.tw-file-mark { display: grid; place-items: center; width: 52px; height: 52px; background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow-card); transform: rotate(-5deg); }
+
+/* The physical card lift and tilt */
 .react-flow { position: relative; z-index: 1; --xy-background-color: transparent; --xy-edge-stroke: var(--edge); }
 .react-flow__pane { cursor: crosshair; }
 .react-flow__node { perspective: 1200px; transition: opacity .25s ease; }
-/* Grid: the same faint editorial rule as the landing page, tinted cobalt. */
-.react-flow__background { --xy-background-color: transparent; opacity: .7; }
-/* The pattern element carries the class itself, and the component passes its colour
-   inline, so the override has to out-specify `.react-flow__background-pattern.variant`. */
-.react-flow .react-flow__background-pattern.lines,
-.react-flow .react-flow__background-pattern.dots,
-.react-flow .react-flow__background-pattern.cross {
-  stroke: color-mix(in oklab, var(--accent-ink) 55%, transparent);
-  fill: color-mix(in oklab, var(--accent-ink) 65%, transparent);
-}
 .tw-spatial-atmosphere { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: radial-gradient(ellipse 60% 44% at 54% 46%, color-mix(in oklab, var(--brass) 10%, transparent), transparent 72%); }
 .tw-spatial-atmosphere canvas { display: block; width: 100% !important; height: 100% !important; opacity: .9; mix-blend-mode: multiply; }
 @media (prefers-reduced-motion: reduce) { .tw-spatial-atmosphere canvas { opacity: .46; } }
-.tw-spatial-atmosphere { background: radial-gradient(ellipse 50% 47% at 52% 48%, color-mix(in oklab, var(--accent-ink) 12%, transparent), transparent 72%), radial-gradient(ellipse 35% 32% at 72% 28%, color-mix(in oklab, var(--accent-ink) 9%, transparent), transparent 70%); }
-.tw-spatial-atmosphere canvas { filter: saturate(1.1); }
+.tw-spatial-atmosphere { background: radial-gradient(ellipse 50% 47% at 52% 48%, color-mix(in oklab, #a879ff 15%, transparent), transparent 72%), radial-gradient(ellipse 35% 32% at 72% 28%, color-mix(in oklab, var(--accent-ink) 14%, transparent), transparent 70%); }
+.tw-spatial-atmosphere canvas { filter: saturate(1.35) hue-rotate(8deg); }
 
 /* The physical card lift and tilt */
 .tw-card {
@@ -189,11 +215,11 @@ body::after {
   transform-style: preserve-3d;
   isolation: isolate;
   
-  /* Crisp editorial shadow: a hairline ring plus hard offset blocks (no blur). */
+  /* Deep, reactive shadow */
   box-shadow:
-    0 0 0 1px oklch(0.25 0.02 60 / calc(9% + (1 - var(--lift)) * 5%)),
-    calc(1px + var(--off) * 0.5) calc(1px + var(--off) * 0.5) 0 0 oklch(0.25 0.02 60 / calc(5% + var(--lift) * 9%)),
-    calc(2px + var(--off)) calc(2px + var(--off)) 0 0 oklch(0.25 0.02 60 / calc(var(--lift) * 7%));
+    0 0 0 1px oklch(0.25 0.02 60 / calc(7% + (1 - var(--lift)) * 6%)),
+    calc(var(--lx, 0) * -1 * var(--off) * 0.8) calc(var(--off) * 0.8 + var(--ly, 0) * -1 * var(--off) * 0.6) calc(var(--off) * 2) calc(var(--off) * -0.8) oklch(0.25 0.02 60 / calc(8% + var(--lift) * 18%)),
+    calc(var(--lx, 0) * -1 * var(--off) * 1.6) calc(var(--off) * 2 + var(--ly, 0) * -1 * var(--off) * 1.2) calc(var(--off) * 4.2) calc(var(--off) * -2.2) oklch(0.25 0.02 60 / calc(var(--lift) * 32%));
   
   /* 3D transform combining rotation, lift, and depth */
   transform: 
@@ -209,12 +235,6 @@ body::after {
   background-blend-mode: normal;
 }
 .tw-card:not(:hover) { background-image: none; transition: box-shadow .4s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
-/* Hover reads as a hard 2px cobalt edge, never a soft glow. */
-.tw-card:not(.is-selected):not(.is-focus-ring):hover {
-  box-shadow:
-    0 0 0 2px var(--accent-ink),
-    calc(3px + var(--off)) calc(3px + var(--off)) 0 0 color-mix(in oklab, var(--accent-ink) 20%, transparent);
-}
 .react-flow__node:active .tw-card {
   transform: rotateX(0deg) rotateY(0deg) translateY(0) scale(0.97);
   transition: transform 0.1s ease;
@@ -258,7 +278,7 @@ body::after {
 .react-flow__node.tw-recoil .tw-card { animation: tw-recoil .32s cubic-bezier(.3,1.6,.5,1); }
 @keyframes tw-recoil { 30% { transform: translateX(-3px) scale(.99); } 100% { transform: none; } }
 
-/* The rest of your CSS follows (I'm keeping it intact so you can just paste) */
+/* The rest of your CSS follows */
 .tw-transclude-target { outline: 2px dashed var(--brass); outline-offset: -6px; }
 @media (prefers-reduced-motion: reduce) { .tw-ink-snap, .tw-ink-bleed, .tw-card.is-link-anchor, .tw-card.is-uncertain, .tw-card.is-risk-pulse, .react-flow__node.tw-recoil .tw-card { animation: none; } .tw-full, .tw-compact, .tw-unfold, .tw-seal, .tw-compact-text { transition: none; } }
 .tw-timeline input[type="range"] { height: 36px; cursor: ew-resize; }
@@ -267,35 +287,6 @@ body::after {
 .tw-toolstrip::-webkit-scrollbar { display: none; }
 
 /* Organizing papers retain the same ink and epistemic spine. */
-:root {
-  --paper-paper: var(--card);
-  --paper-butter: oklch(0.955 0.075 96);
-  --paper-rose: oklch(0.944 0.045 15);
-  --paper-sage: oklch(0.932 0.045 153);
-  --paper-sky: oklch(0.943 0.035 235);
-  --paper-lilac: oklch(0.937 0.038 305);
-}
-.dark {
-  --paper-paper: var(--card);
-  --paper-butter: oklch(0.32 0.05 96);
-  --paper-rose: oklch(0.32 0.04 15);
-  --paper-sage: oklch(0.32 0.04 153);
-  --paper-sky: oklch(0.32 0.04 235);
-  --paper-lilac: oklch(0.32 0.04 305);
-}
-[data-paper="paper"], [data-canvas-paper="paper"] { --paper-tone: var(--paper-paper); }
-[data-paper="butter"], [data-canvas-paper="butter"] { --paper-tone: var(--paper-butter); }
-[data-paper="rose"], [data-canvas-paper="rose"] { --paper-tone: var(--paper-rose); }
-[data-paper="sage"], [data-canvas-paper="sage"] { --paper-tone: var(--paper-sage); }
-[data-paper="sky"], [data-canvas-paper="sky"] { --paper-tone: var(--paper-sky); }
-[data-paper="lilac"], [data-canvas-paper="lilac"] { --paper-tone: var(--paper-lilac); }
-.tw-card[data-paper] { background-color: var(--paper-tone); background-image: none; }
-.tw-card[data-paper] .tw-deckle { background: var(--paper-tone); }
-.tw-card[data-paper="custom"] { color: var(--paper-ink); }
-.tw-card[data-paper="custom"] .text-muted-foreground { color: var(--paper-muted); }
-.tw-card[data-paper="custom"] .border-dashed { border-color: var(--paper-muted); }
-.tw-swatch-custom { background-image: conic-gradient(var(--paper-butter), var(--paper-rose), var(--paper-lilac), var(--paper-sky), var(--paper-sage), var(--paper-butter)); }
-.tw-swatch-custom[data-disabled] { opacity: .5; pointer-events: none; }
 .tw-card.tw-tall { height: var(--note-height, 260px); grid-template-rows: minmax(0, 1fr); }
 .tw-card.tw-tall .tw-full { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; }
 .tw-card.tw-tall .tw-full > * { flex-shrink: 0; min-width: 0; overflow-wrap: anywhere; }
@@ -306,12 +297,6 @@ body::after {
 .react-flow__node:hover .tw-note-grip, .react-flow__node.selected .tw-note-grip, .tw-note-grip:focus-visible { opacity: 1; }
 .tw-note-grip-pill { display: block; width: 44px; height: 6px; border-radius: 3px; background: var(--border-strong); }
 .tw-note-grip:hover .tw-note-grip-pill { background: var(--foreground); }
-.tw-swatch, .tw-file-preview { background-color: var(--paper-tone); color: var(--foreground); }
-.tw-swatch:hover, .tw-file-preview:hover { background-color: var(--paper-tone); }
-.tw-swatch[aria-pressed="true"] { outline: 1px solid var(--foreground); outline-offset: 2px; }
-[data-canvas-paper]:not([data-canvas-paper="paper"]) .react-flow { --xy-background-color: color-mix(in oklab, var(--paper-tone) 55%, var(--background)); }
-.tw-file-preview { background-image: linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px); background-size: 24px 24px; }
-.tw-file-mark { display: grid; place-items: center; width: 52px; height: 52px; background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow-card); transform: rotate(-5deg); }
 .tw-library { max-height: 90dvh; overflow-y: auto; }
 .tw-library { grid-template-columns: minmax(0, 1fr); }
 .tw-library > *, .tw-library section, .tw-library aside { min-width: 0; }
@@ -329,7 +314,7 @@ body::after {
 .tw-canvas-toggle { backdrop-filter: blur(12px); }
 .tw-chrome-quiet .react-flow__controls { margin-bottom: 86px !important; }
 .tw-chrome-quiet .react-flow__minimap { margin-bottom: 86px !important; opacity: .76; }
-.tw-studio-panel { position: absolute; z-index: 30; right: 24px; top: 140px; bottom: 92px; width: min(760px, calc(100% - 48px)); background: var(--card); color: var(--foreground); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: var(--shadow-lift); display: flex; flex-direction: column; overflow: hidden; }
+.tw-studio-panel { position: absolute; z-index: 30; right: 24px; top: 140px; bottom: 92px; width: min(760px, calc(100% - 48px)); background: var(--card); color: var(--foreground); border: 1px solid var(--border-strong); border-radius: 2px; box-shadow: var(--shadow-lift); display: flex; flex-direction: column; overflow: hidden; }
 .tw-studio-body { display: grid; grid-template-columns: 210px minmax(0,1fr); flex: 1; min-height: 0; }
 .tw-studio-nav { overflow-y: auto; border-right: 1px solid var(--border); padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; }
 .tw-studio-nav button { flex-shrink: 0; }
@@ -384,7 +369,7 @@ body::after {
 /* ---------- Presentation stage ---------- */
 .tw-stage { --stage-accent: var(--accent-ink); position: fixed; isolation: isolate; inset: 0; z-index: 80; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; color: var(--foreground); background: color-mix(in oklab, var(--foreground) 68%, transparent); backdrop-filter: blur(10px) saturate(70%); outline: none; overflow: hidden; animation: tw-stage-in 360ms ease both; }
 .tw-stage[data-atmosphere="quiet"] { --stage-accent: var(--brass); background: color-mix(in oklab, var(--foreground) 78%, transparent); }
-.tw-stage[data-atmosphere="electric"] { --stage-accent: var(--accent-ink); background: color-mix(in oklab, #050A1F 76%, transparent); }
+.tw-stage[data-atmosphere="electric"] { --stage-accent: #a879ff; background: color-mix(in oklab, #100725 72%, transparent); }
 .tw-stage-orbit { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; opacity: .45; }
 .tw-stage-orbit i { position: absolute; width: 52vw; aspect-ratio: 1; border: 1px solid color-mix(in oklab, var(--stage-accent) 30%, transparent); border-radius: 50%; filter: blur(.1px); animation: tw-orbit 22s linear infinite; }
 .tw-stage-orbit i:nth-child(1) { top: -34vw; left: -12vw; } .tw-stage-orbit i:nth-child(2) { right: -22vw; bottom: -38vw; width: 68vw; animation-direction: reverse; animation-duration: 30s; } .tw-stage-orbit i:nth-child(3) { top: 22%; right: 7%; width: 10vw; border-width: 2px; animation-duration: 12s; }
@@ -467,18 +452,3 @@ body::after {
 @keyframes tw-playback-line { to { stroke-dashoffset: -32; } } @keyframes tw-playback-node { from { opacity: 0; transform: translateY(16px) scale(.94); } } @keyframes tw-theatre-orbit { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .tw-playback, .tw-theatre, .tw-playback-thread, .tw-playback-node, .tw-theatre main::before { animation: none; } }
 @media (max-width: 720px) { .tw-theatre main { grid-template-columns: 1fr; grid-template-rows: auto; padding-bottom: 28px; }.tw-theatre-core { grid-row: 1; }.tw-theatre-path { grid-column: 1; grid-template-columns: 1fr; }.tw-theatre main::before { inset: 19% 5%; }.tw-theatre-ring { grid-template-columns: repeat(2, minmax(0, 1fr)); }.tw-theatre-ring h3,.tw-theatre-ring > p { grid-column: 1 / -1; } }
-/* ---------- Landing demo: forensic scan ---------- */
-.tw-scanline {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 2px;
-  background: var(--accent-ink);
-  box-shadow: 0 0 12px color-mix(in oklab, var(--accent-ink) 65%, transparent);
-  animation: tw-scan 1.5s linear infinite;
-}
-@keyframes tw-scan { from { top: 0; } to { top: 100%; } }
-@media (prefers-reduced-motion: reduce) {
-  .tw-scanline { animation: none; opacity: .55; }
-}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, Trash2, X } from "lucide-react";
+import { BookOpen, Trash2, X, LayoutTemplate } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,19 +23,51 @@ import { useThread } from "@/lib/threadwise/store";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
 import { EpistemicGlyph, TYPE_COLOR, TYPE_ICON } from "./ThreadNode";
 import { ColorPicker } from "./ColorPicker";
+import { paperColor } from "@/lib/threadwise/paper";
 
 export function DetailsPanel() {
   const { selectedId, nodes, edges, select } = useThread();
+  const ws = useWorkspaces();
+  const w = ws.workspaces.find((w) => w.id === ws.activeId);
+  const c = w?.document.canvases.find((c) => c.id === w.document.activeCanvasId);
+  
   const node = nodes.find((n) => n.id === selectedId);
   const edge = !node ? edges.find((e) => e.id === selectedId) : undefined;
-  if (!node && !edge) return null;
+
+  if (!node && !edge) {
+    return (
+      <aside className="absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col overflow-hidden tw-sheet rounded-t-sm md:inset-x-auto md:right-6 md:top-6 md:bottom-6 md:max-h-none md:w-[360px] md:rounded-sm border bg-card shadow-[var(--shadow-lift)]">
+        <div className="flex items-center justify-between border-b px-5 py-3">
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            Canvas Settings
+          </span>
+        </div>
+        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
+          <div className="space-y-3">
+            <Label className="font-mono text-[10px] font-normal uppercase tracking-[0.16em] text-muted-foreground">Canvas Paper</Label>
+            <ColorPicker 
+              value={c?.color} 
+              label="Canvas color" 
+              disabled={!c} 
+              onChange={(color) => { if (c) ws.setCanvasColor(c.id, paperColor(color)); }} 
+            />
+          </div>
+          <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+            <LayoutTemplate className="h-5 w-5 mb-2 opacity-50" />
+            Select a card to inspect its intelligence, or use the tools in the Studio to analyze the board.
+          </div>
+        </div>
+      </aside>
+    );
+  }
+
   return (
-    <aside className="absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col overflow-hidden tw-sheet rounded-t-[22px] md:inset-x-auto md:right-6 md:top-6 md:bottom-6 md:max-h-none md:w-[360px] md:rounded-[2px] border bg-card shadow-[var(--shadow-lift)]">
+    <aside className="absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col overflow-hidden tw-sheet rounded-t-sm md:inset-x-auto md:right-6 md:top-6 md:bottom-6 md:max-h-none md:w-[360px] md:rounded-sm border bg-card shadow-[var(--shadow-lift)]">
       <div className="flex items-center justify-between border-b px-5 py-3">
         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
           {node ? "Node details" : "Relationship"}
         </span>
-        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => select(null)} aria-label="Close details">
+        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-sm" onClick={() => select(null)} aria-label="Close details">
           <X className="h-4 w-4" />
         </Button>
       </div>
@@ -46,7 +78,7 @@ export function DetailsPanel() {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <Label className="font-mono text-[10px] font-normal uppercase tracking-[0.16em] text-muted-foreground">{label}</Label>
       {children}
     </div>
@@ -81,7 +113,7 @@ function NodeForm({ id }: { id: string }) {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {!isDossier && (
         <Field label="Type">
           <div className="grid grid-cols-3 gap-1">
@@ -94,12 +126,11 @@ function NodeForm({ id }: { id: string }) {
                   title={TYPE_INFO[k].hint}
                   onClick={() => updateNode(id, (data) => changeKind(data, k))}
                   className={cn(
-                    "flex flex-col items-center gap-1 rounded-lg border py-2 text-[10px] transition-colors",
-                    active ? "bg-muted text-foreground" : "border-transparent text-muted-foreground hover:bg-muted/60",
+                    "flex flex-col items-center gap-1 rounded-sm border py-2 text-[10px] transition-colors",
+                    active ? "bg-[#1A4BFF]/10 border-[#1A4BFF] text-[#1A4BFF] font-medium" : "border-black/5 text-muted-foreground hover:bg-muted/60",
                   )}
-                  style={active ? { borderColor: TYPE_COLOR[k] } : undefined}
                 >
-                  <Icon className="h-4 w-4" style={{ color: TYPE_COLOR[k] }} />
+                  <Icon className="h-4 w-4" style={{ color: active ? "#1A4BFF" : TYPE_COLOR[k] }} />
                   {TYPE_INFO[k].label}
                 </button>
               );
@@ -109,34 +140,34 @@ function NodeForm({ id }: { id: string }) {
       )}
 
       {isDossier && (
-        <div className="rounded-lg border border-dashed px-3 py-2 text-[11px] text-muted-foreground" style={{ borderColor: "var(--type-dossier)" }}>
+        <div className="rounded-sm border border-dashed px-3 py-2 text-[11px] text-muted-foreground" style={{ borderColor: "var(--type-dossier)" }}>
           <span className="font-mono uppercase tracking-wider" style={{ color: "var(--type-dossier)" }}>Anchored source</span>
           <p className="mt-1 leading-relaxed">Dossiers are managed automatically. Delete with confirmation to unlink.</p>
         </div>
       )}
 
-      {d.kind === "portal" && <Button variant="outline" className="w-full" onClick={() => useWorkspaces.getState().switchCanvas(d.meta["childCanvasId"] ?? "")}>Open child canvas</Button>}
+      {d.kind === "portal" && <Button variant="outline" className="w-full rounded-sm" onClick={() => useWorkspaces.getState().switchCanvas(d.meta["childCanvasId"] ?? "")}>Open child canvas</Button>}
       
       <Field label="Title">
-        <Input className="h-auto border-0 bg-transparent px-0 py-0 font-display text-[22px] leading-tight md:text-[22px] shadow-none focus-visible:ring-0" value={d.title} onChange={(e) => updateNode(id, { title: e.target.value })} />
+        <Input className="h-auto border-0 bg-transparent px-0 py-0 font-display text-[24px] leading-tight md:text-[24px] shadow-none focus-visible:ring-0" value={d.title} onChange={(e) => updateNode(id, { title: e.target.value })} />
       </Field>
       
       <Field label="Content">
-        <Textarea rows={4} value={d.body} placeholder="What do you know, notice, or wonder?" onChange={(e) => updateNode(id, { body: e.target.value })} />
+        <Textarea rows={4} className="rounded-sm" value={d.body} placeholder="What do you know, notice, or wonder?" onChange={(e) => updateNode(id, { body: e.target.value })} />
       </Field>
 
       {!isDossier && (
         <>
           <Field label="Card color"><ColorPicker value={d.color} label="Card color" allowCustom onChange={(color) => updateNode(id, { color })} /></Field>
           <Field label="Epistemic status">
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1.5">
               {EPISTEMIC.map((s) => (
                 <button
                   key={s}
                   onClick={() => updateNode(id, { epistemic: s })}
                   className={cn(
-                    "rounded-full border px-2.5 py-1 text-xs capitalize transition-colors",
-                    d.epistemic === s ? "border-foreground bg-foreground text-background" : "text-muted-foreground hover:bg-muted",
+                    "rounded-sm border px-2.5 py-1 text-xs capitalize transition-colors",
+                    d.epistemic === s ? "border-[#1A4BFF] bg-[#1A4BFF] text-white" : "border-black/10 text-muted-foreground hover:bg-muted",
                   )}
                 >
                   <span className="flex items-center gap-1.5"><EpistemicGlyph status={s} />{s}</span>
@@ -148,15 +179,15 @@ function NodeForm({ id }: { id: string }) {
             <div className="space-y-2">
               {LENSES.map((l) => (
                 <div key={l} className="flex items-center justify-between">
-                  <span className="text-sm capitalize">{l}</span>
-                  <div className="flex rounded-lg border p-0.5">
+                  <span className="text-xs capitalize">{l}</span>
+                  <div className="flex rounded-sm border border-black/10 p-0.5">
                     {LENS_LEVELS.map((lbl, i) => (
                       <button
                         key={lbl}
                         onClick={() => updateNode(id, { lenses: { ...lenses, [l]: i as LensLevel } })}
                         className={cn(
-                          "rounded-md px-2 py-0.5 text-[11px]",
-                          lenses[l] === i ? "bg-muted font-medium text-foreground" : "text-muted-foreground",
+                          "rounded-sm px-2 py-0.5 text-[11px] transition-colors",
+                          lenses[l] === i ? "bg-[#1A4BFF]/10 font-medium text-[#1A4BFF]" : "text-muted-foreground hover:bg-muted",
                         )}
                       >
                         {lbl}
@@ -179,15 +210,15 @@ function NodeForm({ id }: { id: string }) {
             <Field key={f.key} label={f.label}>
               {f.kind === "select" ? (
                 <Select value={v} onValueChange={set}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="rounded-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {f.options?.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
                   </SelectContent>
                 </Select>
               ) : f.kind === "textarea" ? (
-                <Textarea rows={2} value={v} onChange={(e) => set(e.target.value)} />
+                <Textarea rows={2} className="rounded-sm" value={v} onChange={(e) => set(e.target.value)} />
               ) : (
-                <Input type={f.kind === "date" ? "date" : "text"} value={v} onChange={(e) => set(e.target.value)} />
+                <Input className="rounded-sm" type={f.kind === "date" ? "date" : "text"} value={v} onChange={(e) => set(e.target.value)} />
               )}
             </Field>
           );
@@ -195,7 +226,7 @@ function NodeForm({ id }: { id: string }) {
       </div>
 
       {source && !sourceIsUrl && (
-        <Button variant="outline" className="w-full" onClick={openInLab}>
+        <Button variant="outline" className="w-full rounded-sm" onClick={openInLab}>
           <BookOpen className="mr-2 h-4 w-4" /> Open source in Discourse Lab
         </Button>
       )}
@@ -207,7 +238,7 @@ function NodeForm({ id }: { id: string }) {
             const out = e.source === id;
             const other = nodes.find((n) => n.id === (out ? e.target : e.source));
             return (
-              <div key={e.id} className="text-sm">
+              <div key={e.id} className="text-xs">
                 <span className="text-muted-foreground">{out ? "→ " : "← "}{relationLabel(e.data?.relation ?? "leads_to", e.data?.customLabel)}</span>{" "}
                 {other?.data.title}
               </div>
@@ -216,12 +247,12 @@ function NodeForm({ id }: { id: string }) {
         </div>
       )}
 
-      <Button variant="ghost" className="w-full text-destructive hover:text-destructive" onClick={onDeleteClick}>
+      <Button variant="ghost" className="w-full rounded-sm text-destructive hover:text-destructive hover:bg-destructive/10" onClick={onDeleteClick}>
         <Trash2 className="mr-2 h-4 w-4" /> Delete {isDossier ? "dossier" : "node"}
       </Button>
 
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md rounded-sm border-black/10">
           <DialogHeader>
             <DialogTitle className="font-display text-2xl">Delete Source Dossier?</DialogTitle>
             <DialogDescription className="text-sm leading-relaxed mt-2">
@@ -231,8 +262,8 @@ function NodeForm({ id }: { id: string }) {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-6 flex gap-2 sm:justify-end">
-            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => { deleteNode(id); setShowDeleteConfirm(false); }}>
+            <Button variant="outline" className="rounded-sm" onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
+            <Button variant="destructive" className="rounded-sm" onClick={() => { deleteNode(id); setShowDeleteConfirm(false); }}>
               <Trash2 className="mr-2 h-4 w-4" /> Delete Dossier
             </Button>
           </DialogFooter>
@@ -251,17 +282,17 @@ function EdgeForm({ id }: { id: string }) {
   return (
     <div className="space-y-5">
       <p className="font-display text-sm leading-relaxed">
-        {title(e.source)} <span className="text-muted-foreground">{relationLabel(data.relation, data.customLabel)}</span> {title(e.target)}
+        {title(e.source)} <span className="text-[#1A4BFF]">{relationLabel(data.relation, data.customLabel)}</span> {title(e.target)}
       </p>
       <Field label="Relationship">
         <RelationGrid value={data.relation} onPick={(r) => updateEdge(id, { ...data, relation: r })} />
       </Field>
       {data.relation === "custom" && (
         <Field label="Custom label">
-          <Input value={data.customLabel ?? ""} onChange={(ev) => updateEdge(id, { ...data, customLabel: ev.target.value })} />
+          <Input className="rounded-sm" value={data.customLabel ?? ""} onChange={(ev) => updateEdge(id, { ...data, customLabel: ev.target.value })} />
         </Field>
       )}
-      <Button variant="ghost" className="w-full text-destructive hover:text-destructive" onClick={() => deleteEdge(id)}>
+      <Button variant="ghost" className="w-full rounded-sm text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => deleteEdge(id)}>
         <Trash2 className="mr-2 h-4 w-4" /> Delete relationship
       </Button>
     </div>
@@ -276,9 +307,9 @@ export function RelationGrid({ value, onPick }: { value?: Relation; onPick: (r: 
           key={r}
           onClick={() => onPick(r)}
           className={cn(
-            "rounded-md px-2.5 py-1.5 text-left text-xs transition-colors",
-            value === r ? "bg-foreground text-background" : "hover:bg-muted",
-            r === "contradicts" && value !== r && "text-destructive",
+            "rounded-sm px-2.5 py-1.5 text-left text-xs transition-colors",
+            value === r ? "bg-[#1A4BFF] text-white" : "hover:bg-muted",
+            r === "contradicts" && value !== r && "text-[#1A4BFF] font-medium",
           )}
         >
           {relationLabel(r)}

@@ -47,7 +47,6 @@ export const TYPE_COLOR: Record<ThreadNodeType, string> = {
   omission: "var(--type-omission)",
 };
 
-/** A small glyph that encodes how certain a card is — filled = known, hollow = assumed. */
 export function EpistemicGlyph({ status, className }: { status: Epistemic; className?: string }) {
   const c = "currentColor";
   return (
@@ -94,7 +93,6 @@ function focusInLab(source: string) {
   window.dispatchEvent(new CustomEvent("threadwise:focus-source", { detail: { source } }));
 }
 
-/** The Source Dossier anchor: a distinct manila-folder visual that pins one document to the canvas. */
 function DossierCard({ id, data, selected }: NodeProps<TNode>) {
   const sourceTitle = data.meta["source"] || data.title || "Untitled source";
   const hasUrl = isUrl(data.meta["sourceUrl"]) || isUrl(data.meta["source"]);
@@ -123,7 +121,7 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
     >
       <Handle type="target" position={Position.Left} className="tw-handle" />
       <div
-        className="absolute -top-2 left-3 z-10 flex items-center gap-1.5 rounded-t-md border border-b-0 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.16em] transition-transform duration-200"
+        className="absolute -top-2 left-3 z-10 flex items-center gap-1.5 rounded-t-sm border border-b-0 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.16em] transition-transform duration-200"
         style={{
           background: "var(--card)",
           borderColor: "var(--type-dossier)",
@@ -135,7 +133,7 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
         Source dossier
       </div>
       <div
-        className="mt-4 rounded-[2px] border bg-card p-4 text-card-foreground shadow-sm transition-transform duration-200"
+        className="mt-4 rounded-sm border bg-card p-4 text-card-foreground shadow-sm transition-transform duration-200"
         style={{ 
           borderColor: "var(--type-dossier)",
           transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(16px)"
@@ -155,7 +153,7 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
           </span>
           <button
             type="button"
-            className="nodrag nopan rounded-md border px-2 py-1 text-[10px] font-bold uppercase tracking-wider hover:bg-muted"
+            className="nodrag nopan rounded-sm border px-2 py-1 text-[10px] font-bold uppercase tracking-wider hover:bg-muted"
             style={{ borderColor: "var(--type-dossier)", color: "var(--type-dossier)" }}
             onClick={(e) => {
               e.stopPropagation();
@@ -179,7 +177,6 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
     (s) => s.nodes.find((n) => n.id === id)?.height ?? NOTE_DEFAULT_HEIGHT,
   );
 
-  // Dossier renders its own compact folder card and never uses the standard card chrome.
   if (data.kind === "dossier") {
     return <DossierCard id={id} data={data} selected={selected} width={0} height={0} dragging={false} zIndex={0} isConnectable={true} />;
   }
@@ -210,10 +207,15 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
   
   const isOmission = data.kind === "omission";
 
+  // Determine if the paper tone should override the default bg-card
+  const paper = custom && !isOmission ? "custom" : paperColor(data.color);
+  const isCustomPaper = paper !== "paper";
+
   return (
     <div
       className={cn(
-        "tw-card group relative h-full w-[272px] rounded-[2px] bg-card text-card-foreground",
+        "tw-card group relative h-full w-[272px] rounded-sm text-card-foreground",
+        !isCustomPaper && "bg-card",
         tall && "tw-tall",
         lift >= 0.6 && "is-floating",
         lift === 0 && "is-grounded",
@@ -255,7 +257,6 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
         e.currentTarget.style.setProperty("--hx", `${px * 100}%`);
         e.currentTarget.style.setProperty("--hy", `${py * 100}%`);
         
-        // 3D Tilt: Cranked up to 15 degrees for maximum physical feel
         e.currentTarget.style.setProperty("--rx", `${(py - 0.5) * -15}deg`);
         e.currentTarget.style.setProperty("--ry", `${(px - 0.5) * 15}deg`);
         e.currentTarget.style.setProperty("--near", "1");
@@ -266,7 +267,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
         e.currentTarget.style.setProperty("--near", "0");
       }}
       data-lift={lift}
-      data-paper={custom && !isOmission ? "custom" : paperColor(data.color)}
+      data-paper={paper}
     >
       {data.kind === "note" && (
         <Button
@@ -401,7 +402,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
         {source && !sourceIsUrl && (
           <button
             type="button"
-            className="nodrag nopan mt-2 inline-flex items-center gap-1 rounded-md border border-dashed px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="nodrag nopan mt-2 inline-flex items-center gap-1 rounded-sm border border-dashed px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-foreground"
             onClick={(e) => {
               e.stopPropagation();
               focusInLab(source);
