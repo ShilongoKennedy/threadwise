@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { InteractiveLaptop } from "@/components/threadwise/InteractiveLaptop";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -68,8 +69,6 @@ function LandingPage() {
   const heroReveal = useScrollReveal();
   const laptopReveal = useScrollReveal();
   const commandCenterReveal = useScrollReveal();
-
-  const accentBlue = "#1A4BFF";
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#1A4BFF] selection:text-white overflow-hidden relative flex flex-col">
@@ -219,106 +218,10 @@ function LandingPage() {
             </div>
 
             <div className="relative bg-[#FDFBF7] aspect-[16/10] flex overflow-hidden rounded-t-md">
-              
-              {/* FULL DASHBOARD MOCKUP INSIDE LAPTOP */}
-              <div className="absolute inset-0 flex bg-[#FDFBF7]">
-                
-                {/* 1. Tiny Left Sidebar */}
-                <div className="w-[16%] h-full border-r border-black/5 p-3 flex flex-col bg-[#FDFBF7]">
-                  <div className="text-[8px] font-mono tracking-widest uppercase text-muted-foreground mb-3 flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#1A4BFF]" />
-                    Corpus · 3
-                  </div>
-                  <div className="space-y-2">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="flex flex-col gap-0.5 p-1.5 rounded-sm bg-black/5 border border-black/5">
-                        <span className="text-[6px] text-muted-foreground font-mono">Oct 2026</span>
-                        <span className="text-[8px] font-medium text-[#1A1A1A] truncate">Al Jazeera {i}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 2. Main Content Area */}
-                <div className="w-[84%] h-full flex flex-col">
-                  
-                  {/* Top Navigation Tabs */}
-                  <div className="h-10 border-b border-black/5 flex items-center px-4 gap-4 shrink-0 bg-white">
-                    <span className="text-[8px] font-mono tracking-wider uppercase text-[#1A1A1A] font-bold border-b-2 border-[#1A4BFF] py-2.5 px-1">Forensic Workbench</span>
-                    <span className="text-[8px] font-mono tracking-wider uppercase text-muted-foreground py-2.5 px-1">Cross-Source</span>
-                    <span className="text-[8px] font-mono tracking-wider uppercase text-muted-foreground py-2.5 px-1">Text Diff</span>
-                  </div>
-
-                  {/* Dashboard Body */}
-                  <div className="flex-1 flex overflow-hidden">
-                    
-                    {/* Left: Speech Text */}
-                    <div className="w-1/2 h-full border-r border-black/5 p-6 overflow-hidden relative bg-[#FDFBF7]">
-                      <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[8px] font-mono tracking-widest uppercase text-[#1A4BFF] font-bold">Forensic Workbench</span>
-                      </div>
-                      <div className="font-serif text-[11px] leading-relaxed text-[#1A1A1A]/80">
-                        <p className="mb-3">
-                          "I was in a country somewhere in the Middle East... and the people said, we took our gold out of the vaults in New York City. You know what I said to him? <span className="bg-[#1A4BFF]/10 border-b border-[#1A4BFF] px-1 py-0.5 rounded-sm">I said, you have three armies within 400 miles who can come take your gold.</span>"
-                        </p>
-                        <p className="mb-3">
-                          "That’s the real world. You’re not thinking clearly about safety. <span className="bg-[#1A4BFF]/10 border-b border-[#1A4BFF] px-1 py-0.5 rounded-sm">That gold is protected by the Atlantic, the Pacific, the United States military, the rule of law.</span>"
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Right: Analyst Margin */}
-                    <div className="w-1/2 h-full p-6 flex flex-col gap-4 overflow-hidden relative bg-white">
-                      
-                      {/* Top Metrics Row (Radar & Gauge) */}
-                      <div className="flex gap-3">
-                        <div className="flex-1 rounded-sm border border-black/10 bg-[#FDFBF7] p-2 flex flex-col items-center">
-                          <span className="text-[7px] font-mono uppercase text-muted-foreground self-start mb-1">Radar</span>
-                          <svg viewBox="0 0 100 100" className="w-14 h-14">
-                            <polygon points="50,10 90,40 75,85 25,85 10,40" fill="none" stroke="#E5E5E5" strokeWidth="2" />
-                            <polygon points="50,25 75,45 65,75 35,75 25,45" fill="none" stroke="#E5E5E5" strokeWidth="1" />
-                            <polygon points="50,30 70,45 60,65 40,65 30,45" fill="#1A4BFF" fillOpacity="0.15" stroke="#1A4BFF" strokeWidth="2" />
-                          </svg>
-                        </div>
-                        <div className="flex-1 rounded-sm border border-black/10 bg-[#FDFBF7] p-2 flex flex-col items-center justify-center relative">
-                          <span className="text-[7px] font-mono uppercase text-muted-foreground self-start absolute top-2 left-2">Friction</span>
-                          <div className="text-[18px] font-display text-[#1A4BFF] mt-2">85<span className="text-[8px] text-muted-foreground">/100</span></div>
-                        </div>
-                      </div>
-
-                      {/* Executive Summary */}
-                      <div className="bg-[#FDFBF7] border-l-4 border-[#1A4BFF] p-2 rounded-r shadow-sm">
-                        <span className="text-[7px] font-mono uppercase text-[#1A4BFF] block mb-1 font-bold">Executive Summary</span>
-                        <p className="text-[9px] leading-tight text-[#1A1A1A] font-medium line-clamp-2">The speaker is using implicit threats of military force to reassure foreign investors, revealing a systemic fragility in dollar hegemony.</p>
-                      </div>
-
-                      {/* Margin Notes */}
-                      <div className="space-y-2">
-                        <div className="bg-white border border-black/10 rounded-sm p-2 shadow-sm">
-                          <div className="flex items-center gap-2 mb-1">
-                            <ShieldAlert className="w-3 h-3 text-[#1A4BFF]" />
-                            <span className="text-[7px] font-bold font-mono uppercase text-muted-foreground">Contradiction</span>
-                          </div>
-                          <b className="block text-[9px] font-display mb-1">Rule of Law vs. Force</b>
-                          <p className="text-[8px] text-muted-foreground leading-tight">Citing 'rule of law' alongside implicit military force reveals a protection-racket mentality.</p>
-                        </div>
-
-                        <div className="bg-white border border-black/10 rounded-sm p-2 shadow-sm">
-                          <div className="flex items-center gap-2 mb-1">
-                            <FileWarning className="w-3 h-3 text-[#E3D398]" />
-                            <span className="text-[7px] font-bold font-mono uppercase text-muted-foreground">Fallacy</span>
-                          </div>
-                          <b className="block text-[9px] font-display mb-1">Appeal to Force</b>
-                          <p className="text-[8px] text-muted-foreground leading-tight">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
+              {/* INTERACTIVE DEMO COMPONENT */}
+              <InteractiveLaptop />
             </div>
+            
             {/* Laptop Base/Hinge */}
             <div className="h-6 flex items-center justify-center bg-[#1A1A1A]"><div className="w-16 h-1 rounded-full bg-black/60" /></div>
           </div>
