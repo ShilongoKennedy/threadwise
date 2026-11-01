@@ -31,7 +31,7 @@ export async function handleThreadwise(request: Request) {
     const url = process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"];
     const host = new URL(request.url).hostname;
     const isLoopback = host === "localhost" || host === "127.0.0.1" || host === "::1";
-    const allowLocalTest = process.env["ALLOW_LOCAL_AI_UNAUTHENTICATED"] === "true" && isLoopback && !process.env.VERCEL;
+    const allowLocalTest = process.env["ALLOW_LOCAL_AI_UNAUTHENTICATED"] === "true" && isLoopback && !process.env["VERCEL"];
     
     const token = request.headers.get("Authorization")?.replace(/^Bearer /, "");
     let userId: string | undefined;

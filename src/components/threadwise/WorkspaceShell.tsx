@@ -5,6 +5,8 @@ import { DiscourseLab } from "./DiscourseLab";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
 import { emptySuite } from "@/lib/threadwise/advanced";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { WorkspaceBar } from "./WorkspaceBar";
 import { Columns, LayoutPanelTop, PanelRight, X, Command, Keyboard, Newspaper } from "lucide-react";
 import { CommandPalette } from "./CommandPalette";
 import { ShortcutsModal } from "./ShortcutsModal";
@@ -94,7 +96,7 @@ export function WorkspaceShell() {
   const labContent = (
     <div className="h-full w-full flex flex-col relative overflow-hidden bg-background">
       <DiscourseLab
-        corpus={corpus}
+        {...(corpus ? { corpus } : {})}
         update={(discourse) => updateSuite({ discourse })}
         onClose={() => {
           if (layout === 'slide') setSlideOpen(false);
@@ -119,51 +121,55 @@ export function WorkspaceShell() {
 
       <div className="h-14 border-b flex items-center px-4 justify-between shrink-0 bg-card z-[60]">
         <div className="flex items-center gap-2 md:gap-3">
-          <span className="font-display text-lg md:text-xl italic font-medium tracking-tight">Threadwise</span>
-          <span className="hidden sm:inline-block font-mono text-[10px] uppercase tracking-widest text-muted-foreground bg-muted px-2 py-1 rounded-md">Workspace</span>
+          <span className="hidden font-display text-lg md:text-xl italic font-medium tracking-tight sm:inline">Threadwise</span>
+          <span className="hidden lg:inline-block font-mono text-[10px] uppercase tracking-widest text-muted-foreground bg-muted px-2 py-1 rounded-md">Workspace</span>
         </div>
 
-        {/* Layout switches are desktop-only: below lg the shell always renders the
-            slide layout, so these buttons would be dead controls crowding the bar. */}
-        <div className="hidden items-center gap-1 rounded-xl border bg-muted/50 p-1 lg:flex">
-          {isLargeScreen && (
-            <Button
-              size="sm"
-              variant={layout === "split" ? "secondary" : "ghost"}
-              onClick={() => setLayout("split")}
-              className="h-8 rounded-lg text-xs"
-            >
-              <Columns className="w-3.5 h-3.5 mr-1.5" /> Split
-            </Button>
-          )}
-          <Button
-            size="sm"
-            variant={layout === "tabs" ? "secondary" : "ghost"}
-            onClick={() => setLayout("tabs")}
-            className="h-8 rounded-lg text-xs"
-          >
-            <LayoutPanelTop className="w-3.5 h-3.5 mr-1.5" /> Tabs
-          </Button>
-          <Button
-            size="sm"
-            variant={layout === "slide" ? "secondary" : "ghost"}
-            onClick={() => setLayout("slide")}
-            className="h-8 rounded-lg text-xs"
-          >
-            <PanelRight className="w-3.5 h-3.5 mr-1.5" /> Slide
-          </Button>
+        <div className="flex min-w-0 flex-1 items-center px-1 md:px-2">
+          <WorkspaceBar />
         </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              aria-label="Change layout"
+              className="hidden h-8 gap-1.5 text-xs lg:flex"
+            >
+              {layout === "slide" ? <PanelRight className="h-3.5 w-3.5" /> : <LayoutPanelTop className="h-3.5 w-3.5" />}
+              <span className="capitalize">{layout}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center" className="tw-sheet w-52 p-1">
+            {isLargeScreen && (
+              <DropdownMenuItem onSelect={() => setLayout("split")}>
+                <Columns className="h-3.5 w-3.5" /> Split
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem onSelect={() => setLayout("tabs")}>
+              <LayoutPanelTop className="h-3.5 w-3.5" /> Tabs
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setLayout("slide")}>
+              <PanelRight className="h-3.5 w-3.5" /> Slide
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            {layout === "slide" || isMobile ? (
+              <DropdownMenuItem onSelect={() => setSlideOpen(!slideOpen)}>
+                {slideOpen ? "Close canvas" : "Open canvas"}
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem onSelect={() => setActiveTab(activeTab === "lab" ? "canvas" : "lab")}>
+                Switch to {activeTab === "lab" ? "Canvas" : "Lab"}
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem onSelect={() => setShortcutsOpen(true)}>
+              <Keyboard className="h-3.5 w-3.5" /> Shortcuts
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setShortcutsOpen(true)}
-            className="hidden md:flex h-8 w-8 text-muted-foreground bg-background rounded-lg border-black/10 shadow-sm hover:text-foreground"
-            title="Keyboard Shortcuts (?)"
-          >
-            <Keyboard className="w-4 h-4" />
-          </Button>
 
           <Button
             variant="outline"
@@ -178,16 +184,6 @@ export function WorkspaceShell() {
             </kbd>
           </Button>
 
-          {(layout === "slide" || isMobile) && (
-             <Button size="sm" variant={slideOpen ? "default" : "outline"} onClick={() => setSlideOpen(!slideOpen)}>
-               {slideOpen ? "Close Canvas" : "Open Canvas"}
-             </Button>
-          )}
-          {layout === "tabs" && !isMobile && (
-             <Button size="sm" variant="outline" onClick={() => setActiveTab(activeTab === "lab" ? "canvas" : "lab")}>
-               Switch to {activeTab === "lab" ? "Canvas" : "Lab"}
-             </Button>
-          )}
           <Link
             to="/briefing"
             title="Read today's Morning Brief"

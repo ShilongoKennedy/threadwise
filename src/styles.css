@@ -183,11 +183,11 @@ body::after {
 /* ---- PAPER COLORS ---- */
 :root {
   --paper-paper: var(--card);
-  --paper-butter: oklch(0.955 0.075 96);
-  --paper-rose: oklch(0.944 0.045 15);
-  --paper-sage: oklch(0.932 0.045 153);
-  --paper-sky: oklch(0.943 0.035 235);
-  --paper-lilac: oklch(0.937 0.038 305);
+  --paper-butter: oklch(0.962 0.028 92);
+  --paper-rose: oklch(0.952 0.021 22);
+  --paper-sage: oklch(0.95 0.014 150);
+  --paper-sky: oklch(0.955 0.016 245);
+  --paper-lilac: oklch(0.951 0.013 300);
 }
 .dark {
   --paper-paper: var(--card);
@@ -426,6 +426,12 @@ body::after {
   cursor: pointer;
   pointer-events: auto;
   transition: background-color .15s, color .15s, border-color .15s;
+}
+.tw-tag {
+  /* Continuous, never a step: the tag fades as the graph zooms out, so cords
+     stay legible without switching detail levels. */
+  opacity: clamp(0, calc((var(--tw-zoom, 1) - 0.4) * 2.6), 1);
+  transition: opacity .15s, background-color .15s, color .15s, border-color .15s;
 }
 .tw-tag:hover { background: var(--foreground); color: #FDFBF7; border-color: var(--foreground); }
 .tw-tag[data-selected="true"] { background: var(--foreground); color: #FDFBF7; }

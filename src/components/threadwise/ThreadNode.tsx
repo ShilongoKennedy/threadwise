@@ -20,6 +20,7 @@ import {
   groundedLift,
   type Epistemic,
   type ThreadNodeType,
+  type ThreadNodeData,
 } from "@/lib/threadwise/model";
 import { useThread, type TNode } from "@/lib/threadwise/store";
 import { isCustomColor, paperColor, paperInk } from "@/lib/threadwise/paper";
@@ -93,7 +94,7 @@ function focusInLab(source: string) {
   window.dispatchEvent(new CustomEvent("threadwise:focus-source", { detail: { source } }));
 }
 
-function DossierCard({ id, data, selected }: NodeProps<TNode>) {
+function DossierCard({ id, data, selected }: { id: string; data: ThreadNodeData; selected: boolean }) {
   const sourceTitle = data.meta["source"] || data.title || "Untitled source";
   const hasUrl = isUrl(data.meta["sourceUrl"]) || isUrl(data.meta["source"]);
   const linkedCount = useThread((s) => s.edges.filter((e) => e.source === id || e.target === id).length);
@@ -178,7 +179,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
   );
 
   if (data.kind === "dossier") {
-    return <DossierCard id={id} data={data} selected={selected} width={0} height={0} dragging={false} zIndex={0} isConnectable={true} />;
+    return <DossierCard id={id} data={data} selected={selected} />;
   }
 
   const lift = groundedLift(data);

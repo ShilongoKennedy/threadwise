@@ -9,8 +9,8 @@ import { brokeredPreviewStorage } from "./previewAuthStorage";
  * Do not use process.env here: this module is imported by client components and
  * a server-created singleton could otherwise be reused during hydration.
  */
-const browserUrl = import.meta.env.VITE_SUPABASE_URL;
-const browserKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const browserUrl = import.meta.env["VITE_SUPABASE_URL"];
+const browserKey = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
 
 let browserClient: SupabaseClient<Database> | undefined;
 

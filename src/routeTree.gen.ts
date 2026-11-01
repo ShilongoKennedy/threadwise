@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as BriefsRouteImport } from './routes/briefs'
+import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
@@ -37,6 +38,11 @@ const BriefingRoute = BriefingRouteImport.update({
 const BriefsRoute = BriefsRouteImport.update({
   id: '/briefs',
   path: '/briefs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DigestRoute = DigestRouteImport.update({
+  id: '/digest',
+  path: '/digest',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/briefs': typeof BriefsRoute
+  '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/briefs': typeof BriefsRoute
+  '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/briefs': typeof BriefsRoute
+  '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/briefing'
     | '/briefs'
+    | '/digest'
     | '/login'
     | '/api/news-brief'
     | '/api/threadwise'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/briefing'
     | '/briefs'
+    | '/digest'
     | '/login'
     | '/api/news-brief'
     | '/api/threadwise'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/briefing'
     | '/briefs'
+    | '/digest'
     | '/login'
     | '/api/news-brief'
     | '/api/threadwise'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRoute
   BriefingRoute: typeof BriefingRoute
   BriefsRoute: typeof BriefsRoute
+  DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
@@ -175,6 +188,13 @@ declare module '@tanstack/react-router' {
       path: '/briefs'
       fullPath: '/briefs'
       preLoaderRoute: typeof BriefsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/digest': {
+      id: '/digest'
+      path: '/digest'
+      fullPath: '/digest'
+      preLoaderRoute: typeof DigestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRoute,
   BriefingRoute: BriefingRoute,
   BriefsRoute: BriefsRoute,
+  DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,

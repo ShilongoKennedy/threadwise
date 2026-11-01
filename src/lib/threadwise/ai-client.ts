@@ -9,8 +9,8 @@ export async function authHeaders() {
     return {};
   }
 }
-export async function streamTask(body: unknown, onText: (text: string) => void, signal: AbortSignal) {
-  const response = await fetch("/api/threadwise", { method: "POST", headers: { "Content-Type": "application/json", ...await authHeaders() }, body: JSON.stringify(body), signal });
+export async function streamTask(body: unknown, onText: (text: string) => void, signal?: AbortSignal) {
+  const response = await fetch("/api/threadwise", { method: "POST", headers: { "Content-Type": "application/json", ...await authHeaders() }, body: JSON.stringify(body), ...(signal ? { signal } : {}) });
   if (!response.ok) { const error = await response.json().catch(() => null); throw new Error(error?.message ?? `Request failed (${response.status}).`); }
   if (!response.body) throw new Error("No response received.");
   const reader = response.body.getReader(); const decoder = new TextDecoder(); let text = "";

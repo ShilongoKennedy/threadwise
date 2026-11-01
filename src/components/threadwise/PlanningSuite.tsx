@@ -9,8 +9,9 @@ import {
   ListChecks,
   Plus,
   Users,
+  X,
 } from "lucide-react";
-import { addWatch, listWatches, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
+import { addWatch, listWatches, removeWatch, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,7 +42,6 @@ import {
   validDate,
   type Decision,
 } from "@/lib/threadwise/planning";
-import { WorkshopPanel } from "./WorkshopPanel";
 import {
   addDays,
   startOfMonth,
@@ -445,7 +445,7 @@ function DecisionPanel({
 function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: () => void }) {
   const s = useThread();
   const [month, setMonth] = useState(startOfMonth(new Date()));
-  const [view, setView] = useState("calendar");
+  const [view] = useState<"calendar">("calendar");
   const [nodeId, setNodeId] = useState("");
   const [finding, setFinding] = useState("");
   const events = scheduleEvents(s.nodes, decisions);
@@ -511,12 +511,6 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
             <ChevronRight />
           </Button>
         </div>
-        <Tabs value={view} onValueChange={setView}>
-          <TabsList className="tw-choice-rail h-auto w-auto gap-1 p-1">
-            <TabsTrigger className="tw-choice-tab" value="calendar">Calendar</TabsTrigger>
-            <TabsTrigger className="tw-choice-tab" value="timeline">Timeline</TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
       <div className="flex flex-wrap items-center gap-2 border-2 border-foreground p-2">
         <Input
@@ -543,6 +537,56 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
         )}
       </div>
       {watchError && <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#C1121F]">{watchError}</p>}
+
+      {watches.length > 0 && (
+        <section className="border-2 border-foreground">
+          <div className="flex items-center justify-between border-b border-foreground/12 bg-foreground px-3 py-1">
+            <h3 className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#FDFBF7]">
+              Watched claims
+            </h3>
+            <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">
+              {watches.filter((item) => item.status === "pending").length} open
+            </span>
+          </div>
+          <ul>
+            {watches.map((item) => {
+              const contradicted = item.status === "contradicted";
+              const pending = item.status === "pending";
+              return (
+                <li
+                  key={item.id}
+                  className="flex items-center gap-2 border-b border-foreground/10 px-3 py-1.5 last:border-b-0"
+                >
+                  <span
+                    className="shrink-0 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white"
+                    style={{ backgroundColor: contradicted ? "#C1121F" : pending ? "#1A4BFF" : "#1A1A1A" }}
+                  >
+                    {WATCH_LABEL[item.status]}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-[13px]" title={item.claim}>
+                    {item.claim}
+                  </span>
+                  <span className="shrink-0 font-mono text-[10px] text-foreground/40">{item.due_date}</span>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-7 w-7 shrink-0"
+                    aria-label={`Stop watching ${item.claim}`}
+                    title="Stop watching"
+                    onClick={() => {
+                      void removeWatch(item.id)
+                        .then(() => setWatches((rows) => rows.filter((row) => row.id !== item.id)))
+                        .catch(() => setWatchError("Could not remove that watch."));
+                    }}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       {view === "calendar" ? (
         <div className="overflow-x-auto">

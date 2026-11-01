@@ -168,7 +168,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
 
   const docs = [...corpus.docs].sort((a, b) => a.date.localeCompare(b.date));
   const active = docs.find((doc) => doc.id === activeId) ?? docs[0];
-  const activeAnalysis = savedAnalyses[active?.id];
+  const activeAnalysis = active ? savedAnalyses[active.id] : undefined;
 
   const docA = docs.find((d) => d.id === compareIds[0]);
   const docB = docs.find((d) => d.id === compareIds[1]);
@@ -198,11 +198,13 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
       const text = await readDocument(file);
       if (!text.trim()) throw new Error("No readable text found in this file.");
       
-      const newDoc = { 
+      const newDoc: DiscourseDoc = { 
         id: uid(), 
         title: file.name.replace(/\.[^/.]+$/, ""), 
         speaker: "", 
-        date: new Date().toISOString().split('T')[0], 
+        date: new Date().toISOString().split('T')[0] ?? "", 
+        occasion: "",
+        audience: "",
         text: text.slice(0, 50000)
       };
       
@@ -221,7 +223,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
   };
 
   const loadSample = () => {
-    const newDoc = { id: uid(), title: "Jamie Dimon on Gold & Military", speaker: "Jamie Dimon", date: "2024-01-01", text: SAMPLE_TEXT };
+    const newDoc: DiscourseDoc = { id: uid(), title: "Jamie Dimon on Gold & Military", speaker: "Jamie Dimon", date: "2024-01-01", occasion: "", audience: "", text: SAMPLE_TEXT };
     save({ docs: [...corpus.docs, newDoc] });
     setActiveId(newDoc.id);
     setTimeout(() => { document.getElementById("analyze-source-btn")?.click(); }, 100);
@@ -293,8 +295,8 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
     
     let dossierId = useThread.getState().nodes.find(
       (n) =>
-        (n.data.kind === "dossier" || n.data.meta.dossier === "true") &&
-        n.data.meta.source === sourceTitle
+        (n.data.kind === "dossier" || n.data.meta["dossier"] === "true") &&
+        n.data.meta["source"] === sourceTitle
     )?.id;
     if (!dossierId) {
         dossierId = s.addNode("dossier", { x: -450, y: 100 + useThread.getState().nodes.length * 200 });
@@ -440,8 +442,8 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
 
   const handleTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    if (target.tagName === 'SPAN' && target.dataset.noteIndex) {
-      const index = Number(target.dataset.noteIndex);
+    if (target.tagName === 'SPAN' && target.dataset["noteIndex"]) {
+      const index = Number(target.dataset["noteIndex"]);
       setActiveNote(index);
       document.getElementById(`margin-note-${index}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }

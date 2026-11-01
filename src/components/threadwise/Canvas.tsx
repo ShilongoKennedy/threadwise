@@ -5,7 +5,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
 import { useSocratic } from "@/lib/threadwise/socratic";
 import { playSound, useSound } from "@/lib/threadwise/sound";
-import { WorkspaceBar } from "./WorkspaceBar";
 import { EvidenceClipper } from "./EvidenceClipper";
 import { MemoGenerator } from "./MemoGenerator";
 import { SocraticDrawer } from "./SocraticDrawer";
@@ -501,8 +500,9 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
             setThoughtPortal(n.id);
           }
         }}
-        onMove={(e) => {
+        onMove={(e, viewport) => {
           if (e && "clientX" in e) playSound("pan", sx(e.clientX));
+          if (viewport) wrapper.current?.style.setProperty("--tw-zoom", String(viewport.zoom));
         }}
         onNodeDragStart={(e, n) => {
           const p = pt(e);
@@ -670,7 +670,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </div>
         )}
         {chromeOpen && <div
-          className={`tw-toolstrip absolute right-4 top-[56px] z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
+          className={`tw-toolstrip absolute right-4 top-4 z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
         >
           <Button
             size="icon"
@@ -758,22 +758,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </Button>
         </div>}
 
-        <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center gap-2 overflow-hidden border-b border-[#1A1A1A]/12 bg-[#FDFBF7]/85 px-2 py-1 backdrop-blur-md">
-          <div className="pointer-events-auto flex min-w-0 flex-1 items-center overflow-hidden">
-            <WorkspaceBar />
-          </div>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="pointer-events-auto shrink-0"
-            aria-pressed={chromeOpen}
-            aria-label={chromeOpen ? "Hide workspace controls" : "Show workspace controls"}
-            title={chromeOpen ? "Hide workspace controls" : "Show workspace controls"}
-            onClick={() => setChromeOpen((v) => !v)}
-          >
-            <SlidersHorizontal className={`h-4 w-4 transition-colors ${chromeOpen ? "text-accent-ink" : ""}`} />
-          </Button>
-        </header>
 
         <div
           className={`pointer-events-none absolute inset-x-0 bottom-[max(12px,env(safe-area-inset-bottom))] z-30 justify-center px-3 sm:bottom-5 flex`}
@@ -788,6 +772,17 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
               </Button>
               <Button variant="ghost" size="sm" disabled={replay} onClick={() => window.dispatchEvent(new CustomEvent("threadwise:open-calendar"))} className="tw-press h-11 rounded-[2px] px-2.5 text-[13px] text-foreground/70 hover:text-foreground">
                 <CalendarDays className="mr-1.5 h-4 w-4" /> Calendar
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-pressed={chromeOpen}
+                aria-label={chromeOpen ? "Hide workspace controls" : "Show workspace controls"}
+                title={chromeOpen ? "Hide workspace controls" : "Show workspace controls"}
+                onClick={() => setChromeOpen((v) => !v)}
+                className="tw-press h-11 w-9 rounded-[2px] text-foreground/70 hover:text-foreground"
+              >
+                <SlidersHorizontal className={`h-4 w-4 ${chromeOpen ? "text-accent-ink" : ""}`} />
               </Button>
             </div>
             {!dockOpen ? <Button variant="ghost" disabled={replay} onClick={() => setDockOpen(true)} className="tw-press flex h-11 items-center gap-2 rounded-[2px] px-4 text-[14px] text-foreground"><Plus className="h-4 w-4" />Add to canvas</Button> : <>

@@ -22,7 +22,6 @@ import { validateFindings, type RedTeamResult } from "@/lib/threadwise/redteam";
 import { RELATIONS, type Relation, type ThreadNodeType } from "@/lib/threadwise/model";
 import { PresentationMode } from "./PresentationMode";
 import { ThoughtPlayback } from "./ThoughtPlayback";
-import { DecisionTheatre } from "./DecisionTheatre";
 import { ConsequenceMap } from "./ConsequenceMap";
 import { DossierTool, RunwayTool, ScenarioTool } from "./StrategyTools";
 
@@ -136,7 +135,7 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
   const selected = s.nodes.find((n) => n.id === s.selectedId);
   
   const radar = useMemo(() => {
-    const actions = s.nodes.filter((n) => n.data.kind === "action" && n.data.meta.status !== "done");
+    const actions = s.nodes.filter((n) => n.data.kind === "action" && n.data.meta["status"] !== "done");
     const uncertain = s.nodes.filter((n) => ["assumption", "hypothesis", "unknown"].includes(n.data.epistemic));
     const contradictory = s.edges.filter((e) => e.data?.relation === "contradicts");
     const decisions = canvas?.planning?.decisions ?? [];
@@ -210,7 +209,6 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
       )}
       {present && <PresentationMode stops={validStops} index={Math.min(stop, Math.max(0, validStops.length - 1))} setIndex={setStop} auto={auto} setAuto={setAuto} pace={pace} setPace={setPace} title={canvas?.title ?? "Walkthrough"} onExit={exitPresent} />}
       {playback && <ThoughtPlayback history={s.history} title={canvas?.title ?? "Thought playback"} onExit={() => setPlayback(false)} />}
-      {theatre && <DecisionTheatre onExit={() => setTheatre(false)} />}
       {consequences && <ConsequenceMap onExit={() => setConsequences(false)} />}
       
       {open && !present && s.replayIndex === null && (

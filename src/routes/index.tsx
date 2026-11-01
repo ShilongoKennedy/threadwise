@@ -42,7 +42,7 @@ function useScrollReveal() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true);
+        if (entry?.isIntersecting) setIsVisible(true);
       },
       { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
     );

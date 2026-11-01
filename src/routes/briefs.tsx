@@ -87,6 +87,12 @@ function BriefsPage() {
             </span>
           </div>
           <Link
+            to="/digest"
+            className="hidden shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7] sm:flex"
+          >
+            The record
+          </Link>
+          <Link
             to="/briefing"
             className="group flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-white shadow-[2px_2px_0_0_#1A1A1A] transition-all hover:bg-[#1A1A1A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
           >
