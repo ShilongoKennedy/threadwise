@@ -22,19 +22,23 @@ export const Route = createFileRoute("/strata")({
 });
 
 type Lens = "type" | "risk" | "scarcity";
+type Epistemic = TNode["data"]["epistemic"];
 
-/** Altitude in the strata, 0 = bedrock (fact) … 1 = unanchored (unknown). */
-const LIFT: Record<string, number> = {
-  fact: 0,
-  evidence: 0.18,
-  assumption: 0.62,
-  hypothesis: 0.82,
-  unknown: 1,
-};
+/** Five shelves, bottom to top. Altitude is the whole point of the view. */
+const LAYERS: { key: Epistemic; label: string; lift: number }[] = [
+  { key: "fact", label: "FACT", lift: 0 },
+  { key: "evidence", label: "EVIDENCE", lift: 0.18 },
+  { key: "assumption", label: "ASSUMPTION", lift: 0.62 },
+  { key: "hypothesis", label: "HYPOTHESIS", lift: 0.82 },
+  { key: "unknown", label: "UNKNOWN", lift: 1 },
+];
 
-const ALTITUDE = 9;
-const CARD_W = 3.6;
-const CARD_H = 1.8;
+const ALTITUDE = 11;
+const CARD_W = 3.1;
+const CARD_H = 1.55;
+const STEP_X = CARD_W + 0.85;
+const STEP_Z = CARD_H + 1.75;
+const ROW_LIMIT = 7;
 
 const TYPE_HEX: Record<string, string> = {
   idea: "#1A4BFF",
@@ -50,7 +54,7 @@ const TYPE_HEX: Record<string, string> = {
 const RISK_RAMP = ["#D8D2C4", "#E0A33D", "#E0602C", "#C1121F"];
 const SCARCITY_RAMP = ["#DCE3F5", "#8FA8FF", "#4A74FF", "#1A4BFF"];
 
-const liftOf = (node: TNode) => LIFT[node.data.epistemic] ?? 0.5;
+const liftOf = (node: TNode) => LAYERS.find((l) => l.key === node.data.epistemic)?.lift ?? 0.5;
 const isGround = (node: TNode) =>
   node.data.kind === "note" || node.data.epistemic === "fact" || node.data.epistemic === "evidence";
 
@@ -75,60 +79,87 @@ function wrapLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number
   const words = text.split(/\s+/);
   const lines: string[] = [];
   let line = "";
+  let truncated = false;
+
   for (const word of words) {
     const next = line ? `${line} ${word}` : word;
     if (ctx.measureText(next).width > maxWidth && line) {
       lines.push(line);
       line = word;
-      if (lines.length === maxLines - 1) break;
+      if (lines.length === maxLines) {
+        truncated = true;
+        break;
+      }
     } else {
       line = next;
     }
   }
-  if (line && lines.length < maxLines) lines.push(line);
+  if (!truncated && line && lines.length < maxLines) lines.push(line);
+  else if (truncated && lines.length) lines[lines.length - 1] += "…";
   return lines.slice(0, maxLines);
 }
 
 function cardTexture(node: TNode, tint: string) {
   const canvas = document.createElement("canvas");
-  canvas.width = 640;
-  canvas.height = 320;
+  canvas.width = 620;
+  canvas.height = 310;
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
 
   ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, 640, 320);
+  ctx.fillRect(0, 0, 620, 310);
   ctx.strokeStyle = "#1A1A1A";
-  ctx.lineWidth = 6;
-  ctx.strokeRect(3, 3, 634, 314);
+  ctx.lineWidth = 5;
+  ctx.strokeRect(2.5, 2.5, 615, 305);
   ctx.fillStyle = tint;
-  ctx.fillRect(0, 0, 18, 320);
+  ctx.fillRect(0, 0, 16, 310);
 
   ctx.fillStyle = "#1A1A1A";
-  ctx.font = "600 24px 'JetBrains Mono', ui-monospace, monospace";
-  ctx.fillText(TYPE_INFO[node.data.kind].label.toUpperCase(), 44, 62);
+  ctx.font = "600 22px 'JetBrains Mono', ui-monospace, monospace";
+  ctx.fillText(TYPE_INFO[node.data.kind].label.toUpperCase(), 42, 56);
 
-  ctx.font = "600 20px 'JetBrains Mono', ui-monospace, monospace";
-  ctx.fillStyle = "#1A1A1A80";
   const status = node.data.epistemic.toUpperCase();
-  const width = ctx.measureText(status).width;
-  ctx.strokeStyle = "#1A1A1A40";
+  ctx.font = "600 18px 'JetBrains Mono', ui-monospace, monospace";
+  const chipWidth = ctx.measureText(status).width;
+  ctx.strokeStyle = "#1A1A1A55";
   ctx.lineWidth = 2;
-  ctx.strokeRect(44, 84, width + 28, 40);
-  ctx.fillText(status, 58, 112);
+  ctx.strokeRect(42, 74, chipWidth + 24, 34);
+  ctx.fillStyle = "#1A1A1A99";
+  ctx.fillText(status, 54, 98);
 
   ctx.fillStyle = "#1A1A1A";
-  ctx.font = "500 42px Fraunces, Georgia, serif";
-  const lines = wrapLines(ctx, node.data.title, 540, 3);
-  lines.forEach((line, index) => ctx.fillText(line, 44, 190 + index * 50));
+  ctx.font = "500 38px Fraunces, Georgia, serif";
+  wrapLines(ctx, node.data.title, 520, 2).forEach((line, index) =>
+    ctx.fillText(line, 42, 178 + index * 46),
+  );
 
-  ctx.fillStyle = "#1A1A1A66";
-  ctx.font = "400 20px 'JetBrains Mono', ui-monospace, monospace";
-  ctx.fillText(`y ${(liftOf(node) * ALTITUDE).toFixed(1)}`, 44, 296);
+  ctx.fillStyle = "#1A1A1A55";
+  ctx.font = "400 18px 'JetBrains Mono', ui-monospace, monospace";
+  ctx.fillText(`ALT ${Math.round(liftOf(node) * ALTITUDE)}`, 42, 284);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
+  return texture;
+}
+
+function layerTexture(label: string, count: number) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 96;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  ctx.clearRect(0, 0, 512, 96);
+  ctx.fillStyle = "#1A1A1A";
+  ctx.font = "700 30px 'JetBrains Mono', ui-monospace, monospace";
+  ctx.fillText(label, 0, 42);
+  ctx.fillStyle = "#1A1A1A66";
+  ctx.font = "400 20px 'JetBrains Mono', ui-monospace, monospace";
+  ctx.fillText(`${count} CARD${count === 1 ? "" : "S"}`, 0, 76);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
 }
 
@@ -166,19 +197,10 @@ function StrataPage() {
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#FDFBF7");
-    scene.fog = new THREE.Fog("#FDFBF7", 70, 140);
+    scene.fog = new THREE.Fog("#FDFBF7", 90, 200);
 
-    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 400);
-    camera.position.set(0, 24, 46);
-    /** Pull back far enough that the whole board fits, whatever the aspect. */
-    const frameBoard = () => {
-      const board = 54;
-      const vFov = (camera.fov * Math.PI) / 180;
-      const vertical = board / 2 / Math.tan(vFov / 2);
-      const horizontal = vertical / Math.max(camera.aspect, 0.35);
-      const distance = Math.max(vertical, horizontal) * 1.02;
-      camera.position.set(0, distance * 0.62, distance * 0.86);
-    };
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 500);
+    camera.position.set(0, 30, 60);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -187,51 +209,83 @@ function StrataPage() {
     host.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 4, 0);
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
-    controls.minDistance = 16;
-    controls.maxDistance = 110;
-    controls.maxPolarAngle = Math.PI / 2 - 0.06;
-    controls.update();
+    controls.minDistance = 14;
+    controls.maxDistance = 170;
+    controls.maxPolarAngle = Math.PI / 2 - 0.05;
 
     const disposables: { dispose: () => void }[] = [];
     const textures: THREE.Texture[] = [];
+    const billboards: THREE.Object3D[] = [];
 
     // ── Floor ────────────────────────────────────────────────
-    const grid = new THREE.GridHelper(120, 60, "#1A1A1A", "#1A1A1A");
+    const grid = new THREE.GridHelper(220, 110, "#1A1A1A", "#1A1A1A");
     const gridMaterial = grid.material as THREE.LineBasicMaterial;
     gridMaterial.transparent = true;
-    gridMaterial.opacity = 0.1;
+    gridMaterial.opacity = 0.12;
     scene.add(grid);
 
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(120, 120),
-      new THREE.MeshBasicMaterial({ color: "#FFFFFF", transparent: true, opacity: 0.6 }),
-    );
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -0.02;
-    scene.add(ground);
-    disposables.push(ground.geometry, ground.material);
-
-    // ── Layout: preserve the canvas arrangement, normalise to a ~46-unit box ──
-    const xs = nodes.map((n) => n.position.x);
-    const zs = nodes.map((n) => n.position.y);
-    const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
-    const cz = (Math.min(...zs) + Math.max(...zs)) / 2;
-    const span = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...zs) - Math.min(...zs), 400);
-    const scale = 46 / span;
-
+    // ── Layout: five shelves, one per epistemic status ───────
     const placed = new Map<string, THREE.Vector3>();
-    for (const node of nodes) {
-      placed.set(
-        node.id,
-        new THREE.Vector3(
-          (node.position.x - cx) * scale,
-          liftOf(node) * ALTITUDE + 1,
-          (node.position.y - cz) * scale,
-        ),
+    const shelves: { label: string; y: number; width: number; count: number }[] = [];
+
+    for (const layer of LAYERS) {
+      const cards = nodes.filter((n) => n.data.epistemic === layer.key);
+      const rows = Math.max(1, Math.ceil(cards.length / ROW_LIMIT));
+      const y = layer.lift * ALTITUDE + 1;
+
+      cards.forEach((node, index) => {
+        const row = Math.floor(index / ROW_LIMIT);
+        const inRow = Math.min(ROW_LIMIT, cards.length - row * ROW_LIMIT);
+        const column = index % ROW_LIMIT;
+        placed.set(
+          node.id,
+          new THREE.Vector3(
+            (column - (inRow - 1) / 2) * STEP_X,
+            y,
+            (row - (rows - 1) / 2) * STEP_Z,
+          ),
+        );
+      });
+
+      shelves.push({
+        label: layer.label,
+        y,
+        width: Math.min(Math.max(cards.length, 1), ROW_LIMIT) * STEP_X,
+        count: cards.length,
+      });
+    }
+
+    // ── Shelf planes + labels ────────────────────────────────
+    for (const shelf of shelves) {
+      if (!shelf.count) continue;
+
+      const plane = new THREE.Mesh(
+        new THREE.PlaneGeometry(shelf.width + 1.4, 1.9),
+        new THREE.MeshBasicMaterial({
+          color: "#1A1A1A",
+          transparent: true,
+          opacity: 0.045,
+          side: THREE.DoubleSide,
+        }),
       );
+      plane.rotation.x = -Math.PI / 2;
+      plane.position.set(0, shelf.y - CARD_H / 2 - 0.12, 0);
+      scene.add(plane);
+      disposables.push(plane.geometry, plane.material);
+
+      const texture = layerTexture(shelf.label, shelf.count);
+      if (!texture) continue;
+      textures.push(texture);
+      const label = new THREE.Mesh(
+        new THREE.PlaneGeometry(3.6, 0.68),
+        new THREE.MeshBasicMaterial({ map: texture, transparent: true }),
+      );
+      label.position.set(-(shelf.width / 2) - 2.6, shelf.y, 0);
+      scene.add(label);
+      billboards.push(label);
+      disposables.push(label.geometry, label.material);
     }
 
     // ── Cards ────────────────────────────────────────────────
@@ -254,23 +308,26 @@ function StrataPage() {
       mesh.userData["nodeId"] = node.id;
       scene.add(mesh);
       cardMeshes.push(mesh);
+      billboards.push(mesh);
       disposables.push(material);
 
-      const ringGeometry = new THREE.EdgesGeometry(new THREE.PlaneGeometry(CARD_W + 0.22, CARD_H + 0.22));
+      const ringGeometry = new THREE.EdgesGeometry(
+        new THREE.PlaneGeometry(CARD_W + 0.2, CARD_H + 0.2),
+      );
       const frame = new THREE.LineSegments(
         ringGeometry,
         new THREE.LineBasicMaterial({ color: "#1A4BFF" }),
       );
-      disposables.push(ringGeometry, frame.material as THREE.Material);
       frame.position.copy(position);
       frame.visible = false;
       frame.userData["nodeId"] = node.id;
       scene.add(frame);
       frames.push(frame);
+      billboards.push(frame);
+      disposables.push(ringGeometry, frame.material as THREE.Material);
     }
 
     // ── Cords: grounding lines and dangling threads ──────────
-    const byId = new Map(nodes.map((n) => [n.id, n]));
     const drawn = new Set<string>();
 
     for (const node of nodes) {
@@ -288,29 +345,33 @@ function StrataPage() {
           if (!to) continue;
 
           const mid = from.clone().add(to).multiplyScalar(0.5);
-          mid.y -= Math.max(0.6, from.distanceTo(to) * 0.22);
+          mid.y -= Math.max(0.5, from.distanceTo(to) * 0.2);
           const curve = new THREE.QuadraticBezierCurve3(from, mid, to);
           const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(28));
           const line = new THREE.Line(
             geo,
-            new THREE.LineBasicMaterial({ color: "#1A4BFF", transparent: true, opacity: 0.45 }),
+            new THREE.LineBasicMaterial({ color: "#1A4BFF", transparent: true, opacity: 0.4 }),
           );
           scene.add(line);
           disposables.push(geo, line.material as THREE.Material);
         }
       } else {
-        // Nothing holds it up: a thread straight down to the floor.
-        const points = [from.clone(), new THREE.Vector3(from.x, 0.02, from.z)];
-        const curve = new THREE.CatmullRomCurve3(points, false, "catmullrom", 0.4);
-        const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(16));
+        // Nothing holds it up: a thread straight down to the bedrock.
+        const curve = new THREE.CatmullRomCurve3(
+          [from.clone(), new THREE.Vector3(from.x, 0.05, from.z)],
+          false,
+          "catmullrom",
+          0.4,
+        );
+        const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(14));
         const line = new THREE.Line(
           geo,
           new THREE.LineDashedMaterial({
             color: "#C1121F",
-            dashSize: 0.5,
-            gapSize: 0.5,
+            dashSize: 0.45,
+            gapSize: 0.45,
             transparent: true,
-            opacity: 0.35,
+            opacity: 0.3,
           }),
         );
         line.computeLineDistances();
@@ -318,6 +379,29 @@ function StrataPage() {
         disposables.push(geo, line.material as THREE.Material);
       }
     }
+
+    // ── Camera: fit the whole board, portrait included ───────
+    const box = new THREE.Box3();
+    placed.forEach((point) => box.expandByPoint(point));
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+
+    camera.aspect = (host.clientWidth || 1) / (host.clientHeight || 1);
+    camera.updateProjectionMatrix();
+
+    const vFov = (camera.fov * Math.PI) / 180;
+    const fitHeight = Math.max(size.y, 4) / 2 / Math.tan(vFov / 2);
+    const fitWidth = Math.max(size.x, 10) / 2 / (Math.tan(vFov / 2) * Math.max(camera.aspect, 0.4));
+    const distance = Math.max(fitHeight, fitWidth) * 1.35;
+
+    if (view.current) {
+      camera.position.fromArray(view.current.p);
+      controls.target.fromArray(view.current.t);
+    } else {
+      camera.position.set(center.x, center.y + distance * 0.55, center.z + distance * 0.95);
+      controls.target.copy(center);
+    }
+    controls.update();
 
     // ── Picking ──────────────────────────────────────────────
     const raycaster = new THREE.Raycaster();
@@ -348,14 +432,6 @@ function StrataPage() {
       camera.updateProjectionMatrix();
     };
     resize();
-    if (view.current) {
-      camera.position.fromArray(view.current.p);
-      controls.target.fromArray(view.current.t);
-    } else {
-      frameBoard();
-      controls.target.set(0, 5, 0);
-    }
-    controls.update();
     const observer = new ResizeObserver(resize);
     observer.observe(host);
 
@@ -366,8 +442,7 @@ function StrataPage() {
     const tick = () => {
       raf = requestAnimationFrame(tick);
       controls.update();
-      for (const mesh of cardMeshes) mesh.quaternion.copy(camera.quaternion);
-      for (const frame of frames) frame.quaternion.copy(camera.quaternion);
+      for (const item of billboards) item.quaternion.copy(camera.quaternion);
       renderer.render(scene, camera);
     };
     tick();
@@ -486,7 +561,7 @@ function StrataPage() {
               </p>
             )}
             <div className="mt-3 flex items-center justify-between border-t border-[#1A1A1A]/10 pt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
-              <span>altitude {(liftOf(selectedNode) * ALTITUDE).toFixed(1)}</span>
+              <span>altitude {Math.round(liftOf(selectedNode) * ALTITUDE)}</span>
               <span>
                 {groundingIds(selectedNode.id, nodes, edges).length
                   ? `${groundingIds(selectedNode.id, nodes, edges).length} ground${
