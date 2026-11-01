@@ -304,10 +304,12 @@ export type Database = {
           created_at: string
           due_date: string
           id: string
+          origin: string | null
           resolution: string | null
+          scope: string
           source_url: string | null
           status: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           checked_at?: string | null
@@ -315,10 +317,12 @@ export type Database = {
           created_at?: string
           due_date: string
           id?: string
+          origin?: string | null
           resolution?: string | null
+          scope?: string
           source_url?: string | null
           status?: string
-          user_id?: string
+          user_id?: string | null
         }
         Update: {
           checked_at?: string | null
@@ -326,10 +330,12 @@ export type Database = {
           created_at?: string
           due_date?: string
           id?: string
+          origin?: string | null
           resolution?: string | null
+          scope?: string
           source_url?: string | null
           status?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -377,6 +383,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_suggested_watch: {
+        Args: { watch_id: string }
+        Returns: string
+      }
       cast_workshop_vote: {
         Args: { p_delta: number; p_node: string; p_session: string }
         Returns: undefined

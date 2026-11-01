@@ -12,12 +12,14 @@ export type Watch = {
   status: "pending" | "confirmed" | "contradicted" | "inconclusive";
   resolution: string | null;
   checked_at: string | null;
+  scope: "personal" | "suggested";
+  origin: string | null;
 };
 
 export async function listWatches(): Promise<Watch[]> {
   const { data, error } = await supabase
     .from("claim_watches")
-    .select("id, claim, due_date, source_url, status, resolution, checked_at")
+    .select("id, claim, due_date, source_url, status, resolution, checked_at, scope, origin")
     .order("due_date", { ascending: true })
     .limit(400);
   if (error) throw error;
@@ -40,10 +42,16 @@ export async function addWatch(input: {
       due_date: input.dueDate,
       source_url: input.sourceUrl?.trim() || null,
     })
-    .select("id, claim, due_date, source_url, status, resolution, checked_at")
+    .select("id, claim, due_date, source_url, status, resolution, checked_at, scope, origin")
     .single();
   if (error) throw error;
   return data as Watch;
+}
+
+/** Keeps an agent suggestion as one of your own claims. */
+export async function claimWatch(id: string): Promise<void> {
+  const { error } = await supabase.rpc("claim_suggested_watch", { watch_id: id });
+  if (error) throw error;
 }
 
 export async function removeWatch(id: string): Promise<void> {
@@ -69,7 +77,8 @@ export async function listResolvedWatches(days = 14): Promise<Watch[]> {
   const since = new Date(Date.now() - days * 86_400_000).toISOString();
   const { data, error } = await supabase
     .from("claim_watches")
-    .select("id, claim, due_date, source_url, status, resolution, checked_at")
+    .select("id, claim, due_date, source_url, status, resolution, checked_at, scope, origin")
+    .eq("scope", "personal")
     .neq("status", "pending")
     .gte("checked_at", since)
     .order("checked_at", { ascending: false })

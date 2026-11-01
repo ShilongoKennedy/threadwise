@@ -170,6 +170,16 @@ const briefSchema = z.object({
   historical_echo: z.string().trim().min(20).max(320),
   threat_level: threatLevel,
   source_url: z.string().trim().default(""),
+  /** Future dates the article itself commits to — planted in the calendar. */
+  dated_claims: z
+    .array(
+      z.object({
+        claim: z.string().trim().min(6).max(120),
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      }),
+    )
+    .max(3)
+    .default([]),
 });
 
 export type NewsBriefDraft = {
@@ -180,6 +190,7 @@ export type NewsBriefDraft = {
   historical_echo: string;
   threat_level: ThreatLevel;
   source_url: string;
+  dated_claims: { claim: string; date: string }[];
 };
 
 const SYSTEM = `You are a ruthless intelligence officer writing a target dossier. You are not a journalist, not a summariser, not a commentator. You do not explain, you do not editorialise, and you do not use adjectives for effect.
@@ -197,6 +208,7 @@ Hard limits — break these and the dossier is rejected:
 - omission: EXACTLY 3 bullets, each MAXIMUM 18 words. The dog that didn't bark: missing numbers, absent parties, questions the piece never answers.
 - historical_echo: MAXIMUM 2 SENTENCES. One concrete precedent, and where the comparison breaks.
 - threat_level: exactly one of "LOW", "MODERATE", "ELEVATED", "CRITICAL".
+- dated_claims: 0 to 3 FUTURE dates the article itself commits to — a signing, a deadline, a vote, a ruling, a scheduled release. Shape: { "claim": "what is supposed to happen", "date": "YYYY-MM-DD" }. Only dates stated or unambiguously implied by the article; never invent one. Empty array if the piece commits to nothing. Resolve relative phrasing ("next Friday") against the article date given above.
 
 Rules:
 - Only the supplied article may be cited. Never import outside facts.

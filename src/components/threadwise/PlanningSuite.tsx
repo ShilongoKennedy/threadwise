@@ -11,7 +11,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { addWatch, listWatches, removeWatch, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
+import { addWatch, claimWatch, listWatches, removeWatch, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -559,28 +559,54 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
                 >
                   <span
                     className="shrink-0 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white"
-                    style={{ backgroundColor: contradicted ? "#C1121F" : pending ? "#1A4BFF" : "#1A1A1A" }}
+                    style={{
+                      backgroundColor:
+                        item.scope === "suggested"
+                          ? "#6B6862"
+                          : contradicted
+                            ? "#C1121F"
+                            : pending
+                              ? "#1A4BFF"
+                              : "#1A1A1A",
+                    }}
                   >
-                    {WATCH_LABEL[item.status]}
+                    {item.scope === "suggested" ? "Suggested" : WATCH_LABEL[item.status]}
                   </span>
                   <span className="min-w-0 flex-1 truncate text-[13px]" title={item.claim}>
                     {item.claim}
                   </span>
                   <span className="shrink-0 font-mono text-[10px] text-foreground/40">{item.due_date}</span>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-7 w-7 shrink-0"
-                    aria-label={`Stop watching ${item.claim}`}
-                    title="Stop watching"
-                    onClick={() => {
-                      void removeWatch(item.id)
-                        .then(() => setWatches((rows) => rows.filter((row) => row.id !== item.id)))
-                        .catch(() => setWatchError("Could not remove that watch."));
-                    }}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
+                  {item.scope === "suggested" ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 shrink-0 px-2 text-[11px]"
+                      title="Keep this date and let the agent check it"
+                      onClick={() => {
+                        void claimWatch(item.id)
+                          .then(() => listWatches())
+                          .then(setWatches)
+                          .catch(() => setWatchError("Could not keep that suggestion."));
+                      }}
+                    >
+                      Keep
+                    </Button>
+                  ) : (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7 shrink-0"
+                      aria-label={`Stop watching ${item.claim}`}
+                      title="Stop watching"
+                      onClick={() => {
+                        void removeWatch(item.id)
+                          .then(() => setWatches((rows) => rows.filter((row) => row.id !== item.id)))
+                          .catch(() => setWatchError("Could not remove that watch."));
+                      }}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
                 </li>
               );
             })}

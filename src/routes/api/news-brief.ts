@@ -88,6 +88,28 @@ export const Route = createFileRoute("/api/news-brief")({
             .single();
           if (error) throw error;
 
+          // Dates the article itself commits to become calendar suggestions for
+          // everyone. They carry no owner until someone keeps one.
+          try {
+            const todayIso = new Date().toISOString().slice(0, 10);
+            const upcoming = (brief.dated_claims ?? []).filter(
+              (claim) => claim.date >= todayIso,
+            );
+            if (upcoming.length) {
+              await supabase.from("claim_watches").insert(
+                upcoming.map((claim) => ({
+                  claim: claim.claim,
+                  due_date: claim.date,
+                  scope: "suggested",
+                  origin: brief.headline,
+                  source_url: brief.source_url || null,
+                })),
+              );
+            }
+          } catch (error) {
+            console.warn("[news-brief] could not plant dated claims:", error);
+          }
+
           // Dated claims that have come due. One batched call, and only status changes
           // are written — "inconclusive" keeps the watch open for tomorrow.
           let checked = 0;

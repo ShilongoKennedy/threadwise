@@ -56,7 +56,7 @@ function DigestPage() {
     void listWatches()
       .then((rows) => {
         if (!active) return;
-        setWatches(rows);
+        setWatches(rows.filter((row) => row.scope !== "suggested"));
         setState(rows.length ? "ready" : "empty");
       })
       .catch(() => {
