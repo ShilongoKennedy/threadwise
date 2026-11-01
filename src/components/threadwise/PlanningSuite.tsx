@@ -65,6 +65,13 @@ export function PlanningSuite() {
   const save = (decisions: Decision[]) => {
     if (c) ws.updatePlanning(c.id, { ...planning, decisions });
   };
+
+  useEffect(() => {
+    const openCalendar = () => setOpen(true);
+    window.addEventListener("threadwise:open-calendar", openCalendar);
+    return () => window.removeEventListener("threadwise:open-calendar", openCalendar);
+  }, []);
+
   return (
     <>
 
