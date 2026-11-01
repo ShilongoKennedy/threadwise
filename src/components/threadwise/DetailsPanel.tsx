@@ -112,7 +112,7 @@ function NodeForm({ id }: { id: string }) {
       )}
 
       {isDossier && (
-        <div className="rounded-sm border border-dashed px-3 py-2 text-[11px] text-muted-foreground" style={{ borderColor: "var(--type-dossier)" }}>
+        <div className="rounded-sm border border-dashed px-3 py-2 text-[12px] text-muted-foreground" style={{ borderColor: "var(--type-dossier)" }}>
           <span className="font-mono uppercase tracking-wider" style={{ color: "var(--type-dossier)" }}>Anchored source</span>
           <p className="mt-1 leading-relaxed">Dossiers are managed automatically. Delete with confirmation to unlink.</p>
         </div>
@@ -158,7 +158,7 @@ function NodeForm({ id }: { id: string }) {
                         key={lbl}
                         onClick={() => updateNode(id, { lenses: { ...lenses, [l]: i as LensLevel } })}
                         className={cn(
-                          "rounded-sm px-2 py-0.5 text-[11px] transition-colors",
+                          "rounded-sm px-2 py-0.5 text-[12px] transition-colors",
                           lenses[l] === i ? "bg-[#1A4BFF]/10 font-medium text-[#1A4BFF]" : "text-muted-foreground hover:bg-muted",
                         )}
                       >

@@ -129,7 +129,7 @@ export function CommandPalette({
           
           {groups.map(group => (
             <div key={group} className="mb-2">
-              <div className="px-2 py-1.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">
+              <div className="px-2 py-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground/70">
                 {group}
               </div>
               {filtered.filter(a => a.group === group).map((action) => {

@@ -223,7 +223,7 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
             <nav aria-label="Canvas tools" className="tw-studio-nav flex flex-col gap-1 overflow-y-auto p-2">
               {TOOL_GROUPS.map((group) => (
                 <div key={group.label} className="mb-2">
-                  <div className="sticky top-0 bg-card px-2 py-1.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 shadow-sm">{group.label}</div>
+                  <div className="sticky top-0 bg-card px-2 py-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground/70 shadow-sm">{group.label}</div>
                   {group.tools.map((t) => (
                     <Button key={t.id} variant={tool === t.id ? "secondary" : "ghost"} title={t.label} className="w-full justify-start text-xs h-9 px-2" onClick={() => {
                       setTool(t.id); setError(""); setMessage("");

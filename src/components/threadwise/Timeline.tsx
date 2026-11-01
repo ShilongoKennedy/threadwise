@@ -11,7 +11,7 @@ export function Timeline() {
     <Button variant="ghost" size="icon" title="Previous moment" aria-label="Previous moment" disabled={index === 0} onClick={() => s.setReplay(index - 1)}><ChevronLeft /></Button>
     <input type="range" aria-label="Timeline scrubber" min={0} max={Math.max(0, s.history.length - 1)} value={index} onChange={(e) => s.setReplay(Number(e.target.value))} className="min-w-8 flex-1 accent-foreground" />
     <Button variant="ghost" size="icon" title="Next moment" aria-label="Next moment" disabled={s.replayIndex === null || index >= s.history.length - 1} onClick={() => s.setReplay(index + 1)}><ChevronRight /></Button>
-    <span className="hidden w-36 truncate font-mono text-[9px] text-muted-foreground lg:block" title={moment ? new Date(moment.at).toLocaleString() : ""}>{s.replayIndex === null ? "NOW" : `${index + 1}/${s.history.length} · ${moment?.label}`}</span>
+    <span className="hidden w-36 truncate font-mono text-[10px] text-muted-foreground lg:block" title={moment ? new Date(moment.at).toLocaleString() : ""}>{s.replayIndex === null ? "NOW" : `${index + 1}/${s.history.length} · ${moment?.label}`}</span>
     <Button variant={s.replayIndex === null ? "ghost" : "default"} size="sm" className="shrink-0" onClick={() => s.setReplay(null)} aria-label="Return to live canvas"><Radio className="h-3 w-3" />Live</Button>
   </div>;
 }

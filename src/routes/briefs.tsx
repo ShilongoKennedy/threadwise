@@ -78,7 +78,7 @@ function BriefsPage() {
           <div className="flex min-w-0 items-center gap-3">
             <Link
               to="/"
-              className="flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
+              className="flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
             >
               Threadwise
             </Link>
@@ -88,7 +88,7 @@ function BriefsPage() {
           </div>
           <Link
             to="/briefing"
-            className="group flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white shadow-[2px_2px_0_0_#1A1A1A] transition-all hover:bg-[#1A1A1A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+            className="group flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-white shadow-[2px_2px_0_0_#1A1A1A] transition-all hover:bg-[#1A1A1A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
           >
             Today&rsquo;s brief
             <ArrowUpRight className="h-3 w-3" />
@@ -99,7 +99,7 @@ function BriefsPage() {
       <main className="mx-auto w-full max-w-[1100px] px-4 py-8 md:px-6 md:py-12">
         <div className="mb-6 flex items-end justify-between gap-4 border-b-2 border-[#1A1A1A] pb-3">
           <h1 className="font-display text-[34px] leading-none md:text-[52px]">The archive.</h1>
-          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
             {rows.length} dossier{rows.length === 1 ? "" : "s"}
           </span>
         </div>
@@ -139,11 +139,11 @@ function BriefsPage() {
                     search={{ b: row.id }}
                     className="group grid grid-cols-[auto_1fr] items-start gap-x-4 gap-y-1 px-1 py-4 transition-colors hover:bg-[#1A4BFF]/[0.04] md:grid-cols-[110px_84px_1fr_auto] md:items-center"
                   >
-                    <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/45 md:text-[10px]">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/45 md:text-[10px]">
                       {shortDate(row.created_at)}
                     </span>
                     <span
-                      className="justify-self-start px-1.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white"
+                      className="justify-self-start px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-white"
                       style={{ backgroundColor: THREAT[level] ?? "#1A1A1A" }}
                     >
                       {level}
@@ -166,7 +166,7 @@ function BriefsPage() {
       </main>
 
       <footer className="mx-auto w-full max-w-[1100px] px-4 pb-10 md:px-6">
-        <p className="flex items-center gap-2 border-t border-[#1A1A1A]/15 pt-4 font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/35">
+        <p className="flex items-center gap-2 border-t border-[#1A1A1A]/15 pt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/35">
           <Lock className="h-3 w-3" /> Machine assessment · verify before action
         </p>
       </footer>

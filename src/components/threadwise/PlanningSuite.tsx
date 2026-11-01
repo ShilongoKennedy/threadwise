@@ -581,7 +581,7 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
                     <Button
                       key={e.id}
                       variant="ghost"
-                      className="mt-1 h-auto w-full justify-start whitespace-normal border-l-2 border-accent-ink p-1 text-left text-[11px]"
+                      className="mt-1 h-auto w-full justify-start whitespace-normal border-l-2 border-accent-ink p-1 text-left text-[12px]"
                       onClick={() => setNodeId(e.nodeId)}
                     >
                       {e.title}
@@ -604,7 +604,7 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
                   {Array.from({ length: getDaysInMonth(month) }, (_, i) => (
                     <span
                       key={i}
-                      className="text-center font-mono text-[9px] text-muted-foreground"
+                      className="text-center font-mono text-[10px] text-muted-foreground"
                     >
                       {(i + 1) % 5 === 0 ? i + 1 : ""}
                     </span>

@@ -57,7 +57,7 @@ function Figure({ label, value, note, tone }: { label: string; value: string; no
     <div className="tw-figure">
       <span className="tw-kicker">{label}</span>
       <strong className={`font-display text-2xl ${tone === "accent" ? "text-accent-ink" : ""}`}>{value}</strong>
-      {note && <span className="text-[11px] text-muted-foreground">{note}</span>}
+      {note && <span className="text-[12px] text-muted-foreground">{note}</span>}
     </div>
   );
 }
@@ -85,7 +85,7 @@ export function ScenarioTool({ suite, update, readOnly }: { suite: Suite; update
           <label key={f.key} className="block">
             <span className="mb-2 flex items-baseline justify-between text-xs">
               <span>{f.label}</span>
-              <span className="font-mono text-[11px]">
+              <span className="font-mono text-[12px]">
                 {f.unit === "€" ? money(p[f.key]) : `${p[f.key]}${f.unit ? ` ${f.unit}` : ""}`}
               </span>
             </span>
@@ -195,7 +195,7 @@ export function RunwayTool({ suite, update, nodes, readOnly }: { suite: Suite; u
                 <div key={p.id}>
                   <div className="mb-1 flex justify-between text-xs">
                     <span>{p.name || "Unnamed"} · {p.tasks} open</span>
-                    <span className={`font-mono text-[11px] ${p.load > 1 ? "text-accent-ink" : ""}`}>
+                    <span className={`font-mono text-[12px] ${p.load > 1 ? "text-accent-ink" : ""}`}>
                       {p.demand}d / {Math.round(p.capacity)}d {p.load > 1 ? "· over capacity" : ""}
                     </span>
                   </div>
@@ -343,7 +343,7 @@ export function DossierTool({ suite, nodes, edges, planning, digest, title }: { 
                 <p className="font-display text-xl">{s.signer}</p>
                 <p className="text-sm whitespace-pre-wrap break-words">{s.note}</p>
                 <p className="mt-2 font-mono text-[10px] uppercase tracking-wider">{new Date(s.at).toLocaleString()} · {intact ? "Seal intact — graph unchanged" : "Seal broken — graph edited since signing"}</p>
-                <p className="mt-1 break-all font-mono text-[9px] text-muted-foreground">SHA-256 {s.digest}</p>
+                <p className="mt-1 break-all font-mono text-[10px] text-muted-foreground">SHA-256 {s.digest}</p>
               </div>
             </div>
           );

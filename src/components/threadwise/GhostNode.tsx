@@ -40,10 +40,10 @@ export function GhostNode({ data }: NodeProps<GhostNodeT>) {
         </div>
         {editing ? <div className="nodrag nopan space-y-2"><Input aria-label="Suggestion title" value={g.title} onChange={(e) => update(g.id, { title: e.target.value })} /><Textarea aria-label="Suggestion content" value={g.body} onChange={(e) => update(g.id, { body: e.target.value })} rows={3} />{g.kind === "experiment" && <><Textarea aria-label="Suggested hypothesis" value={g.hypothesis ?? ""} onChange={(e) => update(g.id, { hypothesis: e.target.value })} /><Textarea aria-label="Suggested success criteria" value={g.successCriteria ?? ""} onChange={(e) => update(g.id, { successCriteria: e.target.value })} /></>}<Button variant="outline" size="sm" onClick={() => setEditing(false)}>Done</Button></div> : <><div className="font-display text-[17px] italic leading-[1.25]">{g.title}</div><p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-muted-foreground">{g.body}</p></>}
         <div className="nodrag mt-2.5 flex gap-1.5">
-          <Button disabled={!!leaving} size="sm" onClick={() => resolve(g.id, "accept")} className="tw-press min-h-9 gap-1 px-2 text-[11px]">
+          <Button disabled={!!leaving} size="sm" onClick={() => resolve(g.id, "accept")} className="tw-press min-h-9 gap-1 px-2 text-[12px]">
             <Check className="h-3 w-3" /> Accept
           </Button>
-          <Button disabled={!!leaving} size="sm" variant="ghost" onClick={() => resolve(g.id, "dismiss")} className="tw-press min-h-9 gap-1 px-2 text-[11px] text-muted-foreground">
+          <Button disabled={!!leaving} size="sm" variant="ghost" onClick={() => resolve(g.id, "dismiss")} className="tw-press min-h-9 gap-1 px-2 text-[12px] text-muted-foreground">
             <X className="h-3 w-3" /> Dismiss
           </Button>
           <Button size="icon" variant="ghost" title="Quick edit" aria-label="Quick edit suggestion" onClick={() => setEditing((v) => !v)}><Pencil className="h-3 w-3" /></Button>

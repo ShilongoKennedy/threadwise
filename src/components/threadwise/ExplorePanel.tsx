@@ -230,7 +230,7 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
               ) : (
                 <p className="mt-1 text-xs text-muted-foreground">{g.body}</p>
               )}
-              <p className="mt-2 border-l-2 pl-2 font-display text-[12.5px] italic leading-snug text-muted-foreground" style={{ borderColor: color }}>{g.rationale}</p>
+              <p className="mt-2 border-l-2 pl-2 font-display text-[12px] italic leading-snug text-muted-foreground" style={{ borderColor: color }}>{g.rationale}</p>
               <div className="mt-2 flex gap-1.5">
                 <Button size="sm" className="h-7 text-xs" onClick={() => s.resolveGhost(g.id, "accept")}><Check className="mr-1 h-3 w-3" /> Accept</Button>
                 <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => s.resolveGhost(g.id, "dismiss")}>Dismiss</Button>

@@ -121,7 +121,7 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
     >
       <Handle type="target" position={Position.Left} className="tw-handle" />
       <div
-        className="absolute -top-2 left-3 z-10 flex items-center gap-1.5 rounded-t-sm border border-b-0 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.16em] transition-transform duration-200"
+        className="absolute -top-2 left-3 z-10 flex items-center gap-1.5 rounded-t-sm border border-b-0 px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-[0.16em] transition-transform duration-200"
         style={{
           background: "var(--card)",
           borderColor: "var(--type-dossier)",
@@ -139,7 +139,7 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
           transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(16px)"
         }}
       >
-        <div className="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+        <div className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
           <span>Anchor</span>
           <span style={{ color: "var(--type-dossier)" }}>● locked</span>
         </div>
@@ -148,7 +148,7 @@ function DossierCard({ id, data, selected }: NodeProps<TNode>) {
           <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">{data.body}</p>
         )}
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-dashed pt-2.5">
-          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
             {linkedCount} linked · {hasUrl ? "web" : "indexed"}
           </span>
           <button
@@ -266,6 +266,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
         e.currentTarget.style.setProperty("--ry", "0deg");
         e.currentTarget.style.setProperty("--near", "0");
       }}
+      data-kind={data.kind}
       data-lift={lift}
       data-paper={paper}
     >
@@ -364,7 +365,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
             aria-label={tall ? `Note text: ${data.title}` : undefined}
             style={tall ? undefined : { WebkitLineClamp: unfold > 0.3 ? 24 : 3 }}
             className={cn(
-              "tw-body mt-1.5 text-[12.5px] leading-relaxed text-muted-foreground",
+              "tw-body mt-1.5 text-[12px] leading-relaxed text-muted-foreground",
               tall && "nodrag nopan nowheel",
               isOmission && "text-[color:var(--type-omission)] opacity-80"
             )}
@@ -402,7 +403,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
         {source && !sourceIsUrl && (
           <button
             type="button"
-            className="nodrag nopan mt-2 inline-flex items-center gap-1 rounded-sm border border-dashed px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="nodrag nopan mt-2 inline-flex items-center gap-1 rounded-sm border border-dashed px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-foreground"
             onClick={(e) => {
               e.stopPropagation();
               focusInLab(source);
@@ -416,7 +417,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
             <dl className="mt-2.5 space-y-1.5 border-l-2 pl-2.5" style={{ borderColor: color }}>
               {extras.map((f) => (
                 <div key={f.key}>
-                  <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
                     {f.label}
                   </dt>
                   <dd
@@ -460,7 +461,7 @@ export function ThreadNode({ id, data, selected }: NodeProps<TNode>) {
                     className="flex items-end gap-1"
                     title={`${l}: ${["not assessed", "low", "medium", "high"][lenses[l]]}`}
                   >
-                    <span className="font-mono text-[9px] uppercase text-muted-foreground">
+                    <span className="font-mono text-[10px] uppercase text-muted-foreground">
                       {l[0]}
                     </span>
                     <span className="flex items-end gap-[2px]">

@@ -8,7 +8,7 @@ export const Route = createFileRoute("/socratic/$threadId")({
 function Inquiry() { const { threadId } = Route.useParams(); const loading = <div className="flex h-screen items-center justify-center font-display">Threadwise</div>; return <main className="h-[100dvh] w-full overflow-hidden bg-background">
       <Link
         to="/app"
-        className="fixed right-3 top-3 z-[60] flex items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#FDFBF7]/95 px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] backdrop-blur transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
+        className="fixed right-3 top-3 z-[60] flex items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#FDFBF7]/95 px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] backdrop-blur transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
       >
         ← Workspace
       </Link><ClientOnly fallback={loading}><Suspense fallback={loading}><Canvas threadId={threadId} /></Suspense></ClientOnly></main>; }

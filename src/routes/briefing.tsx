@@ -88,7 +88,7 @@ const filedTime = (iso: string) =>
 function RailField({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="border-b border-[#1A1A1A]/12 pb-3 last:border-0 last:pb-0">
-      <div className="mb-1 font-mono text-[8px] uppercase tracking-[0.28em] text-[#1A1A1A]/35">
+      <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.28em] text-[#1A1A1A]/35">
         {label}
       </div>
       {children}
@@ -153,24 +153,24 @@ function BriefingPage() {
 
       <header className="sticky top-0 z-20 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]/95 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3 px-4 py-2.5 md:px-6">
-          <span className="font-mono text-[9px] font-bold uppercase leading-tight tracking-[0.26em] text-[#1A1A1A] md:text-[10px]">
+          <span className="font-mono text-[10px] font-bold uppercase leading-tight tracking-[0.26em] text-[#1A1A1A] md:text-[10px]">
             Threadwise Intelligence <span className="text-[#1A4BFF]">//</span> Morning Brief
           </span>
 
           <div className="flex shrink-0 items-center gap-2 md:gap-3">
-            <span className="inline-flex items-center gap-1.5 border border-[#C1121F] bg-[#C1121F]/10 px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.22em] text-[#C1121F] shadow-[0_0_18px_rgba(193,18,31,0.4)] md:text-[9px]">
+            <span className="inline-flex items-center gap-1.5 border border-[#C1121F] bg-[#C1121F]/10 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#C1121F] shadow-[0_0_18px_rgba(193,18,31,0.4)] md:text-[10px]">
               <Lock className="h-2.5 w-2.5" />
               Classified
             </span>
             <Link
               to="/briefs"
-              className="hidden items-center gap-1.5 border-2 border-[#1A1A1A] px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7] sm:flex"
+              className="hidden items-center gap-1.5 border-2 border-[#1A1A1A] px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7] sm:flex"
             >
               Archive
             </Link>
             <Link
               to="/app"
-              className="group flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
+              className="group flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
             >
               Workspace
               <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -194,7 +194,7 @@ function BriefingPage() {
 
         {status === "empty" && (
           <div className="mx-auto flex min-h-[64vh] max-w-xl flex-col items-start justify-center gap-4 border-2 border-dashed border-[#1A1A1A]/25 bg-white/60 p-9">
-            <span className="font-mono text-[9px] uppercase tracking-[0.28em] text-[#1A4BFF]">
+            <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#1A4BFF]">
               No target acquired
             </span>
             <h1 className="font-display text-3xl leading-[1.05]">
@@ -208,7 +208,7 @@ function BriefingPage() {
 
         {status === "error" && (
           <div className="mx-auto flex min-h-[64vh] max-w-xl flex-col items-start justify-center gap-3 border-2 border-[#1A1A1A] bg-white p-9">
-            <span className="font-mono text-[9px] uppercase tracking-[0.28em] text-[#C1121F]">
+            <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#C1121F]">
               Signal lost
             </span>
             <h1 className="font-display text-2xl leading-tight">The dossier could not be retrieved.</h1>
@@ -224,14 +224,14 @@ function BriefingPage() {
             <aside className="flex flex-col gap-4 border-b-2 border-[#1A1A1A] bg-[#FDFBF7] p-4 lg:border-b-0 lg:border-r-2">
               <RailField label="Dossier">
                 <div className="font-display text-[26px] leading-none tracking-tight">{dossier}</div>
-                <div className="mt-1 font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
                   Single target
                 </div>
               </RailField>
 
               <RailField label="Filed">
-                <div className="font-mono text-[11px] tracking-[0.08em]">{filedDate(brief.created_at)}</div>
-                <div className="font-mono text-[11px] tracking-[0.08em] text-[#1A1A1A]/45">
+                <div className="font-mono text-[12px] tracking-[0.08em]">{filedDate(brief.created_at)}</div>
+                <div className="font-mono text-[12px] tracking-[0.08em] text-[#1A1A1A]/45">
                   {filedTime(brief.created_at)} local
                 </div>
               </RailField>
@@ -241,7 +241,7 @@ function BriefingPage() {
                   href={brief.source_url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="inline-flex max-w-full items-center gap-1 font-mono text-[11px] uppercase tracking-[0.06em] text-[#1A4BFF] underline decoration-[#1A4BFF]/40 underline-offset-2 hover:decoration-[#1A4BFF]"
+                  className="inline-flex max-w-full items-center gap-1 font-mono text-[12px] uppercase tracking-[0.06em] text-[#1A4BFF] underline decoration-[#1A4BFF]/40 underline-offset-2 hover:decoration-[#1A4BFF]"
                   title={brief.source_url}
                 >
                   <span className="truncate">{hostOf(brief.source_url)}</span>
@@ -271,8 +271,8 @@ function BriefingPage() {
               </RailField>
 
               <RailField label="Confidence">
-                <div className="font-mono text-[11px] tracking-[0.08em]">SINGLE SOURCE</div>
-                <p className="mt-1 text-[11px] leading-snug text-[#1A1A1A]/45">
+                <div className="font-mono text-[12px] tracking-[0.08em]">SINGLE SOURCE</div>
+                <p className="mt-1 text-[12px] leading-snug text-[#1A1A1A]/45">
                   One article, no independent corroboration in this run.
                 </p>
               </RailField>
@@ -281,7 +281,7 @@ function BriefingPage() {
             {/* ── Assessment ─────────────────────────────────────── */}
             <div className="flex min-w-0 flex-col">
               <div className="border-b-2 border-[#1A1A1A] px-5 py-5 md:px-7 md:py-6">
-                <div className="mb-3 flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.3em] text-[#1A1A1A]/40">
+                <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-[#1A1A1A]/40">
                   <span className="h-1.5 w-1.5 bg-[#1A4BFF]" />
                   Target headline
                 </div>
@@ -293,10 +293,10 @@ function BriefingPage() {
               {/* Executive assessment */}
               <section className="border-y-2 border-[#1A4BFF] bg-white">
                 <div className="flex items-center justify-between border-b border-[#1A4BFF]/25 px-5 py-1.5">
-                  <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.26em] text-[#1A4BFF]">
+                  <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#1A4BFF]">
                     Executive Assessment
                   </h2>
-                  <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
                     01
                   </span>
                 </div>
@@ -320,10 +320,10 @@ function BriefingPage() {
               <div className="grid grid-cols-1 divide-y divide-[#1A1A1A] md:grid-cols-3 md:divide-x md:divide-y-0">
                 <section className="flex flex-col">
                   <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 px-4 py-1.5">
-                    <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+                    <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
                       Framing
                     </h2>
-                    <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
                       02
                     </span>
                   </div>
@@ -341,10 +341,10 @@ function BriefingPage() {
 
                 <section className="flex flex-col">
                   <div className="flex items-center justify-between border-b border-dashed border-[#1A1A1A]/25 px-4 py-1.5">
-                    <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]">
+                    <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]">
                       Omission
                     </h2>
-                    <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
                       03
                     </span>
                   </div>
@@ -362,10 +362,10 @@ function BriefingPage() {
 
                 <section className="flex flex-col bg-[#1A1A1A] text-[#FDFBF7]">
                   <div className="flex items-center justify-between border-b border-[#FDFBF7]/20 px-4 py-1.5">
-                    <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+                    <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
                       Historical echo
                     </h2>
-                    <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#FDFBF7]/30">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#FDFBF7]/30">
                       04
                     </span>
                   </div>
@@ -377,14 +377,14 @@ function BriefingPage() {
 
               {/* Footer */}
               <footer className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t-2 border-[#1A1A1A] px-5 py-2.5">
-                <span className="font-mono text-[8px] uppercase tracking-[0.24em] text-[#1A1A1A]/35">
+                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#1A1A1A]/35">
                   End of dossier · machine assessment · verify before action
                 </span>
                 <a
                   href={brief.source_url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="group inline-flex items-center gap-1.5 border border-[#1A1A1A]/20 px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/60 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
+                  className="group inline-flex items-center gap-1.5 border border-[#1A1A1A]/20 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/60 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
                 >
                   Open source
                   <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

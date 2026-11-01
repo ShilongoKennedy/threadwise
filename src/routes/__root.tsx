@@ -56,7 +56,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
         {import.meta.env.DEV && (
-          <pre className="mt-4 max-h-40 overflow-auto rounded-md border border-accent-ink/30 bg-muted p-3 text-left font-mono text-[11px] leading-relaxed text-foreground">
+          <pre className="mt-4 max-h-40 overflow-auto rounded-md border border-accent-ink/30 bg-muted p-3 text-left font-mono text-[12px] leading-relaxed text-foreground">
             {detail}
           </pre>
         )}

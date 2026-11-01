@@ -46,7 +46,7 @@ export function MemoGenerator({ canvasId, onClose }: { canvasId: string; onClose
         <div className="flex items-center gap-2"><FileText className="h-5 w-5" /><span className="font-display text-xl">Live draft</span></div>
         <Button variant="ghost" size="icon" aria-label="Close draft" onClick={onClose}><X /></Button>
       </header>
-      <p className="border-b px-4 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">Drag a card here to embed it · edits flow both ways</p>
+      <p className="border-b px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Drag a card here to embed it · edits flow both ways</p>
       <div className="min-h-0 flex-1 space-y-3 overflow-auto p-4">
         {!blocks.length && !busy && <div className="py-10 text-center"><p className="font-display text-2xl italic">An empty page.</p><p className="mt-2 text-sm text-muted-foreground">Drag cards in from the canvas, write a paragraph, or let the thread draft one.</p></div>}
         {blocks.map((b, i) => (
@@ -91,16 +91,16 @@ function Transclusion({ nodeId }: { nodeId: string }) {
   const editable = TYPE_INFO[d.kind].fields.filter((f) => f.kind === "text" || (d.kind === "experiment" && ["successCriteria", "outcome"].includes(f.key)));
   return (
     <figure className="rounded-lg border-l-[3px] bg-background/60 px-3 py-2.5" style={{ borderColor: color }}>
-      <figcaption className="mb-1 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.14em]" style={{ color }}>
+      <figcaption className="mb-1 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color }}>
         <span>{TYPE_INFO[d.kind].label} · live</span>
         <label className="flex items-center gap-1 text-muted-foreground"><EpistemicGlyph status={d.epistemic} />
           <select aria-label="Epistemic status" className="bg-transparent uppercase" value={d.epistemic} onChange={(e) => update(nodeId, { epistemic: e.target.value as Epistemic })}>{EPISTEMIC.map((x) => <option key={x} value={x}>{x}</option>)}</select>
         </label>
       </figcaption>
       <Input aria-label="Card title" value={d.title} onChange={(e) => update(nodeId, { title: e.target.value })} className="h-auto border-0 bg-transparent px-0 py-0.5 font-display text-[16px] shadow-none focus-visible:ring-0" />
-      {d.body && <Textarea aria-label="Card text" value={d.body} onChange={(e) => update(nodeId, { body: e.target.value })} className="field-sizing-content min-h-0 resize-none border-0 bg-transparent px-0 py-0.5 text-[12.5px] text-muted-foreground shadow-none focus-visible:ring-0" />}
+      {d.body && <Textarea aria-label="Card text" value={d.body} onChange={(e) => update(nodeId, { body: e.target.value })} className="field-sizing-content min-h-0 resize-none border-0 bg-transparent px-0 py-0.5 text-[12px] text-muted-foreground shadow-none focus-visible:ring-0" />}
       {editable.map((f) => (
-        <label key={f.key} className="mt-1 flex items-baseline gap-2 text-[12px]"><span className="w-24 shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">{f.label}</span>
+        <label key={f.key} className="mt-1 flex items-baseline gap-2 text-[12px]"><span className="w-24 shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">{f.label}</span>
           <Input aria-label={f.label} value={d.meta[f.key] ?? ""} placeholder="—" onChange={(e) => update(nodeId, (x) => ({ ...x, meta: { ...x.meta, [f.key]: e.target.value } }))} className="h-7 border-0 border-b border-dashed bg-transparent px-0 text-[12px] shadow-none focus-visible:ring-0" />
         </label>
       ))}

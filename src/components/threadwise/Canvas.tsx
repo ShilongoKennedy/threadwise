@@ -32,7 +32,7 @@ import {
   Orbit,
   RotateCcw,
   Scissors,
-  Sparkles,
+  Waypoints,
   PanelTopClose,
   Plus,
   Volume2,
@@ -835,7 +835,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
             className="dock pointer-events-auto flex max-w-full items-center gap-0.5 overflow-x-auto rounded-2xl p-1.5"
             aria-label="Add to canvas"
           >
-            {!dockOpen ? <Button variant="ghost" disabled={replay} onClick={() => setDockOpen(true)} className="tw-press flex h-11 items-center gap-2 rounded-xl px-4 text-[13px] text-dock-foreground"><Plus className="h-4 w-4" />Add to canvas</Button> : <>
+            {!dockOpen ? <Button variant="ghost" disabled={replay} onClick={() => setDockOpen(true)} className="tw-press flex h-11 items-center gap-2 rounded-xl px-4 text-[14px] text-dock-foreground"><Plus className="h-4 w-4" />Add to canvas</Button> : <>
             {NODE_TYPES.filter(k => k !== "dossier").map((k, i) => {
               const Icon = TYPE_ICON[k];
               return (
@@ -846,7 +846,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
                   onClick={() => create(k)}
                   title={`${TYPE_INFO[k].hint}${i < 5 ? ` — press ${i + 1}` : ""}`}
                   aria-label={`Add ${TYPE_INFO[k].label}`}
-                  className="tw-press group flex h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-xl px-2.5 text-[13px] text-dock-foreground/80 transition-colors hover:bg-dock-foreground/10 hover:text-dock-foreground lg:px-3"
+                  className="tw-press group flex h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-xl px-2.5 text-[14px] text-dock-foreground/80 transition-colors hover:bg-dock-foreground/10 hover:text-dock-foreground lg:px-3"
                 >
                   <Icon
                     className="h-[18px] w-[18px] lg:h-4 lg:w-4"
@@ -868,9 +868,9 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
               disabled={replay}
               onClick={() => setExploreOpen((o) => !o)}
               title="Explore with AI — press E"
-              className={`tw-press flex h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-[13px] font-medium transition-colors ${exploreOpen ? "bg-accent-ink text-dock" : "text-dock-foreground hover:bg-dock-foreground/10"}`}
+              className={`tw-press flex h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-[14px] font-medium transition-colors ${exploreOpen ? "bg-accent-ink text-dock" : "text-dock-foreground hover:bg-dock-foreground/10"}`}
             >
-              <Sparkles className="h-4 w-4" strokeWidth={1.75} />{" "}
+              <Waypoints className="h-4 w-4" strokeWidth={1.75} />{" "}
               <span className="hidden sm:inline">Explore</span>
               {s.ghosts.length > 0 && (
                 <span className="rounded-full bg-dock-foreground/15 px-1.5 font-mono text-[10px]">

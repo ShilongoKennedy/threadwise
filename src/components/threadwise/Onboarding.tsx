@@ -60,7 +60,7 @@ const STEPS = [
     title: "Capture → connect → challenge → decide.",
     body: "Start rough: capture an idea or note. Connect it to what it affects. Use Explore when you want questions and test ideas, then turn the best next move into an action or experiment.",
     art: () => (
-      <div className="flex h-24 items-center justify-center gap-2 text-center font-mono text-[9px] uppercase tracking-[.12em] text-muted-foreground">
+      <div className="flex h-24 items-center justify-center gap-2 text-center font-mono text-[10px] uppercase tracking-[.12em] text-muted-foreground">
         {[["Capture", "var(--type-note)"], ["Connect", "var(--type-idea)"], ["Challenge", "var(--type-question)"], ["Decide", "var(--type-action)"]].map(([label, color], i) => <div key={label} className="contents"><div className="grid h-14 w-14 place-items-center rounded-full border bg-card" style={{ borderColor: color }}>{label}</div>{i < 3 && <ArrowRight className="h-3 w-3" />}</div>)}
       </div>
     ),

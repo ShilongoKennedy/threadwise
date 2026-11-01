@@ -4,6 +4,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * TYPE SCALE — three registers, no exceptions.
+ *   micro  10px  mono only: labels, metadata, keycaps
+ *   body   12–14px  reading copy
+ *   display 18px+  Fraunces titles
+ * Nothing below 10px. No 11px, no 13px, no 12.5px: odd sizes read as accidents,
+ * not hierarchy, and they are unreadable on a phone.
+ */
 @theme inline {
   --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", Georgia, serif;
@@ -82,13 +90,15 @@
   --grid-major: oklch(0.54 0.25 262 / 6%); /* Faint Cobalt */
   --dock: oklch(0.2 0.012 55);
   --dock-foreground: oklch(0.96 0.01 85);
-  --type-idea: oklch(0.54 0.25 262);
-  --type-note: oklch(0.52 0.06 240);
-  --type-question: oklch(0.52 0.1 330);
-  --type-experiment: oklch(0.52 0.08 160);
-  --type-action: oklch(0.6 0.18 36);
-  --type-dossier: oklch(0.54 0.25 262);
-  --type-omission: oklch(0.54 0.25 262);
+  /* Card identity is carried by rule pattern and weight, never by hue.
+     Cobalt is reserved for interaction; red for one thing only: the blind spot. */
+  --type-idea: var(--foreground);
+  --type-note: var(--foreground);
+  --type-question: var(--foreground);
+  --type-experiment: var(--foreground);
+  --type-action: var(--foreground);
+  --type-dossier: var(--foreground);
+  --type-omission: #c1121f;
   --shadow-card: 0 0 0 1px oklch(0.25 0.02 60 / 7%), 0 1px 1px oklch(0.25 0.02 60 / 4%), 0 6px 16px -8px oklch(0.25 0.02 60 / 14%);
   --shadow-lift: 0 0 0 1px oklch(0.25 0.02 60 / 8%), 0 2px 4px oklch(0.25 0.02 60 / 5%), 0 24px 48px -16px oklch(0.25 0.02 60 / 26%);
   --chart-1: oklch(0.646 0.222 41.116);
@@ -261,14 +271,34 @@ body::after {
 .tw-unfold { overflow: hidden; max-height: calc(var(--unfold) * 320px); opacity: var(--unfold); transform: translateY(calc((1 - var(--unfold)) * -6px)); transition: max-height .5s var(--spring), opacity .35s ease, transform .5s var(--spring); }
 
 /* Rest of the card styles */
-.tw-card::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--card-tint); }
+/* Filing marks: each card type is a different rule, not a different colour. */
+.tw-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: var(--card-rule-width, 3px);
+  border-radius: 0 1px 1px 0;
+  background-image: var(--card-rule, linear-gradient(var(--card-tint), var(--card-tint)));
+  background-color: transparent;
+  background-repeat: repeat-y;
+}
+[data-kind="idea"] { --card-rule: linear-gradient(var(--foreground), var(--foreground)); }
+[data-kind="note"] { --card-rule: linear-gradient(color-mix(in oklab, var(--foreground) 42%, transparent), color-mix(in oklab, var(--foreground) 42%, transparent)); }
+[data-kind="question"] { --card-rule: repeating-linear-gradient(to bottom, var(--foreground) 0 7px, transparent 7px 14px); }
+[data-kind="experiment"] { --card-rule: repeating-linear-gradient(to bottom, var(--foreground) 0 3px, transparent 3px 8px); --card-rule-width: 2px; }
+[data-kind="action"] { --card-rule: linear-gradient(var(--foreground), var(--foreground)); --card-rule-width: 5px; }
+[data-kind="portal"] { --card-rule: repeating-linear-gradient(to bottom, var(--foreground) 0 2px, transparent 2px 7px); --card-rule-width: 2px; }
+[data-kind="dossier"] { --card-rule: linear-gradient(var(--foreground), var(--foreground)); --card-rule-width: 6px; }
+[data-kind="omission"] { --card-rule: repeating-linear-gradient(to bottom, #c1121f 0 7px, transparent 7px 14px); }
 .tw-card.is-grounded { outline: 1px solid var(--border-strong); outline-offset: 3px; }
 .tw-card.is-floating { background-color: transparent; }
 .tw-deckle { position: absolute; inset: -1px; z-index: -1; border-radius: inherit; background: var(--card); filter: url(#tw-deckle); }
-.tw-card.is-selected { box-shadow: 0 0 0 1.5px var(--foreground), 0 0 0 5px color-mix(in oklab, var(--card-tint) 18%, transparent), var(--shadow-lift); }
-.tw-kbd .tw-card.is-focus-ring { box-shadow: 0 0 0 2px var(--brass), 0 0 0 6px color-mix(in oklab, var(--brass) 22%, transparent), 0 0 24px color-mix(in oklab, var(--brass) 30%, transparent), var(--shadow-lift); transition: box-shadow .22s cubic-bezier(.2,.8,.2,1); }
-.tw-card.is-link-anchor { box-shadow: 0 0 0 2px var(--brass), 0 0 0 2px var(--card), 0 0 0 4px var(--brass); animation: tw-anchor 1.4s ease-in-out infinite; }
-@keyframes tw-anchor { 50% { box-shadow: 0 0 0 2px var(--brass), 0 0 0 6px var(--card), 0 0 0 8px color-mix(in oklab, var(--brass) 50%, transparent); } }
+.tw-card.is-selected { box-shadow: 0 0 0 1.5px var(--foreground), 0 0 0 5px color-mix(in oklab, var(--accent-ink) 22%, transparent), var(--shadow-lift); }
+.tw-kbd .tw-card.is-focus-ring { box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 6px color-mix(in oklab, var(--accent-ink) 20%, transparent), 0 0 24px color-mix(in oklab, var(--accent-ink) 24%, transparent), var(--shadow-lift); transition: box-shadow .22s cubic-bezier(.2,.8,.2,1); }
+.tw-card.is-link-anchor { box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 2px var(--card), 0 0 0 4px var(--accent-ink); animation: tw-anchor 1.4s ease-in-out infinite; }
+@keyframes tw-anchor { 50% { box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 6px var(--card), 0 0 0 8px color-mix(in oklab, var(--accent-ink) 40%, transparent); } }
 .tw-card.is-grounded-evidence::after { content: ""; position: absolute; inset: 7px; border: 1px solid color-mix(in oklab, var(--card-tint) 28%, transparent); border-radius: 9px; pointer-events: none; opacity: .65; }
 .tw-card.is-uncertain { animation: tw-uncertain-drift 7s ease-in-out infinite; }
 .tw-card.is-risk-pulse { box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent-ink) 45%, transparent), var(--shadow-card); animation: tw-risk-breath 3.8s ease-in-out infinite; }
