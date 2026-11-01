@@ -68,7 +68,7 @@ export function BriefingMode({ onExit }: { onExit: () => void }) {
       <header className="relative z-10 flex items-center justify-between px-10 py-8 pointer-events-auto">
         <div>
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A4BFF] flex items-center gap-2">
-            <Fingerprint className="w-3.5 h-3.5" /> Live Intelligence Briefing
+            <Fingerprint className="w-3.5 h-3.5" /> Live walkthrough
           </span>
           <h2 className="font-display text-2xl text-black mt-1">Threadwise Command</h2>
         </div>

@@ -1,13 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
   ArrowUpRight, ArrowRight, FileText, Activity, ShieldAlert, 
-  FileWarning, Search, Github, Twitter, Crosshair
+  FileWarning, Search, Crosshair
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { InteractiveLaptop } from "@/components/threadwise/InteractiveLaptop";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Threadwise — See what hides" },
+      { name: "description", content: "Threadwise is a forensic intelligence workspace: paste a source, expose its framing, omissions and contradictions, and map what you actually know against what you are assuming." },
+      { property: "og:title", content: "Threadwise — See what hides" },
+      { property: "og:description", content: "Threadwise is a forensic intelligence workspace: paste a source, expose its framing, omissions and contradictions, and map what you actually know against what you are assuming." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Threadwise — See what hides" },
+      { name: "twitter:description", content: "Threadwise is a forensic intelligence workspace: paste a source, expose its framing, omissions and contradictions, and map what you actually know against what you are assuming." },
+    ],
+  }),
   component: LandingPage,
 });
 
@@ -132,9 +144,9 @@ function LandingPage() {
         </Link>
         
         <nav className="hidden md:flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/60">
+          <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">How it works</a>
           <a href="#features" className="hover:text-[#1A1A1A] transition-colors">Features</a>
-          <a href="#how-it-works" className="hover:text-[#1A1A1A] transition-colors">How it works</a>
-          <a href="#pricing" className="hover:text-[#1A1A1A] transition-colors">Pricing</a>
+          <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Briefs</Link>
         </nav>
 
         <div className="flex items-center gap-3 md:gap-6">
@@ -181,13 +193,13 @@ function LandingPage() {
 
             <Link
               to="/briefing"
-              className="group mt-8 inline-flex items-center gap-3 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-5 py-3.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white shadow-[6px_6px_0_0_#1A1A1A] transition-all duration-150 hover:bg-[#1A1A1A] hover:shadow-[3px_3px_0_0_#1A1A1A] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none md:px-6 md:text-[11px]"
+              className="group mt-7 inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
             >
-              Read Today&rsquo;s Intelligence Brief
-              <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1" />
+              Read today&rsquo;s Morning Brief
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
             </Link>
-            <span className="mt-3 font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/35">
-              Updated daily by the autonomous agent
+            <span className="mt-2 font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/35">
+              One story, dissected daily by the autonomous agent
             </span>
           </div>
 
@@ -217,6 +229,7 @@ function LandingPage() {
 
         {/* THE DARK LAPTOP (BREAKING THE GRID) */}
         <div 
+          id="demo"
           ref={laptopReveal.ref}
           className={`relative w-full max-w-[1200px] mx-auto perspective-[2000px] group transition-all duration-1000 delay-200 -mt-12 md:-mt-24 z-30 ${laptopReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
         >
@@ -397,29 +410,22 @@ function LandingPage() {
               <div className="flex flex-col gap-4">
                 <span className="text-[#1A1A1A] font-bold mb-1">Product</span>
                 <Link to="/app" className="hover:text-[#1A1A1A] transition-colors">Workspace</Link>
+                <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Morning briefs</Link>
                 <a href="#features" className="hover:text-[#1A1A1A] transition-colors">Features</a>
-                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Pricing</a>
               </div>
               <div className="flex flex-col gap-4">
-                <span className="text-[#1A1A1A] font-bold mb-1">Company</span>
-                <a href="#" className="hover:text-[#1A1A1A] transition-colors">About</a>
-                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Blog</a>
-                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Contact</a>
-              </div>
-              <div className="flex flex-col gap-4">
-                <span className="text-[#1A1A1A] font-bold mb-1">Legal</span>
-                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Privacy</a>
-                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Terms</a>
-                <a href="#" className="hover:text-[#1A1A1A] transition-colors">Security</a>
+                <span className="text-[#1A1A1A] font-bold mb-1">Read</span>
+                <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">How it works</a>
+                <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Archive</Link>
+                <span className="text-[#1A1A1A]/30">More soon</span>
               </div>
             </div>
           </div>
 
           <div className="border-t border-[#1A1A1A]/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
             <span className="text-[10px] font-mono text-[#1A1A1A]/40 uppercase tracking-widest">© 2026 Threadwise Inc. All rights reserved.</span>
-            <div className="flex items-center gap-6">
-              <a href="#" className="text-[#1A1A1A]/40 hover:text-[#1A1A1A] transition-colors"><Github className="w-5 h-5" /></a>
-              <a href="#" className="text-[#1A1A1A]/40 hover:text-[#1A1A1A] transition-colors"><Twitter className="w-5 h-5" /></a>
+            <div className="flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
+              <span>Built for people who check.</span>
             </div>
           </div>
         </div>

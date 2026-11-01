@@ -6,6 +6,13 @@ import { Loader2 } from "lucide-react";
 const WorkspaceShell = lazy(() => import("@/components/threadwise/WorkspaceShell").then(m => ({ default: m.WorkspaceShell })));
 
 export const Route = createFileRoute("/app")({
+  head: () => ({
+    meta: [
+      { title: "Workspace — Threadwise" },
+      { name: "description", content: "Your reasoning workspace: sources, canvases and the daily brief." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: AppPage,
 });
 

@@ -4,15 +4,18 @@ import { AlertTriangle, ArrowUpRight, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/briefing")({
+  validateSearch: (search: Record<string, unknown>): { b?: string | undefined } => ({
+    b: typeof search["b"] === "string" ? search["b"] : undefined,
+  }),
   head: () => ({
     meta: [
-      { title: "Threadwise — Target Dossier" },
+      { title: "Morning Brief — Threadwise" },
       {
         name: "description",
         content:
-          "A single-target tactical dossier: BLUF, framing techniques, omissions and historical echo.",
+          "One story a day, dissected: the event, the spin, the reality beneath it, and the framing that got you there.",
       },
-      { property: "og:title", content: "Threadwise — Target Dossier" },
+      { property: "og:title", content: "Morning Brief — Threadwise" },
       { property: "og:type", content: "article" },
     ],
   }),
@@ -94,6 +97,7 @@ function RailField({ label, children }: { label: string; children: ReactNode }) 
 }
 
 function BriefingPage() {
+  const { b } = Route.useSearch();
   const [status, setStatus] = useState<"loading" | "ready" | "empty" | "error">("loading");
   const [brief, setBrief] = useState<NewsBrief | null>(null);
 
@@ -101,14 +105,12 @@ function BriefingPage() {
     let active = true;
     void (async () => {
       try {
-        const { data, error } = await supabase
-          .from("news_briefs")
-          .select(
-            "id, headline, bluf, framing, omission, historical_echo, threat_level, source_url, created_at",
-          )
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
+        const columns =
+          "id, headline, bluf, framing, omission, historical_echo, threat_level, source_url, created_at";
+        const query = supabase.from("news_briefs").select(columns);
+        const { data, error } = await (b
+          ? query.eq("id", b).maybeSingle()
+          : query.order("created_at", { ascending: false }).limit(1).maybeSingle());
         if (!active) return;
         if (error) {
           setStatus("error");
@@ -127,7 +129,7 @@ function BriefingPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [b]);
 
   const threat = brief ? threatOf(brief.threat_level) : FALLBACK_THREAT;
   const level = (brief?.threat_level ?? "MODERATE").toUpperCase();
@@ -152,7 +154,7 @@ function BriefingPage() {
       <header className="sticky top-0 z-20 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]/95 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3 px-4 py-2.5 md:px-6">
           <span className="font-mono text-[9px] font-bold uppercase leading-tight tracking-[0.26em] text-[#1A1A1A] md:text-[10px]">
-            Threadwise Intelligence <span className="text-[#1A4BFF]">//</span> Target Dossier
+            Threadwise Intelligence <span className="text-[#1A4BFF]">//</span> Morning Brief
           </span>
 
           <div className="flex shrink-0 items-center gap-2 md:gap-3">
@@ -160,6 +162,12 @@ function BriefingPage() {
               <Lock className="h-2.5 w-2.5" />
               Classified
             </span>
+            <Link
+              to="/briefs"
+              className="hidden items-center gap-1.5 border-2 border-[#1A1A1A] px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7] sm:flex"
+            >
+              Archive
+            </Link>
             <Link
               to="/app"
               className="group flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
@@ -193,7 +201,7 @@ function BriefingPage() {
               No dossier has been generated yet.
             </h1>
             <p className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-[#1A1A1A]/50">
-              Run the /api/news-brief endpoint to commission today&rsquo;s target.
+              The agent files one every day. Check the archive for previous briefs.
             </p>
           </div>
         )}

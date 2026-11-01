@@ -4,6 +4,13 @@ import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/login")({
+  head: () => ({
+    meta: [
+      { title: "Sign in — Threadwise" },
+      { name: "description", content: "Sign in to Threadwise with Google to save your canvases and briefs in the cloud." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: LoginPage,
 });
 
