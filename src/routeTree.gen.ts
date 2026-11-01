@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as StrataRouteImport } from './routes/strata'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
@@ -37,11 +36,6 @@ const BriefingRoute = BriefingRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StrataRoute = StrataRouteImport.update({
-  id: '/strata',
-  path: '/strata',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiNewsBriefRoute = ApiNewsBriefRouteImport.update({
@@ -70,7 +64,6 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/login': typeof LoginRoute
-  '/strata': typeof StrataRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -81,7 +74,6 @@ export interface FileRoutesByTo {
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/login': typeof LoginRoute
-  '/strata': typeof StrataRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -93,7 +85,6 @@ export interface FileRoutesById {
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/login': typeof LoginRoute
-  '/strata': typeof StrataRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -106,7 +97,6 @@ export interface FileRouteTypes {
     | '/app'
     | '/briefing'
     | '/login'
-    | '/strata'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
@@ -117,7 +107,6 @@ export interface FileRouteTypes {
     | '/app'
     | '/briefing'
     | '/login'
-    | '/strata'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
@@ -128,7 +117,6 @@ export interface FileRouteTypes {
     | '/app'
     | '/briefing'
     | '/login'
-    | '/strata'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
@@ -140,7 +128,6 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRoute
   BriefingRoute: typeof BriefingRoute
   LoginRoute: typeof LoginRoute
-  StrataRoute: typeof StrataRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
@@ -175,13 +162,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/strata': {
-      id: '/strata'
-      path: '/strata'
-      fullPath: '/strata'
-      preLoaderRoute: typeof StrataRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/news-brief': {
@@ -220,7 +200,6 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRoute,
   BriefingRoute: BriefingRoute,
   LoginRoute: LoginRoute,
-  StrataRoute: StrataRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
