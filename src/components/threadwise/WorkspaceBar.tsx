@@ -20,15 +20,15 @@ export function WorkspaceBar() {
   const c = w?.document.canvases.find((c) => c.id === w.document.activeCanvasId);
   const newCanvas = (parentId?: string) => { s.createCanvas(undefined, parentId); setOpen(false); };
   return <>
-    <div className="tw-workspacebar flex min-w-0 flex-1 items-center gap-0.5">
+    <div className="tw-workspacebar flex min-w-0 flex-1 items-center gap-0.5 overflow-hidden">
       <Button size="icon" variant="ghost" aria-label="Manage workspaces" title="Your files" onClick={() => setOpen(true)}><FolderOpen /></Button>
-      <nav aria-label="Canvas breadcrumbs" className="flex min-w-0 flex-1 items-center overflow-x-auto">
+      <nav aria-label="Canvas breadcrumbs" className="flex min-w-0 flex-1 items-center overflow-x-auto [scrollbar-width:none]">
         <Button variant="ghost" size="sm" className="hidden max-w-40 shrink-0 md:inline-flex" onClick={() => setOpen(true)}><span className="truncate">{w?.title}</span></Button>
         {w && breadcrumbs(w.document.canvases, w.document.activeCanvasId).map((crumb) => <span key={crumb.id} className="flex min-w-0 shrink-0 items-center"><ChevronRight className="h-3 w-3 text-muted-foreground" /><Button size="sm" variant="ghost" className="max-w-36" onClick={() => s.switchCanvas(crumb.id)} aria-current={crumb.id === c?.id ? "page" : undefined}><span className="truncate">{crumb.title}</span></Button></span>)}
       </nav>
       <span role="status" className={`hidden max-w-48 truncate font-mono text-[10px] sm:block ${s.status.includes('Retry') ? 'text-accent-ink' : 'text-muted-foreground'}`} title={s.status}><Cloud className="mr-1 inline h-3 w-3" />{s.status}</span>
       <Button size="sm" variant="outline" disabled={replay} aria-label="Create new canvas" onClick={() => newCanvas()}><Plus /><span className="hidden sm:inline">New canvas</span></Button>
-      <div className="hidden items-center border-l border-[#1A1A1A]/15 pl-1 md:flex">
+      <div className="hidden shrink-0 items-center border-l border-[#1A1A1A]/15 pl-1 lg:flex">
         <ColorPicker
           value={c?.color}
           label="Canvas color"

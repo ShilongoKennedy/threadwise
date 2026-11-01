@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, History, Radio, Redo2, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useThread, type TEdge, type TNode } from "@/lib/threadwise/store";
+import { describeChange } from "@/lib/threadwise/history";
 
-type Snap = { nodes: TNode[]; edges: TEdge[] };
+type Snap = { nodes: TNode[]; edges: TEdge[]; label: string };
+
 
 /**
  * Canvas-scoped undo. Snapshots are coalesced into 400ms windows so a drag lands
@@ -13,47 +15,68 @@ function useCanvasHistory() {
   const past = useRef<Snap[]>([]);
   const future = useRef<Snap[]>([]);
   const lastAt = useRef(0);
-  const [, bump] = useState(0);
+  const [state, setState] = useState({ canUndo: false, canRedo: false, undoLabel: "", redoLabel: "" });
+
+  const sync = useCallback(() => {
+    setState({
+      canUndo: past.current.length > 0,
+      canRedo: future.current.length > 0,
+      undoLabel: past.current[past.current.length - 1]?.label ?? "",
+      redoLabel: future.current[future.current.length - 1]?.label ?? "",
+    });
+  }, []);
 
   useEffect(() => {
-    const unsubscribe = useThread.subscribe((state, prev) => {
-      const changed = state.nodes !== prev.nodes || state.edges !== prev.edges;
-      if (!changed || state.replayIndex !== null) return;
+    const unsubscribe = useThread.subscribe((next, prev) => {
+      const changed = next.nodes !== prev.nodes || next.edges !== prev.edges;
+      if (!changed || next.replayIndex !== null) return;
       if (Date.now() - lastAt.current < 400) return;
-      past.current.push({ nodes: prev.nodes, edges: prev.edges });
+      past.current.push({ nodes: prev.nodes, edges: prev.edges, label: describeChange(prev, next) });
       if (past.current.length > 60) past.current.shift();
       future.current = [];
       lastAt.current = Date.now();
-      bump((n) => n + 1);
+      sync();
     });
     return unsubscribe;
-  }, []);
+  }, [sync]);
 
   const apply = (snap: Snap) => {
     useThread.setState({ nodes: snap.nodes, edges: snap.edges, selectedId: null });
-    bump((n) => n + 1);
+    lastAt.current = Date.now();
+    sync();
   };
 
-  return {
-    canUndo: past.current.length > 0,
-    canRedo: future.current.length > 0,
-    undo: () => {
-      const snap = past.current.pop();
-      if (!snap) return;
-      const now = useThread.getState();
-      future.current.push({ nodes: now.nodes, edges: now.edges });
-      lastAt.current = Date.now();
-      apply(snap);
-    },
-    redo: () => {
-      const snap = future.current.pop();
-      if (!snap) return;
-      const now = useThread.getState();
-      past.current.push({ nodes: now.nodes, edges: now.edges });
-      lastAt.current = Date.now();
-      apply(snap);
-    },
-  };
+  const undo = useCallback(() => {
+    const snap = past.current.pop();
+    if (!snap) return;
+    const now = useThread.getState();
+    future.current.push({ nodes: now.nodes, edges: now.edges, label: snap.label });
+    apply(snap);
+  }, [sync]);
+
+  const redo = useCallback(() => {
+    const snap = future.current.pop();
+    if (!snap) return;
+    const now = useThread.getState();
+    past.current.push({ nodes: now.nodes, edges: now.edges, label: snap.label });
+    apply(snap);
+  }, [sync]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "z") return;
+      const target = event.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      if (useThread.getState().replayIndex !== null) return;
+      event.preventDefault();
+      if (event.shiftKey) redo();
+      else undo();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [undo, redo]);
+
+  return { ...state, undo, redo };
 }
 
 export function Timeline() {
@@ -108,8 +131,8 @@ export function Timeline() {
           <Button
             variant="ghost"
             size="icon"
-            title="Undo"
-            aria-label="Undo the last change"
+            title={history.canUndo ? `Undo: ${history.undoLabel} (⌘Z)` : "Nothing to undo"}
+            aria-label={history.canUndo ? `Undo ${history.undoLabel}` : "Nothing to undo"}
             disabled={!history.canUndo}
             onClick={history.undo}
           >
@@ -118,8 +141,8 @@ export function Timeline() {
           <Button
             variant="ghost"
             size="icon"
-            title="Redo"
-            aria-label="Redo the last change"
+            title={history.canRedo ? `Redo: ${history.redoLabel} (⇧⌘Z)` : "Nothing to redo"}
+            aria-label={history.canRedo ? `Redo ${history.redoLabel}` : "Nothing to redo"}
             disabled={!history.canRedo}
             onClick={history.redo}
           >

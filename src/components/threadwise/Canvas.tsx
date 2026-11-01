@@ -88,7 +88,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
   const [exploreOpen, setExploreOpen] = useState(false);
   const [physics, setPhysics] = useState(false);
   const [audit, setAudit] = useState(false);
-  const [chromeOpen, setChromeOpen] = useState(false);
+  const [chromeOpen, setChromeOpen] = useState(true);
   const [dockOpen, setDockOpen] = useState(false);
   const [spatial, setSpatial] = useState(false);
   const [thoughtPortal, setThoughtPortal] = useState<string | null>(null);
@@ -684,7 +684,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </div>
         )}
         {chromeOpen && <div
-          className={`tw-toolstrip absolute right-4 top-[104px] z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:top-5 md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
+          className={`tw-toolstrip absolute right-4 top-[104px] z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:top-[104px] md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
         >
           <Button
             size="icon"
@@ -772,7 +772,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </Button>
         </div>}
 
-        <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-2 border-b border-[#1A1A1A]/12 bg-[#FDFBF7]/85 px-3 py-1.5 backdrop-blur-md sm:px-4">
+        <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-2 overflow-hidden border-b border-[#1A1A1A]/12 bg-[#FDFBF7]/85 px-3 py-1.5 backdrop-blur-md sm:px-4">
           <div className="pointer-events-auto flex shrink-0 items-center gap-2">
             {threadId && (
               <>
@@ -788,8 +788,8 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
               {String(visibleNodes.length).padStart(2, "0")} cards · {String(visibleEdges.length).padStart(2, "0")} threads
             </span>
           </div>
-          <div className="pointer-events-none flex min-w-0 flex-1 items-center"><WorkspaceBar /></div>
-          <div className="pointer-events-auto flex items-center gap-2">
+          <div className={`pointer-events-auto min-w-0 flex-1 items-center overflow-hidden ${chromeOpen ? "flex" : "hidden"}`}><WorkspaceBar /></div>
+          <div className="pointer-events-auto flex shrink-0 items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
