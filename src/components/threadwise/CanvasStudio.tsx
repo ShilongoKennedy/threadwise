@@ -56,7 +56,6 @@ const TOOL_GROUPS = [
   { label: "Deliver", tools: [
     { id: "present", label: "Presentation", icon: Presentation },
     { id: "playback", label: "Thought playback", icon: Play },
-    { id: "theatre", label: "Decision theatre", icon: Square },
     { id: "consequences", label: "Consequence map", icon: GitFork },
     { id: "export", label: "Vector & narrative export", icon: Download },
   ]},

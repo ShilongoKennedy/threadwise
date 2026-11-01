@@ -46,6 +46,7 @@ import {
   startOfMonth,
   startOfWeek,
   format,
+  isSameDay,
   addMonths,
   differenceInCalendarDays,
   getDaysInMonth,
@@ -70,99 +71,27 @@ export function PlanningSuite() {
         size="sm"
         className="tw-planning-launch absolute left-4 top-[232px] z-10 bg-card sm:left-6 md:top-5 md:left-[210px]"
         disabled={s.replayIndex !== null}
-        aria-label="Open planning suite"
+        aria-label="Open the calendar"
         onClick={() => setOpen(true)}
       >
-        <ListChecks />
-        Plan
+        <CalendarDays />
+        Calendar
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="tw-planning w-[calc(100%-24px)] max-w-6xl max-h-[90dvh] overflow-y-auto p-0">
           <DialogHeader className="border-b px-6 py-5">
             <DialogTitle className="font-display text-3xl font-normal">
-              From possibility to commitment.
+              Dates that matter.
             </DialogTitle>
             <DialogDescription>
               {c?.title} · {ws.status}
             </DialogDescription>
           </DialogHeader>
-          <Tabs value={tab} onValueChange={setTab} className="px-4 sm:px-6">
-            <TabsList className="tw-choice-rail h-auto w-full justify-start gap-1 overflow-x-auto p-1">
-              <TabsTrigger className="tw-choice-tab" value="workshop">
-                <Users className="mr-2 h-4 w-4" />
-                Run the room
-              </TabsTrigger>
-              <TabsTrigger className="tw-choice-tab" value="decisions">
-                <ListChecks className="mr-2 h-4 w-4" />
-                Decisions
-              </TabsTrigger>
-              <TabsTrigger className="tw-choice-tab" value="schedule">
-                <CalendarDays className="mr-2 h-4 w-4" />
-                Schedule
-              </TabsTrigger>
-              <TabsTrigger className="tw-choice-tab" value="templates">
-                <LayoutTemplate className="mr-2 h-4 w-4" />
-                Templates
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <div className="min-h-[420px] px-4 pb-6 sm:px-6">
-            {tab === "workshop" && <WorkshopPanel />}
-            {tab === "decisions" && <DecisionPanel decisions={planning.decisions} save={save} />}
-            {tab === "schedule" && (
-              <Schedule decisions={planning.decisions} onOutcome={() => setOpen(false)} />
-            )}
-            {tab === "templates" && (
-              <>
-                <div className="mb-5 flex items-end justify-between">
-                  <h2 className="font-display text-2xl">Choose your starting point.</h2>
-                  <span className="font-mono text-xs text-muted-foreground">05 WORKFLOWS</span>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {TEMPLATES.map((t, i) => (
-                    <article key={t.id} className="tw-workflow-card rounded-lg border bg-card p-5">
-                      <div className="mb-5 flex justify-between font-mono text-xs text-muted-foreground">
-                        <span>
-                          0{i + 1} / {t.audience}
-                        </span>
-                        <LayoutTemplate className="h-4 w-4" />
-                      </div>
-                      <h3 className="min-h-14 font-display text-2xl">{t.title}</h3>
-                      <ol className="my-5 space-y-2 text-sm text-muted-foreground">
-                        {t.steps.map((step, i) => (
-                          <li key={step}>
-                            {i + 1}. {step}
-                          </li>
-                        ))}
-                      </ol>
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => {
-                          const id = ws.createCanvas(t.title);
-                          const graph = templateGraph(t.id);
-                          useThread.setState({
-                            ...graph,
-                            ghosts: [],
-                            history: [],
-                            selectedId: null,
-                          });
-                          ws.updatePlanning(id, { decisions: [], templateId: t.id, step: 0 });
-                          setOpen(false);
-                        }}
-                      >
-                        <Plus />
-                        Create canvas
-                      </Button>
-                    </article>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+          <div className="min-h-[420px] px-4 pb-6 pt-4 sm:px-6">
+            <Schedule decisions={planning.decisions} onOutcome={() => setOpen(false)} />
+</div>
         </DialogContent>
       </Dialog>
-      {planning.templateId && <GuidedSteps />}
     </>
   );
 }
@@ -560,11 +489,11 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
       </div>
       {view === "calendar" ? (
         <div className="overflow-x-auto">
-          <div className="grid min-w-[560px] grid-cols-7 border-t border-l">
+          <div className="grid min-w-[560px] grid-cols-7 border-2 border-foreground">
             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
               <div
                 key={d}
-                className="border-r border-b p-2 font-mono text-xs text-muted-foreground"
+                className="border-r border-b border-foreground/10 bg-foreground px-2 py-1.5 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-[#FDFBF7]"
               >
                 {d}
               </div>
@@ -572,16 +501,16 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
             {days.map((day) => (
               <div
                 key={day.toISOString()}
-                className={`min-h-20 border-r border-b p-2 ${day.getMonth() !== month.getMonth() ? "bg-muted/40" : ""}`}
+                className={`min-h-24 border-b border-r border-foreground/10 p-1.5 ${day.getMonth() !== month.getMonth() ? "bg-foreground/[0.035]" : ""} ${isSameDay(day, new Date()) ? "bg-[#1A4BFF]/[0.07]" : ""}`}
               >
-                <span className="font-mono text-xs text-muted-foreground">{format(day, "d")}</span>
+                <span className={`font-mono text-[10px] ${isSameDay(day, new Date()) ? "font-bold text-[#1A4BFF]" : "text-foreground/45"}`}>{format(day, "d")}</span>
                 {events
                   .filter((e) => e.date === format(day, "yyyy-MM-dd"))
                   .map((e) => (
                     <Button
                       key={e.id}
                       variant="ghost"
-                      className="mt-1 h-auto w-full justify-start whitespace-normal border-l-2 border-accent-ink p-1 text-left text-[12px]"
+                      className="mt-1 h-auto w-full justify-start whitespace-normal rounded-none border-l-2 border-[#1A4BFF] bg-white px-1.5 py-0.5 text-left font-mono text-[10px] leading-tight hover:bg-[#1A4BFF] hover:text-white"
                       onClick={() => setNodeId(e.nodeId)}
                     >
                       {e.title}

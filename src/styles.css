@@ -370,7 +370,7 @@ body::after {
 .tw-studio-launch { position: absolute; left: 24px; top: 184px; z-index: 15; gap: 7px; box-shadow: var(--shadow-card); }
 .tw-chrome-quiet .tw-studio-launch { top: 78px; left: 20px; }
 .tw-chrome-quiet .tw-planning-launch { top: 126px !important; left: 20px !important; }
-.tw-planning-launch { min-width: 120px; justify-content: flex-start; border-radius: 11px; box-shadow: var(--shadow-card); }
+.tw-planning-launch { justify-content: flex-start; border-radius: 2px; box-shadow: var(--shadow-card); }
 .tw-canvas-toggle { backdrop-filter: blur(12px); }
 .tw-chrome-quiet .react-flow__controls { margin-bottom: 86px !important; }
 .tw-chrome-quiet .react-flow__minimap { margin-bottom: 86px !important; opacity: .76; }
@@ -412,6 +412,33 @@ body::after {
   border-radius: 2px;
   box-shadow: 6px 6px 0 0 color-mix(in oklab, var(--foreground) 10%, transparent);
 }
+
+/* ---------- Cord tags ---------- */
+/* The relation label is a paper tag on a string, not a floating label. */
+.tw-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 6px 2px 5px;
+  background: #ffffff;
+  border: 1px solid var(--foreground);
+  border-radius: 1px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: color-mix(in oklab, var(--foreground) 62%, transparent);
+  box-shadow: 2px 2px 0 0 color-mix(in oklab, var(--foreground) 8%, transparent);
+  transform-origin: top center;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+.tw-tag:hover { background: var(--foreground); color: #FDFBF7; border-color: var(--foreground); }
+.tw-tag[data-selected="true"] { background: var(--foreground); color: #FDFBF7; }
+.tw-tag[data-contradicts="true"] { border-color: #C1121F; color: #C1121F; }
+.tw-tag[data-contradicts="true"]:hover { background: #C1121F; color: #fff; border-color: #C1121F; }
+.tw-tag-hole { width: 4px; height: 4px; border-radius: 50%; border: 1px solid currentColor; opacity: .55; }
 
 /* ---------- Thought portal ---------- */
 /* The markup renders a full dialog; none of its classes existed, so it appeared
