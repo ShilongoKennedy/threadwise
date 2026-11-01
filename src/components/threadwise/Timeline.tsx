@@ -86,7 +86,7 @@ export function Timeline() {
   const moment = s.history[index];
 
   return (
-    <div className="tw-timeline absolute left-4 right-4 top-[52px] z-10 flex items-center gap-1 border-b border-[#1A1A1A]/12 bg-[#FDFBF7]/80 px-1 py-1 backdrop-blur-md sm:left-6 sm:right-auto sm:w-[min(760px,calc(100%-48px))]">
+    <div className="tw-timeline absolute inset-x-4 bottom-[74px] z-10 flex items-center gap-1 border-t border-[#1A1A1A]/12 bg-[#FDFBF7]/70 px-1 py-0.5 backdrop-blur-sm sm:inset-x-6">
       <History className="mx-2 h-4 w-4 shrink-0 text-muted-foreground" />
       <Button
         variant="ghost"

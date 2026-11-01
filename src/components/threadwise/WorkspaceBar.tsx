@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronRight, Cloud, Copy, DoorOpen, FolderOpen, Plus, RefreshCw, Search, Trash2, UserRound } from "lucide-react";
+import { ChevronRight, Copy, DoorOpen, FolderOpen, MoreHorizontal, Plus, RefreshCw, Search, Trash2, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -9,6 +9,7 @@ import { syncWorkspaces, useAccount } from "@/lib/threadwise/cloud-sync";
 import { useThread } from "@/lib/threadwise/store";
 import { AccountDialog } from "./AccountDialog";
 import { ColorPicker } from "./ColorPicker";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { paperColor } from "@/lib/threadwise/paper";
 
 export function WorkspaceBar() {
@@ -23,20 +24,40 @@ export function WorkspaceBar() {
     <div className="tw-workspacebar flex min-w-0 flex-1 items-center gap-0.5 overflow-hidden">
       <Button size="icon" variant="ghost" aria-label="Manage workspaces" title="Your files" onClick={() => setOpen(true)}><FolderOpen /></Button>
       <nav aria-label="Canvas breadcrumbs" className="flex min-w-0 flex-1 items-center overflow-x-auto [scrollbar-width:none]">
-        <Button variant="ghost" size="sm" className="hidden max-w-40 shrink-0 md:inline-flex" onClick={() => setOpen(true)}><span className="truncate">{w?.title}</span></Button>
-        {w && breadcrumbs(w.document.canvases, w.document.activeCanvasId).map((crumb) => <span key={crumb.id} className="flex min-w-0 shrink-0 items-center"><ChevronRight className="h-3 w-3 text-muted-foreground" /><Button size="sm" variant="ghost" className="max-w-36" onClick={() => s.switchCanvas(crumb.id)} aria-current={crumb.id === c?.id ? "page" : undefined}><span className="truncate">{crumb.title}</span></Button></span>)}
+        {w && breadcrumbs(w.document.canvases, w.document.activeCanvasId).map((crumb) => <span key={crumb.id} className="flex min-w-0 shrink-0 items-center"><ChevronRight className="h-3 w-3 text-muted-foreground" /><Button size="sm" variant="ghost" className="min-w-0 shrink px-1.5" onClick={() => s.switchCanvas(crumb.id)} title={crumb.title}><span className="truncate">{crumb.title}</span></Button></span>)}
       </nav>
-      <span role="status" className={`hidden max-w-48 truncate font-mono text-[10px] sm:block ${s.status.includes('Retry') ? 'text-accent-ink' : 'text-muted-foreground'}`} title={s.status}><Cloud className="mr-1 inline h-3 w-3" />{s.status}</span>
-      <Button size="sm" variant="outline" disabled={replay} aria-label="Create new canvas" onClick={() => newCanvas()}><Plus /><span className="hidden sm:inline">New canvas</span></Button>
-      <div className="hidden shrink-0 items-center border-l border-[#1A1A1A]/15 pl-1 lg:flex">
-        <ColorPicker
-          value={c?.color}
-          label="Canvas color"
-          disabled={replay || !c}
-          onChange={(color) => { if (c) s.setCanvasColor(c.id, paperColor(color)); }}
-        />
-      </div>
-      <Button size="icon" variant={s.status.includes('Retry') ? 'outline' : 'ghost'} title="Retry cloud sync" aria-label="Retry cloud sync" disabled={!user || s.status === 'Saving…'} onClick={() => void syncWorkspaces()}><RefreshCw className={s.status === 'Saving…' ? 'animate-spin' : ''} /></Button>
+
+      <span
+        role="status"
+        aria-label={`Cloud: ${s.status}`}
+        title={s.status}
+        className="mx-1 h-1.5 w-1.5 shrink-0 rounded-full"
+        style={{ background: s.status.includes("Retry") ? "#C1121F" : s.status === "Saving…" ? "var(--accent-ink)" : "color-mix(in oklab, var(--foreground) 30%, transparent)" }}
+      />
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button size="icon" variant="ghost" aria-label="Canvas menu" title="Canvas menu"><MoreHorizontal /></Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="tw-sheet w-60 p-1">
+          <DropdownMenuItem disabled={replay} onSelect={() => newCanvas()}><Plus /> New canvas</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setOpen(true)}><FolderOpen /> Your files</DropdownMenuItem>
+          <DropdownMenuItem disabled={!user || s.status === "Saving…"} onSelect={() => void syncWorkspaces()}><RefreshCw /> {s.status.includes("Retry") ? "Retry sync" : "Sync now"}</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <div className="px-2 pb-1 pt-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/40">Canvas colour</span>
+            <div className="mt-2">
+              <ColorPicker
+                value={c?.color}
+                label="Canvas colour"
+                disabled={replay || !c}
+                onChange={(color) => { if (c) s.setCanvasColor(c.id, paperColor(color)); }}
+              />
+            </div>
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <Button size="icon" variant="ghost" title={user ? "Your account" : "Sign in to sync"} aria-label="Workspace account" onClick={() => setAccount(true)}><UserRound /></Button>
     </div>
     {account && <AccountDialog onClose={() => setAccount(false)} />}

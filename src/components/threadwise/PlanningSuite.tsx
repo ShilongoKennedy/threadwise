@@ -67,17 +67,7 @@ export function PlanningSuite() {
   };
   return (
     <>
-      <Button
-        variant="outline"
-        size="sm"
-        className="tw-planning-launch absolute left-4 top-[168px] z-10 bg-card sm:left-6 md:top-[168px] md:left-6"
-        disabled={s.replayIndex !== null}
-        aria-label="Open the calendar"
-        onClick={() => setOpen(true)}
-      >
-        <CalendarDays />
-        Calendar
-      </Button>
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="tw-planning w-[calc(100%-24px)] max-w-6xl max-h-[90dvh] overflow-y-auto p-0">
           <DialogHeader className="border-b px-6 py-5">

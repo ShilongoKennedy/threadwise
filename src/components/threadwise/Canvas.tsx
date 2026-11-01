@@ -33,6 +33,8 @@ import {
   RotateCcw,
   Scissors,
   Waypoints,
+  CalendarDays,
+  Layers,
   ArrowUpRight,
   PanelTopClose,
   Plus,
@@ -683,7 +685,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
             REPLAY · {snapshot?.label} · {snapshot ? new Date(snapshot.at).toLocaleString() : ""}
           </div>
         )}
-        {chromeOpen && <div
+        {chromeOpen && s.selectedId && <div
           className={`tw-toolstrip absolute right-4 top-[104px] z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:top-[104px] md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
         >
           <Button
@@ -772,56 +774,9 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </Button>
         </div>}
 
-        <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-2 overflow-hidden border-b border-[#1A1A1A]/12 bg-[#FDFBF7]/85 px-3 py-1.5 backdrop-blur-md sm:px-4">
-          <div className="pointer-events-auto flex shrink-0 items-center gap-2">
-            {threadId && (
-              <>
-                <svg viewBox="0 0 32 32" className="h-6 w-6 text-foreground" aria-hidden>
-                  <circle cx="7" cy="9" r="3" fill="currentColor" />
-                  <circle cx="25" cy="23" r="3" fill="var(--accent-ink)" />
-                  <path d="M7 9 C 16 9, 14 23, 25 23" fill="none" stroke="currentColor" strokeWidth="1.4" />
-                </svg>
-                <span className="font-display text-[17px] italic tracking-tight">Threadwise</span>
-              </>
-            )}
-            <span className={`hidden font-mono text-[10px] uppercase tracking-[0.18em] text-foreground/40 sm:inline ${chromeOpen ? "" : "opacity-0"}`}>
-              {String(visibleNodes.length).padStart(2, "0")} cards · {String(visibleEdges.length).padStart(2, "0")} threads
-            </span>
-          </div>
-          <div className={`pointer-events-auto min-w-0 flex-1 items-center overflow-hidden ${chromeOpen ? "flex" : "hidden"}`}><WorkspaceBar /></div>
-          <div className="pointer-events-auto flex shrink-0 items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSpatial((v) => !v)}
-            aria-pressed={spatial}
-            aria-label={spatial ? "Turn off spatial atmosphere" : "Turn on spatial atmosphere"}
-            title={spatial ? "Turn off spatial atmosphere" : "Turn on spatial atmosphere"}
-            className="tw-canvas-toggle tw-press grid h-10 w-10 place-items-center rounded-full border bg-card text-muted-foreground shadow-[var(--shadow-card)] hover:text-foreground"
-          >
-            <Atom className={`h-4 w-4 transition-transform ${spatial ? "rotate-90 text-accent-ink" : ""}`} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setChromeOpen((v) => !v)}
-            aria-pressed={chromeOpen}
-            aria-label={chromeOpen ? "Hide workspace controls" : "Show workspace controls"}
-            title={chromeOpen ? "Hide workspace controls" : "Show workspace controls"}
-            className="tw-canvas-toggle tw-press grid h-10 w-10 place-items-center rounded-full border bg-card text-muted-foreground shadow-[var(--shadow-card)] hover:text-foreground"
-          >
-            <PanelTopClose className={`h-4 w-4 transition-transform ${chromeOpen ? "rotate-180" : ""}`} />
-          </Button>
-          <Button
-            variant="ghost"
-            disabled={replay}
-            onClick={onboarding.show}
-            aria-label="Show introduction"
-            title="Introduction & shortcuts"
-            className="tw-press pointer-events-auto grid h-10 w-10 place-items-center rounded-full border bg-card font-display text-lg italic text-muted-foreground shadow-[var(--shadow-card)] transition-colors hover:text-foreground"
-          >
-            ?
-          </Button>
+        <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center gap-2 overflow-hidden border-b border-[#1A1A1A]/12 bg-[#FDFBF7]/85 px-2 py-1 backdrop-blur-md">
+          <div className="pointer-events-auto flex min-w-0 flex-1 items-center overflow-hidden">
+            <WorkspaceBar />
           </div>
         </header>
 
@@ -832,6 +787,14 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
             className="dock pointer-events-auto flex max-w-full items-center gap-0.5 overflow-x-auto rounded-[3px] p-1.5"
             aria-label="Add to canvas"
           >
+            <div className="mr-0.5 flex shrink-0 items-center gap-0.5 border-r border-foreground/15 pr-1">
+              <Button variant="ghost" size="sm" disabled={replay} onClick={() => window.dispatchEvent(new CustomEvent("threadwise:open-studio"))} className="tw-press h-11 rounded-[2px] px-2.5 text-[13px] text-foreground/70 hover:text-foreground">
+                <Layers className="mr-1.5 h-4 w-4" /> Studio
+              </Button>
+              <Button variant="ghost" size="sm" disabled={replay} onClick={() => window.dispatchEvent(new CustomEvent("threadwise:open-calendar"))} className="tw-press h-11 rounded-[2px] px-2.5 text-[13px] text-foreground/70 hover:text-foreground">
+                <CalendarDays className="mr-1.5 h-4 w-4" /> Calendar
+              </Button>
+            </div>
             {!dockOpen ? <Button variant="ghost" disabled={replay} onClick={() => setDockOpen(true)} className="tw-press flex h-11 items-center gap-2 rounded-[2px] px-4 text-[14px] text-foreground"><Plus className="h-4 w-4" />Add to canvas</Button> : <>
             {NODE_TYPES.filter(k => k !== "dossier").map((k, i) => {
               const Icon = TYPE_ICON[k];

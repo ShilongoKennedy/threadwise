@@ -191,13 +191,14 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
     </div>
   );
 
+  useEffect(() => {
+    const openStudio = () => setOpen(true);
+    window.addEventListener("threadwise:open-studio", openStudio);
+    return () => window.removeEventListener("threadwise:open-studio", openStudio);
+  }, []);
+
   return (
     <>
-      {!present && (
-        <Button className="tw-studio-launch" size="sm" variant={open ? "default" : "outline"} aria-label="Open canvas studio" title="Canvas studio" disabled={s.replayIndex !== null} onClick={() => { s.select(null); setOpen((v) => !v); }}>
-          <Layers /><span>Studio</span>
-        </Button>
-      )}
       {suite.frames.length > 0 && (
         <svg className="tw-frame-layer" aria-hidden>
           <g transform={`translate(${viewport.x} ${viewport.y}) scale(${viewport.zoom})`}>

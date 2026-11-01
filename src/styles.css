@@ -367,12 +367,6 @@ body::after {
 .tw-planning h2, .tw-planning h3, .tw-planning p { overflow-wrap: anywhere; }
 .tw-gantt-track { background-image: linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: calc(100% / 31) 100%; }
 @media (max-width: 767px) { .tw-planning h2 { font-size: 24px; } }
-.tw-studio-launch { position: absolute; left: 24px; top: 120px; z-index: 15; gap: 7px; box-shadow: var(--shadow-card); }
-.tw-chrome-open .tw-studio-launch { top: 156px; }
-.tw-chrome-open .tw-planning-launch { top: 204px !important; }
-.tw-chrome-quiet .tw-studio-launch { top: 56px; left: 20px; }
-.tw-chrome-quiet .tw-planning-launch { top: 104px !important; left: 20px !important; }
-.tw-planning-launch { justify-content: flex-start; border-radius: 2px; box-shadow: var(--shadow-card); }
 .tw-canvas-toggle { backdrop-filter: blur(12px); }
 .tw-chrome-quiet .react-flow__controls { margin-bottom: 86px !important; }
 .tw-chrome-quiet .react-flow__minimap { margin-bottom: 86px !important; opacity: .76; }
@@ -401,7 +395,7 @@ body::after {
 .tw-decision-seal > svg { color: var(--brass); flex-shrink: 0; }
 .tw-presenting .tw-desk-chrome, .tw-presenting .react-flow__controls, .tw-presenting .react-flow__minimap, .tw-presenting .tw-note-grip, .tw-presenting .tw-live-strip { display: none !important; }
 .tw-presenting .react-flow__node { pointer-events: none; }
-@media(max-width:767px) { .tw-studio-launch {left:16px;top:212px;} .tw-live-strip {left:104px;top:212px;} .tw-studio-panel {inset:118px 8px 8px; width:auto;} .tw-studio-body {grid-template-columns:52px minmax(0,1fr);} .tw-studio-nav {padding:8px 4px;} .tw-studio-nav button {width:40px;padding:0;justify-content:center;} .tw-studio-nav span {display:none;} .tw-studio-content {padding:16px;} .tw-presentation-caption {left:16px;right:16px;} .tw-presentation-caption h2 {font-size:24px;} }
+@media(max-width:767px) { .tw-studio-panel {inset:118px 8px 8px; width:auto;} .tw-studio-body {grid-template-columns:52px minmax(0,1fr);} .tw-studio-nav {padding:8px 4px;} .tw-studio-nav button {width:40px;padding:0;justify-content:center;} .tw-studio-nav span {display:none;} .tw-studio-content {padding:16px;} .tw-presentation-caption {left:16px;right:16px;} .tw-presentation-caption h2 {font-size:24px;} }
 @media(prefers-reduced-motion:reduce) { .tw-presence-cursor {transition:none;} }
 
 /* ---------- Printed sheets: the one panel material ---------- */
@@ -703,3 +697,38 @@ body::after {
 @keyframes tw-playback-line { to { stroke-dashoffset: -32; } } @keyframes tw-playback-node { from { opacity: 0; transform: translateY(16px) scale(.94); } } @keyframes tw-theatre-orbit { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .tw-playback, .tw-theatre, .tw-playback-thread, .tw-playback-node, .tw-theatre main::before { animation: none; } }
 @media (max-width: 720px) { .tw-theatre main { grid-template-columns: 1fr; grid-template-rows: auto; padding-bottom: 28px; }.tw-theatre-core { grid-row: 1; }.tw-theatre-path { grid-column: 1; grid-template-columns: 1fr; }.tw-theatre main::before { inset: 19% 5%; }.tw-theatre-ring { grid-template-columns: repeat(2, minmax(0, 1fr)); }.tw-theatre-ring h3,.tw-theatre-ring > p { grid-column: 1 / -1; } }
+/* ---------- Scrubber ---------- */
+.tw-scrub {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+.tw-scrub::-webkit-slider-runnable-track {
+  height: 2px;
+  background: color-mix(in oklab, var(--foreground) 18%, transparent);
+}
+.tw-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 7px;
+  height: 7px;
+  margin-top: -2.5px;
+  border: 0;
+  border-radius: 0;
+  background: var(--foreground);
+}
+.tw-scrub::-moz-range-track {
+  height: 2px;
+  background: color-mix(in oklab, var(--foreground) 18%, transparent);
+}
+.tw-scrub::-moz-range-thumb {
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 0;
+  background: var(--foreground);
+}
+.tw-scrub:focus-visible::-webkit-slider-thumb { background: var(--accent-ink); }
+.tw-scrub:focus-visible { outline: 1px solid var(--accent-ink); outline-offset: 4px; }
