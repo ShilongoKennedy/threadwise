@@ -147,6 +147,14 @@
     border-color: var(--color-border);
   }
 
+  /* No screen should ever scroll sideways. `clip` (not `hidden`) avoids creating
+     a scroll container, which would break the sticky headers on /briefing. */
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);

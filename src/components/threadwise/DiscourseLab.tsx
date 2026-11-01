@@ -567,26 +567,26 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
     <div className="h-full w-full flex flex-col bg-background font-sans relative overflow-hidden" role="region" aria-label="Discourse Lab">
       <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
 
-      <header className="relative z-10 flex items-center justify-between border-b px-6 py-4 bg-[#FDFBF7] shrink-0">
-        <div>
+      <header className="relative z-10 flex shrink-0 flex-wrap items-center gap-3 border-b bg-[#FDFBF7] px-3 py-3 md:px-6 md:py-4">
+        <div className="min-w-0 flex-1 md:flex-none">
           <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             <Crosshair className="h-3 w-3" /> The Reading Room
           </span>
-          <h2 className="font-display text-3xl text-foreground">Discourse Lab</h2>
+          <h2 className="truncate font-display text-2xl text-foreground md:text-3xl">Discourse Lab</h2>
         </div>
-        <nav className="flex gap-1 bg-[#1A1A1A]/5 p-1 rounded-sm border border-[#1A1A1A]/10">
+        <nav className="order-last flex w-full gap-1 overflow-x-auto rounded-sm border border-[#1A1A1A]/10 bg-[#1A1A1A]/5 p-1 md:order-none md:w-auto md:overflow-visible">
           {([ ["read", "Forensic Workbench", BookOpenText, !!activeAnalysis], ["investigate", "Cross-Source", Globe, !!analysis], ["compare", "Text Diff", Columns2, !!comparisonAnalysis], ["count", "Metrics", Hash, terms.length > 0], ["archives", "Ask Archives", Database, !!archiveResult] ] as const).map(([id, label, Icon, hasData]) => (
-            <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`relative rounded-sm transition-all ${view === id ? "bg-white text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-[#1A1A1A]/5"}`}>
+            <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`relative shrink-0 whitespace-nowrap rounded-sm transition-all ${view === id ? "bg-white text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-[#1A1A1A]/5"}`}>
               <Icon className="mr-2 h-4 w-4" />{label}
               {hasData && <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#1A4BFF]" />}
             </Button>
           ))}
         </nav>
-        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full"><X /></Button>
+        <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close the lab" className="order-2 shrink-0 rounded-full md:order-none"><X /></Button>
       </header>
 
-      <div className="relative z-10 flex flex-1 overflow-hidden">
-        <aside className="flex w-[300px] shrink-0 flex-col border-r bg-[#FDFBF7]">
+      <div className="relative z-10 flex flex-1 flex-col overflow-hidden md:flex-row">
+        <aside className="flex max-h-[46dvh] w-full shrink-0 flex-col overflow-y-auto border-b bg-[#FDFBF7] md:max-h-none md:w-[300px] md:overflow-visible md:border-b-0 md:border-r">
           <div 
             className={`border-b border-[#1A1A1A]/10 p-5 bg-white/40 transition-colors ${isDragging ? "bg-[#1A4BFF]/10 border-[#1A4BFF]/30" : ""}`}
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}

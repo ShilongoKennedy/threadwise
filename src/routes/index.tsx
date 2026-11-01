@@ -139,7 +139,7 @@ function LandingPage() {
 
         <div className="flex items-center gap-3 md:gap-6">
           {session ? (
-            <Link to="/app" className="group flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 bg-[#1A1A1A] text-white hover:bg-[#1A4BFF] transition-colors duration-300 font-mono text-[10px] md:text-[11px] uppercase tracking-widest shadow-sm rounded-sm">
+            <Link to="/app" className="group flex shrink-0 items-center gap-1.5 rounded-sm bg-[#1A1A1A] px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-white shadow-sm transition-colors duration-300 hover:bg-[#1A4BFF] md:gap-2 md:px-5 md:py-2.5 md:text-[11px]">
               Go to Workspace <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
           ) : (
@@ -147,8 +147,9 @@ function LandingPage() {
               <Link to="/login" className="hidden sm:block text-sm font-medium text-[#1A1A1A]/70 hover:text-[#1A1A1A] transition-colors">
                 Sign in
               </Link>
-              <Link to="/login" className="group flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 bg-[#1A1A1A] text-white hover:bg-[#1A4BFF] transition-colors duration-300 font-mono text-[10px] md:text-[11px] uppercase tracking-widest shadow-sm rounded-sm">
-                Start Investigation <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <Link to="/login" className="group flex shrink-0 items-center gap-1.5 rounded-sm bg-[#1A1A1A] px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-white shadow-sm transition-colors duration-300 hover:bg-[#1A4BFF] md:gap-2 md:px-5 md:py-2.5 md:text-[11px]">
+                Start<span className="hidden sm:inline"> Investigation</span>
+                <ArrowUpRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 md:w-3.5 md:h-3.5" />
               </Link>
             </>
           )}
@@ -169,7 +170,7 @@ function LandingPage() {
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A4BFF] font-bold">Forensic Intelligence OS</span>
             </div>
             
-            <h1 className="font-display text-[72px] md:text-[120px] lg:text-[150px] tracking-tighter text-[#1A1A1A] leading-[0.85] mb-8">
+            <h1 className="font-display text-[54px] sm:text-[72px] md:text-[120px] lg:text-[150px] tracking-tighter text-[#1A1A1A] leading-[0.85] mb-8">
               See what <br />
               <span className="text-[#1A4BFF] pr-4 tracking-normal" style={{ fontFamily: "Fraunces, serif", fontStyle: "normal", fontWeight: 600 }}>hides.</span>
             </h1>
