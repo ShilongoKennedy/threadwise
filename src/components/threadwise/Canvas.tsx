@@ -15,7 +15,6 @@ import {
   BackgroundVariant,
   Controls,
   MarkerType,
-  MiniMap,
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
@@ -33,6 +32,7 @@ import {
   RotateCcw,
   Scissors,
   Waypoints,
+  SlidersHorizontal,
   CalendarDays,
   Layers,
   ArrowUpRight,
@@ -576,24 +576,8 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           position="bottom-left"
           showInteractive={false}
           className="!hidden md:!flex"
-          style={{ marginLeft: 24, marginBottom: 24 }}
+          style={{ marginLeft: 16, marginBottom: 104 }}
         />}
-        {!presentation&&!s.selectedId && (
-          <MiniMap
-            className="!hidden lg:!block"
-            position="bottom-right"
-            pannable
-            zoomable
-            nodeColor={(n) =>
-              n.type === "ghost"
-                ? "var(--grid-major)"
-                : TYPE_COLOR[(n.data as { kind: ThreadNodeType }).kind]
-            }
-            nodeBorderRadius={2}
-            maskColor="color-mix(in oklab, var(--background) 75%, transparent)"
-            style={{ marginRight: 24, marginBottom: 24, width: 168, height: 108 }}
-          />
-        )}
       </ReactFlow>
       {focusActive && (
         <div className="tw-focus-field-bar" role="status">
@@ -685,8 +669,8 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
             REPLAY · {snapshot?.label} · {snapshot ? new Date(snapshot.at).toLocaleString() : ""}
           </div>
         )}
-        {chromeOpen && s.selectedId && <div
-          className={`tw-toolstrip absolute right-4 top-[104px] z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:top-[104px] md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
+        {chromeOpen && <div
+          className={`tw-toolstrip absolute right-4 top-[56px] z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
         >
           <Button
             size="icon"
@@ -778,6 +762,17 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           <div className="pointer-events-auto flex min-w-0 flex-1 items-center overflow-hidden">
             <WorkspaceBar />
           </div>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="pointer-events-auto shrink-0"
+            aria-pressed={chromeOpen}
+            aria-label={chromeOpen ? "Hide workspace controls" : "Show workspace controls"}
+            title={chromeOpen ? "Hide workspace controls" : "Show workspace controls"}
+            onClick={() => setChromeOpen((v) => !v)}
+          >
+            <SlidersHorizontal className={`h-4 w-4 transition-colors ${chromeOpen ? "text-accent-ink" : ""}`} />
+          </Button>
         </header>
 
         <div
