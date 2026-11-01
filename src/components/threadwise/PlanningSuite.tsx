@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CalendarDays,
   Check,
@@ -10,6 +10,7 @@ import {
   Plus,
   Users,
 } from "lucide-react";
+import { addWatch, listWatches, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -69,7 +70,7 @@ export function PlanningSuite() {
       <Button
         variant="outline"
         size="sm"
-        className="tw-planning-launch absolute left-4 top-[232px] z-10 bg-card sm:left-6 md:top-5 md:left-[210px]"
+        className="tw-planning-launch absolute left-4 top-[168px] z-10 bg-card sm:left-6 md:top-[168px] md:left-6"
         disabled={s.replayIndex !== null}
         aria-label="Open the calendar"
         onClick={() => setOpen(true)}
@@ -451,6 +452,39 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
   const [nodeId, setNodeId] = useState("");
   const [finding, setFinding] = useState("");
   const events = scheduleEvents(s.nodes, decisions);
+  const [watches, setWatches] = useState<Watch[]>([]);
+  const [claim, setClaim] = useState("");
+  const [due, setDue] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [saving, setSaving] = useState(false);
+  const [watchError, setWatchError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    void listWatches()
+      .then((rows) => {
+        if (active) setWatches(rows);
+      })
+      .catch(() => {
+        /* signed out or table not migrated yet: the calendar still works */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const watch = async () => {
+    setSaving(true);
+    setWatchError("");
+    try {
+      const created = await addWatch({ claim, dueDate: due });
+      setWatches((rows) => [...rows, created].sort((a, b) => a.due_date.localeCompare(b.due_date)));
+      setClaim("");
+    } catch (error) {
+      setWatchError(error instanceof Error ? error.message : "Could not add the watch.");
+    } finally {
+      setSaving(false);
+    }
+  };
   const days = Array.from({ length: 42 }, (_, i) =>
     addDays(startOfWeek(month, { weekStartsOn: 1 }), i),
   );
@@ -487,6 +521,32 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
           </TabsList>
         </Tabs>
       </div>
+      <div className="flex flex-wrap items-center gap-2 border-2 border-foreground p-2">
+        <Input
+          value={claim}
+          onChange={(event) => setClaim(event.target.value)}
+          placeholder="What is supposed to happen? e.g. Treaty signed"
+          aria-label="Claim to watch"
+          className="h-9 min-w-[200px] flex-1"
+        />
+        <Input
+          type="date"
+          value={due}
+          onChange={(event) => setDue(event.target.value)}
+          aria-label="Date to check the claim"
+          className="h-9 w-[150px]"
+        />
+        <Button size="sm" className="h-9" disabled={!claim.trim() || saving} onClick={() => void watch()}>
+          <Plus className="mr-1 h-3.5 w-3.5" /> Watch
+        </Button>
+        {watches.length > 0 && (
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/40">
+            {watches.filter((item) => item.status === "pending").length} open
+          </span>
+        )}
+      </div>
+      {watchError && <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#C1121F]">{watchError}</p>}
+
       {view === "calendar" ? (
         <div className="overflow-x-auto">
           <div className="grid min-w-[560px] grid-cols-7 border-2 border-foreground">
@@ -515,6 +575,31 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
                     >
                       {e.title}
                     </Button>
+                  ))}
+                {watches
+                  .filter((item) => item.due_date === format(day, "yyyy-MM-dd"))
+                  .map((item) => (
+                    <div
+                      key={item.id}
+                      title={`${item.claim} · ${WATCH_LABEL[item.status]}`}
+                      className="mt-1 w-full truncate border border-dashed px-1.5 py-0.5 font-mono text-[10px] leading-tight"
+                      style={{
+                        borderColor:
+                          item.status === "contradicted"
+                            ? "#C1121F"
+                            : item.status === "confirmed"
+                              ? "var(--foreground)"
+                              : "var(--accent-ink)",
+                        color:
+                          item.status === "contradicted"
+                            ? "#C1121F"
+                            : item.status === "confirmed"
+                              ? "var(--foreground)"
+                              : "var(--accent-ink)",
+                      }}
+                    >
+                      {item.claim}
+                    </div>
                   ))}
               </div>
             ))}

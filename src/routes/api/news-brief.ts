@@ -38,7 +38,7 @@ export const Route = createFileRoute("/api/news-brief")({
         let stage: "collect" | "read" | "generate" | "save" = "collect";
 
         try {
-          const [{ fetchTopStories, fetchArticleText, generateBrief }, { createClient }] =
+          const [{ fetchTopStories, fetchArticleText, generateBrief, checkClaims }, { createClient }] =
             await Promise.all([
               import("@/lib/threadwise/news-agent"),
               import("@supabase/supabase-js"),
@@ -88,12 +88,45 @@ export const Route = createFileRoute("/api/news-brief")({
             .single();
           if (error) throw error;
 
+          // Dated claims that have come due. One batched call, and only status changes
+          // are written — "inconclusive" keeps the watch open for tomorrow.
+          let checked = 0;
+          try {
+            const today = new Date().toISOString().slice(0, 10);
+            const { data: due } = await supabase
+              .from("claim_watches")
+              .select("id, claim")
+              .eq("status", "pending")
+              .lte("due_date", today)
+              .order("due_date", { ascending: true })
+              .limit(20);
+
+            if (due?.length) {
+              const verdicts = await checkClaims(readable[0]!, due as { id: string; claim: string }[]);
+              for (const verdict of verdicts) {
+                await supabase
+                  .from("claim_watches")
+                  .update({
+                    ...(verdict.status === "inconclusive" ? {} : { status: verdict.status }),
+                    resolution: verdict.note,
+                    checked_at: new Date().toISOString(),
+                  })
+                  .eq("id", verdict.id);
+                if (verdict.status !== "inconclusive") checked += 1;
+              }
+            }
+          } catch (error) {
+            // A watch failure must never lose the brief that was just written.
+            console.warn("[news-brief] watch check skipped:", error);
+          }
+
           return json(
             {
               ok: true,
               id: data.id,
               threat_level: brief.threat_level,
               source: brief.source_url,
+              watches_checked: checked,
               ms: Date.now() - startedAt,
             },
             200,

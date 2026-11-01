@@ -242,3 +242,48 @@ export async function generateBrief(stories: StoryText[]): Promise<NewsBriefDraf
     source_url: story.url,
   };
 }
+
+const verdictSchema = z.object({
+  verdicts: z.array(
+    z.object({
+      id: z.string(),
+      status: z.enum(["confirmed", "contradicted", "inconclusive"]),
+      note: z.string().trim().min(4).max(240),
+    }),
+  ),
+});
+
+export type ClaimVerdict = z.infer<typeof verdictSchema>["verdicts"][number];
+
+const WATCH_SYSTEM = `You verify dated claims against a single day's reporting. You are not a search engine: if today's article does not address a claim, say "inconclusive". Never infer from general knowledge.
+
+Rules:
+- "confirmed" only when the article states the event happened as described.
+- "contradicted" only when the article states it did not happen, or happened differently in a way that falsifies the claim.
+- "inconclusive" for everything else, including silence.
+- note: one clause, max 20 words, quoting the article's own wording where possible.
+
+Return ONLY JSON: { "verdicts": [{ "id": "...", "status": "confirmed" | "contradicted" | "inconclusive", "note": "..." }] }`;
+
+/** Checks a batch of dated claims against today's article in one model call. */
+export async function checkClaims(
+  story: StoryText,
+  claims: { id: string; claim: string }[],
+): Promise<ClaimVerdict[]> {
+  if (!claims.length) return [];
+
+  const { text } = await generateText({
+    model: getModel("deepseek"),
+    system: WATCH_SYSTEM,
+    prompt: `TODAY'S ARTICLE — ${story.source}: ${story.title}\nURL: ${story.url}\n\n${story.text.slice(0, 10_000)}\n\nCLAIMS DUE:\n${claims
+      .map((item) => `- ${item.id}: ${item.claim}`)
+      .join("\n")}`,
+    temperature: 0,
+    maxRetries: 1,
+  });
+
+  const parsed = verdictSchema.safeParse(extractJson<unknown>(text));
+  if (!parsed.success) throw new Error("Claim verification returned an unusable shape.");
+  const known = new Set(claims.map((item) => item.id));
+  return parsed.data.verdicts.filter((verdict) => known.has(verdict.id));
+}

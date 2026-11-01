@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { AlertTriangle, ArrowUpRight, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { listResolvedWatches, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
 
 export const Route = createFileRoute("/briefing")({
   validateSearch: (search: Record<string, unknown>): { b?: string | undefined } => ({
@@ -100,6 +101,21 @@ function BriefingPage() {
   const { b } = Route.useSearch();
   const [status, setStatus] = useState<"loading" | "ready" | "empty" | "error">("loading");
   const [brief, setBrief] = useState<NewsBrief | null>(null);
+  const [resolved, setResolved] = useState<Watch[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    void listResolvedWatches()
+      .then((rows) => {
+        if (active) setResolved(rows);
+      })
+      .catch(() => {
+        /* anonymous readers have no watches; that is not an error */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -219,7 +235,48 @@ function BriefingPage() {
         )}
 
         {status === "ready" && brief && (
-          <article className="grid grid-cols-1 border-2 border-[#1A1A1A] bg-white lg:grid-cols-[228px_minmax(0,1fr)]">
+          <>
+            {resolved.length > 0 && (
+              <section className="mb-4 border-2 border-[#1A1A1A] bg-white">
+                <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
+                  <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+                    Watches resolved
+                  </h2>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A4BFF]">
+                    {resolved.length} settled
+                  </span>
+                </div>
+                <ul>
+                  {resolved.map((watch) => {
+                    const contradicted = watch.status === "contradicted";
+                    return (
+                      <li
+                        key={watch.id}
+                        className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-[#1A1A1A]/10 px-3 py-2 last:border-b-0"
+                      >
+                        <span
+                          className="px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white"
+                          style={{ backgroundColor: contradicted ? "#C1121F" : "#1A1A1A" }}
+                        >
+                          {WATCH_LABEL[watch.status]}
+                        </span>
+                        <span className="font-display text-sm leading-tight text-[#1A1A1A]">
+                          {watch.claim}
+                        </span>
+                        {watch.resolution && (
+                          <span className="text-xs leading-snug text-[#1A1A1A]/55">{watch.resolution}</span>
+                        )}
+                        <span className="ml-auto font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/35">
+                          {watch.due_date}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            )}
+
+            <article className="grid grid-cols-1 border-2 border-[#1A1A1A] bg-white lg:grid-cols-[228px_minmax(0,1fr)]">
             {/* ── Cover rail ─────────────────────────────────────── */}
             <aside className="flex flex-col gap-4 border-b-2 border-[#1A1A1A] bg-[#FDFBF7] p-4 lg:border-b-0 lg:border-r-2">
               <RailField label="Dossier">
@@ -391,7 +448,8 @@ function BriefingPage() {
                 </a>
               </footer>
             </div>
-          </article>
+            </article>
+          </>
         )}
       </main>
     </div>

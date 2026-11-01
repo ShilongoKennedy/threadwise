@@ -660,7 +660,6 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
       />
       <div className="tw-desk-chrome">
         {chromeOpen && <><Timeline />
-        <WorkspaceBar />
         </>}
         {!threadId && <PlanningSuite />}
         {audit && !replay && (
@@ -685,7 +684,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </div>
         )}
         {chromeOpen && <div
-          className={`tw-toolstrip absolute right-4 top-[185px] z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:top-5 md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
+          className={`tw-toolstrip absolute right-4 top-[121px] z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:top-5 md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
         >
           <Button
             size="icon"
@@ -773,7 +772,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </Button>
         </div>}
 
-        <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between px-4 pt-4 sm:px-6 sm:pt-5">
+        <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-2 border-b border-[#1A1A1A]/12 bg-[#FDFBF7]/85 px-3 py-1.5 backdrop-blur-md sm:px-4">
           <div className="pointer-events-auto flex items-center gap-3">
             <svg viewBox="0 0 32 32" className="h-7 w-7 text-foreground" aria-hidden>
               <circle cx="7" cy="9" r="3" fill="currentColor" />
@@ -793,6 +792,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
               </div>
             </div>
           </div>
+          <div className="pointer-events-none flex min-w-0 flex-1 items-center"><WorkspaceBar /></div>
           <div className="pointer-events-auto flex items-center gap-2">
           <Button
             variant="ghost"
@@ -833,10 +833,10 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           className={`pointer-events-none absolute inset-x-0 bottom-[max(12px,env(safe-area-inset-bottom))] z-30 justify-center px-3 sm:bottom-5 flex`}
         >
           <nav
-            className="dock pointer-events-auto flex max-w-full items-center gap-0.5 overflow-x-auto rounded-2xl p-1.5"
+            className="dock pointer-events-auto flex max-w-full items-center gap-0.5 overflow-x-auto rounded-[3px] p-1.5"
             aria-label="Add to canvas"
           >
-            {!dockOpen ? <Button variant="ghost" disabled={replay} onClick={() => setDockOpen(true)} className="tw-press flex h-11 items-center gap-2 rounded-xl px-4 text-[14px] text-dock-foreground"><Plus className="h-4 w-4" />Add to canvas</Button> : <>
+            {!dockOpen ? <Button variant="ghost" disabled={replay} onClick={() => setDockOpen(true)} className="tw-press flex h-11 items-center gap-2 rounded-[2px] px-4 text-[14px] text-foreground"><Plus className="h-4 w-4" />Add to canvas</Button> : <>
             {NODE_TYPES.filter(k => k !== "dossier").map((k, i) => {
               const Icon = TYPE_ICON[k];
               return (
@@ -847,7 +847,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
                   onClick={() => create(k)}
                   title={`${TYPE_INFO[k].hint}${i < 5 ? ` — press ${i + 1}` : ""}`}
                   aria-label={`Add ${TYPE_INFO[k].label}`}
-                  className="tw-press group flex h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-xl px-2.5 text-[14px] text-dock-foreground/80 transition-colors hover:bg-dock-foreground/10 hover:text-dock-foreground lg:px-3"
+                  className="tw-press group flex h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-[2px] px-2.5 text-[14px] text-foreground/70 transition-colors hover:bg-foreground/[0.06] hover:text-foreground lg:px-3"
                 >
                   <Icon
                     className="h-[18px] w-[18px] lg:h-4 lg:w-4"
@@ -856,37 +856,37 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
                   />
                   <span className="hidden lg:inline">{TYPE_INFO[k].label}</span>
                   {i < 5 && (
-                    <kbd className="hidden font-mono text-[10px] text-dock-foreground/35 group-hover:text-dock-foreground/60 [@media(hover:hover)]:md:inline">
+                    <kbd className="hidden font-mono text-[10px] text-foreground/30 group-hover:text-foreground/55 [@media(hover:hover)]:md:inline">
                       {i + 1}
                     </kbd>
                   )}
                 </Button>
               );
             })}
-            <div className="mx-1 h-6 w-px shrink-0 bg-dock-foreground/15" />
+            <div className="mx-1 h-6 w-px shrink-0 bg-foreground/10" />
             <Button
               variant="ghost"
               disabled={replay}
               onClick={() => setExploreOpen((o) => !o)}
               title="Explore with AI — press E"
-              className={`tw-press flex h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-[14px] font-medium transition-colors ${exploreOpen ? "bg-accent-ink text-dock" : "text-dock-foreground hover:bg-dock-foreground/10"}`}
+              className={`tw-press flex h-11 shrink-0 items-center gap-2 rounded-[2px] px-3 text-[14px] font-medium transition-colors ${exploreOpen ? "bg-accent-ink text-white" : "text-foreground hover:bg-foreground/[0.06]"}`}
             >
               <Waypoints className="h-4 w-4" strokeWidth={1.75} />{" "}
               <span className="hidden sm:inline">Explore</span>
               {s.ghosts.length > 0 && (
-                <span className="rounded-full bg-dock-foreground/15 px-1.5 font-mono text-[10px]">
+                <span className="rounded-full bg-foreground/10 px-1.5 font-mono text-[10px]">
                   {s.ghosts.length}
                 </span>
               )}
             </Button>
-            <Button variant="ghost" title="Collapse add tools" aria-label="Collapse add tools" onClick={() => setDockOpen(false)} className="tw-press grid h-11 w-9 shrink-0 place-items-center rounded-xl text-dock-foreground/60 hover:bg-dock-foreground/10">×</Button>
+            <Button variant="ghost" title="Collapse add tools" aria-label="Collapse add tools" onClick={() => setDockOpen(false)} className="tw-press grid h-11 w-9 shrink-0 place-items-center rounded-[2px] text-foreground/55 hover:bg-foreground/[0.06]">×</Button>
             </>}
             <Button
               variant="ghost"
               title="Open Threadwise guide"
               aria-label="Open Threadwise guide"
               onClick={onboarding.show}
-              className="tw-press grid h-11 w-10 shrink-0 place-items-center rounded-xl text-dock-foreground/50 transition-colors hover:bg-dock-foreground/10 hover:text-dock-foreground"
+              className="tw-press grid h-11 w-10 shrink-0 place-items-center rounded-[2px] text-foreground/45 transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
             >
               <CircleHelp className="h-4 w-4" />
             </Button>
@@ -896,7 +896,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
               title="Reset to example canvas"
               aria-label="Reset to example canvas"
               onClick={() => confirm("Replace this canvas with the example?") && s.reset()}
-              className="tw-press grid h-11 w-10 shrink-0 place-items-center rounded-xl text-dock-foreground/50 transition-colors hover:bg-dock-foreground/10 hover:text-dock-foreground"
+              className="tw-press grid h-11 w-10 shrink-0 place-items-center rounded-[2px] text-foreground/45 transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </Button>

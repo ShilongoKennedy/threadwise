@@ -20,7 +20,7 @@ export function WorkspaceBar() {
   const c = w?.document.canvases.find((c) => c.id === w.document.activeCanvasId);
   const newCanvas = (parentId?: string) => { s.createCanvas(undefined, parentId); setOpen(false); };
   return <>
-    <div className="tw-workspacebar absolute inset-x-4 top-[74px] z-10 flex min-w-0 items-center gap-1 border-y bg-background/95 py-1 sm:inset-x-6">
+    <div className="tw-workspacebar flex min-w-0 flex-1 items-center gap-0.5">
       <Button size="icon" variant="ghost" aria-label="Manage workspaces" title="Your files" onClick={() => setOpen(true)}><FolderOpen /></Button>
       <nav aria-label="Canvas breadcrumbs" className="flex min-w-0 flex-1 items-center overflow-x-auto">
         <Button variant="ghost" size="sm" className="hidden max-w-40 shrink-0 md:inline-flex" onClick={() => setOpen(true)}><span className="truncate">{w?.title}</span></Button>

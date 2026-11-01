@@ -297,6 +297,42 @@ export type Database = {
         }
         Relationships: []
       }
+      claim_watches: {
+        Row: {
+          checked_at: string | null
+          claim: string
+          created_at: string
+          due_date: string
+          id: string
+          resolution: string | null
+          source_url: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          checked_at?: string | null
+          claim: string
+          created_at?: string
+          due_date: string
+          id?: string
+          resolution?: string | null
+          source_url?: string | null
+          status?: string
+          user_id?: string
+        }
+        Update: {
+          checked_at?: string | null
+          claim?: string
+          created_at?: string
+          due_date?: string
+          id?: string
+          resolution?: string | null
+          source_url?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       news_briefs: {
         Row: {
           bluf: string
