@@ -33,6 +33,7 @@ import {
   RotateCcw,
   Scissors,
   Waypoints,
+  ArrowUpRight,
   PanelTopClose,
   Plus,
   Volume2,
@@ -904,35 +905,82 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
         {onboarding.open && <Onboarding onClose={onboarding.close} />}
         
         {s.nodes.length === 0 && (
-          <div className="absolute inset-0 z-40 flex flex-col items-center justify-center pointer-events-none p-4">
-            <div className="pointer-events-auto bg-[#FDFBF7]/90 backdrop-blur-2xl border border-white/40 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] rounded-3xl p-10 max-w-lg w-full text-center animate-in fade-in zoom-in-95 duration-500">
-              
-              <div className="mx-auto w-16 h-16 bg-[#1A4BFF]/10 rounded-sm flex items-center justify-center mb-6 shadow-inner border border-black/5">
-                 <Search className="w-8 h-8 text-[#1A4BFF]" />
-              </div>
-              
-              <h2 className="font-display text-4xl mb-3 text-foreground tracking-tight">Uncover the bigger picture.</h2>
-              <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto leading-relaxed">
-                Paste speeches, news articles, or transcripts. Threadwise helps you find hidden motives, contradictions, and the truth.
-              </p>
-              
-              <div className="flex flex-col gap-3">
-                <Button 
-                  onClick={() => window.dispatchEvent(new CustomEvent("threadwise:open-lab"))} 
-                  className="w-full h-12 text-base bg-[#1A1A1A] hover:bg-[#333] text-white shadow-lg"
-                >
-                  <Search className="mr-2 h-5 w-5" /> Start a Discourse Analysis
-                </Button>
-                <Button variant="outline" onClick={() => create("idea")} className="w-full h-12 bg-white/50 border-black/10">
-                  <Plus className="mr-2 h-4 w-4" /> Start a blank canvas
-                </Button>
-                <Button variant="ghost" onClick={() => s.reset()} className="w-full h-12 text-muted-foreground hover:text-foreground">
-                  Load an example canvas
-                </Button>
+          <div className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center p-4">
+            <div className="tw-sheet pointer-events-auto w-full max-w-[470px] overflow-hidden">
+              <div className="flex items-center justify-between border-b-2 border-foreground bg-foreground px-4 py-2">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#FDFBF7]">
+                  New investigation
+                </span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A4BFF]">
+                  00 cards
+                </span>
               </div>
 
-              <p className="mt-8 font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60">
-                Or double-click anywhere on the canvas
+              <div className="px-5 py-5">
+                <h2 className="font-display text-[28px] leading-[1.05] tracking-tight">
+                  Start from evidence, not a prompt.
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/55">
+                  Threadwise is a desk, not a chat. Put a source on it, then separate what you know
+                  from what you are assuming.
+                </p>
+
+                <div className="mt-5 border-t border-foreground/15">
+                  <button
+                    type="button"
+                    onClick={() => window.dispatchEvent(new CustomEvent("threadwise:open-lab"))}
+                    className="group flex w-full items-center gap-3 border-b border-foreground/15 px-1 py-3 text-left transition-colors hover:bg-foreground/[0.04]"
+                  >
+                    <span className="font-mono text-[10px] text-foreground/35 group-hover:text-[#1A4BFF]">
+                      01
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-medium">Clip a source</span>
+                      <span className="block text-xs text-foreground/45">
+                        Article, transcript or PDF — read like an opponent, not a summary.
+                      </span>
+                    </span>
+                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-foreground/25 group-hover:text-[#1A4BFF]" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => create("question")}
+                    className="group flex w-full items-center gap-3 border-b border-foreground/15 px-1 py-3 text-left transition-colors hover:bg-foreground/[0.04]"
+                  >
+                    <span className="font-mono text-[10px] text-foreground/35 group-hover:text-[#1A4BFF]">
+                      02
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-medium">Open with a question</span>
+                      <span className="block text-xs text-foreground/45">
+                        What would have to be true for this to be wrong?
+                      </span>
+                    </span>
+                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-foreground/25 group-hover:text-[#1A4BFF]" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => s.reset()}
+                    className="group flex w-full items-center gap-3 px-1 py-3 text-left transition-colors hover:bg-foreground/[0.04]"
+                  >
+                    <span className="font-mono text-[10px] text-foreground/35 group-hover:text-[#1A4BFF]">
+                      03
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-medium">Open the example</span>
+                      <span className="block text-xs text-foreground/45">
+                        Five cards that already have a shape.
+                      </span>
+                    </span>
+                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-foreground/25 group-hover:text-[#1A4BFF]" />
+                  </button>
+                </div>
+              </div>
+
+              <p className="border-t border-foreground/15 px-5 py-2.5 font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/35">
+                or double-click anywhere on the canvas
               </p>
             </div>
           </div>

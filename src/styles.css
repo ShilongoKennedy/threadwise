@@ -15,6 +15,8 @@
 @theme inline {
   --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", Georgia, serif;
+  /* font-serif is the reading register: same face, quieter weight. */
+  --font-serif: "Fraunces", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --color-dock: var(--dock);
   --color-dock-foreground: var(--dock-foreground);
@@ -372,7 +374,7 @@ body::after {
 .tw-canvas-toggle { backdrop-filter: blur(12px); }
 .tw-chrome-quiet .react-flow__controls { margin-bottom: 86px !important; }
 .tw-chrome-quiet .react-flow__minimap { margin-bottom: 86px !important; opacity: .76; }
-.tw-studio-panel { position: absolute; z-index: 40; right: 24px; top: 140px; bottom: 92px; width: min(760px, calc(100% - 48px)); background: var(--card); color: var(--foreground); border: 1px solid var(--border-strong); border-radius: 2px; box-shadow: var(--shadow-lift); display: flex; flex-direction: column; overflow: hidden; }
+.tw-studio-panel { position: absolute; z-index: 40; right: 24px; top: 140px; bottom: 92px; width: min(760px, calc(100% - 48px)); background: #ffffff; color: var(--foreground); border: 2px solid var(--foreground); border-radius: 2px; box-shadow: 6px 6px 0 0 color-mix(in oklab, var(--foreground) 10%, transparent); display: flex; flex-direction: column; overflow: hidden; }
 .tw-studio-body { display: grid; grid-template-columns: 210px minmax(0,1fr); flex: 1; min-height: 0; }
 .tw-studio-nav { overflow-y: auto; border-right: 1px solid var(--border); padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; }
 .tw-studio-nav button { flex-shrink: 0; }
@@ -399,6 +401,168 @@ body::after {
 .tw-presenting .react-flow__node { pointer-events: none; }
 @media(max-width:767px) { .tw-studio-launch {left:16px;top:276px;} .tw-live-strip {left:104px;top:276px;} .tw-studio-panel {inset:118px 8px 8px; width:auto;} .tw-studio-body {grid-template-columns:52px minmax(0,1fr);} .tw-studio-nav {padding:8px 4px;} .tw-studio-nav button {width:40px;padding:0;justify-content:center;} .tw-studio-nav span {display:none;} .tw-studio-content {padding:16px;} .tw-presentation-caption {left:16px;right:16px;} .tw-presentation-caption h2 {font-size:24px;} }
 @media(prefers-reduced-motion:reduce) { .tw-presence-cursor {transition:none;} }
+
+/* ---------- Printed sheets: the one panel material ---------- */
+/* .tw-sheet was referenced by five panels but never defined. It is now the
+   single material for every floating surface: white stock, ink rule, hard edge. */
+.tw-sheet,
+.tw-sheet-left {
+  background: #ffffff;
+  border: 2px solid var(--foreground);
+  border-radius: 2px;
+  box-shadow: 6px 6px 0 0 color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+
+/* ---------- Thought portal ---------- */
+/* The markup renders a full dialog; none of its classes existed, so it appeared
+   as an unstyled block. This is the printed-sheet treatment it was promised. */
+.tw-thought-portal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 78;
+  width: min(560px, calc(100% - 24px));
+  max-height: 86dvh;
+  overflow-y: auto;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  color: var(--foreground);
+  border: 2px solid var(--foreground);
+  border-radius: 2px;
+  box-shadow: 8px 8px 0 0 color-mix(in oklab, var(--foreground) 12%, transparent);
+  animation: tw-pop .24s cubic-bezier(.2, .8, .2, 1) both;
+}
+.tw-thought-portal-glow { display: none; }
+.tw-thought-portal header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
+}
+.tw-portal-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .2em;
+  color: color-mix(in oklab, var(--foreground) 55%, transparent);
+}
+.tw-portal-kicker svg { width: 14px; height: 14px; color: var(--accent-ink); }
+.tw-portal-kicker span { border: 1px solid color-mix(in oklab, var(--foreground) 25%, transparent); padding: 0 4px; font-size: 9px; }
+.tw-portal-core { padding: 18px 16px 16px; border-left: 4px solid var(--portal-tone, var(--foreground)); }
+.tw-portal-type { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .16em; color: color-mix(in oklab, var(--foreground) 45%, transparent); }
+.tw-portal-core h2 { margin-top: 8px; font-family: var(--font-display); font-size: 28px; line-height: 1.04; letter-spacing: -.01em; }
+.tw-portal-core p { margin-top: 10px; font-family: var(--font-serif); font-size: 15px; line-height: 1.55; white-space: pre-wrap; color: color-mix(in oklab, var(--foreground) 72%, transparent); }
+.tw-portal-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent); }
+.tw-portal-metrics span { padding: 9px 14px; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: .12em; color: color-mix(in oklab, var(--foreground) 50%, transparent); }
+.tw-portal-metrics span + span { border-left: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent); }
+.tw-portal-metrics b { display: block; font-family: var(--font-display); font-size: 22px; font-weight: 500; letter-spacing: 0; color: var(--foreground); }
+.tw-portal-section-title { padding: 12px 16px 6px; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: .22em; color: color-mix(in oklab, var(--foreground) 40%, transparent); }
+.tw-portal-links { display: grid; }
+.tw-portal-links button {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 16px;
+  text-align: left;
+  border-top: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
+  transition: background-color .15s;
+}
+.tw-portal-links button:hover { background: color-mix(in oklab, var(--foreground) 4%, transparent); }
+.tw-portal-links i { margin-top: 5px; width: 8px; height: 8px; flex-shrink: 0; }
+.tw-portal-links small { display: block; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: .14em; color: color-mix(in oklab, var(--foreground) 40%, transparent); }
+.tw-portal-links span { font-family: var(--font-display); font-size: 15px; line-height: 1.2; }
+.tw-portal-empty { padding: 4px 16px 14px; font-size: 12.5px; line-height: 1.5; color: color-mix(in oklab, var(--foreground) 50%, transparent); }
+.tw-portal-next > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent); }
+.tw-portal-next button {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  text-align: left;
+  border-right: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
+  transition: background-color .15s, color .15s;
+}
+.tw-portal-next button:last-child { border-right: 0; }
+.tw-portal-next button:hover { background: var(--foreground); color: #FDFBF7; }
+.tw-portal-next button:hover small { color: color-mix(in oklab, #FDFBF7 70%, transparent); }
+.tw-portal-next b { font-family: var(--font-display); font-size: 18px; color: var(--accent-ink); }
+.tw-portal-next span { font-size: 13px; font-weight: 500; }
+.tw-portal-next small { font-size: 11px; line-height: 1.3; color: color-mix(in oklab, var(--foreground) 50%, transparent); }
+.tw-thought-portal footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 2px solid var(--foreground);
+}
+.tw-thought-portal footer > span { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: .14em; color: color-mix(in oklab, var(--foreground) 35%, transparent); }
+
+/* ---------- Focus field ---------- */
+.tw-focus-field .react-flow__node.tw-fog { opacity: .12; filter: blur(1.5px) saturate(.3); transition: opacity .2s; }
+.tw-focus-field .react-flow__edge { opacity: .3; }
+.tw-focus-field .react-flow__edge:has(.tw-thread-traced) { opacity: .85; }
+/* The epistemic fault audit marks nodes and cords; without these it marked nothing. */
+.react-flow__node.tw-fault .tw-card { box-shadow: 0 0 0 2px #C1121F, 8px 8px 0 0 color-mix(in oklab, #C1121F 12%, transparent); }
+.tw-fault-thread { stroke: #C1121F !important; stroke-dasharray: 5 4; }
+.tw-focus-field-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 88px;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border: 2px solid var(--foreground);
+  box-shadow: 4px 4px 0 0 color-mix(in oklab, var(--foreground) 10%, transparent);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: color-mix(in oklab, var(--foreground) 55%, transparent);
+}
+.tw-focus-field-bar i { display: inline-block; width: 6px; height: 6px; margin-right: 6px; background: var(--accent-ink); }
+.tw-focus-field-bar b { color: var(--foreground); text-transform: none; letter-spacing: 0; font-family: var(--font-display); font-size: 13px; }
+.tw-focus-field-bar kbd { margin-left: 6px; border: 1px solid color-mix(in oklab, var(--foreground) 20%, transparent); padding: 0 3px; font-size: 9px; }
+
+/* ---------- Connection handles ---------- */
+.tw-handle {
+  width: 8px !important;
+  height: 8px !important;
+  border: 1px solid var(--foreground) !important;
+  border-radius: 1px !important;
+  background: var(--card) !important;
+  opacity: .5;
+  transition: opacity .15s, background-color .15s;
+}
+.react-flow__node:hover .tw-handle { opacity: 1; }
+.tw-handle:hover { background: var(--accent-ink) !important; border-color: var(--accent-ink) !important; }
+
+/* ---------- Small motion + surfaces ---------- */
+.tw-pop { animation: tw-pop .22s cubic-bezier(.2, .8, .2, 1) both; }
+.tw-rise { animation: tw-rise .32s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes tw-rise { from { opacity: 0; transform: translateY(8px); } }
+.tw-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: var(--accent-ink);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--accent-ink) 65%, transparent);
+  animation: tw-scan 1.5s linear infinite;
+}
+@keyframes tw-scan { from { top: 0; } to { top: 100%; } }
+.tw-workspacebar { background: color-mix(in oklab, #FDFBF7 96%, transparent); }
 
 /* ---------- Strategy tools ---------- */
 .tw-kicker { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-foreground); }

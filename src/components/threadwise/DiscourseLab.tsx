@@ -699,12 +699,12 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
 
                 <aside className="w-full xl:w-[420px] shrink-0 flex flex-col gap-5 overflow-y-auto pr-2 pb-10">
                   {!activeAnalysis && !isAnalyzingSource && (
-                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center p-8 border border-[#1A1A1A]/10 rounded-sm border-dashed bg-white/40">
-                      <Wand2 className="h-10 w-10 text-[#1A4BFF] mb-4" />
-                      <h4 className="font-display text-xl mb-2 text-[#1A1A1A]">Awaiting Analysis</h4>
-                      <p className="text-sm text-[#1A1A1A]/60 mb-6">Click "Analyze Source" to run forensic linguistics and extract hidden motives, biases, and contradictions.</p>
+                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center p-8 border-2 border-dashed border-[#1A1A1A]/20 rounded-sm bg-white/40">
+                      <Crosshair className="mb-4 h-8 w-8 text-[#1A1A1A]/25" />
+                      <h4 className="mb-2 font-display text-xl text-[#1A1A1A]">Nothing challenged yet</h4>
+                      <p className="mb-6 max-w-[260px] text-sm leading-relaxed text-[#1A1A1A]/55">The bench reads the source for what it argues, how it argues it, and what it never says.</p>
                       <Button onClick={loadSample} variant="outline" className="bg-white border-[#1A1A1A]/10 text-[#1A1A1A] hover:bg-[#1A1A1A]/5 rounded-sm">
-                        <Sparkles className="w-4 h-4 mr-2 text-[#1A4BFF]" /> Try a sample speech
+                        <FileText className="mr-2 h-4 w-4 text-[#1A4BFF]" /> Load a sample speech
                       </Button>
                     </div>
                   )}

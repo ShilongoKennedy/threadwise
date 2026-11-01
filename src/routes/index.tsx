@@ -107,8 +107,9 @@ function LandingPage() {
 
         .dossier-card {
           background: #FFFFFF;
-          border: 1px solid #1A1A1A;
-          box-shadow: 4px 4px 0px rgba(26,26,26,0.05);
+          border: 2px solid #1A1A1A;
+          border-radius: 2px;
+          box-shadow: 6px 6px 0px rgba(26,26,26,0.1);
           position: relative;
         }
 
@@ -312,10 +313,13 @@ function LandingPage() {
               <p className="font-serif text-xl md:text-2xl leading-relaxed text-[#1A1A1A]">
                 "You know what I said to him? <span className="bg-[#1A4BFF]/10 border-b-2 border-[#1A4BFF] px-1 py-0.5 font-medium">I said, you have three armies within 400 miles who can come take your gold.</span>"
               </p>
-              <div className="mt-8 pt-4 border-t border-dashed border-[#1A1A1A]/20 flex gap-4">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/40">Tags:</span>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A] font-bold">Threat</span>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A] font-bold">Military</span>
+              <div className="mt-8 flex flex-wrap items-center gap-2 border-t border-dashed border-[#1A1A1A]/20 pt-4">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/40">Tags</span>
+                {["Threat", "Military"].map((tag) => (
+                  <span key={tag} className="border border-[#1A1A1A]/25 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]">
+                    {tag}
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -373,12 +377,12 @@ function LandingPage() {
                 <div className="font-mono text-[10px] text-[#1A1A1A]/40">NOTES-09</div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="bg-[#FDFBF7] border border-[#1A1A1A]/10 p-5 rounded-sm shadow-sm border-l-4 border-l-[#1A4BFF]">
+                <div className="border border-[#1A1A1A]/20 border-l-4 border-l-[#1A4BFF] bg-white p-5">
                   <span className="text-[10px] font-mono uppercase text-[#1A4BFF] block mb-2 font-bold tracking-widest">Contradiction</span>
                   <b className="text-[15px] font-display block mb-2">Rule of Law vs. Force</b>
                   <p className="text-[12px] text-[#1A1A1A]/60 leading-relaxed">Citing 'rule of law' alongside implicit military force reveals a protection-racket mentality.</p>
                 </div>
-                <div className="bg-[#FDFBF7] border border-[#1A1A1A]/10 p-5 rounded-sm shadow-sm border-l-4 border-l-[#1A1A1A]">
+                <div className="border border-[#1A1A1A]/20 border-l-4 border-l-[#1A1A1A] bg-white p-5">
                   <span className="text-[10px] font-mono uppercase text-[#1A1A1A]/60 block mb-2 font-bold tracking-widest">Fallacy</span>
                   <b className="text-[15px] font-display block mb-2">Appeal to Force</b>
                   <p className="text-[12px] text-[#1A1A1A]/60 leading-relaxed">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
