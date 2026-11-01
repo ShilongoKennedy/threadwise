@@ -368,6 +368,8 @@ body::after {
 .tw-gantt-track { background-image: linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: calc(100% / 31) 100%; }
 @media (max-width: 767px) { .tw-planning h2 { font-size: 24px; } }
 .tw-studio-launch { position: absolute; left: 24px; top: 120px; z-index: 15; gap: 7px; box-shadow: var(--shadow-card); }
+.tw-chrome-open .tw-studio-launch { top: 156px; }
+.tw-chrome-open .tw-planning-launch { top: 204px !important; }
 .tw-chrome-quiet .tw-studio-launch { top: 56px; left: 20px; }
 .tw-chrome-quiet .tw-planning-launch { top: 104px !important; left: 20px !important; }
 .tw-planning-launch { justify-content: flex-start; border-radius: 2px; box-shadow: var(--shadow-card); }

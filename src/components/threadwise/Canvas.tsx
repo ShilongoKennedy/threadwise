@@ -679,12 +679,12 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           />
         )}
         {replay && (
-          <div className="absolute left-4 right-4 top-[184px] z-10 border-l-2 border-foreground bg-background/95 px-3 py-2 font-mono text-[10px] md:left-6 md:right-auto md:top-[132px]">
+          <div className="absolute left-4 right-4 top-[248px] z-10 border-l-2 border-foreground bg-background/95 px-3 py-2 font-mono text-[10px] md:left-6 md:right-auto md:top-[132px]">
             REPLAY · {snapshot?.label} · {snapshot ? new Date(snapshot.at).toLocaleString() : ""}
           </div>
         )}
         {chromeOpen && <div
-          className={`tw-toolstrip absolute right-4 top-[121px] z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:top-5 md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
+          className={`tw-toolstrip absolute right-4 top-[104px] z-10 max-w-[calc(100%-32px)] gap-1 overflow-x-auto border bg-card p-1 shadow-[var(--shadow-card)] md:top-5 md:right-20 ${threadId ? "hidden md:flex" : "flex"}`}
         >
           <Button
             size="icon"
@@ -773,24 +773,20 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
         </div>}
 
         <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-2 border-b border-[#1A1A1A]/12 bg-[#FDFBF7]/85 px-3 py-1.5 backdrop-blur-md sm:px-4">
-          <div className="pointer-events-auto flex items-center gap-3">
-            <svg viewBox="0 0 32 32" className="h-7 w-7 text-foreground" aria-hidden>
-              <circle cx="7" cy="9" r="3" fill="currentColor" />
-              <circle cx="25" cy="23" r="3" fill="var(--accent-ink)" />
-              <path
-                d="M7 9 C 16 9, 14 23, 25 23"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.4"
-              />
-            </svg>
-            <div className="leading-none">
-              <div className="font-display text-[22px] italic tracking-tight">Threadwise</div>
-              <div className={`mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground ${chromeOpen ? "" : "hidden"}`}>
-                {String(visibleNodes.length).padStart(2, "0")} cards ·{" "}
-                {String(visibleEdges.length).padStart(2, "0")} threads
-              </div>
-            </div>
+          <div className="pointer-events-auto flex shrink-0 items-center gap-2">
+            {threadId && (
+              <>
+                <svg viewBox="0 0 32 32" className="h-6 w-6 text-foreground" aria-hidden>
+                  <circle cx="7" cy="9" r="3" fill="currentColor" />
+                  <circle cx="25" cy="23" r="3" fill="var(--accent-ink)" />
+                  <path d="M7 9 C 16 9, 14 23, 25 23" fill="none" stroke="currentColor" strokeWidth="1.4" />
+                </svg>
+                <span className="font-display text-[17px] italic tracking-tight">Threadwise</span>
+              </>
+            )}
+            <span className={`hidden font-mono text-[10px] uppercase tracking-[0.18em] text-foreground/40 sm:inline ${chromeOpen ? "" : "opacity-0"}`}>
+              {String(visibleNodes.length).padStart(2, "0")} cards · {String(visibleEdges.length).padStart(2, "0")} threads
+            </span>
           </div>
           <div className="pointer-events-none flex min-w-0 flex-1 items-center"><WorkspaceBar /></div>
           <div className="pointer-events-auto flex items-center gap-2">
