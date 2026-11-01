@@ -229,8 +229,34 @@ function LandingPage() {
             </div>
 
             <div className="relative bg-[#FDFBF7] aspect-[16/10] min-h-[380px] flex overflow-hidden rounded-t-md">
-              {/* INTERACTIVE DEMO COMPONENT */}
-              <InteractiveLaptop />
+              {/* The full demo is a desktop-width instrument; phones get a readable sample. */}
+              <div className="hidden h-full w-full md:block">
+                <InteractiveLaptop />
+              </div>
+              <div className="flex h-full w-full flex-col justify-center gap-2.5 bg-[#FDFBF7] p-5 md:hidden">
+                <div className="flex items-center justify-between border-b-2 border-[#1A1A1A] pb-1.5">
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
+                    Live sample
+                  </span>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
+                    DOC-001
+                  </span>
+                </div>
+                <p className="font-display text-[17px] leading-tight text-[#1A1A1A]">
+                  &ldquo;Three armies within 400 miles.&rdquo;
+                </p>
+                <p className="text-[12px] leading-snug text-[#1A1A1A]/60">
+                  Appeal to force, framed as reassurance to an ally.
+                </p>
+                <div className="mt-1 flex items-center gap-2 border border-[#1A1A1A] bg-white px-2.5 py-2">
+                  <ShieldAlert className="h-3.5 w-3.5 text-[#1A4BFF]" />
+                  <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/70">
+                    Contradiction
+                  </span>
+                  <span className="ml-auto font-display text-xl leading-none text-[#1A4BFF]">85</span>
+                  <span className="font-mono text-[9px] text-[#1A1A1A]/35">/100</span>
+                </div>
+              </div>
             </div>
             
             {/* Laptop Base/Hinge */}

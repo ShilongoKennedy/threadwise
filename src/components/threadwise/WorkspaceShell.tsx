@@ -107,7 +107,7 @@ export function WorkspaceShell() {
   );
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-background overflow-hidden">
+    <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-background">
       <CommandPalette
         open={cmdOpen}
         setOpen={setCmdOpen}
@@ -123,7 +123,9 @@ export function WorkspaceShell() {
           <span className="hidden sm:inline-block font-mono text-[10px] uppercase tracking-widest text-muted-foreground bg-muted px-2 py-1 rounded-md">Workspace</span>
         </div>
 
-        <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl border">
+        {/* Layout switches are desktop-only: below lg the shell always renders the
+            slide layout, so these buttons would be dead controls crowding the bar. */}
+        <div className="hidden items-center gap-1 rounded-xl border bg-muted/50 p-1 lg:flex">
           {isLargeScreen && (
             <Button
               size="sm"
@@ -217,7 +219,7 @@ export function WorkspaceShell() {
             <div className={`absolute inset-y-0 right-0 w-full md:w-[75%] lg:w-[65%] border-l bg-background shadow-2xl transition-transform duration-300 ease-in-out z-50 flex flex-col ${slideOpen ? "translate-x-0" : "translate-x-full"}`}>
               <div className="h-10 border-b flex items-center justify-between px-4 bg-muted/20 shrink-0">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Canvas View</span>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSlideOpen(false)}><X className="h-3 w-3" /></Button>
+                <Button variant="ghost" size="icon" className="h-9 w-9" aria-label="Close canvas" onClick={() => setSlideOpen(false)}><X className="h-3 w-3" /></Button>
               </div>
               <div className="flex-1 relative overflow-hidden"><Canvas /></div>
             </div>

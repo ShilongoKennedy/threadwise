@@ -34,7 +34,7 @@ export function DetailsPanel() {
   if (!node && !edge) return null;
 
   return (
-    <aside className="absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col overflow-hidden tw-sheet rounded-t-sm md:inset-x-auto md:right-6 md:top-6 md:bottom-6 md:max-h-none md:w-[360px] md:rounded-sm border bg-card shadow-[var(--shadow-lift)]">
+    <aside className="absolute inset-x-0 bottom-0 z-40 flex max-h-[78dvh] flex-col overflow-hidden tw-sheet rounded-t-sm md:inset-x-auto md:right-6 md:top-6 md:bottom-6 md:max-h-none md:w-[360px] md:rounded-sm border bg-card shadow-[var(--shadow-lift)]">
       <div className="flex items-center justify-between border-b px-5 py-3">
         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
           {node ? "Node details" : "Relationship"}

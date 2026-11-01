@@ -595,7 +595,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
           >
             <div className="flex items-center justify-between mb-3">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50">Document Intake</span>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => fileInput.current?.click()} title="Upload Document">
+              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => fileInput.current?.click()} title="Upload document" aria-label="Upload document">
                 {isReadingFile ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileUp className="h-3.5 w-3.5" />}
               </Button>
               <input 
@@ -629,7 +629,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                   <b className="block font-display text-base leading-tight text-[#1A1A1A] group-hover:text-[#1A1A1A]">{doc.title}</b>
                   <span className="block mt-1.5 text-[9px] font-mono text-[#1A1A1A]/50 uppercase tracking-wider truncate">{doc.speaker || "Unknown Speaker"}</span>
                 </button>
-                <Button variant="ghost" size="icon" className="absolute right-2 bottom-2 h-7 w-7 opacity-0 group-hover:opacity-100 text-[#1A1A1A]/30 hover:text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); deleteDoc(doc.id); }}>
+                <Button variant="ghost" size="icon" className="absolute right-2 bottom-2 h-9 w-9 opacity-100 text-[#1A1A1A]/30 hover:bg-destructive/10 hover:text-destructive md:opacity-0 md:group-hover:opacity-100" onClick={(e) => { e.stopPropagation(); deleteDoc(doc.id); }}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </li>

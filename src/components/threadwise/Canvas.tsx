@@ -461,6 +461,8 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
         el.style.setProperty("--ly", ((e.clientY / window.innerHeight) * 2 - 1).toFixed(3));
       }}
       onDoubleClick={(e) => {
+        // Double-tap is a pan/zoom gesture on touch, not a create shortcut.
+        if (!window.matchMedia("(hover: hover)").matches) return;
         if (!presentation && (e.target as HTMLElement).classList.contains("react-flow__pane"))
           create("idea", { x: e.clientX, y: e.clientY });
       }}
@@ -827,7 +829,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
         </header>
 
         <div
-          className={`pointer-events-none absolute inset-x-0 bottom-[max(12px,env(safe-area-inset-bottom))] z-50 justify-center px-3 sm:bottom-5 ${threadId ? "hidden md:flex" : "flex"}`}
+          className={`pointer-events-none absolute inset-x-0 bottom-[max(12px,env(safe-area-inset-bottom))] z-30 justify-center px-3 sm:bottom-5 ${threadId ? "hidden md:flex" : "flex"}`}
         >
           <nav
             className="dock pointer-events-auto flex max-w-full items-center gap-0.5 overflow-x-auto rounded-2xl p-1.5"

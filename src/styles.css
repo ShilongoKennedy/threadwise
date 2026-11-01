@@ -334,7 +334,7 @@ body::after {
 .tw-canvas-toggle { backdrop-filter: blur(12px); }
 .tw-chrome-quiet .react-flow__controls { margin-bottom: 86px !important; }
 .tw-chrome-quiet .react-flow__minimap { margin-bottom: 86px !important; opacity: .76; }
-.tw-studio-panel { position: absolute; z-index: 30; right: 24px; top: 140px; bottom: 92px; width: min(760px, calc(100% - 48px)); background: var(--card); color: var(--foreground); border: 1px solid var(--border-strong); border-radius: 2px; box-shadow: var(--shadow-lift); display: flex; flex-direction: column; overflow: hidden; }
+.tw-studio-panel { position: absolute; z-index: 40; right: 24px; top: 140px; bottom: 92px; width: min(760px, calc(100% - 48px)); background: var(--card); color: var(--foreground); border: 1px solid var(--border-strong); border-radius: 2px; box-shadow: var(--shadow-lift); display: flex; flex-direction: column; overflow: hidden; }
 .tw-studio-body { display: grid; grid-template-columns: 210px minmax(0,1fr); flex: 1; min-height: 0; }
 .tw-studio-nav { overflow-y: auto; border-right: 1px solid var(--border); padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; }
 .tw-studio-nav button { flex-shrink: 0; }
@@ -359,7 +359,7 @@ body::after {
 .tw-decision-seal > svg { color: var(--brass); flex-shrink: 0; }
 .tw-presenting .tw-desk-chrome, .tw-presenting .react-flow__controls, .tw-presenting .react-flow__minimap, .tw-presenting .tw-note-grip, .tw-presenting .tw-live-strip { display: none !important; }
 .tw-presenting .react-flow__node { pointer-events: none; }
-@media(max-width:767px) { .tw-studio-launch {left:16px;top:276px;} .tw-live-strip {left:104px;top:276px;} .tw-studio-panel {inset:330px 8px 8px; width:auto;} .tw-studio-body {grid-template-columns:52px minmax(0,1fr);} .tw-studio-nav {padding:8px 4px;} .tw-studio-nav button {width:40px;padding:0;justify-content:center;} .tw-studio-nav span {display:none;} .tw-studio-content {padding:16px;} .tw-presentation-caption {left:16px;right:16px;} .tw-presentation-caption h2 {font-size:24px;} }
+@media(max-width:767px) { .tw-studio-launch {left:16px;top:276px;} .tw-live-strip {left:104px;top:276px;} .tw-studio-panel {inset:118px 8px 8px; width:auto;} .tw-studio-body {grid-template-columns:52px minmax(0,1fr);} .tw-studio-nav {padding:8px 4px;} .tw-studio-nav button {width:40px;padding:0;justify-content:center;} .tw-studio-nav span {display:none;} .tw-studio-content {padding:16px;} .tw-presentation-caption {left:16px;right:16px;} .tw-presentation-caption h2 {font-size:24px;} }
 @media(prefers-reduced-motion:reduce) { .tw-presence-cursor {transition:none;} }
 
 /* ---------- Strategy tools ---------- */
