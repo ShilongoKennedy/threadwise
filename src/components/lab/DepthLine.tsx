@@ -18,10 +18,12 @@ export function DepthLine({
   cards,
   renderRail,
   label,
+  backdrop,
 }: {
   cards: DepthCard[];
   renderRail?: (focus: number) => React.ReactNode;
   label: string;
+  backdrop?: (focus: number) => React.ReactNode;
 }) {
   const depth = useDepth(cards.length);
   const box = useRef<HTMLDivElement>(null);
@@ -67,6 +69,10 @@ export function DepthLine({
           userSelect: "none",
         }}
       >
+        {backdrop && (
+          <div className="absolute inset-0 overflow-hidden">{backdrop(depth.focus)}</div>
+        )}
+
         <div ref={box} className="absolute inset-0">
           {cards.map((card, index) => {
             const spot = place(index, depth.p, cards.length, size.w, size.h);

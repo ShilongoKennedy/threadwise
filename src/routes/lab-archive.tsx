@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { DepthLine, type DepthCard } from "@/components/lab/DepthLine";
+import { WorldMap, type Pinned } from "@/components/lab/WorldMap";
+import { inferPlace } from "@/components/lab/world";
 import { listSuggestedFor, type Watch } from "@/lib/threadwise/watches";
 
 export const Route = createFileRoute("/lab-archive")({
@@ -52,6 +54,15 @@ function ArchiveDepth() {
       active = false;
     };
   }, []);
+
+  const places = useMemo(
+    () =>
+      rows.map((row) => {
+        const hit = inferPlace(`${row.headline} ${row.bluf ?? ""}`);
+        return hit ? hit : null;
+      }),
+    [rows],
+  );
 
   const cards = useMemo<DepthCard[]>(
     () =>
@@ -116,6 +127,24 @@ function ArchiveDepth() {
         <DepthLine
           label="Brief archive, newest in front"
           cards={cards}
+          backdrop={(focus) => {
+            const pins: Pinned[] = [];
+            rows.forEach((row, index) => {
+              const hit = places[index];
+              if (!hit) return;
+              pins.push({
+                id: row.id,
+                x: hit.x,
+                y: hit.y,
+                name: hit.place.name,
+                label: row.headline,
+                active: index === focus,
+                past: index <= focus,
+              });
+            });
+            if (!pins.length) return null;
+            return <WorldMap pins={pins} />;
+          }}
           renderRail={(index) => {
             const row = rows[index];
             if (!row) return null;
@@ -131,6 +160,11 @@ function ArchiveDepth() {
                     })}
                   </p>
                   <h2 className="mt-2 font-display text-[24px] leading-[1.05]">{row.headline}</h2>
+                  {places[index] && (
+                    <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/55">
+                      {places[index]!.place.name}
+                    </p>
+                  )}
                   <p className="mt-3 font-serif text-[13.5px] leading-[1.6] text-[#1A1A1A]/70">
                     {firstLine(row.bluf)}
                   </p>
