@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronRight, Copy, DoorOpen, FolderOpen, MoreHorizontal, Plus, RefreshCw, Search, Trash2, UserRound } from "lucide-react";
+import { ChevronRight, Copy, DoorOpen, FolderOpen, MoreHorizontal, Plus, RefreshCw, Search, Share2, Trash2, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -11,10 +11,13 @@ import { AccountDialog } from "./AccountDialog";
 import { ColorPicker } from "./ColorPicker";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { paperColor } from "@/lib/threadwise/paper";
+import { publishShare, snapshotCanvas } from "@/lib/threadwise/share";
+import { toast } from "sonner";
 
 export function WorkspaceBar() {
   const s = useWorkspaces(); const user = useAccount((s) => s.user);
   const replay = useThread((s) => s.replayIndex !== null);
+  const graph = useThread();
   const [open, setOpen] = useState(false), [account, setAccount] = useState(false);
   const [search, setSearch] = useState("");
   const w = s.workspaces.find((w) => w.id === s.activeId);
@@ -43,6 +46,26 @@ export function WorkspaceBar() {
           <DropdownMenuItem disabled={replay} onSelect={() => newCanvas()}><Plus /> New canvas</DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setOpen(true)}><FolderOpen /> Your files</DropdownMenuItem>
           <DropdownMenuItem disabled={!user || s.status === "Saving…"} onSelect={() => void syncWorkspaces()}><RefreshCw /> {s.status.includes("Retry") ? "Retry sync" : "Sync now"}</DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={!user || !c}
+            onSelect={() => {
+              if (!c) return;
+              const payload = snapshotCanvas(c.title, graph.nodes, graph.edges);
+              void publishShare(c.title, payload)
+                .then(async (token) => {
+                  const url = `${window.location.origin}/s/${token}`;
+                  try {
+                    await navigator.clipboard.writeText(url);
+                    toast.success("Read-only link copied", { description: url });
+                  } catch {
+                    toast.success("Read-only link ready", { description: url });
+                  }
+                })
+                .catch(() => toast.error("Could not publish this canvas."));
+            }}
+          >
+            <Share2 /> Publish a read-only copy
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <div className="px-2 pb-1 pt-2">
             <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/65">Canvas colour</span>

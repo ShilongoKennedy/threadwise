@@ -108,7 +108,7 @@ function BriefsPage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1100px] px-4 py-8 md:px-6 md:py-12">
+      <main id="main" className="mx-auto w-full max-w-[1100px] px-4 py-8 md:px-6 md:py-12">
         <div className="mb-6 flex items-end justify-between gap-4 border-b-2 border-[#1A1A1A] pb-3">
           <h1 className="font-display text-[34px] leading-none md:text-[52px]">The archive.</h1>
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">

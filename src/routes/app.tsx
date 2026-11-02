@@ -40,7 +40,7 @@ function AppPage() {
   if (isChecking) return loading;
 
   return (
-    <main className="h-[100dvh] w-full overflow-hidden bg-background">
+    <main id="main" className="h-[100dvh] w-full overflow-hidden bg-background">
       <ClientOnly fallback={loading}>
         <Suspense fallback={loading}>
           <WorkspaceShell />

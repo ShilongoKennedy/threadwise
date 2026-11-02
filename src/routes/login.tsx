@@ -54,7 +54,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-[#1A4BFF]/20">
+    <div className="min-h-[100dvh] bg-[#FDFBF7] flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-[#1A4BFF]/20">
       
       {/* Ambient Pastel Glows */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">

@@ -150,7 +150,7 @@ function DigestPage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1100px] px-4 py-8 md:px-6 md:py-12">
+      <main id="main" className="mx-auto w-full max-w-[1100px] px-4 py-8 md:px-6 md:py-12">
         <h1 className="font-display text-[38px] leading-none md:text-[58px]">The record.</h1>
         <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-[#1A1A1A]/65">
           Every claim you dated, and what the reporting actually did. Judgements only count when the

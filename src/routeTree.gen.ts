@@ -20,6 +20,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as SocraticThreadIdRouteImport } from './routes/socratic.$threadId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -77,6 +78,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const STokenRoute = STokenRouteImport.update({
+  id: '/s/$token',
+  path: '/s/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SocraticThreadIdRoute = SocraticThreadIdRouteImport.update({
   id: '/socratic/$threadId',
   path: '/socratic/$threadId',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/s/$token': typeof STokenRoute
   '/socratic/$threadId': typeof SocraticThreadIdRoute
 }
 export interface FileRoutesByTo {
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/s/$token': typeof STokenRoute
   '/socratic/$threadId': typeof SocraticThreadIdRoute
 }
 export interface FileRoutesById {
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/s/$token': typeof STokenRoute
   '/socratic/$threadId': typeof SocraticThreadIdRoute
 }
 export interface FileRouteTypes {
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
+    | '/s/$token'
     | '/socratic/$threadId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
+    | '/s/$token'
     | '/socratic/$threadId'
   id:
     | '__root__'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
+    | '/s/$token'
     | '/socratic/$threadId'
   fileRoutesById: FileRoutesById
 }
@@ -183,6 +195,7 @@ export interface RootRouteChildren {
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  STokenRoute: typeof STokenRoute
   SocraticThreadIdRoute: typeof SocraticThreadIdRoute
 }
 
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/s/$token': {
+      id: '/s/$token'
+      path: '/s/$token'
+      fullPath: '/s/$token'
+      preLoaderRoute: typeof STokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/socratic/$threadId': {
       id: '/socratic/$threadId'
       path: '/socratic/$threadId'
@@ -287,6 +307,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  STokenRoute: STokenRoute,
   SocraticThreadIdRoute: SocraticThreadIdRoute,
 }
 export const routeTree = rootRouteImport

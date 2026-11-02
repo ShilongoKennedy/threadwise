@@ -89,7 +89,7 @@ function LandingPage() {
   const commandCenterReveal = useScrollReveal();
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#1A4BFF] selection:text-white overflow-hidden relative flex flex-col">
+    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#1A4BFF] selection:text-white overflow-hidden relative flex flex-col">
       
       <style>{`
         .reveal-hidden { opacity: 0; transform: translateY(30px); }
@@ -175,7 +175,7 @@ function LandingPage() {
         </div>
       </header>
 
-      <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 pt-32 md:pt-48 pb-24 flex-1">
+      <main id="main" className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 pt-32 md:pt-48 pb-24 flex-1">
         
         {/* HERO SECTION - ASYMMETRICAL EDITORIAL */}
         <div 

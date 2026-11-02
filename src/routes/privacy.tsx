@@ -37,7 +37,7 @@ function PrivacyPage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[820px] px-4 py-10 md:px-6 md:py-14">
+      <main id="main" className="mx-auto w-full max-w-[820px] px-4 py-10 md:px-6 md:py-14">
         <h1 className="font-display text-[38px] leading-none md:text-[52px]">What we hold.</h1>
         <p className="mt-4 text-base leading-relaxed text-[#1A1A1A]/70">
           Written plainly, because a privacy page nobody reads protects nobody. Last updated 2

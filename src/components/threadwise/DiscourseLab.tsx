@@ -631,11 +631,19 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                   <b className="block font-display text-base leading-tight text-[#1A1A1A] group-hover:text-[#1A1A1A]">{doc.title}</b>
                   <span className="block mt-1.5 text-[10px] font-mono text-[#1A1A1A]/65 uppercase tracking-wider truncate">{doc.speaker || "Unknown Speaker"}</span>
                 </button>
-                <Button variant="ghost" size="icon" className="absolute right-2 bottom-2 h-9 w-9 opacity-100 text-[#1A1A1A]/65 hover:bg-destructive/10 hover:text-destructive md:opacity-0 md:group-hover:opacity-100" onClick={(e) => { e.stopPropagation(); deleteDoc(doc.id); }}>
+                <Button variant="ghost" size="icon" aria-label={`Delete ${doc.title}`} className="absolute right-2 bottom-2 h-9 w-9 opacity-100 text-[#1A1A1A]/65 hover:bg-destructive/10 hover:text-destructive md:opacity-0 md:group-hover:opacity-100" onClick={(e) => { e.stopPropagation(); deleteDoc(doc.id); }}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </li>
             ))}
+            {docs.length === 0 && (
+              <li className="border border-dashed border-[#1A1A1A]/25 px-4 py-6 text-center">
+                <p className="font-display text-lg leading-tight">The shelf is empty.</p>
+                <p className="mt-1.5 font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-[#1A1A1A]/65">
+                  Paste a source above. The lab reads what it argues, not just what it says.
+                </p>
+              </li>
+            )}
           </ol>
         </aside>
 

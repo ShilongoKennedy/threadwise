@@ -41,7 +41,7 @@ function AuthCallback() {
   }, [navigate]);
 
   return (
-    <main className="grid min-h-screen place-items-center bg-[#FDFBF7] px-6 text-center">
+    <main className="grid min-h-[100dvh] place-items-center bg-[#FDFBF7] px-6 text-center">
       <section className="max-w-md">
         <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#1A4BFF]">Threadwise Intelligence OS</p>
         <h1 className="mt-3 font-display text-4xl">{problem ? "Sign-in needs attention" : "Opening your workbench…"}</h1>

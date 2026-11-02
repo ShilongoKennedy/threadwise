@@ -161,7 +161,7 @@ function BriefingPage() {
   const omission = brief ? toBullets(brief.omission) : [];
 
   return (
-    <div className="relative min-h-screen bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       {/* faint instrument grid, same language as the canvas */}
       <div
         aria-hidden
@@ -204,7 +204,7 @@ function BriefingPage() {
       {/* threat rail — the page's only colour until the content starts */}
       <div className="h-1 w-full" style={{ backgroundColor: threat.bg }} />
 
-      <main className="relative z-10 mx-auto w-full max-w-[1400px] px-4 py-6 md:px-6 md:py-9">
+      <main id="main" className="relative z-10 mx-auto w-full max-w-[1400px] px-4 py-6 md:px-6 md:py-9">
         {status === "loading" && (
           <div className="flex min-h-[64vh] flex-col items-center justify-center gap-3 border-2 border-dashed border-[#1A1A1A]/20">
             <span className="h-2.5 w-2.5 animate-pulse bg-[#1A4BFF]" />

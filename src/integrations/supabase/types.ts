@@ -297,6 +297,33 @@ export type Database = {
         }
         Relationships: []
       }
+      canvas_shares: {
+        Row: {
+          created_at: string
+          id: string
+          owner_id: string
+          payload: Json
+          title: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          payload: Json
+          title: string
+          token?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          payload?: Json
+          title?: string
+          token?: string
+        }
+        Relationships: []
+      }
       claim_watches: {
         Row: {
           checked_at: string | null

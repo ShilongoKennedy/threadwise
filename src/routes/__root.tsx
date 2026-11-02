@@ -18,19 +18,27 @@ const CloudSync = lazy(() => import("@/components/threadwise/CloudSync"));
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <div className="flex min-h-[100dvh] items-center justify-center bg-[#FDFBF7] px-4 text-[#1A1A1A]">
+      <div className="w-full max-w-[440px] border-2 border-[#1A1A1A] bg-white p-8">
+        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#1A1A1A]/65">
+          File not found
         </p>
-        <div className="mt-6">
+        <h1 className="mt-3 font-display text-[52px] leading-none">404</h1>
+        <p className="mt-3 font-serif text-[15px] leading-[1.65] text-[#1A1A1A]/80">
+          Nothing is filed at this address. It may have been renamed, revoked, or never existed.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-2">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF] hover:border-[#1A4BFF]"
           >
-            Go home
+            Back to Threadwise
+          </Link>
+          <Link
+            to="/briefing"
+            className="inline-flex items-center border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
+          >
+            Today&rsquo;s brief
           </Link>
         </div>
       </div>
@@ -47,7 +55,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           This page didn't load
@@ -134,6 +142,9 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <a href="#main" className="tw-skip-link">
+          Skip to content
+        </a>
         {children}
         <Scripts />
       </body>
