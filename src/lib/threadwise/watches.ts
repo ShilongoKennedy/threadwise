@@ -114,3 +114,16 @@ export async function checkWatchNow(
     source: payload?.source ?? "",
   };
 }
+
+/** Suggestions the agent planted while writing a given brief. */
+export async function listSuggestedFor(origin: string): Promise<Watch[]> {
+  const { data, error } = await supabase
+    .from("claim_watches")
+    .select("id, claim, due_date, source_url, status, resolution, checked_at, scope, origin")
+    .eq("scope", "suggested")
+    .eq("origin", origin)
+    .order("due_date", { ascending: true })
+    .limit(6);
+  if (error) throw error;
+  return (data as Watch[]) ?? [];
+}

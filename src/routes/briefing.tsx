@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { AlertTriangle, ArrowUpRight, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { listResolvedWatches, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
+import { claimWatch, listResolvedWatches, listSuggestedFor, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
 
 export const Route = createFileRoute("/briefing")({
   validateSearch: (search: Record<string, unknown>): { b?: string | undefined } => ({
@@ -108,6 +108,8 @@ function BriefingPage() {
   const [status, setStatus] = useState<"loading" | "ready" | "empty" | "error">("loading");
   const [brief, setBrief] = useState<NewsBrief | null>(null);
   const [resolved, setResolved] = useState<Watch[]>([]);
+  const [signals, setSignals] = useState<Watch[]>([]);
+  const [kept, setKept] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     let active = true;
@@ -144,6 +146,10 @@ function BriefingPage() {
         }
         setBrief(data as NewsBrief);
         setStatus("ready");
+
+        void listSuggestedFor((data as NewsBrief).headline)
+          .then(setSignals)
+          .catch(() => setSignals([]));
       } catch {
         if (active) setStatus("error");
       }
@@ -243,6 +249,51 @@ function BriefingPage() {
 
         {status === "ready" && brief && (
           <>
+            {signals.length > 0 && (
+              <section className="mb-4 border-2 border-[#1A1A1A] bg-white">
+                <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
+                  <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+                    Dates in this brief
+                  </h2>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A4BFF]">
+                    keep to watch
+                  </span>
+                </div>
+                <ul>
+                  {signals.map((signal) => (
+                    <li
+                      key={signal.id}
+                      className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-[#1A1A1A]/10 px-3 py-2 last:border-b-0"
+                    >
+                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/65">
+                        {signal.due_date}
+                      </span>
+                      <span className="min-w-0 flex-1 font-display text-sm leading-tight">
+                        {signal.claim}
+                      </span>
+                      {kept[signal.id] ? (
+                        <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
+                          kept
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            void claimWatch(signal.id)
+                              .then(() => setKept((rows) => ({ ...rows, [signal.id]: true })))
+                              .catch(() => setKept((rows) => ({ ...rows, [signal.id]: false })));
+                          }}
+                          className="border border-[#1A1A1A] px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
+                        >
+                          Keep
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
             {resolved.length > 0 && (
               <section className="mb-4 border-2 border-[#1A1A1A] bg-white">
                 <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">

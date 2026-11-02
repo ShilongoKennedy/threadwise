@@ -93,6 +93,21 @@ export function WorkspaceShell() {
     };
   }, [layout]);
 
+  // Planting a card in the lab has to be able to show its result.
+  useEffect(() => {
+    const reveal = () => {
+      if (isMobile || layout === "slide") {
+        setSlideOpen(true);
+        if (layout !== "slide") setActiveTab("canvas");
+      } else {
+        setActiveTab("canvas");
+      }
+      if (layout === "slide") setSlideOpen(true);
+    };
+    window.addEventListener("threadwise:open-canvas", reveal);
+    return () => window.removeEventListener("threadwise:open-canvas", reveal);
+  }, [isMobile, layout]);
+
   const labContent = (
     <div className="h-full w-full flex flex-col relative overflow-hidden bg-background">
       <DiscourseLab

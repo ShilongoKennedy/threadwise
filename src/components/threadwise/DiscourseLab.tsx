@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useEffect } from "react";
-import { BookOpenText, Columns2, Hash, Plus, X, Globe, Loader2, Check, ScanSearch, AlertTriangle, Activity, ShieldAlert, Fingerprint, Crosshair, FileWarning, FileText, Lightbulb, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, GitCompare, FileUp, Terminal, Database, Network, Share2 } from "lucide-react";
+import { ArrowUpRight, BookOpenText, Columns2, Hash, Plus, X, Globe, Loader2, Check, ScanSearch, AlertTriangle, Activity, ShieldAlert, Fingerprint, Crosshair, FileWarning, FileText, Lightbulb, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, GitCompare, FileUp, Terminal, Database, Network, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -149,6 +149,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
   const [analysisError, setAnalysisError] = useState("");
   const [analysis, setAnalysis] = useState<any>(savedInv.analysis || null);
   const [plantedIds, setPlantedIds] = useState<Record<string, boolean>>({});
+  const [plantedCount, setPlantedCount] = useState(0);
 
   const [archiveQuery, setArchiveQuery] = useState("");
   const [isSearchingArchive, setIsSearchingArchive] = useState(false);
@@ -308,6 +309,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
     s.updateNode(nodeId, { title, body, epistemic, meta: { source: sourceTitle } });
 
     s.connect({ source: dossierId, target: nodeId, sourceHandle: null, targetHandle: null }, "leads_to");
+    setPlantedCount((n) => n + 1);
 
     void archiveInsight(nodeId, `${title}\n\n${body}`, { source: sourceTitle, type: kind });
 
@@ -591,6 +593,22 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
         </nav>
         <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close the lab" className="order-2 shrink-0 rounded-full md:order-none"><X /></Button>
       </header>
+
+      {plantedCount > 0 && (
+        <div className="relative z-20 flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/15 bg-[#1A4BFF]/[0.06] px-4 py-1.5 md:px-6">
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/70">
+            {plantedCount} {plantedCount === 1 ? "card" : "cards"} planted · evidence is on the canvas
+          </span>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("threadwise:open-canvas"))}
+            className="group inline-flex items-center gap-1.5 border border-[#1A1A1A] px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
+          >
+            Open the canvas
+            <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </button>
+        </div>
+      )}
 
       <div className="relative z-10 flex flex-1 flex-col overflow-hidden md:flex-row">
         <aside className="flex max-h-[46dvh] w-full shrink-0 flex-col overflow-y-auto border-b bg-[#FDFBF7] md:max-h-none md:w-[300px] md:overflow-visible md:border-b-0 md:border-r">
