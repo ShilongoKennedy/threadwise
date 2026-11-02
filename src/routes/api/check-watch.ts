@@ -54,7 +54,7 @@ export const Route = createFileRoute("/api/check-watch")({
 
         const { data: watch, error: readError } = await supabase
           .from("claim_watches")
-          .select("id, claim, scope, status, checked_at")
+          .select("id, claim, scope, status, checked_at, source_url")
           .eq("id", watchId)
           .maybeSingle();
 
@@ -82,10 +82,21 @@ export const Route = createFileRoute("/api/check-watch")({
         );
 
         try {
-          const [story] = await fetchTopStories(1);
-          if (!story) throw new Error("No article available right now.");
+          // The claim's own source first — that is the article it came from.
+          // Only fall back to the day's front page when no source was filed.
+          const sourceUrl = (watch.source_url ?? "").trim();
+          const story = /^https?:\/\//i.test(sourceUrl)
+            ? { title: sourceUrl.replace(/^https?:\/\//i, ""), url: sourceUrl, source: "filed source" }
+            : await fetchTopStories(1).then((stories) => {
+                const first = stories[0];
+                if (!first) throw new Error("No article available right now.");
+                return first;
+              });
 
           const text = await fetchArticleText(story.url);
+          if (!text || text.trim().length < 200) {
+            throw new Error("That source returned too little text to check against.");
+          }
           const verdicts = await checkClaims(
             { ...story, text },
             [{ id: watch.id, claim: watch.claim }],

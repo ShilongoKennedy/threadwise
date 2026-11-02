@@ -456,6 +456,7 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
   const [saving, setSaving] = useState(false);
   const [watchError, setWatchError] = useState("");
   const [checking, setChecking] = useState<string | null>(null);
+  const [sourceUrl, setSourceUrl] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -475,9 +476,10 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
     setSaving(true);
     setWatchError("");
     try {
-      const created = await addWatch({ claim, dueDate: due });
+      const created = await addWatch({ claim, dueDate: due, sourceUrl });
       setWatches((rows) => [...rows, created].sort((a, b) => a.due_date.localeCompare(b.due_date)));
       setClaim("");
+      setSourceUrl("");
     } catch (error) {
       setWatchError(error instanceof Error ? error.message : "Could not add the watch.");
     } finally {
@@ -521,6 +523,14 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
           placeholder="What is supposed to happen? e.g. Treaty signed"
           aria-label="Claim to watch"
           className="h-9 min-w-[200px] flex-1"
+        />
+        <Input
+          type="url"
+          value={sourceUrl}
+          onChange={(event) => setSourceUrl(event.target.value)}
+          placeholder="Source URL (optional)"
+          aria-label="Source article for this claim"
+          className="h-9 min-w-[160px] flex-1"
         />
         <Input
           type="date"

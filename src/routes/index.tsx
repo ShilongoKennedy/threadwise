@@ -190,17 +190,27 @@ function LandingPage() {
               <span className="text-[#1A4BFF] pr-4 tracking-normal" style={{ fontFamily: "Fraunces, serif", fontStyle: "normal", fontWeight: 600 }}>hides.</span>
             </h1>
 
-            <p className="text-lg md:text-2xl text-[#1A1A1A]/65 leading-relaxed max-w-xl font-light">
-              Paste a speech. Uncover the hidden motives, contradictions, and strategic blind spots in seconds.
+            <p className="max-w-xl text-lg font-light leading-relaxed text-[#1A1A1A]/70 md:text-2xl">
+              A workbench for sources that are arguing with you. The lab marks the framing, the
+              omissions and the claims it cannot support — then you map the reasoning and keep score.
             </p>
 
-            <Link
-              to="/briefing"
-              className="group mt-7 inline-flex items-center gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
-            >
-              Read today&rsquo;s Morning Brief
-              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
-            </Link>
+            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <Link
+                to="/app"
+                className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+              >
+                Start an investigation
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                to="/briefing"
+                className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+              >
+                Read today&rsquo;s brief
+                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
+              </Link>
+            </div>
             <span className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
               One story, dissected daily by the autonomous agent
             </span>
@@ -397,6 +407,86 @@ function LandingPage() {
 
           </div>
         </section>
+        {/* HOW IT WORKS — the loop, stated plainly */}
+        <section className="relative z-10 mx-auto mt-32 w-full max-w-[1200px] px-6 md:px-12">
+          <div className="flex flex-wrap items-end justify-between gap-3 border-b-2 border-[#1A1A1A] pb-3">
+            <h2 className="font-display text-[30px] leading-none md:text-[42px]">
+              Three moves, repeated.
+            </h2>
+            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#1A1A1A]/65">
+              read · map · check
+            </span>
+          </div>
+
+          <ol className="grid grid-cols-1 border-b border-[#1A1A1A]/15 md:grid-cols-3">
+            {[
+              {
+                n: "01",
+                title: "Clip a source",
+                body: "An article, a speech, a transcript. The lab reads what it argues — framing, omissions, the dog that didn't bark — not just what it says.",
+              },
+              {
+                n: "02",
+                title: "Map the reasoning",
+                body: "What you know sits on the floor; what you assume floats above it. Every card is tied to its evidence by a cord, and the unsupported ones hang in red.",
+              },
+              {
+                n: "03",
+                title: "Keep score",
+                body: "The agent files a brief every morning and checks the dated claims you filed. You find out whether the reporting was right, in public, on a record.",
+              },
+            ].map((step, index) => (
+              <li
+                key={step.n}
+                className={`px-1 py-7 ${index > 0 ? "border-t border-[#1A1A1A]/15 md:border-t-0 md:border-l md:pl-6" : ""}`}
+              >
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
+                  {step.n}
+                </span>
+                <h3 className="mt-3 font-display text-[22px] leading-tight">{step.title}</h3>
+                <p className="mt-2 max-w-[38ch] text-[14px] leading-relaxed text-[#1A1A1A]/70">
+                  {step.body}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {/* CLOSING */}
+        <section className="relative z-10 mx-auto mt-32 mb-24 w-full max-w-[1200px] px-6 md:px-12">
+          <div className="border-2 border-[#1A1A1A] bg-white px-6 py-12 md:px-12 md:py-16">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+              Nothing here is generated for you to nod at
+            </span>
+            <h2 className="mt-4 max-w-[18ch] font-display text-[38px] leading-[0.95] tracking-tight md:text-[64px]">
+              Read one article properly.
+            </h2>
+            <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-[#1A1A1A]/70">
+              Ten minutes with a source you already distrust will teach you more than a month of
+              summaries. Start with the one you have open in another tab.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link
+                to="/app"
+                className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+              >
+                Start an investigation
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                to="/briefing"
+                className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+              >
+                Read today&rsquo;s brief
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+            <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
+              Free while in beta · sign in with Google · your work stays yours
+            </p>
+          </div>
+        </section>
+
       </main>
 
       {/* EDITORIAL FOOTER */}
