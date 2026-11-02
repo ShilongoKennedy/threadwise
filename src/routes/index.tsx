@@ -6,7 +6,7 @@ import {
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { InteractiveLaptop } from "@/components/threadwise/InteractiveLaptop";
-import { BrandMark } from "@/components/threadwise/BrandMark";
+import { BrandLockup } from "@/components/threadwise/BrandLockup";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -144,10 +144,7 @@ function LandingPage() {
 
       {/* STICKY HEADER */}
       <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 md:px-12 py-4 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-[#1A1A1A]/10">
-        <Link to="/" className="flex items-center gap-2 md:gap-3 group">
-          <BrandMark className="h-6 w-6 md:h-7 md:w-7" />
-          <span className="font-display italic text-xl tracking-tight font-medium text-[#1A1A1A] group-hover:text-[#1A4BFF] transition-colors">threadwise</span>
-        </Link>
+        <BrandLockup size="md" asLink />
         
         <nav className="hidden md:flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
           <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">How it works</a>
@@ -407,10 +404,7 @@ function LandingPage() {
         <div className="max-w-[1400px] mx-auto px-6 md:px-12">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12 mb-16">
             <div className="max-w-sm">
-              <Link to="/" className="flex items-center gap-3 mb-4">
-                <BrandMark className="h-7 w-7" />
-                <span className="font-display italic text-2xl tracking-tight font-medium text-[#1A1A1A]">threadwise</span>
-              </Link>
+              <BrandLockup size="lg" asLink className="mb-4" />
               <p className="text-sm text-[#1A1A1A]/65 leading-relaxed">
                 A spatial intelligence workbench for researchers, strategists, and complex thinkers.
               </p>
