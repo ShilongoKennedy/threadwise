@@ -59,7 +59,7 @@ export function DepthLine({
   }, [depth.go]);
 
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className={`grid min-h-0 flex-1 grid-cols-1 ${renderRail ? "lg:grid-cols-[minmax(0,1fr)_340px]" : ""}`}>
       <div
         ref={depth.stage}
         role="region"

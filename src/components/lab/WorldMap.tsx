@@ -17,7 +17,7 @@ export type Pinned = {
  */
 export function WorldMap({ pins }: { pins: Pinned[] }) {
   const focus = pins.find((pin) => pin.active) ?? pins[0];
-  const zoom = 2.4;
+  const zoom = 1.45;
   const cx = focus?.x ?? PROJ_W / 2;
   const cy = focus?.y ?? PROJ_H / 2;
   const tx = PROJ_W * 0.62 - cx * zoom;
