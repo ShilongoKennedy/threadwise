@@ -18,6 +18,12 @@ export const Route = createFileRoute("/briefing")({
       },
       { property: "og:title", content: "Morning Brief — Threadwise" },
       { property: "og:type", content: "article" },
+    
+      { property: "og:image", content: "https://threadwise-beta.vercel.app/og.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://threadwise-beta.vercel.app/og.png" },
     ],
   }),
   component: BriefingPage,
@@ -89,7 +95,7 @@ const filedTime = (iso: string) =>
 function RailField({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="border-b border-[#1A1A1A]/12 pb-3 last:border-0 last:pb-0">
-      <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.28em] text-[#1A1A1A]/35">
+      <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.28em] text-[#1A1A1A]/65">
         {label}
       </div>
       {children}
@@ -202,7 +208,7 @@ function BriefingPage() {
         {status === "loading" && (
           <div className="flex min-h-[64vh] flex-col items-center justify-center gap-3 border-2 border-dashed border-[#1A1A1A]/20">
             <span className="h-2.5 w-2.5 animate-pulse bg-[#1A4BFF]" />
-            <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#1A1A1A]/45">
+            <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#1A1A1A]/65">
               Acquiring target…
             </p>
           </div>
@@ -216,7 +222,7 @@ function BriefingPage() {
             <h1 className="font-display text-3xl leading-[1.05]">
               No dossier has been generated yet.
             </h1>
-            <p className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-[#1A1A1A]/50">
+            <p className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-[#1A1A1A]/65">
               The agent files one every day. Check the archive for previous briefs.
             </p>
           </div>
@@ -228,7 +234,7 @@ function BriefingPage() {
               Signal lost
             </span>
             <h1 className="font-display text-2xl leading-tight">The dossier could not be retrieved.</h1>
-            <p className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-[#1A1A1A]/50">
+            <p className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-[#1A1A1A]/65">
               Sign in, or confirm the news_briefs table is reachable.
             </p>
           </div>
@@ -264,9 +270,9 @@ function BriefingPage() {
                           {watch.claim}
                         </span>
                         {watch.resolution && (
-                          <span className="text-xs leading-snug text-[#1A1A1A]/55">{watch.resolution}</span>
+                          <span className="text-xs leading-snug text-[#1A1A1A]/65">{watch.resolution}</span>
                         )}
-                        <span className="ml-auto font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/35">
+                        <span className="ml-auto font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/65">
                           {watch.due_date}
                         </span>
                       </li>
@@ -281,14 +287,14 @@ function BriefingPage() {
             <aside className="flex flex-col gap-4 border-b-2 border-[#1A1A1A] bg-[#FDFBF7] p-4 lg:border-b-0 lg:border-r-2">
               <RailField label="Dossier">
                 <div className="font-display text-[26px] leading-none tracking-tight">{dossier}</div>
-                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
                   Single target
                 </div>
               </RailField>
 
               <RailField label="Filed">
                 <div className="font-mono text-[12px] tracking-[0.08em]">{filedDate(brief.created_at)}</div>
-                <div className="font-mono text-[12px] tracking-[0.08em] text-[#1A1A1A]/45">
+                <div className="font-mono text-[12px] tracking-[0.08em] text-[#1A1A1A]/65">
                   {filedTime(brief.created_at)} local
                 </div>
               </RailField>
@@ -329,7 +335,7 @@ function BriefingPage() {
 
               <RailField label="Confidence">
                 <div className="font-mono text-[12px] tracking-[0.08em]">SINGLE SOURCE</div>
-                <p className="mt-1 text-[12px] leading-snug text-[#1A1A1A]/45">
+                <p className="mt-1 text-[12px] leading-snug text-[#1A1A1A]/65">
                   One article, no independent corroboration in this run.
                 </p>
               </RailField>
@@ -338,7 +344,7 @@ function BriefingPage() {
             {/* ── Assessment ─────────────────────────────────────── */}
             <div className="flex min-w-0 flex-col">
               <div className="border-b-2 border-[#1A1A1A] px-5 py-5 md:px-7 md:py-6">
-                <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-[#1A1A1A]/40">
+                <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-[#1A1A1A]/65">
                   <span className="h-1.5 w-1.5 bg-[#1A4BFF]" />
                   Target headline
                 </div>
@@ -353,7 +359,7 @@ function BriefingPage() {
                   <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#1A4BFF]">
                     Executive Assessment
                   </h2>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
                     01
                   </span>
                 </div>
@@ -380,7 +386,7 @@ function BriefingPage() {
                     <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
                       Framing
                     </h2>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
                       02
                     </span>
                   </div>
@@ -401,7 +407,7 @@ function BriefingPage() {
                     <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]">
                       Omission
                     </h2>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/30">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
                       03
                     </span>
                   </div>
@@ -422,7 +428,7 @@ function BriefingPage() {
                     <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
                       Historical echo
                     </h2>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#FDFBF7]/30">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#FDFBF7]/70">
                       04
                     </span>
                   </div>
@@ -434,14 +440,14 @@ function BriefingPage() {
 
               {/* Footer */}
               <footer className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t-2 border-[#1A1A1A] px-5 py-2.5">
-                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#1A1A1A]/35">
+                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#1A1A1A]/65">
                   End of dossier · machine assessment · verify before action
                 </span>
                 <a
                   href={brief.source_url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="group inline-flex items-center gap-1.5 border border-[#1A1A1A]/20 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/60 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
+                  className="group inline-flex items-center gap-1.5 border border-[#1A1A1A]/20 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/65 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
                 >
                   Open source
                   <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { 
   Search, LayoutPanelTop, PanelRight, Columns, 
   BookOpenText, Map, Plus, Settings, LogOut, 
-  Fingerprint, ShieldAlert, Sparkles
+  Fingerprint, ShieldAlert, Network
 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
@@ -80,7 +80,7 @@ export function CommandPalette({
     {
       id: "sample",
       label: "Load Sample Speech",
-      icon: Sparkles,
+      icon: Network,
       group: "Workspace",
       perform: () => { 
         window.dispatchEvent(new CustomEvent("threadwise:load-sample"));

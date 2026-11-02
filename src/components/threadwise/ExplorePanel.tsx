@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useReactFlow } from "@xyflow/react";
-import { AlertTriangle, Check, Link2, Loader2, Network, Sparkles, X } from "lucide-react";
+import { AlertTriangle, Check, Link2, Loader2, Network, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { relationLabel, type Relation, type ThreadNodeType } from "@/lib/threadwise/model";
 import { useThread } from "@/lib/threadwise/store";
@@ -170,7 +170,7 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
     <aside className="tw-sheet-left absolute inset-x-0 bottom-0 z-20 flex max-h-[72dvh] flex-col md:inset-x-auto md:bottom-28 md:left-6 md:top-24 md:max-h-none md:w-[320px] overflow-hidden tw-sheet rounded-t-[22px] md:rounded-[2px] border bg-card shadow-[var(--shadow-lift)]">
       <div className="flex items-center justify-between border-b px-5 py-3">
         <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5" /> Explore
+          <Network className="h-3.5 w-3.5" /> Explore
         </span>
         <Button variant="ghost" size="icon" className="h-9 w-9" onClick={onClose} aria-label="Close explore">
           <X className="h-4 w-4" />
@@ -182,7 +182,7 @@ export function ExplorePanel({ onClose }: { onClose: () => void }) {
         </p>
         <div className="flex flex-col gap-2">
           <Button className="w-full" onClick={explore} disabled={loading || redTeamLoading || bridgeLoading}>
-            {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Reading your canvas…</> : <><Sparkles className="mr-2 h-4 w-4" /> Find questions, tests & links</>}
+            {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Reading your canvas…</> : <><Network className="mr-2 h-4 w-4" /> Find questions, tests & links</>}
           </Button>
           <Button variant="outline" className="w-full border-[#1A4BFF]/30 text-[#1A4BFF] hover:bg-[#1A4BFF]/5" onClick={runRedTeam} disabled={redTeamLoading || loading || bridgeLoading}>
             {redTeamLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Red Teaming...</> : <><AlertTriangle className="mr-2 h-4 w-4" /> Red Team Board (Find Omissions)</>}

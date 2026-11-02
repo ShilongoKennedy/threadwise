@@ -18,6 +18,12 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Threadwise — See what hides" },
       { name: "twitter:description", content: "Threadwise is a forensic intelligence workspace: paste a source, expose its framing, omissions and contradictions, and map what you actually know against what you are assuming." },
+    
+      { property: "og:image", content: "https://threadwise-beta.vercel.app/og.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://threadwise-beta.vercel.app/og.png" },
     ],
   }),
   component: LandingPage,
@@ -144,7 +150,7 @@ function LandingPage() {
           <span className="font-display italic text-xl tracking-tight font-medium text-[#1A1A1A] group-hover:text-[#1A4BFF] transition-colors">threadwise</span>
         </Link>
         
-        <nav className="hidden md:flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/60">
+        <nav className="hidden md:flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
           <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">How it works</a>
           <a href="#features" className="hover:text-[#1A1A1A] transition-colors">Features</a>
           <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Briefs</Link>
@@ -188,7 +194,7 @@ function LandingPage() {
               <span className="text-[#1A4BFF] pr-4 tracking-normal" style={{ fontFamily: "Fraunces, serif", fontStyle: "normal", fontWeight: 600 }}>hides.</span>
             </h1>
 
-            <p className="text-lg md:text-2xl text-[#1A1A1A]/60 leading-relaxed max-w-xl font-light">
+            <p className="text-lg md:text-2xl text-[#1A1A1A]/65 leading-relaxed max-w-xl font-light">
               Paste a speech. Uncover the hidden motives, contradictions, and strategic blind spots in seconds.
             </p>
 
@@ -199,14 +205,14 @@ function LandingPage() {
               Read today&rsquo;s Morning Brief
               <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
             </Link>
-            <span className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/35">
+            <span className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
               One story, dissected daily by the autonomous agent
             </span>
           </div>
 
           {/* Right Side: Technical Annotations */}
           <div className="md:col-span-4 hidden md:flex flex-col justify-end pb-8 border-l border-[#1A1A1A]/10 pl-8">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/40 space-y-4">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65 space-y-4">
               <div className="flex justify-between border-b border-[#1A1A1A]/10 pb-2">
                 <span>Status</span>
                 <span className="text-[#1A4BFF]">Ready</span>
@@ -253,14 +259,14 @@ function LandingPage() {
                   <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
                     Live sample
                   </span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/65">
                     DOC-001
                   </span>
                 </div>
                 <p className="font-display text-[17px] leading-tight text-[#1A1A1A]">
                   &ldquo;Three armies within 400 miles.&rdquo;
                 </p>
-                <p className="text-[12px] leading-snug text-[#1A1A1A]/60">
+                <p className="text-[12px] leading-snug text-[#1A1A1A]/65">
                   Appeal to force, framed as reassurance to an ally.
                 </p>
                 <div className="mt-1 flex items-center gap-2 border border-[#1A1A1A] bg-white px-2.5 py-2">
@@ -269,7 +275,7 @@ function LandingPage() {
                     Contradiction
                   </span>
                   <span className="ml-auto font-display text-xl leading-none text-[#1A4BFF]">85</span>
-                  <span className="font-mono text-[10px] text-[#1A1A1A]/35">/100</span>
+                  <span className="font-mono text-[10px] text-[#1A1A1A]/65">/100</span>
                 </div>
               </div>
             </div>
@@ -293,7 +299,7 @@ function LandingPage() {
                 <FileText className="w-4 h-4" /> Case File 092-A
               </div>
               <h2 className="font-display text-4xl md:text-6xl text-[#1A1A1A] leading-none tracking-tight">The Dossier.</h2>
-              <p className="text-[#1A1A1A]/60 text-base md:text-lg mt-4">Cross-reference sources, expose contradictions, and map the truth on a structured forensic board.</p>
+              <p className="text-[#1A1A1A]/65 text-base md:text-lg mt-4">Cross-reference sources, expose contradictions, and map the truth on a structured forensic board.</p>
             </div>
             <div className="mt-6 md:mt-0">
               <span className="stamp text-xs">Classified</span>
@@ -308,13 +314,13 @@ function LandingPage() {
                 <div className="text-[10px] font-mono text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2 font-bold">
                   <FileText className="w-3.5 h-3.5 text-[#1A4BFF]" /> Source Ingested
                 </div>
-                <div className="font-mono text-[10px] text-[#1A1A1A]/40">DOC-892A</div>
+                <div className="font-mono text-[10px] text-[#1A1A1A]/65">DOC-892A</div>
               </div>
               <p className="font-serif text-xl md:text-2xl leading-relaxed text-[#1A1A1A]">
                 "You know what I said to him? <span className="bg-[#1A4BFF]/10 border-b-2 border-[#1A4BFF] px-1 py-0.5 font-medium">I said, you have three armies within 400 miles who can come take your gold.</span>"
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-2 border-t border-dashed border-[#1A1A1A]/20 pt-4">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/40">Tags</span>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65">Tags</span>
                 {["Threat", "Military"].map((tag) => (
                   <span key={tag} className="border border-[#1A1A1A]/25 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]">
                     {tag}
@@ -329,7 +335,7 @@ function LandingPage() {
                 <div className="text-[10px] font-mono text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2 font-bold">
                   <ShieldAlert className="w-3.5 h-3.5 text-[#1A4BFF]" /> Contradiction Index
                 </div>
-                <div className="font-mono text-[10px] text-[#1A1A1A]/40">METRIC-04</div>
+                <div className="font-mono text-[10px] text-[#1A1A1A]/65">METRIC-04</div>
               </div>
               <div className="relative flex justify-center my-4">
                  <svg viewBox="0 0 100 50" className="w-56 h-auto overflow-visible">
@@ -343,7 +349,7 @@ function LandingPage() {
                    <span className="text-sm text-muted-foreground">/100</span>
                  </div>
               </div>
-              <p className="text-center font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50 mt-8">
+              <p className="text-center font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65 mt-8">
                 High friction detected
               </p>
             </div>
@@ -354,7 +360,7 @@ function LandingPage() {
                 <div className="flex items-center gap-2">
                   <Activity className="w-3.5 h-3.5 text-[#1A4BFF]" /> Profile
                 </div>
-                <div className="font-mono text-[10px] text-[#1A1A1A]/40">NAR-01</div>
+                <div className="font-mono text-[10px] text-[#1A1A1A]/65">NAR-01</div>
               </div>
               <svg viewBox="0 0 120 120" className="w-48 h-48 mt-2">
                 <polygon points="60,10 110,45 90,105 30,105 10,45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
@@ -374,18 +380,18 @@ function LandingPage() {
                 <div className="flex items-center gap-2">
                   <Search className="w-3.5 h-3.5 text-[#1A4BFF]" /> Analyst Margin
                 </div>
-                <div className="font-mono text-[10px] text-[#1A1A1A]/40">NOTES-09</div>
+                <div className="font-mono text-[10px] text-[#1A1A1A]/65">NOTES-09</div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="border border-[#1A1A1A]/20 border-l-4 border-l-[#1A4BFF] bg-white p-5">
                   <span className="text-[10px] font-mono uppercase text-[#1A4BFF] block mb-2 font-bold tracking-widest">Contradiction</span>
                   <b className="text-[15px] font-display block mb-2">Rule of Law vs. Force</b>
-                  <p className="text-[12px] text-[#1A1A1A]/60 leading-relaxed">Citing 'rule of law' alongside implicit military force reveals a protection-racket mentality.</p>
+                  <p className="text-[12px] text-[#1A1A1A]/65 leading-relaxed">Citing 'rule of law' alongside implicit military force reveals a protection-racket mentality.</p>
                 </div>
                 <div className="border border-[#1A1A1A]/20 border-l-4 border-l-[#1A1A1A] bg-white p-5">
-                  <span className="text-[10px] font-mono uppercase text-[#1A1A1A]/60 block mb-2 font-bold tracking-widest">Fallacy</span>
+                  <span className="text-[10px] font-mono uppercase text-[#1A1A1A]/65 block mb-2 font-bold tracking-widest">Fallacy</span>
                   <b className="text-[15px] font-display block mb-2">Appeal to Force</b>
-                  <p className="text-[12px] text-[#1A1A1A]/60 leading-relaxed">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
+                  <p className="text-[12px] text-[#1A1A1A]/65 leading-relaxed">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
                 </div>
               </div>
             </div>
@@ -405,12 +411,12 @@ function LandingPage() {
                 </svg>
                 <span className="font-display italic text-2xl tracking-tight font-medium text-[#1A1A1A]">threadwise</span>
               </Link>
-              <p className="text-sm text-[#1A1A1A]/50 leading-relaxed">
+              <p className="text-sm text-[#1A1A1A]/65 leading-relaxed">
                 A spatial intelligence workbench for researchers, strategists, and complex thinkers.
               </p>
             </div>
             
-            <div className="flex flex-wrap gap-12 md:gap-24 font-mono text-[12px] uppercase tracking-widest text-[#1A1A1A]/50">
+            <div className="flex flex-wrap gap-12 md:gap-24 font-mono text-[12px] uppercase tracking-widest text-[#1A1A1A]/65">
               <div className="flex flex-col gap-4">
                 <span className="text-[#1A1A1A] font-bold mb-1">Product</span>
                 <Link to="/app" className="hover:text-[#1A1A1A] transition-colors">Workspace</Link>
@@ -421,14 +427,14 @@ function LandingPage() {
                 <span className="text-[#1A1A1A] font-bold mb-1">Read</span>
                 <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">How it works</a>
                 <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Archive</Link>
-                <span className="text-[#1A1A1A]/30">More soon</span>
+                <span className="text-[#1A1A1A]/65">More soon</span>
               </div>
             </div>
           </div>
 
           <div className="border-t border-[#1A1A1A]/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-            <span className="text-[10px] font-mono text-[#1A1A1A]/40 uppercase tracking-widest">© 2026 Threadwise Inc. All rights reserved.</span>
-            <div className="flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
+            <span className="text-[10px] font-mono text-[#1A1A1A]/65 uppercase tracking-widest">© 2026 Threadwise Inc. All rights reserved.</span>
+            <div className="flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
               <span>Built for people who check.</span>
             </div>
           </div>

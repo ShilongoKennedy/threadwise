@@ -108,10 +108,10 @@ export function BriefingMode({ onExit }: { onExit: () => void }) {
         <div className="px-8 py-4 bg-black/5 flex items-center justify-between">
           <span className="font-mono text-[10px] uppercase tracking-widest text-black/40">Node {index + 1} of {sequence.length}</span>
           <div className="flex gap-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={index === 0}>
+            <Button variant="ghost" size="icon" aria-label="Previous card" className="h-8 w-8 rounded-full" onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={index === 0}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setIndex(i => Math.min(sequence.length - 1, i + 1))} disabled={index === sequence.length - 1}>
+            <Button variant="ghost" size="icon" aria-label="Next card" className="h-8 w-8 rounded-full" onClick={() => setIndex(i => Math.min(sequence.length - 1, i + 1))} disabled={index === sequence.length - 1}>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

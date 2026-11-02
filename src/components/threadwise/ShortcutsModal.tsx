@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Keyboard, Command, Plus, Search, Sparkles, Map, LayoutPanelTop, PanelRight } from "lucide-react";
+import { Keyboard, Command, Network, Plus, Search, Map, LayoutPanelTop, PanelRight } from "lucide-react";
 
 export function ShortcutsModal({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void }) {
   const shortcuts = [
@@ -27,7 +27,7 @@ export function ShortcutsModal({ open, setOpen }: { open: boolean; setOpen: (v: 
         { keys: ["3"], label: "Add Question", icon: Plus },
         { keys: ["4"], label: "Add Experiment", icon: Plus },
         { keys: ["5"], label: "Add Action", icon: Plus },
-        { keys: ["E"], label: "Explore with AI", icon: Sparkles },
+        { keys: ["E"], label: "Explore connections", icon: Network },
         { keys: ["O"], label: "Open Thought Portal", icon: Map },
         { keys: ["Z"], label: "Focus Field", icon: Search },
       ],

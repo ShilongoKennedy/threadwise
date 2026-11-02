@@ -1,5 +1,5 @@
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDraft } from "@/lib/threadwise/draft";
 import { useNavigate } from "@tanstack/react-router";
 import { useWorkspaces } from "@/lib/threadwise/workspaces";
@@ -7,8 +7,6 @@ import { useSocratic } from "@/lib/threadwise/socratic";
 import { playSound, useSound } from "@/lib/threadwise/sound";
 import { EvidenceClipper } from "./EvidenceClipper";
 import { MemoGenerator } from "./MemoGenerator";
-import { SocraticDrawer } from "./SocraticDrawer";
-import { BriefingMode } from "./BriefingMode";
 import {
   Background,
   BackgroundVariant,
@@ -50,7 +48,6 @@ import { ExperimentOutcome } from "./ExperimentOutcome";
 import { Timeline } from "./Timeline";
 import { AuditPanel } from "./AuditPanel";
 import { GhostNode, type GhostNodeT } from "./GhostNode";
-import { ExplorePanel } from "./ExplorePanel";
 import { Onboarding, useOnboarding } from "./Onboarding";
 import type { TEdge, TNode } from "@/lib/threadwise/store";
 import type { NodeChange } from "@xyflow/react";
@@ -64,7 +61,17 @@ import { DetailsPanel, RelationGrid } from "./DetailsPanel";
 import { paperColor } from "@/lib/threadwise/paper";
 import { PlanningSuite } from "./PlanningSuite";
 import { CanvasStudio } from "./CanvasStudio";
-import { SpatialAtmosphere } from "./SpatialAtmosphere";
+
+const SocraticDrawer = lazy(() =>
+  import("./SocraticDrawer").then((m) => ({ default: m.SocraticDrawer })),
+);
+const BriefingMode = lazy(() =>
+  import("./BriefingMode").then((m) => ({ default: m.BriefingMode })),
+);
+const ExplorePanel = lazy(() => import("./ExplorePanel").then((m) => ({ default: m.ExplorePanel })));
+const SpatialAtmosphere = lazy(() =>
+  import("./SpatialAtmosphere").then((m) => ({ default: m.SpatialAtmosphere })),
+);
 import { snapToLane } from "@/lib/threadwise/advanced";
 
 const nodeTypes = { thread: ThreadNode, ghost: GhostNode };
@@ -469,7 +476,11 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           create("idea", { x: e.clientX, y: e.clientY });
       }}
     >
-      {!presentation && spatial && <SpatialAtmosphere density={visibleNodes.length} />}
+      {!presentation && spatial && (
+        <Suspense fallback={null}>
+          <SpatialAtmosphere density={visibleNodes.length} />
+        </Suspense>
+      )}
       <ReactFlow
         nodes={allNodes}
         edges={allEdges}
@@ -805,7 +816,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
                   />
                   <span className="hidden lg:inline">{TYPE_INFO[k].label}</span>
                   {i < 5 && (
-                    <kbd className="hidden font-mono text-[10px] text-foreground/30 group-hover:text-foreground/55 [@media(hover:hover)]:md:inline">
+                    <kbd className="hidden font-mono text-[10px] text-foreground/65 group-hover:text-foreground/65 [@media(hover:hover)]:md:inline">
                       {i + 1}
                     </kbd>
                   )}
@@ -828,14 +839,14 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
                 </span>
               )}
             </Button>
-            <Button variant="ghost" title="Collapse add tools" aria-label="Collapse add tools" onClick={() => setDockOpen(false)} className="tw-press grid h-11 w-9 shrink-0 place-items-center rounded-[2px] text-foreground/55 hover:bg-foreground/[0.06]">×</Button>
+            <Button variant="ghost" title="Collapse add tools" aria-label="Collapse add tools" onClick={() => setDockOpen(false)} className="tw-press grid h-11 w-9 shrink-0 place-items-center rounded-[2px] text-foreground/65 hover:bg-foreground/[0.06]">×</Button>
             </>}
             <Button
               variant="ghost"
               title="Open Threadwise guide"
               aria-label="Open Threadwise guide"
               onClick={onboarding.show}
-              className="tw-press grid h-11 w-10 shrink-0 place-items-center rounded-[2px] text-foreground/45 transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
+              className="tw-press grid h-11 w-10 shrink-0 place-items-center rounded-[2px] text-foreground/65 transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
             >
               <CircleHelp className="h-4 w-4" />
             </Button>
@@ -845,7 +856,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
               title="Reset to example canvas"
               aria-label="Reset to example canvas"
               onClick={() => confirm("Replace this canvas with the example?") && s.reset()}
-              className="tw-press grid h-11 w-10 shrink-0 place-items-center rounded-[2px] text-foreground/45 transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
+              className="tw-press grid h-11 w-10 shrink-0 place-items-center rounded-[2px] text-foreground/65 transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </Button>
@@ -869,7 +880,7 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
                 <h2 className="font-display text-[28px] leading-[1.05] tracking-tight">
                   Start from evidence, not a prompt.
                 </h2>
-                <p className="mt-2 text-sm leading-relaxed text-foreground/55">
+                <p className="mt-2 text-sm leading-relaxed text-foreground/65">
                   Threadwise is a desk, not a chat. Put a source on it, then separate what you know
                   from what you are assuming.
                 </p>
@@ -880,16 +891,16 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
                     onClick={() => window.dispatchEvent(new CustomEvent("threadwise:open-lab"))}
                     className="group flex w-full items-center gap-3 border-b border-foreground/15 px-1 py-3 text-left transition-colors hover:bg-foreground/[0.04]"
                   >
-                    <span className="font-mono text-[10px] text-foreground/35 group-hover:text-[#1A4BFF]">
+                    <span className="font-mono text-[10px] text-foreground/65 group-hover:text-[#1A4BFF]">
                       01
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm font-medium">Clip a source</span>
-                      <span className="block text-xs text-foreground/45">
+                      <span className="block text-xs text-foreground/65">
                         Article, transcript or PDF — read like an opponent, not a summary.
                       </span>
                     </span>
-                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-foreground/25 group-hover:text-[#1A4BFF]" />
+                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-foreground/65 group-hover:text-[#1A4BFF]" />
                   </button>
 
                   <button
@@ -897,16 +908,16 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
                     onClick={() => create("question")}
                     className="group flex w-full items-center gap-3 border-b border-foreground/15 px-1 py-3 text-left transition-colors hover:bg-foreground/[0.04]"
                   >
-                    <span className="font-mono text-[10px] text-foreground/35 group-hover:text-[#1A4BFF]">
+                    <span className="font-mono text-[10px] text-foreground/65 group-hover:text-[#1A4BFF]">
                       02
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm font-medium">Open with a question</span>
-                      <span className="block text-xs text-foreground/45">
+                      <span className="block text-xs text-foreground/65">
                         What would have to be true for this to be wrong?
                       </span>
                     </span>
-                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-foreground/25 group-hover:text-[#1A4BFF]" />
+                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-foreground/65 group-hover:text-[#1A4BFF]" />
                   </button>
 
                   <button
@@ -914,21 +925,21 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
                     onClick={() => s.reset()}
                     className="group flex w-full items-center gap-3 px-1 py-3 text-left transition-colors hover:bg-foreground/[0.04]"
                   >
-                    <span className="font-mono text-[10px] text-foreground/35 group-hover:text-[#1A4BFF]">
+                    <span className="font-mono text-[10px] text-foreground/65 group-hover:text-[#1A4BFF]">
                       03
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm font-medium">Open the example</span>
-                      <span className="block text-xs text-foreground/45">
+                      <span className="block text-xs text-foreground/65">
                         Five cards that already have a shape.
                       </span>
                     </span>
-                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-foreground/25 group-hover:text-[#1A4BFF]" />
+                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-foreground/65 group-hover:text-[#1A4BFF]" />
                   </button>
                 </div>
               </div>
 
-              <p className="border-t border-foreground/15 px-5 py-2.5 font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/35">
+              <p className="border-t border-foreground/15 px-5 py-2.5 font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/65">
                 or double-click anywhere on the canvas
               </p>
             </div>
@@ -981,7 +992,11 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
           </div>
         )}
 
-        {exploreOpen && !replay && <ExplorePanel onClose={() => setExploreOpen(false)} />}
+        {exploreOpen && !replay && (
+          <Suspense fallback={null}>
+            <ExplorePanel onClose={() => setExploreOpen(false)} />
+          </Suspense>
+        )}
         {!replay && !threadId && !memo && <DetailsPanel />}
         {!replay && <ExperimentOutcome />}
         {clipper && !replay && (
@@ -1002,10 +1017,18 @@ function Inner({ threadId }: { threadId?: string | undefined }) {
             <feDisplacementMap in="SourceGraphic" scale="3.2" />
           </filter>
         </svg>
-        {threadId && !replay && <SocraticDrawer threadId={threadId} />}
+        {threadId && !replay && (
+          <Suspense fallback={null}>
+            <SocraticDrawer threadId={threadId} />
+          </Suspense>
+        )}
         
         {/* NEW BRIEFING MODE OVERLAY */}
-        {briefingOpen && <BriefingMode onExit={() => setBriefingOpen(false)} />}
+        {briefingOpen && (
+          <Suspense fallback={null}>
+            <BriefingMode onExit={() => setBriefingOpen(false)} />
+          </Suspense>
+        )}
       </div>
     </div>
   );

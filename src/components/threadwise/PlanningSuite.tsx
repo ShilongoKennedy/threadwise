@@ -531,7 +531,7 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
           <Plus className="mr-1 h-3.5 w-3.5" /> Watch
         </Button>
         {watches.length > 0 && (
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/40">
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/65">
             {watches.filter((item) => item.status === "pending").length} open
           </span>
         )}
@@ -575,7 +575,7 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
                   <span className="min-w-0 flex-1 truncate text-[13px]" title={item.claim}>
                     {item.claim}
                   </span>
-                  <span className="shrink-0 font-mono text-[10px] text-foreground/40">{item.due_date}</span>
+                  <span className="shrink-0 font-mono text-[10px] text-foreground/65">{item.due_date}</span>
                   {item.scope === "suggested" ? (
                     <Button
                       size="sm"
@@ -630,7 +630,7 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
                 key={day.toISOString()}
                 className={`min-h-24 border-b border-r border-foreground/10 p-1.5 ${day.getMonth() !== month.getMonth() ? "bg-foreground/[0.035]" : ""} ${isSameDay(day, new Date()) ? "bg-[#1A4BFF]/[0.07]" : ""}`}
               >
-                <span className={`font-mono text-[10px] ${isSameDay(day, new Date()) ? "font-bold text-[#1A4BFF]" : "text-foreground/45"}`}>{format(day, "d")}</span>
+                <span className={`font-mono text-[10px] ${isSameDay(day, new Date()) ? "font-bold text-[#1A4BFF]" : "text-foreground/65"}`}>{format(day, "d")}</span>
                 {events
                   .filter((e) => e.date === format(day, "yyyy-MM-dd"))
                   .map((e) => (

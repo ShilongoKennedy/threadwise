@@ -45,7 +45,7 @@ export function WorkspaceBar() {
           <DropdownMenuItem disabled={!user || s.status === "Saving…"} onSelect={() => void syncWorkspaces()}><RefreshCw /> {s.status.includes("Retry") ? "Retry sync" : "Sync now"}</DropdownMenuItem>
           <DropdownMenuSeparator />
           <div className="px-2 pb-1 pt-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/40">Canvas colour</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/65">Canvas colour</span>
             <div className="mt-2">
               <ColorPicker
                 value={c?.color}

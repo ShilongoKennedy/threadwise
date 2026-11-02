@@ -14,6 +14,12 @@ export const Route = createFileRoute("/digest")({
       },
       { property: "og:title", content: "The record — Threadwise" },
       { property: "og:type", content: "website" },
+    
+      { property: "og:image", content: "https://threadwise-beta.vercel.app/og.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://threadwise-beta.vercel.app/og.png" },
     ],
   }),
   component: DigestPage,
@@ -146,13 +152,13 @@ function DigestPage() {
 
       <main className="mx-auto w-full max-w-[1100px] px-4 py-8 md:px-6 md:py-12">
         <h1 className="font-display text-[38px] leading-none md:text-[58px]">The record.</h1>
-        <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-[#1A1A1A]/55">
+        <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-[#1A1A1A]/65">
           Every claim you dated, and what the reporting actually did. Judgements only count when the
           agent could settle them.
         </p>
 
         {state === "loading" && (
-          <p className="py-16 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-[#1A1A1A]/40">
+          <p className="py-16 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-[#1A1A1A]/65">
             Reading the record…
           </p>
         )}
@@ -166,7 +172,7 @@ function DigestPage() {
         {state === "empty" && (
           <div className="mt-10 border-2 border-dashed border-[#1A1A1A]/25 p-10 text-center">
             <p className="font-display text-2xl">Nothing filed yet.</p>
-            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
               Add a dated claim in the calendar and it will start keeping score.
             </p>
           </div>
@@ -185,7 +191,7 @@ function DigestPage() {
                   key={stat.label}
                   className={`px-4 py-4 ${index > 0 ? "border-l border-[#1A1A1A]/12" : ""} ${index === 2 ? "max-md:border-l-0 max-md:border-t" : ""} ${index === 3 ? "max-md:border-t" : ""}`}
                 >
-                  <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
                     {stat.label}
                   </div>
                   <div className="mt-1 font-display text-[32px] leading-none">{stat.value}</div>
@@ -195,17 +201,17 @@ function DigestPage() {
 
             <section className="mt-4 flex flex-wrap items-end justify-between gap-3 border-2 border-[#1A1A1A] px-4 py-3">
               <div>
-                <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
+                <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
                   reporting called it
                 </div>
                 <div className="mt-1 font-display text-[28px] leading-none">
                   {accuracy === null ? "—" : `${accuracy}%`}
-                  <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+                  <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
                     of {settled} settled
                   </span>
                 </div>
               </div>
-              <p className="max-w-[40ch] text-xs leading-relaxed text-[#1A1A1A]/50">
+              <p className="max-w-[40ch] text-xs leading-relaxed text-[#1A1A1A]/65">
                 A claim the agent could not settle stays open and is checked again tomorrow. It never
                 counts as a miss.
               </p>
@@ -216,7 +222,7 @@ function DigestPage() {
                 <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">
                   By week
                 </h2>
-                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/35">
+                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
                   filed · settled
                 </span>
               </div>
@@ -231,7 +237,7 @@ function DigestPage() {
                         aria-pressed={active}
                         className={`flex w-full items-center gap-3 border-b border-[#1A1A1A]/12 px-1 py-2.5 text-left transition-colors hover:bg-[#1A1A1A]/[0.035] ${active ? "bg-[#1A4BFF]/[0.05]" : ""}`}
                       >
-                        <span className="w-[150px] shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/60">
+                        <span className="w-[150px] shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/65">
                           {span(week.start)}
                         </span>
                         <span className="flex min-w-0 flex-1 items-center gap-1">
@@ -246,7 +252,7 @@ function DigestPage() {
                             aria-hidden
                           />
                         </span>
-                        <span className="w-16 shrink-0 text-right font-mono text-[10px] text-[#1A1A1A]/45">
+                        <span className="w-16 shrink-0 text-right font-mono text-[10px] text-[#1A1A1A]/65">
                           {week.filed} · {week.resolved}
                         </span>
                       </button>
@@ -261,12 +267,12 @@ function DigestPage() {
                 <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">
                   {span(current.start)}
                 </h2>
-                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/35">
+                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
                   {weekWatches.length} claims
                 </span>
               </div>
               {weekWatches.length === 0 ? (
-                <p className="py-8 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+                <p className="py-8 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
                   Nothing filed or settled this week.
                 </p>
               ) : (
@@ -293,11 +299,11 @@ function DigestPage() {
                         </span>
                         <span className="font-display text-sm leading-tight">{watch.claim}</span>
                         {watch.resolution && (
-                          <span className="text-xs leading-snug text-[#1A1A1A]/55">
+                          <span className="text-xs leading-snug text-[#1A1A1A]/65">
                             {watch.resolution}
                           </span>
                         )}
-                        <span className="ml-auto font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/35">
+                        <span className="ml-auto font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/65">
                           {watch.due_date}
                         </span>
                       </li>

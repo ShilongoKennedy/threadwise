@@ -15,6 +15,8 @@ import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as BriefsRouteImport } from './routes/briefs'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
@@ -50,6 +52,16 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiNewsBriefRoute = ApiNewsBriefRouteImport.update({
   id: '/api/news-brief',
   path: '/api/news-brief',
@@ -78,6 +90,8 @@ export interface FileRoutesByFullPath {
   '/briefs': typeof BriefsRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -90,6 +104,8 @@ export interface FileRoutesByTo {
   '/briefs': typeof BriefsRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -103,6 +119,8 @@ export interface FileRoutesById {
   '/briefs': typeof BriefsRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -117,6 +135,8 @@ export interface FileRouteTypes {
     | '/briefs'
     | '/digest'
     | '/login'
+    | '/privacy'
+    | '/terms'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
@@ -129,6 +149,8 @@ export interface FileRouteTypes {
     | '/briefs'
     | '/digest'
     | '/login'
+    | '/privacy'
+    | '/terms'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
@@ -141,6 +163,8 @@ export interface FileRouteTypes {
     | '/briefs'
     | '/digest'
     | '/login'
+    | '/privacy'
+    | '/terms'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
@@ -154,6 +178,8 @@ export interface RootRouteChildren {
   BriefsRoute: typeof BriefsRoute
   DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
@@ -204,6 +230,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/news-brief': {
       id: '/api/news-brief'
       path: '/api/news-brief'
@@ -242,6 +282,8 @@ const rootRouteChildren: RootRouteChildren = {
   BriefsRoute: BriefsRoute,
   DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,

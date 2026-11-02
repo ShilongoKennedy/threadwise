@@ -254,7 +254,7 @@ export function InteractiveLaptop() {
     <div className="flex h-full w-full bg-[#FDFBF7] text-[#1A1A1A]">
       {/* ── Corpus rail ─────────────────────────────────────────── */}
       <aside className="flex h-full w-[17%] shrink-0 flex-col border-r-2 border-[#1A1A1A]/15 bg-[#FDFBF7] p-2.5">
-        <div className="mb-2.5 flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.2em] text-[#1A1A1A]/50">
+        <div className="mb-2.5 flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
           <span className="h-1.5 w-1.5 bg-[#1A4BFF]" />
           Corpus · {DOCS.length}
         </div>
@@ -274,13 +274,13 @@ export function InteractiveLaptop() {
                     : "border-transparent bg-[#1A1A1A]/[0.04] hover:border-[#1A1A1A]/20 hover:bg-white",
                 )}
               >
-                <span className="font-mono text-[6px] uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+                <span className="font-mono text-[6px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
                   {item.date}
                 </span>
                 <span
                   className={cn(
                     "truncate font-mono text-[8px] uppercase tracking-[0.08em]",
-                    selected ? "font-bold text-[#1A1A1A]" : "text-[#1A1A1A]/60",
+                    selected ? "font-bold text-[#1A1A1A]" : "text-[#1A1A1A]/65",
                   )}
                 >
                   {item.label}
@@ -290,7 +290,7 @@ export function InteractiveLaptop() {
           })}
         </div>
 
-        <div className="mt-auto border-t border-dashed border-[#1A1A1A]/20 pt-2 font-mono text-[6px] uppercase leading-relaxed tracking-[0.16em] text-[#1A1A1A]/35">
+        <div className="mt-auto border-t border-dashed border-[#1A1A1A]/20 pt-2 font-mono text-[6px] uppercase leading-relaxed tracking-[0.16em] text-[#1A1A1A]/65">
           {doc.source}
         </div>
       </aside>
@@ -313,13 +313,13 @@ export function InteractiveLaptop() {
                 "h-full border-b-2 px-0.5 font-mono text-[7px] uppercase tracking-[0.18em] transition-colors",
                 activeTab === key
                   ? "border-[#1A4BFF] font-bold text-[#1A1A1A]"
-                  : "border-transparent text-[#1A1A1A]/40 hover:text-[#1A1A1A]/70",
+                  : "border-transparent text-[#1A1A1A]/65 hover:text-[#1A1A1A]/70",
               )}
             >
               {label}
             </button>
           ))}
-          <span className="ml-auto font-mono text-[6px] uppercase tracking-[0.18em] text-[#1A1A1A]/30">
+          <span className="ml-auto font-mono text-[6px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
             {activeTab === "diff" ? `Divergence ${divergence}` : "Live"}
           </span>
         </div>
@@ -405,7 +405,7 @@ export function InteractiveLaptop() {
               </button>
 
               {running && (
-                <div className="mt-3 space-y-1.5 font-mono text-[7px] uppercase tracking-[0.16em] text-[#1A1A1A]/50">
+                <div className="mt-3 space-y-1.5 font-mono text-[7px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
                   <p className="text-[#1A4BFF]">› Segmenting claims…</p>
                   <p>› Scoring narrative axes…</p>
                   <p>› Locating omissions…</p>
@@ -417,7 +417,7 @@ export function InteractiveLaptop() {
                   {/* Metrics */}
                   <div className="flex gap-2">
                     <div className="flex flex-1 flex-col border border-[#1A1A1A]/15 bg-[#FDFBF7] p-1.5">
-                      <span className="font-mono text-[6px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
+                      <span className="font-mono text-[6px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
                         Narrative profile
                       </span>
                       <svg
@@ -486,14 +486,14 @@ export function InteractiveLaptop() {
                     </div>
 
                     <div className="flex w-[76px] flex-col justify-between border border-[#1A1A1A]/15 bg-[#FDFBF7] p-1.5">
-                      <span className="font-mono text-[6px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
+                      <span className="font-mono text-[6px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
                         Friction
                       </span>
                       <div className="text-center">
                         <div className="font-display text-[26px] leading-none text-[#1A4BFF]">
                           {doc.friction}
                         </div>
-                        <div className="font-mono text-[6px] tracking-[0.16em] text-[#1A1A1A]/35">
+                        <div className="font-mono text-[6px] tracking-[0.16em] text-[#1A1A1A]/65">
                           /100
                         </div>
                       </div>
@@ -547,7 +547,7 @@ export function InteractiveLaptop() {
                               strokeWidth={2.5}
                               style={{ color: meta.ink }}
                             />
-                            <span className="font-mono text-[6px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/50">
+                            <span className="font-mono text-[6px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/65">
                               {meta.label}
                             </span>
                             {hot && (
@@ -559,7 +559,7 @@ export function InteractiveLaptop() {
                           <b className="block font-display text-[9.5px] leading-tight text-[#1A1A1A]">
                             {note.title}
                           </b>
-                          <p className="mt-0.5 text-[7.5px] leading-[1.45] text-[#1A1A1A]/55">
+                          <p className="mt-0.5 text-[7.5px] leading-[1.45] text-[#1A1A1A]/65">
                             {note.body}
                           </p>
                         </button>
@@ -567,7 +567,7 @@ export function InteractiveLaptop() {
                     })}
                   </div>
 
-                  <p className="border-t border-dashed border-[#1A1A1A]/20 pt-1 text-center font-mono text-[6px] uppercase tracking-[0.16em] text-[#1A1A1A]/35">
+                  <p className="border-t border-dashed border-[#1A1A1A]/20 pt-1 text-center font-mono text-[6px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
                     {activeNote ? `Linked to “${activeNote.title}”` : "Hover a note to trace it"}
                   </p>
                 </div>
@@ -581,7 +581,7 @@ export function InteractiveLaptop() {
               <span className="font-mono text-[8px] font-bold uppercase tracking-[0.2em]">
                 Comparative analysis
               </span>
-              <span className="ml-auto font-mono text-[7px] uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+              <span className="ml-auto font-mono text-[7px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
                 Divergence {divergence}/100
               </span>
             </div>
@@ -592,14 +592,14 @@ export function InteractiveLaptop() {
                 { key: "B", doc: compareDoc, quote: secondQuote },
               ].map((side) => (
                 <div key={side.key} className="flex flex-col border border-[#1A1A1A]/15 bg-white p-3">
-                  <span className="mb-2 block font-mono text-[7px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
+                  <span className="mb-2 block font-mono text-[7px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
                     Source {side.key} · {side.doc.label}
                   </span>
                   <p className="font-display text-[10px] leading-[1.7] text-[#1A1A1A]/85">
                     “{side.quote}”
                   </p>
                   <div className="mt-auto flex items-end justify-between border-t border-dashed border-[#1A1A1A]/20 pt-2">
-                    <span className="font-mono text-[6px] uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+                    <span className="font-mono text-[6px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
                       Friction
                     </span>
                     <span className="font-display text-lg leading-none text-[#1A4BFF]">

@@ -14,6 +14,12 @@ export const Route = createFileRoute("/briefs")({
       },
       { property: "og:title", content: "Morning Briefs — Threadwise" },
       { property: "og:type", content: "website" },
+    
+      { property: "og:image", content: "https://threadwise-beta.vercel.app/og.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://threadwise-beta.vercel.app/og.png" },
     ],
   }),
   component: BriefsPage,
@@ -105,13 +111,13 @@ function BriefsPage() {
       <main className="mx-auto w-full max-w-[1100px] px-4 py-8 md:px-6 md:py-12">
         <div className="mb-6 flex items-end justify-between gap-4 border-b-2 border-[#1A1A1A] pb-3">
           <h1 className="font-display text-[34px] leading-none md:text-[52px]">The archive.</h1>
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/40">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
             {rows.length} dossier{rows.length === 1 ? "" : "s"}
           </span>
         </div>
 
         {status === "loading" && (
-          <p className="py-16 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-[#1A1A1A]/40">
+          <p className="py-16 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-[#1A1A1A]/65">
             Loading the record…
           </p>
         )}
@@ -119,7 +125,7 @@ function BriefsPage() {
         {status === "empty" && (
           <div className="border-2 border-dashed border-[#1A1A1A]/25 p-10 text-center">
             <p className="font-display text-2xl">No briefs filed yet.</p>
-            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
               The agent files one every day.
             </p>
           </div>
@@ -128,7 +134,7 @@ function BriefsPage() {
         {status === "error" && (
           <div className="border-2 border-[#1A1A1A] p-10 text-center">
             <p className="font-display text-2xl">The archive could not be read.</p>
-            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
               Check the news_briefs table and its read policy.
             </p>
           </div>
@@ -145,7 +151,7 @@ function BriefsPage() {
                     search={{ b: row.id }}
                     className="group grid grid-cols-[auto_1fr] items-start gap-x-4 gap-y-1 px-1 py-4 transition-colors hover:bg-[#1A4BFF]/[0.04] md:grid-cols-[110px_84px_1fr_auto] md:items-center"
                   >
-                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/45 md:text-[10px]">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65 md:text-[10px]">
                       {shortDate(row.created_at)}
                     </span>
                     <span
@@ -158,11 +164,11 @@ function BriefsPage() {
                       <h2 className="font-display text-lg leading-tight transition-colors group-hover:text-[#1A4BFF] md:text-xl">
                         {row.headline}
                       </h2>
-                      <p className="mt-1 line-clamp-1 text-xs leading-relaxed text-[#1A1A1A]/50">
+                      <p className="mt-1 line-clamp-1 text-xs leading-relaxed text-[#1A1A1A]/65">
                         {excerpt(row.bluf)}
                       </p>
                     </div>
-                    <ArrowUpRight className="hidden h-4 w-4 shrink-0 text-[#1A1A1A]/30 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#1A4BFF] md:block" />
+                    <ArrowUpRight className="hidden h-4 w-4 shrink-0 text-[#1A1A1A]/65 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#1A4BFF] md:block" />
                   </Link>
                 </li>
               );
@@ -172,7 +178,7 @@ function BriefsPage() {
       </main>
 
       <footer className="mx-auto w-full max-w-[1100px] px-4 pb-10 md:px-6">
-        <p className="flex items-center gap-2 border-t border-[#1A1A1A]/15 pt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/35">
+        <p className="flex items-center gap-2 border-t border-[#1A1A1A]/15 pt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
           <Lock className="h-3 w-3" /> Machine assessment · verify before action
         </p>
       </footer>

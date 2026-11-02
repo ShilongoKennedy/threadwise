@@ -20,7 +20,7 @@ import {
   Play,
   RotateCcw,
   Settings2,
-  Sparkles,
+  PenTool,
   StickyNote,
   Trash2,
   X,
@@ -296,7 +296,7 @@ export function PresentationMode({
             title="Reveal beat (R)"
             onClick={() => setReveal((v) => (v + 1) % 3)}
           >
-            <Sparkles />
+            <Eye />
           </Button>
           <Button
             variant="ghost"
@@ -509,7 +509,7 @@ export function PresentationMode({
             </div>
           </label>
           <p className="tw-director-note">
-            <Sparkles /> A sketch · D director · M story map · R reveals
+            <PenTool /> A sketch · D director · M story map · R reveals
           </p>
         </aside>
       )}

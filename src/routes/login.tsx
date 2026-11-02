@@ -73,7 +73,7 @@ function LoginPage() {
       />
 
       {/* Back Button */}
-      <Link to="/" className="absolute top-8 left-8 z-20 flex items-center gap-2 text-[#1A1A1A]/50 hover:text-[#1A1A1A] transition-colors font-mono text-xs uppercase tracking-widest">
+      <Link to="/" className="absolute top-8 left-8 z-20 flex items-center gap-2 text-[#1A1A1A]/65 hover:text-[#1A1A1A] transition-colors font-mono text-xs uppercase tracking-widest">
         <ArrowLeft className="w-4 h-4" /> Back to home
       </Link>
 
@@ -98,7 +98,7 @@ function LoginPage() {
           
           <div className="text-center mb-8">
             <h2 className="font-display text-3xl text-[#1A1A1A] mb-2">Welcome back.</h2>
-            <p className="text-[#1A1A1A]/50 text-sm">Sign in to access your intelligence workbench.</p>
+            <p className="text-[#1A1A1A]/65 text-sm">Sign in to access your intelligence workbench.</p>
           </div>
 
           {error && (
@@ -127,13 +127,21 @@ function LoginPage() {
             )}
           </button>
 
-          <div className="mt-8 flex items-center justify-center gap-2 text-[#1A1A1A]/40 font-mono text-[10px] uppercase tracking-widest">
+          <div className="mt-8 flex items-center justify-center gap-2 text-[#1A1A1A]/65 font-mono text-[10px] uppercase tracking-widest">
             <ShieldCheck className="w-4 h-4" /> Secured by Supabase
           </div>
         </div>
 
-        <p className="mt-8 text-center text-[10px] text-[#1A1A1A]/40 leading-relaxed font-mono">
-          By signing in, you agree to our <a href="#" className="underline hover:text-[#1A1A1A]">Terms</a> and <a href="#" className="underline hover:text-[#1A1A1A]">Privacy Policy</a>.
+        <p className="mt-8 text-center text-[10px] text-[#1A1A1A]/65 leading-relaxed font-mono">
+          By signing in, you agree to our{" "}
+          <Link to="/terms" className="underline decoration-[#1A1A1A]/30 underline-offset-2 hover:decoration-[#1A1A1A]">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link to="/privacy" className="underline decoration-[#1A1A1A]/30 underline-offset-2 hover:decoration-[#1A1A1A]">
+            Privacy Policy
+          </Link>
+          .
         </p>
       </div>
     </div>

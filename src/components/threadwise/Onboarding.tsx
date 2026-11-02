@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, CircleHelp, Link2, MousePointer2, Sparkles } from "lucide-react";
+import { ArrowRight, CircleHelp, Link2, MousePointer2, Radar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NODE_TYPES, TYPE_INFO } from "@/lib/threadwise/model";
 import { EpistemicGlyph, TYPE_COLOR, TYPE_ICON } from "./ThreadNode";
@@ -38,7 +38,7 @@ const STEPS = [
       <div className="flex h-24 items-center justify-center gap-3">
         <div className="h-16 w-28 rounded-lg border bg-card shadow-[var(--shadow-card)]" />
         <div className="tw-ghost flex h-16 w-28 items-center justify-center gap-1 rounded-lg border border-dashed font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground" style={{ borderColor: "var(--type-question)" }}>
-          <Sparkles className="h-3 w-3" /> suggested
+          <Radar className="h-3 w-3" /> suggested
         </div>
       </div>
     ),
@@ -90,7 +90,7 @@ const STEPS = [
         })}
         <div className="flex items-center gap-3 border-t border-dashed pt-2 text-sm">
           <Key>E</Key>
-          <Sparkles className="h-4 w-4 text-accent-ink" />
+          <Radar className="h-4 w-4 text-accent-ink" />
           <span>Explore</span>
           <span className="ml-auto flex items-center gap-1.5 text-xs text-muted-foreground"><Key>Esc</Key> deselect</span>
         </div>

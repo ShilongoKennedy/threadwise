@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useEffect } from "react";
-import { BookOpenText, Columns2, Hash, Plus, X, Globe, Loader2, Check, Sparkles, AlertTriangle, Activity, ShieldAlert, Fingerprint, Crosshair, FileWarning, FileText, Lightbulb, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, GitCompare, FileUp, Terminal, Database, Network, Share2 } from "lucide-react";
+import { BookOpenText, Columns2, Hash, Plus, X, Globe, Loader2, Check, ScanSearch, AlertTriangle, Activity, ShieldAlert, Fingerprint, Crosshair, FileWarning, FileText, Lightbulb, Eye, HelpCircle, Type, Highlighter, Target, GitMerge, Download, Trash2, Wand2, Search, GitCompare, FileUp, Terminal, Database, Network, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -525,7 +525,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
         </svg>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
           <span className="font-display text-[38px] leading-none text-[#1A1A1A]">{Math.round(score)}</span>
-          <span className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/45">{label}</span>
+          <span className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">{label}</span>
         </div>
       </div>
     );
@@ -596,7 +596,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
             onDrop={(e) => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); }}
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50">Document Intake</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65">Document Intake</span>
               <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => fileInput.current?.click()} title="Upload document" aria-label="Upload document">
                 {isReadingFile ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileUp className="h-3.5 w-3.5" />}
               </Button>
@@ -625,13 +625,13 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                 <div className={`absolute left-0 top-0 bottom-0 w-1 transition-opacity ${doc.id === active?.id ? "bg-[#1A4BFF] opacity-100" : "bg-[#1A1A1A] opacity-0 group-hover:opacity-20"}`} />
                 <button className="w-full text-left p-4 pl-5" onClick={() => { setActiveId(doc.id); setView("read"); }}>
                   <div className="flex justify-between items-start mb-1">
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/40">File {String(index + 1).padStart(3, '0')}</span>
-                    <span className="font-mono text-[10px] text-[#1A1A1A]/40 border border-[#1A1A1A]/10 px-1.5 py-0.5 rounded-sm bg-[#FDFBF7]">{doc.date || "UNDATED"}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65">File {String(index + 1).padStart(3, '0')}</span>
+                    <span className="font-mono text-[10px] text-[#1A1A1A]/65 border border-[#1A1A1A]/10 px-1.5 py-0.5 rounded-sm bg-[#FDFBF7]">{doc.date || "UNDATED"}</span>
                   </div>
                   <b className="block font-display text-base leading-tight text-[#1A1A1A] group-hover:text-[#1A1A1A]">{doc.title}</b>
-                  <span className="block mt-1.5 text-[10px] font-mono text-[#1A1A1A]/50 uppercase tracking-wider truncate">{doc.speaker || "Unknown Speaker"}</span>
+                  <span className="block mt-1.5 text-[10px] font-mono text-[#1A1A1A]/65 uppercase tracking-wider truncate">{doc.speaker || "Unknown Speaker"}</span>
                 </button>
-                <Button variant="ghost" size="icon" className="absolute right-2 bottom-2 h-9 w-9 opacity-100 text-[#1A1A1A]/30 hover:bg-destructive/10 hover:text-destructive md:opacity-0 md:group-hover:opacity-100" onClick={(e) => { e.stopPropagation(); deleteDoc(doc.id); }}>
+                <Button variant="ghost" size="icon" className="absolute right-2 bottom-2 h-9 w-9 opacity-100 text-[#1A1A1A]/65 hover:bg-destructive/10 hover:text-destructive md:opacity-0 md:group-hover:opacity-100" onClick={(e) => { e.stopPropagation(); deleteDoc(doc.id); }}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </li>
@@ -646,16 +646,16 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
               <div className="mb-6 flex flex-wrap items-center justify-between gap-4 shrink-0 border-b border-[#1A1A1A]/10 pb-6">
                 <div className="min-w-0">
                   <h3 className="mb-2 font-display text-4xl leading-tight truncate text-[#1A1A1A]">{active.title}</h3>
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65">{active.speaker || "Unknown speaker"} · {active.date || "undated"}</p>
                 </div>
                 <div className="flex gap-2 shrink-0 items-center">
                   {activeAnalysis && (
                     <>
-                      <Button variant="outline" size="icon" className="h-9 w-9 border-[#1A1A1A]/10 hover:bg-[#1A1A1A]/5" onClick={() => exportReport("forensic")} title="Export Analysis"><Download className="h-4 w-4" /></Button>
+                      <Button aria-label="Export Analysis" variant="outline" size="icon" className="h-9 w-9 border-[#1A1A1A]/10 hover:bg-[#1A1A1A]/5" onClick={() => exportReport("forensic")} title="Export Analysis"><Download className="h-4 w-4" /></Button>
                       <Button variant="outline" size="icon" className={`h-9 w-9 border-[#1A1A1A]/10 hover:bg-[#1A1A1A]/5 ${rawView ? 'bg-[#1A1A1A]/5' : ''}`} onClick={() => setRawView(!rawView)} title={rawView ? "Show Highlights" : "Show Raw Text"}>
                         {rawView ? <Highlighter className="h-4 w-4" /> : <Type className="h-4 w-4" />}
                       </Button>
-                      <Button variant="outline" size="sm" className="h-9 border-dashed border-[#1A1A1A]/20 text-[#1A1A1A]/60 hover:text-destructive hover:bg-destructive/10" onClick={() => { 
+                      <Button variant="outline" size="sm" className="h-9 border-dashed border-[#1A1A1A]/20 text-[#1A1A1A]/65 hover:text-destructive hover:bg-destructive/10" onClick={() => { 
                         const newAnalyses = { ...savedAnalyses };
                         delete newAnalyses[active.id];
                         update({ ...corpus, analyses: newAnalyses } as any); 
@@ -702,9 +702,9 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                 <aside className="w-full xl:w-[420px] shrink-0 flex flex-col gap-5 overflow-y-auto pr-2 pb-10">
                   {!activeAnalysis && !isAnalyzingSource && (
                     <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center p-8 border-2 border-dashed border-[#1A1A1A]/20 rounded-sm bg-white/40">
-                      <Crosshair className="mb-4 h-8 w-8 text-[#1A1A1A]/25" />
+                      <Crosshair className="mb-4 h-8 w-8 text-[#1A1A1A]/65" />
                       <h4 className="mb-2 font-display text-xl text-[#1A1A1A]">Nothing challenged yet</h4>
-                      <p className="mb-6 max-w-[260px] text-sm leading-relaxed text-[#1A1A1A]/55">The bench reads the source for what it argues, how it argues it, and what it never says.</p>
+                      <p className="mb-6 max-w-[260px] text-sm leading-relaxed text-[#1A1A1A]/65">The bench reads the source for what it argues, how it argues it, and what it never says.</p>
                       <Button onClick={loadSample} variant="outline" className="bg-white border-[#1A1A1A]/10 text-[#1A1A1A] hover:bg-[#1A1A1A]/5 rounded-sm">
                         <FileText className="mr-2 h-4 w-4 text-[#1A4BFF]" /> Load a sample speech
                       </Button>
@@ -728,11 +728,11 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                           
                           <div className="grid grid-cols-2 gap-2 mb-4 text-center">
                             <div className="bg-white/60 rounded border border-[#1A1A1A]/5 p-2">
-                              <span className="block text-[10px] font-mono text-[#1A1A1A]/50 uppercase">DeepSeek</span>
+                              <span className="block text-[10px] font-mono text-[#1A1A1A]/65 uppercase">DeepSeek</span>
                               <span className="font-display text-2xl text-[#1A1A1A]">{activeAnalysis.quantData.contradictionIndex}</span>
                             </div>
                             <div className="bg-white/60 rounded border border-[#1A1A1A]/5 p-2">
-                              <span className="block text-[10px] font-mono text-[#1A1A1A]/50 uppercase">OpenAI</span>
+                              <span className="block text-[10px] font-mono text-[#1A1A1A]/65 uppercase">OpenAI</span>
                               <span className="font-display text-2xl text-[#1A1A1A]">{activeAnalysis.consensus.openai.quantData.contradictionIndex}</span>
                             </div>
                           </div>
@@ -747,7 +747,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                                ))}
                              </ul>
                           ) : (
-                            <p className="text-[10px] text-center text-[#1A1A1A]/50 font-mono uppercase">Models broadly agree</p>
+                            <p className="text-[10px] text-center text-[#1A1A1A]/65 font-mono uppercase">Models broadly agree</p>
                           )}
                         </div>
                       )}
@@ -767,7 +767,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                       </div>
 
                       <div>
-                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50 border-b border-[#1A1A1A]/10 pb-2 mb-3">Forensic Margin Notes</h4>
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65 border-b border-[#1A1A1A]/10 pb-2 mb-3">Forensic Margin Notes</h4>
                         <div className="space-y-3">
                           {activeAnalysis.margin_notes?.map((note: any, i: number) => {
                             const isActive = activeNote === i;
@@ -782,10 +782,10 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                                   {note.type === "contradiction" && <AlertTriangle className="h-3 w-3 text-[#1A4BFF]" />}
                                   {note.type === "fallacy" && <FileWarning className="h-3 w-3 text-[#1A4BFF]" />}
                                   {note.type === "motive" && <Eye className="h-3 w-3 text-[#1A1A1A]" />}
-                                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A]/40">{note.type}</span>
+                                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A]/65">{note.type}</span>
                                 </div>
                                 <b className="block font-display text-sm mb-1 text-[#1A1A1A]">{note.title}</b>
-                                <p className="text-xs text-[#1A1A1A]/60 leading-relaxed mb-3">"{note.analysis}"</p>
+                                <p className="text-xs text-[#1A1A1A]/65 leading-relaxed mb-3">"{note.analysis}"</p>
                                 <div className={`p-2 rounded text-[12px] font-serif italic text-[#1A1A1A]/70 border-l-2 ${isActive ? "border-[#1A4BFF] bg-[#1A4BFF]/10" : "border-[#1A1A1A]/10 bg-[#1A1A1A]/5"}`}>"{clip(note.quote, 60)}"</div>
                               </div>
                             );
@@ -794,12 +794,12 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                       </div>
 
                       <div>
-                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50 border-b border-[#1A1A1A]/10 pb-2 mb-3">Unstated Assumptions</h4>
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65 border-b border-[#1A1A1A]/10 pb-2 mb-3">Unstated Assumptions</h4>
                         <div className="space-y-2">
                           {activeAnalysis.unstated_assumptions?.map((text: string, i: number) => (
                             <div key={i} className="flex flex-col gap-2 rounded-sm border border-[#1A1A1A]/10 bg-white p-3">
                               <p className="text-xs text-[#1A1A1A]/80 leading-relaxed">{text}</p>
-                              <Button size="sm" variant="ghost" className="h-7 self-end text-[10px] uppercase tracking-wider text-[#1A1A1A]/40 hover:text-[#1A1A1A] hover:bg-[#1A1A1A]/5" onClick={(e) => { e.stopPropagation(); plantAnalysis(`asm-${i}`, "hypothesis", "Unstated Assumption", text, active.title); }}>
+                              <Button size="sm" variant="ghost" className="h-7 self-end text-[10px] uppercase tracking-wider text-[#1A1A1A]/65 hover:text-[#1A1A1A] hover:bg-[#1A1A1A]/5" onClick={(e) => { e.stopPropagation(); plantAnalysis(`asm-${i}`, "hypothesis", "Unstated Assumption", text, active.title); }}>
                                 <Share2 className="mr-1 h-3 w-3" /> Plant & Wire
                               </Button>
                             </div>
@@ -808,7 +808,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                       </div>
 
                       <div>
-                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50 border-b border-[#1A1A1A]/10 pb-2 mb-3">The Dog That Didn't Bark</h4>
+                        <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65 border-b border-[#1A1A1A]/10 pb-2 mb-3">The Dog That Didn't Bark</h4>
                         <div className="space-y-2">
                           {activeAnalysis.questions_to_ask?.map((text: string, i: number) => (
                             <div key={i} className="flex flex-col gap-2 rounded-sm border border-[#1A4BFF]/20 bg-[#FDFBF7] p-3">
@@ -835,7 +835,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
               <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <h3 className="mb-2 font-display text-4xl tracking-tight text-[#1A1A1A]">Cross-Source Dossier</h3>
-                  <p className="max-w-xl text-sm text-[#1A1A1A]/60">Cross-reference global sources, extract quantitative sentiment signals, and map strategic blind spots.</p>
+                  <p className="max-w-xl text-sm text-[#1A1A1A]/65">Cross-reference global sources, extract quantitative sentiment signals, and map strategic blind spots.</p>
                 </div>
                 {analysis && (
                   <Button variant="outline" className="border-[#1A1A1A]/10 bg-white hover:bg-[#1A1A1A]/5" onClick={() => exportReport("cross-source")}>
@@ -848,16 +848,16 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                 <div className="flex flex-1 flex-col sm:flex-row gap-2 w-full">
                   {urls.map((url, i) => (
                     <div key={i} className="relative flex-1 w-full">
-                      <Globe className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1A1A1A]/30" />
+                      <Globe className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1A1A1A]/65" />
                       <Input value={url} placeholder="https://foreignaffairs.com/..." className="h-11 border-transparent bg-[#1A1A1A]/5 pl-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-[#1A1A1A]/20" onChange={(e) => { const newUrls = [...urls]; newUrls[i] = e.target.value; setUrls(newUrls); }} />
-                      {urls.length > 1 && <Button variant="ghost" size="icon" className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 hover:bg-[#1A1A1A]/10" onClick={() => setUrls(urls.filter((_, idx) => idx !== i))}><X className="h-3 w-3 text-[#1A1A1A]/40" /></Button>}
+                      {urls.length > 1 && <Button variant="ghost" size="icon" className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 hover:bg-[#1A1A1A]/10" onClick={() => setUrls(urls.filter((_, idx) => idx !== i))}><X className="h-3 w-3 text-[#1A1A1A]/65" /></Button>}
                     </div>
                   ))}
                 </div>
                 <div className="flex w-full sm:w-auto gap-2">
-                  <Button variant="outline" size="icon" onClick={() => setUrls([...urls, ""])} className="h-11 w-11 shrink-0 border-[#1A1A1A]/10 bg-white hover:bg-[#1A1A1A]/5"><Plus className="h-4 w-4" /></Button>
+                  <Button variant="outline" size="icon" aria-label="Add a source URL" onClick={() => setUrls([...urls, ""])} className="h-11 w-11 shrink-0 border-[#1A1A1A]/10 bg-white hover:bg-[#1A1A1A]/5"><Plus className="h-4 w-4" /></Button>
                   <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="h-11 flex-1 sm:flex-none shrink-0 px-8 bg-[#1A1A1A] text-white hover:bg-[#1A1A1A] rounded-sm">
-                    {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</> : <><Sparkles className="mr-2 h-4 w-4" /> Analyze Sources</>}
+                    {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</> : <><ScanSearch className="mr-2 h-4 w-4" /> Analyze Sources</>}
                   </Button>
                 </div>
               </div>
@@ -878,7 +878,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                     <Globe className="w-8 h-8 text-[#1A1A1A]" />
                   </div>
                   <h3 className="font-display text-3xl mb-3 text-[#1A1A1A]">Read the whole world.</h3>
-                  <p className="text-sm text-[#1A1A1A]/60 max-w-md mx-auto leading-relaxed">
+                  <p className="text-sm text-[#1A1A1A]/65 max-w-md mx-auto leading-relaxed">
                     Paste URLs from different news sources, speeches, or reports. The AI will read them all and synthesize a unified intelligence dossier, highlighting where they agree and where they lie.
                   </p>
                 </div>
@@ -890,7 +890,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                     <div className="absolute left-0 top-0 h-full w-1.5 bg-[#1A4BFF]" />
                     <div className="mb-4 flex items-center gap-3">
                       <div className="bg-[#1A1A1A]/5 p-2 rounded-sm"><FileWarning className="h-5 w-5 text-[#1A1A1A]" /></div>
-                      <h4 className="font-mono text-xs uppercase tracking-widest text-[#1A1A1A]/50">The Big Picture</h4>
+                      <h4 className="font-mono text-xs uppercase tracking-widest text-[#1A1A1A]/65">The Big Picture</h4>
                     </div>
                     <p className="font-display text-2xl md:text-3xl leading-relaxed text-[#1A1A1A]/90 first-letter:text-7xl first-letter:float-left first-letter:mr-4 first-letter:mt-1">{analysis.conclusion}</p>
                   </section>
@@ -952,12 +952,12 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                         <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A] font-bold flex items-center gap-2">
                           <ShieldAlert className="h-3.5 w-3.5 text-[#1A4BFF]" /> Contradiction Index
                         </h4>
-                        <span className="font-mono text-[10px] uppercase text-[#1A1A1A]/50">METRIC_04</span>
+                        <span className="font-mono text-[10px] uppercase text-[#1A1A1A]/65">METRIC_04</span>
                       </div>
                       <div className="flex-1 flex flex-col items-center justify-center min-h-[220px]">
                         <TacticalGauge score={analysis.quantData?.contradictionIndex || 50} />
                         <div className="mt-4 w-full flex items-center justify-between border-t border-[#1A1A1A]/10 pt-3">
-                          <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/60">STATUS</span>
+                          <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65">STATUS</span>
                           <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A4BFF] border border-[#1A4BFF]/30 bg-[#1A4BFF]/5 px-2 py-0.5 rounded-sm">
                             {analysis.quantData?.contradictionIndex > 70 ? "CRITICAL" : analysis.quantData?.contradictionIndex > 40 ? "ELEVATED" : "NOMINAL"}
                           </span>
@@ -976,12 +976,12 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                               <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A4BFF] font-bold flex items-center gap-1.5">
                                 <FileText className="h-3 w-3" /> Evidence_Log
                               </span>
-                              <span className="font-mono text-[10px] text-[#1A1A1A]/40">DOC-{String(i + 1).padStart(3, '0')}</span>
+                              <span className="font-mono text-[10px] text-[#1A1A1A]/65">DOC-{String(i + 1).padStart(3, '0')}</span>
                             </div>
                             <b className="mb-2 block font-display text-lg leading-tight text-[#1A1A1A]">{item.title}</b>
                             <p className="mb-6 flex-1 text-xs leading-relaxed text-[#1A1A1A]/70">{item.body}</p>
                             <div className="mt-auto flex items-center justify-between border-t border-dashed border-[#1A1A1A]/20 pt-3">
-                              <span className="max-w-[200px] truncate font-mono text-[10px] uppercase tracking-wider text-[#1A1A1A]/40">{item.source}</span>
+                              <span className="max-w-[200px] truncate font-mono text-[10px] uppercase tracking-wider text-[#1A1A1A]/65">{item.source}</span>
                               <Button size="sm" variant={plantedIds[`ev-${i}`] ? "secondary" : "outline"} className={`h-8 rounded-sm px-3 text-[10px] font-bold uppercase tracking-wider transition-all ${plantedIds[`ev-${i}`] ? "bg-[#1A1A1A] text-white" : "border-2 border-[#1A1A1A] hover:bg-[#1A4BFF] hover:border-[#1A4BFF] hover:text-white"}`} onClick={() => plantAnalysis(`ev-${i}`, "evidence", item.title, item.body, item.source)}>
                                 {plantedIds[`ev-${i}`] ? <><Check className="mr-1.5 h-3 w-3" /> Planted</> : <><Share2 className="mr-1.5 h-3 w-3" /> Plant & Wire</>}
                               </Button>
@@ -993,7 +993,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
 
                     <div className="space-y-6">
                       <section className="border-2 border-[#1A1A1A] bg-white p-6 rounded-sm">
-                        <h4 className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-[#1A1A1A] border-b-2 border-[#1A1A1A] pb-4"><Sparkles className="h-4 w-4" /> Strategic Hypotheses</h4>
+                        <h4 className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-[#1A1A1A] border-b-2 border-[#1A1A1A] pb-4"><ScanSearch className="h-4 w-4" /> Strategic Hypotheses</h4>
                         <div className="space-y-3">
                           {analysis.hypotheses?.map((item: any, i: number) => (
                             <div key={i} className="group relative flex flex-col border-2 border-l-4 border-[#1A1A1A] border-l-[#1A1A1A] bg-white p-5 transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0_0_#1A4BFF] rounded-sm">
@@ -1001,12 +1001,12 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                                 <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A4BFF] font-bold flex items-center gap-1.5">
                                   <Lightbulb className="h-3 w-3" /> Hypothesis_Log
                                 </span>
-                                <span className="font-mono text-[10px] text-[#1A1A1A]/40">HYP-{String(i + 1).padStart(3, '0')}</span>
+                                <span className="font-mono text-[10px] text-[#1A1A1A]/65">HYP-{String(i + 1).padStart(3, '0')}</span>
                               </div>
                               <b className="mb-2 block font-display text-lg leading-tight text-[#1A1A1A]">{item.title}</b>
                               <p className="mb-6 flex-1 text-xs leading-relaxed text-[#1A1A1A]/70">{item.body}</p>
                               <div className="mt-auto flex items-center justify-between border-t border-dashed border-[#1A1A1A]/20 pt-3">
-                                <span className="font-mono text-[10px] uppercase tracking-wider text-[#1A1A1A]/40">Inference</span>
+                                <span className="font-mono text-[10px] uppercase tracking-wider text-[#1A1A1A]/65">Inference</span>
                                 <Button size="sm" variant={plantedIds[`hyp-${i}`] ? "secondary" : "outline"} className={`h-8 rounded-sm px-3 text-[10px] font-bold uppercase tracking-wider transition-all ${plantedIds[`hyp-${i}`] ? "bg-[#1A1A1A] text-white" : "border-2 border-[#1A1A1A] hover:bg-[#1A4BFF] hover:border-[#1A4BFF] hover:text-white"}`} onClick={() => plantAnalysis(`hyp-${i}`, "hypothesis", item.title, item.body)}>
                                   {plantedIds[`hyp-${i}`] ? <><Check className="mr-1.5 h-3 w-3" /> Planted</> : <><Share2 className="mr-1.5 h-3 w-3" /> Plant & Wire</>}
                                 </Button>
@@ -1024,12 +1024,12 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                                 <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A4BFF] font-bold flex items-center gap-1.5">
                                   <Target className="h-3 w-3" /> Blind_Spot
                                 </span>
-                                <span className="font-mono text-[10px] text-[#1A1A1A]/40">OMIT-{String(i + 1).padStart(3, '0')}</span>
+                                <span className="font-mono text-[10px] text-[#1A1A1A]/65">OMIT-{String(i + 1).padStart(3, '0')}</span>
                               </div>
                               <b className="mb-2 block font-display text-lg leading-tight text-[#1A4BFF]">{item.title}</b>
                               <p className="mb-6 flex-1 text-xs leading-relaxed text-[#1A1A1A]/70">{item.body}</p>
                               <div className="mt-auto flex items-center justify-between border-t border-dashed border-[#1A1A1A]/20 pt-3">
-                                <span className="font-mono text-[10px] uppercase tracking-wider text-[#1A1A1A]/40">Unasked</span>
+                                <span className="font-mono text-[10px] uppercase tracking-wider text-[#1A1A1A]/65">Unasked</span>
                                 <Button size="sm" variant={plantedIds[`q-${i}`] ? "secondary" : "outline"} className={`h-8 rounded-sm px-3 text-[10px] font-bold uppercase tracking-wider transition-all ${plantedIds[`q-${i}`] ? "bg-[#1A1A1A] text-white" : "border-2 border-[#1A1A1A] hover:bg-[#1A4BFF] hover:border-[#1A4BFF] hover:text-white"}`} onClick={() => plantAnalysis(`q-${i}`, "omission", item.title, item.body)}>
                                   {plantedIds[`q-${i}`] ? <><Check className="mr-1.5 h-3 w-3" /> Planted</> : <><Share2 className="mr-1.5 h-3 w-3" /> Plant & Wire</>}
                                 </Button>
@@ -1050,14 +1050,14 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
               <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <h3 className="mb-2 font-display text-4xl tracking-tight text-[#1A1A1A]">Comparative Intelligence</h3>
-                  <p className="max-w-xl text-sm text-[#1A1A1A]/60">Cross-examine two narratives to reveal diverging framings, omissions, and direct contradictions.</p>
+                  <p className="max-w-xl text-sm text-[#1A1A1A]/65">Cross-examine two narratives to reveal diverging framings, omissions, and direct contradictions.</p>
                 </div>
                 {comparisonAnalysis && (
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" className="h-9 border-[#1A1A1A]/10 bg-white hover:bg-[#1A1A1A]/5" onClick={() => exportReport("compare")}>
                       <Download className="mr-2 h-4 w-4" /> Export
                     </Button>
-                    <Button variant="outline" size="sm" className="h-9 border-dashed border-[#1A1A1A]/20 text-[#1A1A1A]/50 hover:text-destructive hover:bg-destructive/10" onClick={() => { 
+                    <Button variant="outline" size="sm" className="h-9 border-dashed border-[#1A1A1A]/20 text-[#1A1A1A]/65 hover:text-destructive hover:bg-destructive/10" onClick={() => { 
                       const newComparisons = { ...savedComparisons };
                       delete newComparisons[comparisonKey];
                       update({ ...corpus, comparisons: newComparisons } as any); 
@@ -1074,7 +1074,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                     <Columns2 className="w-8 h-8 text-[#1A1A1A]" />
                   </div>
                   <h3 className="font-display text-3xl mb-3 text-[#1A1A1A]">Find the friction.</h3>
-                  <p className="text-sm text-[#1A1A1A]/60 max-w-md mx-auto leading-relaxed">
+                  <p className="text-sm text-[#1A1A1A]/65 max-w-md mx-auto leading-relaxed">
                     You need at least two indexed documents to run a comparison. Go back to the Forensic Workbench and index another source to see how their narratives diverge.
                   </p>
                 </div>
@@ -1084,7 +1084,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                     <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {[0, 1].map((index) => (
                         <div key={index}>
-                          <label className="text-[10px] font-mono uppercase tracking-widest text-[#1A1A1A]/50 mb-1 block">Source {index === 0 ? "A" : "B"}</label>
+                          <label className="text-[10px] font-mono uppercase tracking-widest text-[#1A1A1A]/65 mb-1 block">Source {index === 0 ? "A" : "B"}</label>
                           <select className="w-full rounded-sm border border-[#1A1A1A]/10 bg-[#FDFBF7] p-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-[#1A1A1A]/20" value={compareIds[index]} onChange={(e) => setCompareIds((value) => index === 0 ? [e.target.value, value[1]] : [value[0], e.target.value])}>
                             <option value="" disabled>Select a document</option>
                             {docs.map((doc) => <option key={doc.id} value={doc.id}>{doc.date} · {doc.title}</option>)}
@@ -1106,7 +1106,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                         <Activity className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-[#1A1A1A] animate-pulse" />
                       </div>
                       <h4 className="mb-2 font-display text-2xl text-[#1A1A1A]">Cross-examining Narratives...</h4>
-                      <p className="animate-pulse font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50">Mapping Entities → Detecting Omissions → Measuring Divergence</p>
+                      <p className="animate-pulse font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65">Mapping Entities → Detecting Omissions → Measuring Divergence</p>
                     </div>
                   )}
 
@@ -1116,14 +1116,14 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                         <div className="border-2 border-[#1A1A1A] bg-white p-6 rounded-sm flex flex-col items-center justify-center h-[320px]">
                           <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A4BFF] mb-4 text-center">Divergence Score</h4>
                           <TacticalGauge score={comparisonAnalysis.divergenceScore} label="Divergence" />
-                          <p className="text-[10px] text-center font-mono uppercase tracking-widest text-[#1A1A1A]/50 mt-6 border border-[#1A1A1A]/10 px-3 py-1 rounded-full bg-[#1A1A1A]/5">
+                          <p className="text-[10px] text-center font-mono uppercase tracking-widest text-[#1A1A1A]/65 mt-6 border border-[#1A1A1A]/10 px-3 py-1 rounded-full bg-[#1A1A1A]/5">
                             {comparisonAnalysis.divergenceScore > 70 ? "Fundamentally Opposed" : comparisonAnalysis.divergenceScore > 40 ? "Moderate Friction" : "Broad Alignment"}
                           </p>
                         </div>
 
                         <div className="md:col-span-2 border-2 border-[#1A1A1A] bg-white p-6 rounded-sm h-[320px]">
                           <div className="mb-2 flex items-center justify-between">
-                            <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50">Comparative Narrative Profile</h4>
+                            <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65">Comparative Narrative Profile</h4>
                           </div>
                           <div className="h-[240px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
@@ -1144,7 +1144,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                         <h4 className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-[#1A1A1A] border-b-2 border-[#1A1A1A] pb-4"><Target className="h-4 w-4" /> Entity Matrix</h4>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           <div>
-                            <h5 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50 mb-3 text-center">Shared Focus</h5>
+                            <h5 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65 mb-3 text-center">Shared Focus</h5>
                             <div className="flex flex-col gap-2">
                               {comparisonAnalysis.shared_entities?.map((e: string, i: number) => (
                                 <span key={i} className="w-full px-3 py-1.5 bg-[#1A1A1A]/5 text-[#1A1A1A] border border-[#1A1A1A]/10 rounded-sm text-xs font-medium text-center truncate">{e}</span>
@@ -1199,7 +1199,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                         <GitCompare className="w-8 h-8 text-[#1A1A1A]" />
                       </div>
                       <h3 className="font-display text-3xl mb-3 text-[#1A1A1A]">Ready to compare.</h3>
-                      <p className="text-sm text-[#1A1A1A]/60 max-w-md mx-auto leading-relaxed">
+                      <p className="text-sm text-[#1A1A1A]/65 max-w-md mx-auto leading-relaxed">
                         Select two sources above and run the comparison to see the divergence score, entity matrix, and direct flashpoints.
                       </p>
                     </div>
@@ -1214,7 +1214,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
               <div className="mb-10 flex items-end justify-between">
                 <div>
                   <h3 className="mb-2 font-display text-4xl text-[#1A1A1A]">Language Trajectory</h3>
-                  <p className="text-sm text-[#1A1A1A]/60">Track phrases across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p>
+                  <p className="text-sm text-[#1A1A1A]/65">Track phrases across texts. Rates are per 1,000 words, so texts of different lengths remain comparable.</p>
                 </div>
               </div>
               
@@ -1227,7 +1227,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                 {terms.map((item, i) => (
                   <button key={item} className="flex items-center gap-2 rounded-full border border-[#1A1A1A]/10 bg-white px-4 py-2 text-sm font-medium text-[#1A1A1A] transition-colors hover:bg-[#1A1A1A]/5" onClick={() => save({ terms: terms.filter((phrase) => phrase !== item) })}>
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                    {item} <X className="h-4 w-4 text-[#1A1A1A]/40" />
+                    {item} <X className="h-4 w-4 text-[#1A1A1A]/65" />
                   </button>
                 ))}
               </div>
@@ -1238,7 +1238,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                     <Hash className="w-8 h-8 text-[#1A1A1A]" />
                   </div>
                   <h3 className="font-display text-3xl mb-3 text-[#1A1A1A]">Measure the narrative.</h3>
-                  <p className="text-sm text-[#1A1A1A]/60 max-w-md mx-auto leading-relaxed">
+                  <p className="text-sm text-[#1A1A1A]/65 max-w-md mx-auto leading-relaxed">
                     Type a word or phrase above (like "security" or "economy") to visualize how often it appears across your sources.
                   </p>
                 </div>
@@ -1246,7 +1246,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
 
               {terms.length > 0 && docs.length > 0 && (
                 <div className="mb-12 rounded-sm border border-[#1A1A1A]/10 bg-white p-8">
-                  <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50 mb-6">Phrase Frequency (per 1k words)</h4>
+                  <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65 mb-6">Phrase Frequency (per 1k words)</h4>
                   <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -1273,15 +1273,15 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                     <div className="flex gap-6 flex-wrap">
                       {values.map((value, i) => (
                         <div key={value.phrase} className="text-right">
-                          <span className="block font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/40 mb-1">{value.phrase}</span>
+                          <span className="block font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65 mb-1">{value.phrase}</span>
                           <strong className="text-xl" style={{ color: COLORS[i % COLORS.length] }}>{value.rate}</strong>
-                          <span className="text-[10px] text-[#1A1A1A]/40 ml-1">/1k</span>
+                          <span className="text-[10px] text-[#1A1A1A]/65 ml-1">/1k</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 ))}
-                {terms.length === 0 && <p className="py-8 text-center font-display text-lg text-[#1A1A1A]/50">Add a phrase above to see its frequency across documents.</p>}
+                {terms.length === 0 && <p className="py-8 text-center font-display text-lg text-[#1A1A1A]/65">Add a phrase above to see its frequency across documents.</p>}
               </div>
 
               <section>
@@ -1289,11 +1289,11 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                 <div className="space-y-8">
                   {docs.map((doc) => (
                     <div key={doc.id} className="flex flex-col gap-4">
-                      <b className="text-sm font-mono uppercase tracking-widest text-[#1A1A1A]/50 border-b border-[#1A1A1A]/10 pb-2">{doc.title}</b>
+                      <b className="text-sm font-mono uppercase tracking-widest text-[#1A1A1A]/65 border-b border-[#1A1A1A]/10 pb-2">{doc.title}</b>
                       <div className="flex flex-wrap gap-3 mt-2">
                         {topTerms(doc.text, 15).map(([word, count], i) => {
                           const size = count > 20 ? "text-2xl font-bold" : count > 10 ? "text-lg font-semibold" : "text-base";
-                          const color = i % 3 === 0 ? "text-[#1A4BFF]" : i % 3 === 1 ? "text-[#1A1A1A]" : "text-[#1A1A1A]/50";
+                          const color = i % 3 === 0 ? "text-[#1A4BFF]" : i % 3 === 1 ? "text-[#1A1A1A]" : "text-[#1A1A1A]/65";
                           return (
                             <button key={word} className={`${size} ${color} hover:opacity-60 transition-opacity font-display`} onClick={() => setTerm(word)} title={`${count} occurrences`}>
                               {word}
@@ -1312,12 +1312,12 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
             <div className="mx-auto max-w-4xl p-6 pb-24">
               <div className="mb-8">
                 <h3 className="mb-2 font-display text-4xl tracking-tight text-[#1A1A1A]">Ask the Archives</h3>
-                <p className="max-w-xl text-sm text-[#1A1A1A]/60">Query your long-term memory. The AI will search across everything you have planted to the canvas and synthesize a historical intelligence report.</p>
+                <p className="max-w-xl text-sm text-[#1A1A1A]/65">Query your long-term memory. The AI will search across everything you have planted to the canvas and synthesize a historical intelligence report.</p>
               </div>
 
               <form className="mb-10 flex flex-col sm:flex-row gap-2" onSubmit={(e) => { e.preventDefault(); runArchiveSearch(); }}>
                 <div className="relative flex-1">
-                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1A1A1A]/30" />
+                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1A1A1A]/65" />
                   <Input value={archiveQuery} onChange={(e) => setArchiveQuery(e.target.value)} placeholder="e.g. What did the UN say about Haiti's arms embargo?" className="h-11 border-[#1A1A1A]/10 bg-white pl-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-[#1A1A1A]/20" />
                 </div>
                 <Button type="submit" disabled={isSearchingArchive || !archiveQuery.trim()} className="h-11 px-8 bg-[#1A1A1A] text-white hover:bg-[#1A1A1A] rounded-sm">
@@ -1333,7 +1333,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                     <div className="absolute left-0 top-0 h-full w-1.5 bg-[#1A1A1A]" />
                     <div className="mb-4 flex items-center gap-3">
                       <div className="bg-[#1A1A1A]/5 p-2 rounded-sm"><BookOpenText className="h-5 w-5 text-[#1A1A1A]" /></div>
-                      <h4 className="font-mono text-xs uppercase tracking-widest text-[#1A1A1A]/50">Synthesized Intelligence</h4>
+                      <h4 className="font-mono text-xs uppercase tracking-widest text-[#1A1A1A]/65">Synthesized Intelligence</h4>
                     </div>
                     <div className="font-serif text-lg leading-relaxed text-[#1A1A1A]/90 whitespace-pre-wrap">{archiveResult.answer}</div>
                   </section>
@@ -1344,7 +1344,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                       <div className="space-y-3">
                         {archiveResult.sources.map((source: any, i: number) => (
                           <div key={i} className="flex flex-col rounded-sm border border-[#1A1A1A]/10 bg-[#FDFBF7] p-4 text-xs">
-                            <span className="font-mono text-[10px] uppercase text-[#1A1A1A]/40 mb-2">Match Score: {(source.score * 100).toFixed(1)}%</span>
+                            <span className="font-mono text-[10px] uppercase text-[#1A1A1A]/65 mb-2">Match Score: {(source.score * 100).toFixed(1)}%</span>
                             <p className="whitespace-pre-wrap text-[#1A1A1A]/70">{source.metadata?.text || "No text recorded"}</p>
                           </div>
                         ))}
@@ -1357,10 +1357,10 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
               {!archiveResult && !isSearchingArchive && (
                 <div className="flex flex-col items-center justify-center py-20 px-4 text-center border border-[#1A1A1A]/10 rounded-sm border-dashed bg-white/40 mt-8">
                   <div className="w-16 h-16 bg-[#1A1A1A]/5 rounded-sm flex items-center justify-center mb-6 shadow-inner border border-[#1A1A1A]/5">
-                    <Database className="w-8 h-8 text-[#1A1A1A]/40" />
+                    <Database className="w-8 h-8 text-[#1A1A1A]/65" />
                   </div>
                   <h3 className="font-display text-3xl mb-3 text-[#1A1A1A]">Search your memory.</h3>
-                  <p className="text-sm text-[#1A1A1A]/60 max-w-md mx-auto leading-relaxed">
+                  <p className="text-sm text-[#1A1A1A]/65 max-w-md mx-auto leading-relaxed">
                     Every time you plant a card, it gets archived. Query the database to connect the dots across weeks of research.
                   </p>
                 </div>
@@ -1372,8 +1372,8 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
       
       {selection && (
         <div className="fixed bottom-10 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border border-[#1A1A1A]/10 bg-white p-2 animate-in slide-in-from-bottom-8">
-          <span className="px-4 font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/50">Code as:</span>
-          {CODES.map((code) => <button key={code.id} className="rounded-sm px-3 py-1.5 text-xs font-medium text-[#1A1A1A]/60 transition-colors hover:bg-[#1A1A1A]/5 hover:text-[#1A1A1A]" onClick={() => { 
+          <span className="px-4 font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65">Code as:</span>
+          {CODES.map((code) => <button key={code.id} className="rounded-sm px-3 py-1.5 text-xs font-medium text-[#1A1A1A]/65 transition-colors hover:bg-[#1A1A1A]/5 hover:text-[#1A1A1A]" onClick={() => { 
              if (!selection) return; 
              const at = selection.doc.text.indexOf(selection.quote); 
              if (at < 0) return; 
@@ -1384,7 +1384,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
              window.getSelection()?.removeAllRanges(); 
           }}>{code.label}</button>)}
           <Button size="sm" className="rounded-sm px-4 font-bold uppercase tracking-wider text-[10px] bg-[#1A1A1A] text-white hover:bg-[#1A1A1A]" onClick={() => { plant(selection.doc, selection.quote); setSelection(null); }}>Plant</Button>
-          <Button variant="ghost" size="icon" className="rounded-full ml-1 hover:bg-[#1A1A1A]/5" onClick={() => setSelection(null)}><X className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" aria-label="Clear selection" className="rounded-full ml-1 hover:bg-[#1A1A1A]/5" onClick={() => setSelection(null)}><X className="h-4 w-4" /></Button>
         </div>
       )}
     </div>
