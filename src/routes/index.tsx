@@ -96,7 +96,7 @@ function LandingPage() {
         .reveal-visible { opacity: 1; transform: translateY(0); transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1); }
 
         .laptop-bezel {
-          background: #0A0A0A;
+          background: #1A1A1A;
           border: 12px solid #1A1A1A;
           box-shadow: 
             0 60px 120px -20px rgba(0,0,0,0.8),
@@ -287,6 +287,9 @@ function LandingPage() {
           <div className="relative h-6 rounded-b-[1.5rem] mx-auto w-[105%] -ml-[2.5%] z-[-1] bg-[#0A0A0A]" style={{ boxShadow: '0 60px 120px -20px rgba(0,0,0,0.8)' }}><div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/60 rounded-b-lg" /></div>
         </div>
 
+        {/* TODAY'S BRIEF — the product proving itself, every day */}
+        <TodaysBrief />
+
         {/* THE DOSSIER SECTION (BRUTALIST EDITORIAL) */}
         <section 
           id="features" 
@@ -441,5 +444,91 @@ function LandingPage() {
         </div>
       </footer>
     </div>
+  );
+}
+/**
+ * The landing page proves itself: it renders the most recent brief rather than
+ * describing one. Signed-out readers get it because 0008 opened the read policy.
+ */
+function TodaysBrief() {
+  const [brief, setBrief] = useState<{
+    headline: string;
+    bluf: string;
+    threat_level: string | null;
+    created_at: string;
+  } | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void supabase
+      .from("news_briefs")
+      .select("headline, bluf, threat_level, created_at")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (active && data) setBrief(data);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (!brief) return null;
+
+  const opening = (brief.bluf ?? "").split(/\n\s*\n/)[0] ?? "";
+  const level = (brief.threat_level ?? "MODERATE").toUpperCase();
+  const filed = new Date(brief.created_at).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  return (
+    <section className="relative z-10 mx-auto mt-24 w-full max-w-[1200px] px-6 md:px-12">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em]">
+          Today&rsquo;s brief
+        </span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
+          {filed} · one story, dissected
+        </span>
+      </div>
+
+      <article className="tw-sheet grid grid-cols-1 gap-0 overflow-hidden lg:grid-cols-[220px_minmax(0,1fr)]">
+        <div className="flex flex-col justify-between gap-4 border-b-2 border-[#1A1A1A] p-4 lg:border-b-0 lg:border-r-2">
+          <div>
+            <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
+              Threat level
+            </div>
+            <div
+              className="mt-1 inline-block px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-white"
+              style={{ backgroundColor: level === "CRITICAL" || level === "ELEVATED" ? "#C1121F" : "#1A1A1A" }}
+            >
+              {level}
+            </div>
+          </div>
+          <p className="font-mono text-[9px] uppercase leading-relaxed tracking-[0.16em] text-[#1A1A1A]/65">
+            Machine assessment · verify before action
+          </p>
+        </div>
+
+        <div className="p-5 md:p-7">
+          <h2 className="max-w-[24ch] font-display text-[26px] leading-[1.05] md:text-[38px]">
+            {brief.headline}
+          </h2>
+          <p className="mt-3 max-w-[62ch] font-serif text-[15px] leading-[1.6] text-[#1A1A1A]/80">
+            {opening}
+          </p>
+          <Link
+            to="/briefing"
+            className="group mt-5 inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+          >
+            Read the full brief
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+      </article>
+    </section>
   );
 }

@@ -113,6 +113,7 @@ export const Route = createFileRoute("/api/news-brief")({
           // Dated claims that have come due. One batched call, and only status changes
           // are written — "inconclusive" keeps the watch open for tomorrow.
           let checked = 0;
+          let dueCount = 0;
           try {
             const today = new Date().toISOString().slice(0, 10);
             const { data: due } = await supabase
@@ -123,6 +124,7 @@ export const Route = createFileRoute("/api/news-brief")({
               .order("due_date", { ascending: true })
               .limit(20);
 
+            dueCount = due?.length ?? 0;
             if (due?.length) {
               const verdicts = await checkClaims(readable[0]!, due as { id: string; claim: string }[]);
               for (const verdict of verdicts) {
@@ -148,6 +150,7 @@ export const Route = createFileRoute("/api/news-brief")({
               id: data.id,
               threat_level: brief.threat_level,
               source: brief.source_url,
+              watches_due: dueCount,
               watches_checked: checked,
               ms: Date.now() - startedAt,
             },

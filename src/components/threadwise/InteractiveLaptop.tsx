@@ -53,7 +53,7 @@ const AXES: { key: keyof Radar; label: string; angle: number }[] = [
 const NOTE_STYLE: Record<NoteKind, { label: string; ink: string; Icon: typeof ShieldAlert }> = {
   contradiction: { label: "Contradiction", ink: "var(--accent-ink)", Icon: ShieldAlert },
   fallacy: { label: "Fallacy", ink: "#1A1A1A", Icon: FileWarning },
-  motive: { label: "Motive", ink: "#5B6B8C", Icon: Eye },
+  motive: { label: "Motive", ink: "#7A766E", Icon: Eye },
 };
 
 const DOCS: Doc[] = [

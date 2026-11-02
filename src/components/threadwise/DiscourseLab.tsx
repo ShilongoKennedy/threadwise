@@ -15,7 +15,8 @@ import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Pola
 type View = "read" | "compare" | "count" | "investigate" | "archives";
 const uid = () => crypto.randomUUID();
 
-const COLORS = ["#1A4BFF", "#1A1A1A", "#5B6B8C", "#93A3C4", "#2D6A65"];
+// One ink ramp plus the two accents: charts borrow the product's own materials.
+const COLORS = ["#1A1A1A", "#4A4A46", "#7A766E", "#1A4BFF", "#C1121F"];
 
 const SAMPLE_TEXT = `"I was in a country somewhere in the Middle East, and also in Europe, and the people said, we took our gold out of the vaults in New York City and moved it to our country. You know what I said to him? I said, you have three armies within 400 miles who can come take your gold."
 
@@ -646,6 +647,14 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                 <p className="mt-1.5 font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-[#1A1A1A]/65">
                   Paste a source above. The lab reads what it argues, not just what it says.
                 </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 h-9 border-[#1A1A1A]/25 font-mono text-[10px] uppercase tracking-[0.14em]"
+                  onClick={loadSample}
+                >
+                  <FileText className="mr-2 h-3.5 w-3.5" /> Read a sample speech
+                </Button>
               </li>
             )}
           </ol>
