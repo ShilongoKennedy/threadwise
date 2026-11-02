@@ -70,10 +70,13 @@ function ArchiveDepth() {
     rows.forEach((row, index) => {
       const hit = places[index];
       if (!hit) return;
+      const collide = list.filter(
+        (pin) => Math.hypot(pin.x - hit.x, pin.y - hit.y) < 6,
+      ).length;
       list.push({
         id: row.id,
-        x: hit.x,
-        y: hit.y,
+        x: hit.x + collide * 7,
+        y: hit.y + collide * 5,
         name: hit.place.name,
         label: row.headline,
         active: index === pinsFor,
@@ -166,62 +169,6 @@ function ArchiveDepth() {
           onFocus={(index) => {
             setFocus(index);
             setPinsFor(index);
-          }}
-          renderRail={(index) => {
-            const row = rows[index];
-            if (!row) return null;
-            return (
-              <div className="space-y-5">
-                <div>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#1A4BFF]">
-                    {new Date(row.created_at).toLocaleDateString("en-GB", {
-                      weekday: "long",
-                      day: "2-digit",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </p>
-                  <h2 className="mt-2 font-display text-[24px] leading-[1.05]">{row.headline}</h2>
-                  {places[index] && (
-                    <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/55">
-                      {places[index]!.place.name}
-                    </p>
-                  )}
-                  <p className="mt-3 font-serif text-[13.5px] leading-[1.6] text-[#1A1A1A]/70">
-                    {firstLine(row.bluf)}
-                  </p>
-                  <Link
-                    to="/briefing"
-                    search={{ b: row.id }}
-                    className="mt-3 inline-flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4"
-                  >
-                    Read this brief <ArrowUpRight className="h-3 w-3" />
-                  </Link>
-                </div>
-
-                <div className="border-t border-[#1A1A1A]/15 pt-4">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/60">
-                    Dated claims in it
-                  </p>
-                  {signals.length === 0 ? (
-                    <p className="mt-2 font-serif text-[13px] leading-[1.6] text-[#1A1A1A]/60">
-                      This brief committed to no dates.
-                    </p>
-                  ) : (
-                    <ul className="mt-2 space-y-2">
-                      {signals.map((signal) => (
-                        <li key={signal.id} className="border-l-2 border-l-[#1A4BFF] pl-2.5">
-                          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/60">
-                            {signal.due_date}
-                          </span>
-                          <p className="font-display text-[13px] leading-tight">{signal.claim}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            );
           }}
         />
           </div>
