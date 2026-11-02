@@ -147,7 +147,7 @@ function ArchiveDepth() {
 
       {status === "ready" && (
         <main className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(220px,46%)_minmax(240px,54%)] lg:grid-cols-[minmax(0,1fr)_340px] lg:grid-rows-[minmax(220px,46%)_minmax(240px,54%)]">
-          <section className="relative min-h-0 overflow-hidden border-b-2 border-[#1A1A1A]">
+          <section className="relative min-h-0 overflow-hidden border-b-2 border-[#1A1A1A] lg:col-start-1 lg:row-start-1">
             {pins.length > 0 ? (
               <>
                 <WorldMap pins={pins} />
@@ -162,7 +162,7 @@ function ArchiveDepth() {
             )}
           </section>
 
-          <div className="relative flex min-h-0 flex-col">
+          <div className="relative flex min-h-0 flex-col lg:col-start-1 lg:row-start-2">
         <DepthLine
           label="Brief archive, newest in front"
           cards={cards}
@@ -173,7 +173,7 @@ function ArchiveDepth() {
         />
           </div>
 
-          <aside className="hidden min-h-0 overflow-y-auto border-l-2 border-[#1A1A1A] bg-[#faf8f3] px-5 py-6 lg:block lg:row-span-2">
+          <aside className="hidden min-h-0 overflow-y-auto border-l-2 border-[#1A1A1A] bg-[#faf8f3] px-5 py-6 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:block">
             <Dossier row={rows[focus]} place={places[focus] ?? null} signals={signals} />
           </aside>
         </main>
