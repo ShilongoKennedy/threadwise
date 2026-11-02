@@ -64,11 +64,13 @@ function ArchiveDepth() {
     () =>
       rows.map((row) => {
         // Stored coordinates win; the gazetteer is only a bridge for old briefs.
-        if (row.place && typeof row.lat === "number" && typeof row.lon === "number") {
-          const spot = project(row.lon, row.lat);
-          return { place: { name: row.place, lat: row.lat, lon: row.lon }, ...spot };
+        const known = row.place && typeof row.lat === "number" && typeof row.lon === "number" && !(row.lat === 0 && row.lon === 0);
+        if (known) {
+          const spot = project(row.lon as number, row.lat as number);
+          return { place: { name: row.place as string, lat: row.lat as number, lon: row.lon as number }, ...spot };
         }
         const hit = inferPlace(`${row.headline} ${row.bluf ?? ""}`);
+        if (hit && Math.abs(hit.place.lat) < 0.5 && Math.abs(hit.place.lon) < 0.5) return null;
         return hit ?? null;
       }),
     [rows],

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { PROJ_H, PROJ_W, WORLD_PATH } from "./world";
 
 export type Pinned = {
@@ -18,7 +19,7 @@ export type Pinned = {
  */
 export function WorldMap({ pins, onPick }: { pins: Pinned[]; onPick?: (index: number) => void }) {
   const focus = pins.find((pin) => pin.active) ?? pins[0];
-  const zoom = 1.45;
+  const [zoom, setZoom] = useState(1.45);
   const cx = focus?.x ?? PROJ_W / 2;
   const cy = focus?.y ?? PROJ_H / 2;
   const tx = PROJ_W * 0.62 - cx * zoom;
@@ -28,6 +29,9 @@ export function WorldMap({ pins, onPick }: { pins: Pinned[]; onPick?: (index: nu
     <svg
       viewBox={`0 0 ${PROJ_W} ${PROJ_H}`}
       className="absolute inset-0 h-full w-full"
+      onWheel={(event) => {
+        setZoom((z) => Math.min(6, Math.max(1.1, z * (event.deltaY > 0 ? 0.92 : 1.08))));
+      }}
       aria-hidden
       preserveAspectRatio="xMidYMid slice"
     >
