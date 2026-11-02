@@ -11,7 +11,8 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { addWatch, claimWatch, listWatches, removeWatch, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
+import { addWatch, checkWatchNow, claimWatch, listWatches, removeWatch, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -454,6 +455,7 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
   const [due, setDue] = useState(format(new Date(), "yyyy-MM-dd"));
   const [saving, setSaving] = useState(false);
   const [watchError, setWatchError] = useState("");
+  const [checking, setChecking] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -592,6 +594,52 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
                       Keep
                     </Button>
                   ) : (
+                    <>
+                    {item.status === "pending" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 shrink-0 px-2 text-[11px]"
+                        disabled={checking === item.id}
+                        title="Check this claim against today's reporting"
+                        onClick={() => {
+                          setChecking(item.id);
+                          void checkWatchNow(item.id)
+                            .then((result) => {
+                              setWatches((rows) =>
+                                rows.map((row) =>
+                                  row.id === item.id
+                                    ? {
+                                        ...row,
+                                        status: result.status === "inconclusive" ? row.status : result.status,
+                                        resolution: result.note,
+                                        checked_at: new Date().toISOString(),
+                                      }
+                                    : row,
+                                ),
+                              );
+                              if (result.status === "inconclusive") {
+                                toast("Not settled by today's article", {
+                                  description: result.note || "It stays open and will be checked again.",
+                                });
+                              } else {
+                                toast[result.status === "confirmed" ? "success" : "error"](
+                                  result.status === "confirmed" ? "Confirmed" : "Contradicted",
+                                  { description: result.note },
+                                );
+                              }
+                            })
+                            .catch((error: unknown) =>
+                              toast.error(
+                                error instanceof Error ? error.message : "The check failed.",
+                              ),
+                            )
+                            .finally(() => setChecking(null));
+                        }}
+                      >
+                        {checking === item.id ? "Checking…" : "Check"}
+                      </Button>
+                    )}
                     <Button
                       size="icon"
                       variant="ghost"
@@ -606,6 +654,7 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
                     >
                       <X className="h-3.5 w-3.5" />
                     </Button>
+                    </>
                   )}
                 </li>
               );

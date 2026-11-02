@@ -17,6 +17,7 @@ import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
@@ -63,6 +64,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCheckWatchRoute = ApiCheckWatchRouteImport.update({
+  id: '/api/check-watch',
+  path: '/api/check-watch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiNewsBriefRoute = ApiNewsBriefRouteImport.update({
   id: '/api/news-brief',
   path: '/api/news-brief',
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -113,6 +120,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -146,6 +155,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/terms'
+    | '/api/check-watch'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/terms'
+    | '/api/check-watch'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/terms'
+    | '/api/check-watch'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
@@ -192,6 +204,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
+  ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
@@ -257,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/check-watch': {
+      id: '/api/check-watch'
+      path: '/api/check-watch'
+      fullPath: '/api/check-watch'
+      preLoaderRoute: typeof ApiCheckWatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/news-brief': {
       id: '/api/news-brief'
       path: '/api/news-brief'
@@ -304,6 +324,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
+  ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,

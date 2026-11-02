@@ -86,3 +86,31 @@ export async function listResolvedWatches(days = 14): Promise<Watch[]> {
   if (error) throw error;
   return (data as Watch[]) ?? [];
 }
+
+/**
+ * Verifies a single watch against today's article, on demand. Same model, same
+ * sources as the daily run — this is the manual trigger, not a different check.
+ */
+export async function checkWatchNow(
+  id: string,
+): Promise<{ status: Watch["status"]; note: string; source: string }> {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  const response = await fetch("/api/check-watch", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ watchId: id }),
+  });
+  const payload = (await response.json().catch(() => null)) as
+    | { status: Watch["status"]; note: string; source: string; message?: string }
+    | null;
+  if (!response.ok) throw new Error(payload?.message ?? "The check could not be completed.");
+  return {
+    status: payload?.status ?? "inconclusive",
+    note: payload?.note ?? "",
+    source: payload?.source ?? "",
+  };
+}
