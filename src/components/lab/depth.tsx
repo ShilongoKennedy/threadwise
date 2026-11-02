@@ -9,9 +9,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * never depend on `p`, or every frame would tear down and restart it.
  */
 
-const KX = [1.08, 0.64, 0.44, 0.31, 0.215, 0.145, 0.09];
-const KF = [1.06, 0.9, 0.795, 0.72, 0.665, 0.625, 0.6];
-const KH = [1.0, 0.66, 0.45, 0.32, 0.23, 0.17, 0.13];
+const KX = [1.02, 0.6, 0.415, 0.295, 0.205, 0.14, 0.088];
+const KF = [1.08, 0.97, 0.86, 0.775, 0.71, 0.665, 0.635];
+const KH = [1.16, 0.72, 0.48, 0.34, 0.245, 0.18, 0.135];
 const KB = [0, 0, 2, 5, 9, 13, 18];
 const KO = [1, 1, 1, 0.92, 0.7, 0.4, 0];
 

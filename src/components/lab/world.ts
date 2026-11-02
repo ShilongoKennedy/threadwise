@@ -83,7 +83,81 @@ const project = (lon: number, lat: number) => ({
 });
 
 /** Longest names first so "United States" wins over "US". */
-const ORDERED = [...PLACES].sort((a, b) => b.name.length - a.name.length);
+const EXTRA: Place[] = [
+  { name: "Belarus", lat: 53.71, lon: 27.95 },
+  { name: "Chernihiv", lat: 51.49, lon: 31.29 },
+  { name: "Oleshky", lat: 46.62, lon: 32.73 },
+  { name: "Donetsk", lat: 48.02, lon: 37.8 },
+  { name: "Luhansk", lat: 48.57, lon: 39.3 },
+  { name: "Zaporizhzhia", lat: 47.84, lon: 35.14 },
+  { name: "Kherson", lat: 46.64, lon: 32.61 },
+  { name: "Mariupol", lat: 47.1, lon: 37.55 },
+  { name: "Lviv", lat: 49.84, lon: 24.03 },
+  { name: "Moldova", lat: 47.41, lon: 28.37 },
+  { name: "Georgia", lat: 42.32, lon: 43.36 },
+  { name: "Armenia", lat: 40.07, lon: 45.04 },
+  { name: "Azerbaijan", lat: 40.14, lon: 47.58 },
+  { name: "Kazakhstan", lat: 48.02, lon: 66.92 },
+  { name: "Serbia", lat: 44.02, lon: 21.01 },
+  { name: "Kosovo", lat: 42.6, lon: 20.9 },
+  { name: "Bosnia", lat: 43.92, lon: 17.68 },
+  { name: "Croatia", lat: 45.1, lon: 15.2 },
+  { name: "Romania", lat: 45.94, lon: 24.97 },
+  { name: "Bulgaria", lat: 42.73, lon: 25.49 },
+  { name: "Greece", lat: 39.07, lon: 21.82 },
+  { name: "Italy", lat: 41.87, lon: 12.57 },
+  { name: "Spain", lat: 40.46, lon: -3.75 },
+  { name: "Netherlands", lat: 52.13, lon: 5.29 },
+  { name: "Sweden", lat: 60.13, lon: 18.64 },
+  { name: "Norway", lat: 60.47, lon: 8.47 },
+  { name: "Finland", lat: 61.92, lon: 25.75 },
+  { name: "Denmark", lat: 56.26, lon: 9.5 },
+  { name: "Ireland", lat: 53.14, lon: -7.69 },
+  { name: "Portugal", lat: 39.4, lon: -8.22 },
+  { name: "Morocco", lat: 31.79, lon: -7.09 },
+  { name: "Algeria", lat: 28.03, lon: 1.66 },
+  { name: "Libya", lat: 26.34, lon: 17.23 },
+  { name: "Tunisia", lat: 33.89, lon: 9.54 },
+  { name: "Mali", lat: 17.57, lon: -4.0 },
+  { name: "Niger", lat: 17.61, lon: 8.08 },
+  { name: "Chad", lat: 15.45, lon: 18.73 },
+  { name: "Cameroon", lat: 7.37, lon: 12.35 },
+  { name: "Congo", lat: -4.04, lon: 21.76 },
+  { name: "Uganda", lat: 1.37, lon: 32.29 },
+  { name: "Rwanda", lat: -1.94, lon: 29.87 },
+  { name: "Zimbabwe", lat: -19.02, lon: 29.15 },
+  { name: "Mozambique", lat: -18.67, lon: 35.53 },
+  { name: "Angola", lat: -11.2, lon: 17.87 },
+  { name: "Ghana", lat: 7.95, lon: -1.02 },
+  { name: "Iraq", lat: 33.22, lon: 43.68 },
+  { name: "Kuwait", lat: 29.31, lon: 47.48 },
+  { name: "Oman", lat: 21.51, lon: 55.92 },
+  { name: "Jordan", lat: 30.59, lon: 36.24 },
+  { name: "UAE", lat: 23.42, lon: 53.85 },
+  { name: "Bahrain", lat: 26.07, lon: 50.55 },
+  { name: "Saudi Arabia", lat: 23.89, lon: 45.08 },
+  { name: "Turkey", lat: 38.96, lon: 35.24 },
+  { name: "Cyprus", lat: 35.13, lon: 33.43 },
+  { name: "Malaysia", lat: 4.21, lon: 101.98 },
+  { name: "Singapore", lat: 1.35, lon: 103.82 },
+  { name: "Vietnam", lat: 14.06, lon: 108.28 },
+  { name: "Cambodia", lat: 12.57, lon: 104.99 },
+  { name: "Sri Lanka", lat: 7.87, lon: 80.77 },
+  { name: "Nepal", lat: 28.39, lon: 84.12 },
+  { name: "Hong Kong", lat: 22.32, lon: 114.17 },
+  { name: "Mongolia", lat: 46.86, lon: 103.85 },
+  { name: "New Zealand", lat: -40.9, lon: 174.89 },
+  { name: "Peru", lat: -9.19, lon: -75.02 },
+  { name: "Bolivia", lat: -16.29, lon: -63.59 },
+  { name: "Ecuador", lat: -1.83, lon: -78.18 },
+  { name: "Panama", lat: 8.54, lon: -80.78 },
+  { name: "Guatemala", lat: 15.78, lon: -90.23 },
+  { name: "Honduras", lat: 15.2, lon: -86.24 },
+  { name: "Dominican Republic", lat: 18.74, lon: -70.16 },
+  { name: "Jamaica", lat: 18.11, lon: -77.3 },
+];
+
+const ORDERED = [...PLACES, ...EXTRA].sort((a, b) => b.name.length - a.name.length);
 
 /** Where a story is about. A gazetteer, not a geocoder: unknown places return null. */
 export function inferPlace(text: string): { place: Place; x: number; y: number } | null {
@@ -96,6 +170,8 @@ export function inferPlace(text: string): { place: Place; x: number; y: number }
     const after = haystack[at + needle.length];
     const boundary = (ch: string | undefined) => ch === undefined || !/[a-z]/.test(ch);
     if (!boundary(before) || !boundary(after)) continue;
+    // "US-brokered" is an adjective, not a location.
+    if (needle === "us" && after === "-") continue;
     return { place, ...project(place.lon, place.lat) };
   }
   return null;
