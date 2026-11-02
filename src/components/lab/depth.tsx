@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * A line of planes receding to the left. One float `p` is the only state: every
  * card's x, size, blur and opacity is read from a seven-stop table by depth.
  * Layers are laid out once at a base size and only scaled, so text stays sharp.
+ *
+ * The animation loop is started once and reads its values from refs. It must
+ * never depend on `p`, or every frame would tear down and restart it.
  */
 
 const KX = [1.15, 0.7, 0.47, 0.325, 0.22, 0.145, 0.09];
@@ -26,98 +29,127 @@ export const BASE_H = 520;
 
 export function useDepth(count: number) {
   const [p, setP] = useState(0);
-  const target = useRef(0);
-  const stage = useRef<HTMLDivElement>(null);
   const [focus, setFocus] = useState(0);
-  const dragging = useRef<{ startX: number; startP: number; moved: number } | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const target = useRef(0);
+  const value = useRef(0);
+  const shown = useRef(0);
+  const focusRef = useRef(0);
+  const calm = useRef(false);
+
+  const stage = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ startX: number; startP: number; moved: number } | null>(null);
+  const justDragged = useRef(0);
   const wheelTimer = useRef<number | undefined>(undefined);
-  const calm = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
-    target.current = clamp(target.current, 0, count - 1);
+    calm.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
+
+  useEffect(() => {
+    target.current = clamp(target.current, 0, Math.max(0, count - 1));
+    value.current = clamp(value.current, 0, Math.max(0, count - 1));
   }, [count]);
 
+  // One loop, started once. Values live in refs; React only hears about changes.
   useEffect(() => {
     let raf = 0;
     let last = performance.now();
-    let current = 0;
 
     const tick = (now: number) => {
       const dt = Math.min(50, now - last);
       last = now;
+
       const t = target.current;
-      if (calm) current = t;
-      else {
-        current += (t - current) * (1 - Math.exp(-dt * 0.0072));
-        if (Math.abs(t - current) < 0.0004) current = t;
+      if (calm.current) {
+        value.current = t;
+      } else {
+        value.current += (t - value.current) * (1 - Math.exp(-dt * 0.0072));
+        if (Math.abs(t - value.current) < 0.0004) value.current = t;
       }
-      if (Math.abs(current - p) > 0.0001) {
-        setP(current);
-        setFocus(Math.round(wrap(current, count)));
+
+      if (Math.abs(value.current - shown.current) > 0.0004) {
+        shown.current = value.current;
+        setP(value.current);
+        const next = Math.round(wrap(value.current, count));
+        if (next !== focusRef.current) {
+          focusRef.current = next;
+          setFocus(next);
+        }
       }
+
       raf = requestAnimationFrame(tick);
     };
+
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [calm, count, p]);
+  }, [count]);
 
-  const go = (delta: number) => {
-    target.current = clamp(Math.round(target.current) + delta, 0, count - 1);
-  };
-  const jump = (index: number) => {
-    target.current = clamp(index, 0, count - 1);
-  };
+  const go = useCallback((delta: number) => {
+    target.current = clamp(Math.round(target.current) + delta, 0, Math.max(0, count - 1));
+  }, [count]);
+
+  const jump = useCallback((index: number) => {
+    if (Date.now() - justDragged.current < 250) return;
+    target.current = clamp(wrap(index, count), 0, Math.max(0, count - 1));
+  }, [count]);
 
   const bind = {
     onPointerDown: (event: React.PointerEvent) => {
-      const width = stage.current?.clientWidth ?? 800;
-      dragging.current = {
-        startX: event.clientX,
-        startP: target.current,
-        moved: 0,
-      };
-      void width;
+      if (event.button !== 0 && event.pointerType === "mouse") return;
+      drag.current = { startX: event.clientX, startP: target.current, moved: 0 };
+      setDragging(true);
       (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
     },
     onPointerMove: (event: React.PointerEvent) => {
-      const drag = dragging.current;
-      if (!drag) return;
+      const active = drag.current;
+      if (!active) return;
       const width = stage.current?.clientWidth ?? 800;
-      const dx = event.clientX - drag.startX;
-      drag.moved = Math.max(drag.moved, Math.abs(dx));
-      target.current = clamp(drag.startP + dx / Math.max(150, width * 0.2), 0, count - 1);
+      const dx = event.clientX - active.startX;
+      active.moved = Math.max(active.moved, Math.abs(dx));
+      target.current = clamp(
+        active.startP + dx / Math.max(150, width * 0.2),
+        0,
+        Math.max(0, count - 1),
+      );
     },
-    onPointerUp: () => {
-      const drag = dragging.current;
-      dragging.current = null;
-      if (!drag) return;
-      target.current = clamp(Math.round(target.current), 0, count - 1);
+    onPointerUp: (event: React.PointerEvent) => {
+      const active = drag.current;
+      drag.current = null;
+      setDragging(false);
+      if (!active) return;
+      if (active.moved > 6) justDragged.current = Date.now();
+      target.current = clamp(Math.round(target.current), 0, Math.max(0, count - 1));
+      try {
+        (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
+      } catch {
+        /* already released */
+      }
+    },
+    onPointerCancel: (event: React.PointerEvent) => {
+      drag.current = null;
+      setDragging(false);
+      try {
+        (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
+      } catch {
+        /* already released */
+      }
     },
     onWheel: (event: React.WheelEvent) => {
-      event.preventDefault();
       const step = clamp(event.deltaY + event.deltaX, -120, 120) / 420;
-      target.current = clamp(target.current + step, 0, count - 1);
+      target.current = clamp(target.current + step, 0, Math.max(0, count - 1));
       window.clearTimeout(wheelTimer.current);
       wheelTimer.current = window.setTimeout(() => {
-        target.current = clamp(Math.round(target.current), 0, count - 1);
+        target.current = clamp(Math.round(target.current), 0, Math.max(0, count - 1));
       }, 150);
-    },
-    onKeyDown: (event: React.KeyboardEvent) => {
-      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-        event.preventDefault();
-        go(1);
-      }
-      if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-        event.preventDefault();
-        go(-1);
-      }
     },
   };
 
-  return { p, stage, focus, bind, go, jump };
+  return { p, stage, focus, dragging, bind, go, jump };
 }
 
-/** Computes the placement of the card at a given index. */
+/** Where the card at `index` sits, given the current position `p`. */
 export function place(index: number, p: number, count: number, width: number, height: number) {
   const d = wrap(index - p, count);
   const depth = d > count - 1 ? d - count : d;

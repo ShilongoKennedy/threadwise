@@ -40,6 +40,7 @@ export function DepthLine({
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
       if (["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp"].includes(event.key)) {
         event.preventDefault();
         depth.go(event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1);
@@ -47,7 +48,7 @@ export function DepthLine({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [depth]);
+  }, [depth.go]);
 
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px]">
@@ -61,8 +62,8 @@ export function DepthLine({
         style={{
           background:
             "linear-gradient(transparent 55%, rgba(253,251,247,.9) 100%), linear-gradient(90deg,#f4f1ea 0%,#faf8f3 55%,#fdfbf7 100%)",
-          touchAction: "pan-y",
-          cursor: "grab",
+          touchAction: "none",
+          cursor: depth.dragging ? "grabbing" : "grab",
           userSelect: "none",
         }}
       >
@@ -90,6 +91,7 @@ export function DepthLine({
                 <button
                   type="button"
                   onClick={() => depth.jump(index)}
+                  draggable={false}
                   className={`flex h-full w-full flex-col justify-between border-2 bg-white p-6 text-left transition-colors ${
                     active ? "border-[#1A1A1A]" : "border-[#1A1A1A]/25"
                   }`}
