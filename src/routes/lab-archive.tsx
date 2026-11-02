@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { DepthLine, type DepthCard } from "@/components/lab/DepthLine";
 import { WorldMap, type Pinned } from "@/components/lab/WorldMap";
-import { inferPlace } from "@/components/lab/world";
+import { inferPlace, project } from "@/components/lab/world";
 import { listSuggestedFor, type Watch } from "@/lib/threadwise/watches";
 
 export const Route = createFileRoute("/lab-archive")({
@@ -23,6 +23,9 @@ type Row = {
   bluf: string;
   threat_level: string | null;
   created_at: string;
+  place: string | null;
+  lat: number | null;
+  lon: number | null;
 };
 
 const firstLine = (text: string) => {
@@ -36,13 +39,14 @@ function ArchiveDepth() {
   const [status, setStatus] = useState<"loading" | "ready" | "empty">("loading");
   const [focus, setFocus] = useState(0);
   const [pinsFor, setPinsFor] = useState<number>(0);
+  const [jump, setJump] = useState({ index: 0, nonce: 0 });
   const [signals, setSignals] = useState<Watch[]>([]);
 
   useEffect(() => {
     let active = true;
     void supabase
       .from("news_briefs")
-      .select("id, headline, bluf, threat_level, created_at")
+      .select("id, headline, bluf, threat_level, created_at, place, lat, lon")
       .order("created_at", { ascending: false })
       .limit(8)
       .then(({ data }) => {
@@ -59,8 +63,13 @@ function ArchiveDepth() {
   const places = useMemo(
     () =>
       rows.map((row) => {
+        // Stored coordinates win; the gazetteer is only a bridge for old briefs.
+        if (row.place && typeof row.lat === "number" && typeof row.lon === "number") {
+          const spot = project(row.lon, row.lat);
+          return { place: { name: row.place, lat: row.lat, lon: row.lon }, ...spot };
+        }
         const hit = inferPlace(`${row.headline} ${row.bluf ?? ""}`);
-        return hit ? hit : null;
+        return hit ?? null;
       }),
     [rows],
   );
@@ -81,6 +90,7 @@ function ArchiveDepth() {
         label: row.headline,
         active: index === pinsFor,
         past: index <= pinsFor,
+        index,
       });
     });
     return list;
@@ -150,7 +160,7 @@ function ArchiveDepth() {
           <section className="relative min-h-0 overflow-hidden border-b-2 border-[#1A1A1A] lg:col-start-1 lg:row-start-1">
             {pins.length > 0 ? (
               <>
-                <WorldMap pins={pins} />
+                <WorldMap pins={pins} onPick={(index) => setJump((j) => ({ index, nonce: j.nonce + 1 }))} />
                 <div className="pointer-events-none absolute left-4 top-3 font-mono text-[9px] uppercase tracking-[0.22em] text-[#1A1A1A]/55">
                   Where the record has been
                 </div>
@@ -166,6 +176,7 @@ function ArchiveDepth() {
         <DepthLine
           label="Brief archive, newest in front"
           cards={cards}
+          jumpTo={jump}
           onFocus={(index) => {
             setFocus(index);
             setPinsFor(index);

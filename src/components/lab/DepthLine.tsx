@@ -20,12 +20,14 @@ export function DepthLine({
   label,
   backdrop,
   onFocus,
+  jumpTo,
 }: {
   cards: DepthCard[];
   renderRail?: (focus: number) => React.ReactNode;
   label: string;
   backdrop?: (focus: number) => React.ReactNode;
   onFocus?: (index: number) => void;
+  jumpTo?: { index: number; nonce: number };
 }) {
   const depth = useDepth(cards.length);
   const box = useRef<HTMLDivElement>(null);
@@ -41,6 +43,11 @@ export function DepthLine({
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (jumpTo && jumpTo.nonce > 0) depth.jump(jumpTo.index);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jumpTo?.nonce]);
 
   useEffect(() => {
     onFocus?.(depth.focus);

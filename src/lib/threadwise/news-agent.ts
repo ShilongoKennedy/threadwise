@@ -170,6 +170,9 @@ const briefSchema = z.object({
   historical_echo: z.string().trim().min(20).max(320),
   threat_level: threatLevel,
   source_url: z.string().trim().default(""),
+  place: z.string().trim().max(60).default(""),
+  lat: z.number().min(-90).max(90).default(0),
+  lon: z.number().min(-180).max(180).default(0),
   /** Future dates the article itself commits to — planted in the calendar. */
   dated_claims: z
     .array(
@@ -190,6 +193,9 @@ export type NewsBriefDraft = {
   historical_echo: string;
   threat_level: ThreatLevel;
   source_url: string;
+  place: string;
+  lat: number;
+  lon: number;
   dated_claims: { claim: string; date: string }[];
 };
 
@@ -208,6 +214,8 @@ Hard limits — break these and the dossier is rejected:
 - omission: EXACTLY 3 bullets, each MAXIMUM 18 words. The dog that didn't bark: missing numbers, absent parties, questions the piece never answers.
 - historical_echo: MAXIMUM 2 SENTENCES. One concrete precedent, and where the comparison breaks.
 - threat_level: exactly one of "LOW", "MODERATE", "ELEVATED", "CRITICAL".
+- place: the single primary location the story happens in, as a city or country name (max 3 words).
+- lat, lon: that place's decimal coordinates, to two decimals. If the article names no place, return empty place and 0, 0.
 - dated_claims: 0 to 3 FUTURE dates the article itself commits to — a signing, a deadline, a vote, a ruling, a scheduled release. Shape: { "claim": "what is supposed to happen", "date": "YYYY-MM-DD" }. Only dates stated or unambiguously implied by the article; never invent one. Empty array if the piece commits to nothing. Resolve relative phrasing ("next Friday") against the article date given above.
 
 Rules:

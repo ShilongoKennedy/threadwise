@@ -77,7 +77,7 @@ const PLACES: Place[] = [
   { name: "Greenland", lat: 71.71, lon: -42.6 },
 ];
 
-const project = (lon: number, lat: number) => ({
+export const project = (lon: number, lat: number) => ({
   x: ((lon + 180) / 360) * PROJ_W,
   y: ((90 - lat) / 180) * PROJ_H,
 });

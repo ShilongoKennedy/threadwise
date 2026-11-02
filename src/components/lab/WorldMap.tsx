@@ -8,6 +8,7 @@ export type Pinned = {
   label: string;
   active: boolean;
   past: boolean;
+  index: number;
 };
 
 /**
@@ -15,7 +16,7 @@ export type Pinned = {
  * each to the next — the same cord the canvas uses, laid on a map instead.
  * The map only ever pans to the focused pin; it never redraws.
  */
-export function WorldMap({ pins }: { pins: Pinned[] }) {
+export function WorldMap({ pins, onPick }: { pins: Pinned[]; onPick?: (index: number) => void }) {
   const focus = pins.find((pin) => pin.active) ?? pins[0];
   const zoom = 1.45;
   const cx = focus?.x ?? PROJ_W / 2;
@@ -26,7 +27,7 @@ export function WorldMap({ pins }: { pins: Pinned[] }) {
   return (
     <svg
       viewBox={`0 0 ${PROJ_W} ${PROJ_H}`}
-      className="pointer-events-none absolute inset-0 h-full w-full"
+      className="absolute inset-0 h-full w-full"
       aria-hidden
       preserveAspectRatio="xMidYMid slice"
     >
@@ -80,7 +81,13 @@ export function WorldMap({ pins }: { pins: Pinned[] }) {
         })}
 
         {pins.map((pin) => (
-          <g key={pin.id} transform={`translate(${pin.x} ${pin.y})`}>
+          <g
+            key={pin.id}
+            transform={`translate(${pin.x} ${pin.y})`}
+            style={{ cursor: onPick ? "pointer" : "default", pointerEvents: onPick ? "auto" : "none" }}
+            onClick={() => onPick?.(pin.index)}
+          >
+            <circle r="18" fill="transparent" />
             {pin.active && (
               <>
                 <circle r="16" fill="#1A4BFF" opacity="0.12" />

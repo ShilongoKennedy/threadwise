@@ -372,6 +372,9 @@ export type Database = {
           created_at: string
           framing: string[]
           headline: string
+          lat: number | null
+          lon: number | null
+          place: string | null
           historical_echo: string
           id: string
           model: string | null

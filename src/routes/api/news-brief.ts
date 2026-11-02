@@ -82,6 +82,9 @@ export const Route = createFileRoute("/api/news-brief")({
               historical_echo: brief.historical_echo,
               threat_level: brief.threat_level,
               source_url: brief.source_url,
+              place: brief.place || null,
+              lat: brief.place ? brief.lat : null,
+              lon: brief.place ? brief.lon : null,
               model: process.env["DEEPSEEK_MODEL"] ?? "deepseek-chat",
             })
             .select("id")
