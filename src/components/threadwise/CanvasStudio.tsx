@@ -25,42 +25,55 @@ import { ThoughtPlayback } from "./ThoughtPlayback";
 import { ConsequenceMap } from "./ConsequenceMap";
 import { DossierTool, RunwayTool, ScenarioTool } from "./StrategyTools";
 
-const TOOL_GROUPS = [
+// Five tools were removed: Conversation to canvas, Batch wire, Spatial narratives,
+// Document & evidence and Discourse lab — the first three had no recorded use, the
+// last two only opened surfaces that already have their own front door.
+const PRIMARY_TOOLS = [
+  { id: "inbox", label: "Capture inbox", icon: Inbox },
+  { id: "layout", label: "Auto-layout", icon: Wand2 },
+  { id: "frames", label: "Swimlanes & frames", icon: PanelTop },
+  { id: "redteam", label: "Red-team audit", icon: ShieldCheck },
+  { id: "path", label: "Critical path", icon: ScanLine },
+  { id: "scenario", label: "Scenario stress-test", icon: SlidersHorizontal },
+  { id: "dossier", label: "Executive dossier", icon: FileBadge },
+  { id: "export", label: "Vector & narrative export", icon: Download },
+];
+
+const MORE_GROUPS = [
   { label: "Capture", tools: [
-    { id: "inbox", label: "Capture inbox", icon: Inbox },
     { id: "field", label: "Field capture", icon: PenLine },
-    { id: "intake", label: "Conversation to canvas", icon: FileUp },
-    { id: "evidence", label: "Document & evidence", icon: FileUp },
   ]},
   { label: "Organize", tools: [
-    { id: "layout", label: "Auto-layout", icon: Wand2 },
-    { id: "frames", label: "Swimlanes & frames", icon: PanelTop },
-    { id: "weave", label: "Batch wire", icon: Layers },
     { id: "branches", label: "Branches & merge", icon: GitBranch },
   ]},
   { label: "Analyze", tools: [
     { id: "risk", label: "Risk simulation", icon: ChartNoAxesCombined },
     { id: "tensions", label: "Contradiction engine", icon: GitFork },
-    { id: "redteam", label: "Red-team audit", icon: ShieldCheck },
-    { id: "path", label: "Critical path & depth", icon: ScanLine },
     { id: "radar", label: "Executive radar", icon: Target },
     { id: "zoom", label: "Spatial narratives", icon: Maximize },
     { id: "discourse", label: "Discourse lab", icon: BookOpenText },
   ]},
   { label: "Strategy", tools: [
-    { id: "scenario", label: "Scenario stress-test", icon: SlidersHorizontal },
     { id: "runway", label: "Resource & runway", icon: Wallet },
-    { id: "dossier", label: "Executive dossier", icon: FileBadge },
   ]},
   { label: "Deliver", tools: [
     { id: "present", label: "Presentation", icon: Presentation },
     { id: "playback", label: "Thought playback", icon: Play },
     { id: "consequences", label: "Consequence map", icon: GitFork },
-    { id: "export", label: "Vector & narrative export", icon: Download },
   ]},
 ];
 
-const ALL_TOOLS = TOOL_GROUPS.flatMap((g) => g.tools);
+const TOOL_GROUPS = [
+  { label: "Core", tools: PRIMARY_TOOLS },
+  ...MORE_GROUPS,
+];
+
+const MORE_TOOL_IDS = new Set(MORE_GROUPS.flatMap((g) => g.tools.map((t) => t.id)));
+
+const ALL_TOOLS = [
+  ...PRIMARY_TOOLS,
+  ...MORE_GROUPS.flatMap((g) => g.tools),
+];
 type Stroke = { id: string; points: { x: number; y: number }[]; at: number };
 const saveFile = (text: string, name: string, type: string) => {
   const url = URL.createObjectURL(new Blob([text], { type }));
@@ -76,7 +89,7 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
   // FIX: Safely merge the default suite so stops, frames, etc. are never wiped out
   const suite = { ...emptySuite(), ...(canvas?.suite ?? {}) };
   
-  const [open, setOpen] = useState(false), [tool, setTool] = useState("inbox"), [error, setError] = useState(""), [busy, setBusy] = useState(false), [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false), [moreOpen, setMoreOpen] = useState(false), [tool, setTool] = useState("inbox"), [error, setError] = useState(""), [busy, setBusy] = useState(false), [message, setMessage] = useState("");
   const [title, setTitle] = useState(""), [capture, setCapture] = useState(""), [ids, setIds] = useState<string[]>([]), [relation, setRelation] = useState<Relation>("depends_on"), [wireMode, setWireMode] = useState<"chain" | "fan" | "all">("chain");
   const [prob, setProb] = useState<Record<string, number>>({}), [results, setResults] = useState<ReturnType<typeof simulate> | null>(null), [findings, setFindings] = useState<RedTeamResult | null>(null), [choices, setChoices] = useState<Record<string, "ours" | "theirs">>({}), [digest, setDigest] = useState("");
   const [present, setPresent] = useState(false), [stop, setStop] = useState(0), [auto, setAuto] = useState(false), [pace, setPace] = useState(7000), [playback, setPlayback] = useState(false), [theatre, setTheatre] = useState(false);
@@ -213,29 +226,56 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
       
       {open && !present && s.replayIndex === null && (
         <aside className="tw-studio-panel" aria-label="Canvas studio">
-          <div className="flex items-center justify-between border-b px-5 py-4">
-            <div><span className="font-mono text-[10px] uppercase text-muted-foreground">THE WORKBENCH</span><h2 className="font-display text-2xl">Canvas studio</h2></div>
+          <div className="flex items-center justify-between border-b-2 border-[#1A1A1A] px-4 py-2.5">
+            <div className="min-w-0">
+              <span className="font-mono text-[9px] uppercase tracking-[0.24em] text-[#1A1A1A]/65">
+                The workbench
+              </span>
+              <h2 className="font-display text-xl leading-tight">Canvas studio</h2>
+            </div>
             <Button variant="ghost" size="icon" aria-label="Close canvas studio" onClick={() => setOpen(false)}><X /></Button>
           </div>
           <div className="tw-studio-body">
-            <nav aria-label="Canvas tools" className="tw-studio-nav flex flex-col gap-1 overflow-y-auto p-2">
-              {TOOL_GROUPS.map((group) => (
-                <div key={group.label} className="mb-2">
-                  <div className="sticky top-0 bg-card px-2 py-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground/70 shadow-sm">{group.label}</div>
+            <nav aria-label="Canvas tools" className="tw-studio-nav flex flex-col gap-0.5 overflow-y-auto py-2">
+              <div className="mb-1 px-3 pt-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/65">
+                Tools
+              </div>
+              {PRIMARY_TOOLS.map((t) => (
+                <Button key={t.id} variant="ghost" title={t.label} aria-pressed={tool === t.id} className={`mx-1 h-8 w-[calc(100%-8px)] justify-start rounded-[2px] border-l-2 px-2 text-[12px] ${tool === t.id ? "border-l-[#1A4BFF] bg-[#1A4BFF]/[0.07] text-[#1A1A1A]" : "border-l-transparent text-[#1A1A1A]/75 hover:bg-[#1A1A1A]/[0.04] hover:text-[#1A1A1A]"}`} onClick={() => { setTool(t.id); setError(""); setMessage(""); }}>
+                  <t.icon className="mr-2 h-4 w-4 shrink-0" /><span className="truncate">{t.label}</span>
+                </Button>
+              ))}
+
+              <details
+                open={moreOpen || MORE_TOOL_IDS.has(tool)}
+                onToggle={(event) => setMoreOpen((event.currentTarget as HTMLDetailsElement).open)}
+                className="group mt-2 border-t border-[#1A1A1A]/15 pt-1"
+              >
+                <summary className="cursor-pointer list-none px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/65 transition-colors hover:text-[#1A1A1A]">
+                  More tools <span className="group-open:hidden">+</span><span className="hidden group-open:inline">−</span>
+                </summary>
+              {MORE_GROUPS.map((group) => (
+                <div key={group.label} className="mb-3">
+                  <div className="sticky top-0 z-10 border-b border-[#1A1A1A]/15 bg-white px-3 pb-1 pt-2 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/65">{group.label}</div>
                   {group.tools.map((t) => (
-                    <Button key={t.id} variant={tool === t.id ? "secondary" : "ghost"} title={t.label} className="w-full justify-start text-xs h-9 px-2" onClick={() => {
+                    <Button key={t.id} variant="ghost" title={t.label} aria-pressed={tool === t.id} className={`mx-1 h-8 w-[calc(100%-8px)] justify-start rounded-[2px] border-l-2 px-2 text-[12px] ${tool === t.id ? "border-l-[#1A4BFF] bg-[#1A4BFF]/[0.07] text-[#1A1A1A]" : "border-l-transparent text-[#1A1A1A]/75 hover:bg-[#1A1A1A]/[0.04] hover:text-[#1A1A1A]"}`} onClick={() => {
                       setTool(t.id); setError(""); setMessage("");
                       if (t.id === "discourse") { setOpen(false); window.dispatchEvent(new CustomEvent("threadwise:open-lab")); }
-                      if (t.id === "evidence") onEvidence();
                     }}>
                       <t.icon className="mr-2 h-4 w-4 shrink-0" /><span className="truncate">{t.label}</span>
                     </Button>
                   ))}
                 </div>
               ))}
+              </details>
             </nav>
             <section className="tw-studio-content">
-              <h3 className="mb-5 flex items-center gap-2 font-display text-xl">{ALL_TOOLS.find((t) => t.id === tool)?.label}</h3>
+              <h3 className="mb-5 flex items-baseline justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2 font-display text-xl">
+                {ALL_TOOLS.find((t) => t.id === tool)?.label}
+                <span className="font-mono text-[9px] font-normal uppercase tracking-[0.2em] text-[#1A1A1A]/65">
+                  {TOOL_GROUPS.find((g) => g.tools.some((t) => t.id === tool))?.label}
+                </span>
+              </h3>
               {tool === "inbox" && (
                 <>
                   <Textarea aria-label="Quick capture" placeholder="A thought worth keeping…" value={capture} onChange={(e) => setCapture(e.target.value)} className="mb-3" />
@@ -258,15 +298,15 @@ export function CanvasStudio({ onEvidence, onPresentChange }: { onEvidence: () =
                   <p className="mb-5 text-sm leading-relaxed text-muted-foreground">A live briefing made from the actual canvas. It shows what needs movement, what is still unproven, and where the team is holding two incompatible views.</p>
                   <div className="grid gap-3">
                     {[["Open moves", radar.actions.length, "Actions that are not done", radar.actions], ["Unproven", radar.uncertain.length, "Assumptions, hypotheses and unknowns", radar.uncertain], ["Tensions", radar.contradictory.length, "Explicit contradictions", []], ["Decision receipts", radar.decisions.length, "Saved planning decisions", []]].map(([label, count, description, nodes]) => (
-                      <button key={String(label)} className="rounded-xl border bg-card p-4 text-left transition hover:-translate-y-0.5 hover:shadow-md" onClick={() => Array.isArray(nodes) && nodes.length && focus(nodes as typeof s.nodes, 0.6)}>
-                        <span className="font-mono text-[10px] uppercase tracking-[.14em] text-muted-foreground">{String(label)}</span>
-                        <strong className="mt-1 block font-display text-3xl">{String(count).padStart(2, "0")}</strong>
-                        <span className="text-xs text-muted-foreground">{String(description)}</span>
+                      <button key={String(label)} className="border-2 border-[#1A1A1A] bg-white p-4 text-left transition-colors hover:bg-[#1A4BFF]/[0.05]" onClick={() => Array.isArray(nodes) && nodes.length && focus(nodes as typeof s.nodes, 0.6)}>
+                        <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">{String(label)}</span>
+                        <strong className="mt-1 block font-display text-3xl leading-none">{String(count).padStart(2, "0")}</strong>
+                        <span className="mt-1 block text-[11px] leading-snug text-[#1A1A1A]/65">{String(description)}</span>
                       </button>
                     ))}
                   </div>
                   {radar.decisions.slice(0, 3).map((decision) => (
-                    <article key={decision.id} className="mt-4 rounded-xl border border-dashed p-4">
+                    <article key={decision.id} className="mt-4 border border-dashed border-[#1A1A1A]/30 p-4">
                       <span className="font-mono text-[10px] uppercase text-muted-foreground">Decision receipt · {decision.status}</span>
                       <h4 className="mt-1 font-display text-lg">{decision.title}</h4>
                       <p className="mt-2 text-sm text-muted-foreground">{decision.conclusion || "Conclusion still being written."}</p>

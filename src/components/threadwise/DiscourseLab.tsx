@@ -679,6 +679,39 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
         </aside>
 
         <main className="flex-1 overflow-y-auto bg-[#FDFBF7]">
+
+          {!active && (
+            <div className="flex h-full min-h-[420px] flex-col justify-center px-6 py-16 md:px-12">
+              <div className="max-w-[46ch]">
+                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#1A4BFF]">
+                  The reading room
+                </span>
+                <h3 className="mt-3 font-display text-[30px] leading-[1.05] md:text-[42px]">
+                  Nothing on the bench.
+                </h3>
+                <p className="mt-3 font-serif text-[16px] leading-[1.65] text-[#1A1A1A]/75">
+                  Paste a source on the left — an article, a speech, a transcript. The lab marks what
+                  it argues, what it omits, and the claims it cannot support.
+                </p>
+                <div className="mt-6 flex flex-wrap items-center gap-3">
+                  <Button
+                    variant="outline"
+                    className="h-10 border-[#1A1A1A] font-mono text-[10px] uppercase tracking-[0.14em]"
+                    onClick={loadSample}
+                  >
+                    <FileText className="mr-2 h-3.5 w-3.5" /> Read a sample speech
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => window.dispatchEvent(new CustomEvent("threadwise:open-canvas"))}
+                    className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+                  >
+                    or open the canvas
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           
           {view === "read" && active && (
             <div className="mx-auto max-w-7xl p-6 pb-24 h-full flex flex-col">
