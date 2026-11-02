@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Threadwise">
+  <circle cx="16" cy="4.6" r="2.2" fill="#1A4BFF"/>
+  <path d="M16 6.6V9.5" stroke="#1A1A1A" stroke-width="1.8" stroke-linecap="round"/>
+  <g transform="rotate(-7 16 9.5)">
+    <path fill="#1A1A1A" fill-rule="evenodd" d="M10.2 9.5h11.6a1.6 1.6 0 0 1 1.6 1.6v15a1.6 1.6 0 0 1-1.6 1.6H10.2a1.6 1.6 0 0 1-1.6-1.6v-15a1.6 1.6 0 0 1 1.6-1.6Zm5.8 3.1a1.9 1.9 0 1 0 0 3.8 1.9 1.9 0 0 0 0-3.8Z"/>
+  </g>
+</svg>

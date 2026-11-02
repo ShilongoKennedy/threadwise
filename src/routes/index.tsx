@@ -6,6 +6,7 @@ import {
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { InteractiveLaptop } from "@/components/threadwise/InteractiveLaptop";
+import { BrandMark } from "@/components/threadwise/BrandMark";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -144,9 +145,7 @@ function LandingPage() {
       {/* STICKY HEADER */}
       <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 md:px-12 py-4 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-[#1A1A1A]/10">
         <Link to="/" className="flex items-center gap-2 md:gap-3 group">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1A1A1A] md:w-6 md:h-6">
-            <circle cx="6" cy="18" r="2.5" fill="currentColor"/><path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2"/><circle cx="18" cy="6" r="2.5" fill="currentColor"/><path d="M18 6L12 12" stroke="currentColor" strokeWidth="1.5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/>
-          </svg>
+          <BrandMark className="h-6 w-6 md:h-7 md:w-7" />
           <span className="font-display italic text-xl tracking-tight font-medium text-[#1A1A1A] group-hover:text-[#1A4BFF] transition-colors">threadwise</span>
         </Link>
         
@@ -409,9 +408,7 @@ function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12 mb-16">
             <div className="max-w-sm">
               <Link to="/" className="flex items-center gap-3 mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1A1A1A]">
-                  <circle cx="6" cy="18" r="2.5" fill="currentColor"/><path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2"/><circle cx="18" cy="6" r="2.5" fill="currentColor"/><path d="M18 6L12 12" stroke="currentColor" strokeWidth="1.5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/>
-                </svg>
+                <BrandMark className="h-7 w-7" />
                 <span className="font-display italic text-2xl tracking-tight font-medium text-[#1A1A1A]">threadwise</span>
               </Link>
               <p className="text-sm text-[#1A1A1A]/65 leading-relaxed">

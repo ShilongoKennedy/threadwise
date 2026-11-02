@@ -1,0 +1,14 @@
+{
+  "name": "Threadwise",
+  "short_name": "Threadwise",
+  "description": "Forensic intelligence workspace: dissect a source, map what you know, and keep score on what the reporting predicted.",
+  "start_url": "/app",
+  "display": "standalone",
+  "background_color": "#FDFBF7",
+  "theme_color": "#FDFBF7",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
