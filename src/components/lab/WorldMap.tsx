@@ -17,7 +17,7 @@ export type Pinned = {
  */
 export function WorldMap({ pins }: { pins: Pinned[] }) {
   const focus = pins.find((pin) => pin.active) ?? pins[0];
-  const zoom = 2.1;
+  const zoom = 2.4;
   const cx = focus?.x ?? PROJ_W / 2;
   const cy = focus?.y ?? PROJ_H / 2;
   const tx = PROJ_W * 0.62 - cx * zoom;
@@ -31,10 +31,10 @@ export function WorldMap({ pins }: { pins: Pinned[] }) {
       preserveAspectRatio="xMidYMid slice"
     >
       <defs>
-        <radialGradient id="map-fade" cx="62%" cy="44%" r="72%">
-          <stop offset="0%" stopColor="#f4f1ea" stopOpacity="0.15" />
-          <stop offset="60%" stopColor="#f4f1ea" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#f4f1ea" stopOpacity="0.95" />
+        <radialGradient id="map-fade" cx="58%" cy="46%" r="80%">
+          <stop offset="0%" stopColor="#f4f1ea" stopOpacity="0" />
+          <stop offset="72%" stopColor="#f4f1ea" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#f4f1ea" stopOpacity="0.9" />
         </radialGradient>
       </defs>
 
@@ -44,8 +44,8 @@ export function WorldMap({ pins }: { pins: Pinned[] }) {
           transition: "transform 900ms cubic-bezier(.22,.8,.24,1)",
         }}
       >
-        <path d={WORLD_PATH} fill="#1A1A1A" fillOpacity="0.09" stroke="none" />
-        <path d={WORLD_PATH} fill="none" stroke="#1A1A1A" strokeOpacity="0.22" strokeWidth="0.7" />
+        <path d={WORLD_PATH} fill="#1A1A1A" fillOpacity="0.13" stroke="none" />
+        <path d={WORLD_PATH} fill="none" stroke="#1A1A1A" strokeOpacity="0.3" strokeWidth="0.6" />
 
         {/* the thread: each pin tied to the one before it */}
         {pins.map((pin, index) => {
@@ -77,7 +77,7 @@ export function WorldMap({ pins }: { pins: Pinned[] }) {
             <circle
               r={pin.active ? 3.4 : 2.2}
               fill={pin.active ? "#1A4BFF" : "#1A1A1A"}
-              fillOpacity={pin.active ? 1 : 0.55}
+              fillOpacity={pin.active ? 1 : 0.7}
             />
             {pin.active && (
               <text

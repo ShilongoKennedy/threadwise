@@ -19,11 +19,13 @@ export function DepthLine({
   renderRail,
   label,
   backdrop,
+  onFocus,
 }: {
   cards: DepthCard[];
   renderRail?: (focus: number) => React.ReactNode;
   label: string;
   backdrop?: (focus: number) => React.ReactNode;
+  onFocus?: (index: number) => void;
 }) {
   const depth = useDepth(cards.length);
   const box = useRef<HTMLDivElement>(null);
@@ -39,6 +41,10 @@ export function DepthLine({
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    onFocus?.(depth.focus);
+  }, [depth.focus, onFocus]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

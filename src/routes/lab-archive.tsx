@@ -35,6 +35,7 @@ function ArchiveDepth() {
   const [rows, setRows] = useState<Row[]>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "empty">("loading");
   const [focus, setFocus] = useState(0);
+  const [pinsFor, setPinsFor] = useState<number>(0);
   const [signals, setSignals] = useState<Watch[]>([]);
 
   useEffect(() => {
@@ -63,6 +64,24 @@ function ArchiveDepth() {
       }),
     [rows],
   );
+
+  const pins = useMemo<Pinned[]>(() => {
+    const list: Pinned[] = [];
+    rows.forEach((row, index) => {
+      const hit = places[index];
+      if (!hit) return;
+      list.push({
+        id: row.id,
+        x: hit.x,
+        y: hit.y,
+        name: hit.place.name,
+        label: row.headline,
+        active: index === pinsFor,
+        past: index <= pinsFor,
+      });
+    });
+    return list;
+  }, [rows, places, pinsFor]);
 
   const cards = useMemo<DepthCard[]>(
     () =>
@@ -124,26 +143,29 @@ function ArchiveDepth() {
       )}
 
       {status === "ready" && (
+        <main className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(220px,46%)_minmax(240px,54%)] lg:grid-cols-[minmax(0,1fr)_340px] lg:grid-rows-[minmax(220px,46%)_minmax(240px,54%)]">
+          <section className="relative min-h-0 overflow-hidden border-b-2 border-[#1A1A1A]">
+            {pins.length > 0 ? (
+              <>
+                <WorldMap pins={pins} />
+                <div className="pointer-events-none absolute left-4 top-3 font-mono text-[9px] uppercase tracking-[0.22em] text-[#1A1A1A]/55">
+                  Where the record has been
+                </div>
+              </>
+            ) : (
+              <div className="flex h-full items-center justify-center font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/45">
+                No location could be read from these briefs
+              </div>
+            )}
+          </section>
+
+          <div className="relative flex min-h-0 flex-col">
         <DepthLine
           label="Brief archive, newest in front"
           cards={cards}
-          backdrop={(focus) => {
-            const pins: Pinned[] = [];
-            rows.forEach((row, index) => {
-              const hit = places[index];
-              if (!hit) return;
-              pins.push({
-                id: row.id,
-                x: hit.x,
-                y: hit.y,
-                name: hit.place.name,
-                label: row.headline,
-                active: index === focus,
-                past: index <= focus,
-              });
-            });
-            if (!pins.length) return null;
-            return <WorldMap pins={pins} />;
+          onFocus={(index) => {
+            setFocus(index);
+            setPinsFor(index);
           }}
           renderRail={(index) => {
             const row = rows[index];
@@ -202,7 +224,77 @@ function ArchiveDepth() {
             );
           }}
         />
+          </div>
+
+          <aside className="hidden min-h-0 overflow-y-auto border-l-2 border-[#1A1A1A] bg-[#faf8f3] px-5 py-6 lg:block lg:row-span-2">
+            <Dossier row={rows[focus]} place={places[focus] ?? null} signals={signals} />
+          </aside>
+        </main>
       )}
+    </div>
+  );
+}
+
+function Dossier({
+  row,
+  place,
+  signals,
+}: {
+  row: Row | undefined;
+  place: { place: { name: string } } | null;
+  signals: Watch[];
+}) {
+  if (!row) return null;
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#1A4BFF]">
+          {new Date(row.created_at).toLocaleDateString("en-GB", {
+            weekday: "long",
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          })}
+        </p>
+        <h2 className="mt-2 font-display text-[24px] leading-[1.05]">{row.headline}</h2>
+        {place && (
+          <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/55">
+            {place.place.name}
+          </p>
+        )}
+        <p className="mt-3 font-serif text-[13.5px] leading-[1.6] text-[#1A1A1A]/70">
+          {firstLine(row.bluf)}
+        </p>
+        <Link
+          to="/briefing"
+          search={{ b: row.id }}
+          className="mt-3 inline-flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4"
+        >
+          Read this brief <ArrowUpRight className="h-3 w-3" />
+        </Link>
+      </div>
+
+      <div className="border-t border-[#1A1A1A]/15 pt-4">
+        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/60">
+          Dated claims in it
+        </p>
+        {signals.length === 0 ? (
+          <p className="mt-2 font-serif text-[13px] leading-[1.6] text-[#1A1A1A]/60">
+            This brief committed to no dates.
+          </p>
+        ) : (
+          <ul className="mt-2 space-y-2">
+            {signals.map((signal) => (
+              <li key={signal.id} className="border-l-2 border-l-[#1A4BFF] pl-2.5">
+                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/60">
+                  {signal.due_date}
+                </span>
+                <p className="font-display text-[13px] leading-tight">{signal.claim}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
