@@ -878,3 +878,33 @@ body::after {
   transition: top .15s;
 }
 .tw-skip-link:focus { top: 12px; }
+
+/* ---------- Verdict stamp ---------- */
+/* Accountability should feel like ink hitting paper, not a status pill. */
+.tw-stamp {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border: 2px solid currentColor;
+  border-radius: 1px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--foreground);
+  transform: rotate(-2deg);
+  animation: tw-stamp-in .26s cubic-bezier(.2, .9, .3, 1.25) both;
+}
+.tw-stamp.is-contradicted { color: #c1121f; transform: rotate(-4deg); }
+
+@keyframes tw-stamp-in {
+  0% { opacity: 0; transform: scale(1.7) rotate(-6deg); }
+  55% { opacity: 1; transform: scale(.94) rotate(-2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tw-stamp { animation: none; }
+}

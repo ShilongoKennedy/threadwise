@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { AlertTriangle, ArrowUpRight, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { claimWatch, listResolvedWatches, listSuggestedFor, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
+import { VerdictStamp } from "@/components/threadwise/VerdictStamp";
 
 export const Route = createFileRoute("/briefing")({
   validateSearch: (search: Record<string, unknown>): { b?: string | undefined } => ({
@@ -312,12 +313,7 @@ function BriefingPage() {
                         key={watch.id}
                         className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-[#1A1A1A]/10 px-3 py-2 last:border-b-0"
                       >
-                        <span
-                          className="px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white"
-                          style={{ backgroundColor: contradicted ? "#C1121F" : "#1A1A1A" }}
-                        >
-                          {WATCH_LABEL[watch.status]}
-                        </span>
+                        <VerdictStamp status={contradicted ? "contradicted" : "confirmed"} />
                         <span className="font-display text-sm leading-tight text-[#1A1A1A]">
                           {watch.claim}
                         </span>

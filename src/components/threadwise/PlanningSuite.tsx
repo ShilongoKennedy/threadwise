@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { addWatch, checkWatchNow, claimWatch, listWatches, removeWatch, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
 import { toast } from "sonner";
+import { VerdictStamp } from "./VerdictStamp";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -569,21 +570,17 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
                   key={item.id}
                   className="flex items-center gap-2 border-b border-foreground/10 px-3 py-1.5 last:border-b-0"
                 >
-                  <span
-                    className="shrink-0 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white"
-                    style={{
-                      backgroundColor:
-                        item.scope === "suggested"
-                          ? "#6B6862"
-                          : contradicted
-                            ? "#C1121F"
-                            : pending
-                              ? "#1A4BFF"
-                              : "#1A1A1A",
-                    }}
-                  >
-                    {item.scope === "suggested" ? "Suggested" : WATCH_LABEL[item.status]}
-                  </span>
+                  {item.scope === "suggested" ? (
+                    <span className="shrink-0 bg-[#6B6862] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white">
+                      Suggested
+                    </span>
+                  ) : pending ? (
+                    <span className="shrink-0 bg-[#1A4BFF] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white">
+                      {WATCH_LABEL[item.status]}
+                    </span>
+                  ) : (
+                    <VerdictStamp status={contradicted ? "contradicted" : "confirmed"} sound={false} />
+                  )}
                   <span className="min-w-0 flex-1 truncate text-[13px]" title={item.claim}>
                     {item.claim}
                   </span>
@@ -647,7 +644,7 @@ function Schedule({ decisions, onOutcome }: { decisions: Decision[]; onOutcome: 
                             .finally(() => setChecking(null));
                         }}
                       >
-                        {checking === item.id ? "Checking…" : "Check"}
+                        {checking === item.id ? "Looking…" : "Check"}
                       </Button>
                     )}
                     <Button

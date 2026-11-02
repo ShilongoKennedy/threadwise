@@ -313,7 +313,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
 
     void archiveInsight(nodeId, `${title}\n\n${body}`, { source: sourceTitle, type: kind });
 
-    toast.loading("Planted. Auto-wiring...", { id: "autowire" });
+    toast.loading("Finding what this argues with…", { id: "autowire" });
     try {
         const others = useThread.getState().nodes.filter(n => n.id !== nodeId && n.id !== dossierId).map(n => ({ id: n.id, title: n.data.title, body: n.data.body }));
         if (others.length > 0) {
@@ -929,7 +929,7 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
                 <div className="flex w-full sm:w-auto gap-2">
                   <Button variant="outline" size="icon" aria-label="Add a source URL" onClick={() => setUrls([...urls, ""])} className="h-11 w-11 shrink-0 border-[#1A1A1A]/10 bg-white hover:bg-[#1A1A1A]/5"><Plus className="h-4 w-4" /></Button>
                   <Button onClick={runInvestigation} disabled={isAnalyzing || urls.every(u => u.trim() === "")} className="h-11 flex-1 sm:flex-none shrink-0 px-8 bg-[#1A1A1A] text-white hover:bg-[#1A1A1A] rounded-sm">
-                    {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</> : <><ScanSearch className="mr-2 h-4 w-4" /> Analyze Sources</>}
+                    {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Reading it like an opponent…</> : <><ScanSearch className="mr-2 h-4 w-4" /> Analyze Sources</>}
                   </Button>
                 </div>
               </div>

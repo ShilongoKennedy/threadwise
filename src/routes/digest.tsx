@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { listWatches, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
+import { VerdictStamp } from "@/components/threadwise/VerdictStamp";
 
 export const Route = createFileRoute("/digest")({
   head: () => ({
@@ -117,6 +118,11 @@ function DigestPage() {
   const accuracy = settled ? Math.round((totals.confirmed / settled) * 100) : null;
   const peak = Math.max(1, ...weeks.map((week) => week.filed + week.resolved));
 
+  const form = watches
+    .filter((watch) => watch.status === "confirmed" || watch.status === "contradicted")
+    .sort((a, b) => (b.checked_at ?? "").localeCompare(a.checked_at ?? ""))
+    .slice(0, 10);
+
   const weekWatches = current
     ? watches.filter((watch) => {
         const filed = isoDay(watch.due_date).key;
@@ -217,6 +223,36 @@ function DigestPage() {
               </p>
             </section>
 
+            <section className="mt-4 flex flex-wrap items-center justify-between gap-3 border-2 border-[#1A1A1A] px-4 py-3">
+              <div className="flex items-center gap-3">
+                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
+                  Form
+                </span>
+                <span className="flex items-center gap-1.5">
+                  {form.length === 0 && (
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/65">
+                      no verdicts yet
+                    </span>
+                  )}
+                  {form.map((watch) => (
+                    <span
+                      key={watch.id}
+                      title={`${WATCH_LABEL[watch.status]} · ${watch.claim}`}
+                      className="h-2.5 w-2.5"
+                      style={{
+                        background: watch.status === "confirmed" ? "#1A1A1A" : "transparent",
+                        border: "1px solid",
+                        borderColor: watch.status === "contradicted" ? "#C1121F" : "#1A1A1A",
+                      }}
+                    />
+                  ))}
+                </span>
+              </div>
+              <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
+                last {form.length} settled · filled held, hollow did not
+              </span>
+            </section>
+
             <section className="mt-10">
               <div className="flex items-end justify-between border-b-2 border-[#1A1A1A] pb-2">
                 <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">
@@ -285,18 +321,19 @@ function DigestPage() {
                         key={watch.id}
                         className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-[#1A1A1A]/12 px-1 py-2.5"
                       >
-                        <span
-                          className="px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white"
-                          style={{
-                            backgroundColor: contradicted
-                              ? "#C1121F"
-                              : pending
-                                ? "#1A4BFF"
-                                : "#1A1A1A",
-                          }}
-                        >
-                          {WATCH_LABEL[watch.status]}
-                        </span>
+                        {pending ? (
+                          <span
+                            className="px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white"
+                            style={{ backgroundColor: "#1A4BFF" }}
+                          >
+                            {WATCH_LABEL[watch.status]}
+                          </span>
+                        ) : (
+                          <VerdictStamp
+                            status={contradicted ? "contradicted" : "confirmed"}
+                            sound={false}
+                          />
+                        )}
                         <span className="font-display text-sm leading-tight">{watch.claim}</span>
                         {watch.resolution && (
                           <span className="text-xs leading-snug text-[#1A1A1A]/65">
