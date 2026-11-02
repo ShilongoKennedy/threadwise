@@ -38,13 +38,22 @@ export function WorldMap({ pins }: { pins: Pinned[] }) {
         </radialGradient>
       </defs>
 
+      <g opacity="0.5">
+        {Array.from({ length: 11 }, (_, i) => 200 + i * 200).map((x) => (
+          <line key={`v${x}`} x1={x} y1={0} x2={x} y2={PROJ_H} stroke="#1A1A1A" strokeOpacity="0.07" strokeWidth="1" />
+        ))}
+        {Array.from({ length: 5 }, (_, i) => 200 + i * 200).map((y) => (
+          <line key={`h${y}`} x1={0} y1={y} x2={PROJ_W} y2={y} stroke="#1A1A1A" strokeOpacity="0.07" strokeWidth="1" />
+        ))}
+      </g>
+
       <g
         style={{
           transform: `translate(${tx}px, ${ty}px) scale(${zoom})`,
           transition: "transform 900ms cubic-bezier(.22,.8,.24,1)",
         }}
       >
-        <path d={WORLD_PATH} fill="#1A1A1A" fillOpacity="0.13" stroke="none" />
+        <path d={WORLD_PATH} fill="#3B3830" fillOpacity="0.16" stroke="none" />
         <path d={WORLD_PATH} fill="none" stroke="#1A1A1A" strokeOpacity="0.3" strokeWidth="0.6" />
 
         {/* the thread: each pin tied to the one before it */}
@@ -53,16 +62,20 @@ export function WorldMap({ pins }: { pins: Pinned[] }) {
           if (!next) return null;
           const mx = (pin.x + next.x) / 2;
           const my = (pin.y + next.y) / 2 - Math.hypot(next.x - pin.x, next.y - pin.y) * 0.22;
+          const lead = next.active;
           return (
-            <path
-              key={`rope-${pin.id}`}
-              d={`M${pin.x} ${pin.y} Q${mx} ${my} ${next.x} ${next.y}`}
-              fill="none"
-              stroke="#1A4BFF"
-              strokeWidth="1.4"
-              strokeOpacity={pin.past ? 0.5 : 0.22}
-              strokeDasharray={pin.past ? undefined : "4 4"}
-            />
+            <g key={`rope-${pin.id}`}>
+              <path
+                d={`M${pin.x} ${pin.y} Q${mx} ${my} ${next.x} ${next.y}`}
+                fill="none"
+                stroke={lead ? "#1A4BFF" : "#1A1A1A"}
+                strokeWidth={lead ? 1.6 : 1}
+                strokeOpacity={lead ? 0.85 : 0.28}
+                strokeDasharray={pin.past ? undefined : "3 4"}
+                strokeLinecap="round"
+              />
+              <circle cx={pin.x} cy={pin.y} r={lead ? 2.2 : 1.5} fill={lead ? "#1A4BFF" : "#1A1A1A"} fillOpacity={lead ? 1 : 0.4} />
+            </g>
           );
         })}
 
@@ -75,9 +88,16 @@ export function WorldMap({ pins }: { pins: Pinned[] }) {
               </>
             )}
             <circle
-              r={pin.active ? 3.4 : 2.2}
+              r={pin.active ? 5.5 : 2.6}
+              fill="none"
+              stroke="#1A1A1A"
+              strokeOpacity={pin.active ? 0.9 : 0.35}
+              strokeWidth="1"
+            />
+            <circle
+              r={pin.active ? 2.6 : 1.6}
               fill={pin.active ? "#1A4BFF" : "#1A1A1A"}
-              fillOpacity={pin.active ? 1 : 0.7}
+              fillOpacity={pin.active ? 1 : 0.75}
             />
             {pin.active && (
               <text
@@ -97,6 +117,20 @@ export function WorldMap({ pins }: { pins: Pinned[] }) {
       </g>
 
       <rect width={PROJ_W} height={PROJ_H} fill="url(#map-fade)" />
+
+      {(
+        [
+          [24, 24, 1, 1],
+          [PROJ_W - 24, 24, -1, 1],
+          [24, PROJ_H - 24, 1, -1],
+          [PROJ_W - 24, PROJ_H - 24, -1, -1],
+        ] as const
+      ).map(([x, y, dx, dy], i) => (
+        <g key={i} stroke="#1A1A1A" strokeOpacity="0.35" strokeWidth="1.5">
+          <line x1={x} y1={y} x2={x + 20 * dx} y2={y} />
+          <line x1={x} y1={y} x2={x} y2={y + 20 * dy} />
+        </g>
+      ))}
     </svg>
   );
 }

@@ -73,6 +73,7 @@ export function DepthLine({
           touchAction: "none",
           cursor: depth.dragging ? "grabbing" : "grab",
           userSelect: "none",
+          outline: "none",
         }}
       >
         {backdrop && (
