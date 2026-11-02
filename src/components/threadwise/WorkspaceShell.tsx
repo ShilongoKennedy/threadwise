@@ -129,6 +129,19 @@ export function WorkspaceShell() {
           <WorkspaceBar />
         </div>
 
+        {isMobile && (
+          <Button
+            size="sm"
+            variant={slideOpen ? "default" : "outline"}
+            onClick={() => setSlideOpen((v) => !v)}
+            aria-label={slideOpen ? "Close the canvas" : "Open the canvas"}
+            className="h-8 shrink-0 gap-1.5 px-2 text-xs"
+          >
+            <LayoutPanelTop className="h-3.5 w-3.5" />
+            {slideOpen ? "Lab" : "Canvas"}
+          </Button>
+        )}
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

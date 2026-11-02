@@ -175,8 +175,9 @@ function BriefingPage() {
 
       <header className="sticky top-0 z-20 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]/95 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3 px-4 py-2.5 md:px-6">
-          <span className="font-mono text-[10px] font-bold uppercase leading-tight tracking-[0.26em] text-[#1A1A1A] md:text-[10px]">
-            Threadwise Intelligence <span className="text-[#1A4BFF]">//</span> Morning Brief
+          <span className="min-w-0 font-mono text-[10px] font-bold uppercase leading-tight tracking-[0.26em] text-[#1A1A1A]">
+            <span className="hidden sm:inline">Threadwise Intelligence </span>
+            <span className="text-[#1A4BFF]">//</span> Morning Brief
           </span>
 
           <div className="flex shrink-0 items-center gap-2 md:gap-3">
@@ -367,9 +368,9 @@ function BriefingPage() {
                   {assessment.map((paragraph, index) => (
                     <p
                       key={index}
-                      className={`font-serif text-xl leading-relaxed text-[#1A1A1A]/90 md:text-2xl ${
+                      className={`font-serif text-[17px] leading-[1.7] text-[#1A1A1A]/90 md:text-2xl ${
                         index === 0
-                          ? "first-letter:float-left first-letter:mr-4 first-letter:mt-1 first-letter:font-display first-letter:text-7xl first-letter:text-[#1A4BFF]"
+                          ? "first-letter:float-left first-letter:mr-2.5 first-letter:mt-1 first-letter:font-display first-letter:text-5xl first-letter:leading-[0.85] first-letter:text-[#1A4BFF] md:first-letter:mr-4 md:first-letter:text-7xl"
                           : "mt-5"
                       }`}
                     >

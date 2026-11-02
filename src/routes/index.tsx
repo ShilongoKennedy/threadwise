@@ -245,11 +245,11 @@ function LandingPage() {
             style={{ transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1)`, transformStyle: 'preserve-3d' }}
           >
             {/* Laptop Camera Notch */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 rounded-b-xl z-50 flex items-center justify-center bg-[#1A1A1A]">
+            <div className="absolute left-1/2 top-0 z-50 hidden h-6 w-32 -translate-x-1/2 items-center justify-center rounded-b-xl bg-[#1A1A1A] md:flex">
               <div className="w-2 h-2 rounded-full bg-black/60 shadow-inner" />
             </div>
 
-            <div className="relative bg-[#FDFBF7] aspect-[16/10] min-h-[380px] flex overflow-hidden rounded-t-md">
+            <div className="relative flex aspect-[4/3] overflow-hidden rounded-t-md bg-[#FDFBF7] md:aspect-[16/10] md:min-h-[380px]">
               {/* The full demo is a desktop-width instrument; phones get a readable sample. */}
               <div className="hidden h-full w-full md:block">
                 <InteractiveLaptop />

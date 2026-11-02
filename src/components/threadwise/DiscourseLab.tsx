@@ -579,7 +579,11 @@ export function DiscourseLab({ corpus: stored, update, onClose, focusSource, onF
         <nav className="order-last flex w-full gap-1 overflow-x-auto rounded-sm border border-[#1A1A1A]/10 bg-[#1A1A1A]/5 p-1 md:order-none md:w-auto md:overflow-visible">
           {([ ["read", "Forensic Workbench", BookOpenText, !!activeAnalysis], ["investigate", "Cross-Source", Globe, !!analysis], ["compare", "Text Diff", Columns2, !!comparisonAnalysis], ["count", "Metrics", Hash, terms.length > 0], ["archives", "Ask Archives", Database, !!archiveResult] ] as const).map(([id, label, Icon, hasData]) => (
             <Button key={id} size="sm" variant={view === id ? "secondary" : "ghost"} onClick={() => setView(id)} className={`relative shrink-0 whitespace-nowrap rounded-sm transition-all ${view === id ? "bg-white text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-[#1A1A1A]/5"}`}>
-              <Icon className="mr-2 h-4 w-4" />{label}
+              <Icon className="mr-1.5 h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{label}</span>
+              <span className="sm:hidden">
+                {label === "Forensic Workbench" ? "Forensics" : label === "Cross-Source" ? "Cross" : label === "Text Diff" ? "Diff" : label}
+              </span>
               {hasData && <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#1A4BFF]" />}
             </Button>
           ))}
