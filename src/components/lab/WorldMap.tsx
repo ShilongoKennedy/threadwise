@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PROJ_H, PROJ_W, WORLD_PATH } from "./world";
 
 export type Pinned = {
@@ -20,15 +20,31 @@ export type Pinned = {
 export function WorldMap({ pins, onPick }: { pins: Pinned[]; onPick?: (index: number) => void }) {
   const focus = pins.find((pin) => pin.active) ?? pins[0];
   const [zoom, setZoom] = useState(1.45);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const drag = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
   const cx = focus?.x ?? PROJ_W / 2;
   const cy = focus?.y ?? PROJ_H / 2;
-  const tx = PROJ_W * 0.62 - cx * zoom;
-  const ty = PROJ_H * 0.44 - cy * zoom;
+  const tx = PROJ_W * 0.62 - cx * zoom + pan.x;
+  const ty = PROJ_H * 0.44 - cy * zoom + pan.y;
 
   return (
     <svg
       viewBox={`0 0 ${PROJ_W} ${PROJ_H}`}
       className="absolute inset-0 h-full w-full"
+      onPointerDown={(event) => {
+        drag.current = { x: event.clientX, y: event.clientY, px: pan.x, py: pan.y };
+        (event.currentTarget as SVGElement).setPointerCapture(event.pointerId);
+      }}
+      onPointerMove={(event) => {
+        const active = drag.current;
+        if (!active) return;
+        setPan({ x: active.px + (event.clientX - active.x), y: active.py + (event.clientY - active.y) });
+      }}
+      onPointerUp={(event) => {
+        drag.current = null;
+        try { (event.currentTarget as SVGElement).releasePointerCapture(event.pointerId); } catch { /* released */ }
+      }}
+      style={{ cursor: "grab" }}
       onWheel={(event) => {
         setZoom((z) => Math.min(6, Math.max(1.1, z * (event.deltaY > 0 ? 0.92 : 1.08))));
       }}
