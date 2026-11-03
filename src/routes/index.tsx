@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { InteractiveLaptop } from "@/components/threadwise/InteractiveLaptop";
+import { LandingCanvas } from "@/components/threadwise/LandingCanvas";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 
 export const Route = createFileRoute("/")({
@@ -247,35 +247,12 @@ function LandingPage() {
             className="relative overflow-hidden border-2 border-[#1A1A1A] bg-[#FDFBF7]"
             style={{ boxShadow: "10px 10px 0 0 rgba(26,26,26,.10)" }}
           >
-            <div className="relative flex aspect-[4/3] overflow-hidden md:aspect-[16/10] md:min-h-[380px]">
-              <div className="hidden h-full w-full md:block">
-                <InteractiveLaptop />
+            <div className="relative flex overflow-hidden">
+              <div className="flex h-full w-full items-center justify-center p-3 md:p-6">
+                <LandingCanvas />
               </div>
 
-              <div className="flex h-full w-full flex-col justify-center gap-2.5 bg-[#FDFBF7] p-5 md:hidden">
-                <div className="flex items-center justify-between border-b-2 border-[#1A1A1A] pb-1.5">
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
-                    Live sample
-                  </span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/65">
-                    DOC-001
-                  </span>
-                </div>
-                <p className="font-display text-[17px] leading-tight text-[#1A1A1A]">
-                  &ldquo;Three armies within 400 miles.&rdquo;
-                </p>
-                <p className="text-[12px] leading-snug text-[#1A1A1A]/65">
-                  Appeal to force, framed as reassurance to an ally.
-                </p>
-                <div className="mt-1 flex items-center gap-2 border border-[#1A1A1A] bg-white px-2.5 py-2">
-                  <ShieldAlert className="h-3.5 w-3.5 text-[#1A4BFF]" />
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/70">
-                    Contradiction
-                  </span>
-                  <span className="ml-auto font-display text-xl leading-none text-[#1A4BFF]">85</span>
-                  <span className="font-mono text-[10px] text-[#1A1A1A]/65">/100</span>
-                </div>
-              </div>
+              
             </div>
           </div>
 
