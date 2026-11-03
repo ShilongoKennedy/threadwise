@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { LandingCanvas } from "@/components/threadwise/LandingCanvas";
+import { SpecimenCanvas } from "@/components/threadwise/SpecimenCanvas";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 
 export const Route = createFileRoute("/")({
@@ -249,7 +249,7 @@ function LandingPage() {
           >
             <div className="relative flex overflow-hidden">
               <div className="flex h-full w-full items-center justify-center p-3 md:p-6">
-                <LandingCanvas />
+                <SpecimenCanvas />
               </div>
 
               
@@ -257,7 +257,7 @@ function LandingPage() {
           </div>
 
           <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
-            Fig. 1 — the same canvas you get after signing in · not a video
+            Fig. 1 — the same cards and cords you get after signing in · click one
           </p>
         </div>
 
