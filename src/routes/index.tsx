@@ -82,8 +82,6 @@ function LandingPage() {
 
   // Disable tilt on small screens
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const tiltX = isMobile ? 0 : (mouse.y / (typeof window !== 'undefined' ? window.innerHeight : 800) - 0.5) * 3;
-  const tiltY = isMobile ? 0 : (mouse.x / (typeof window !== 'undefined' ? window.innerWidth : 1200) - 0.5) * -3;
 
   const heroReveal = useScrollReveal();
   const laptopReveal = useScrollReveal();
@@ -96,16 +94,6 @@ function LandingPage() {
         .reveal-hidden { opacity: 0; transform: translateY(30px); }
         .reveal-visible { opacity: 1; transform: translateY(0); transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1); }
 
-        .laptop-bezel {
-          background: #1A1A1A;
-          border: 12px solid #1A1A1A;
-          box-shadow: 
-            0 60px 120px -20px rgba(0,0,0,0.8),
-            0 0 0 1px rgba(255,255,255,0.05) inset,
-            inset 0 0 40px rgba(0,0,0,1);
-          border-radius: 12px 12px 4px 4px;
-        }
-        
         .editorial-line {
           height: 1px;
           background: #1A1A1A;
@@ -240,26 +228,30 @@ function LandingPage() {
           </div>
         </div>
 
-        {/* THE DARK LAPTOP (BREAKING THE GRID) */}
-        <div 
+        {/* PLATE 01 — the instrument, printed rather than mocked up */}
+        <div
           id="demo"
           ref={laptopReveal.ref}
-          className={`relative w-full max-w-[1200px] mx-auto perspective-[2000px] group transition-all duration-1000 delay-200 -mt-12 md:-mt-24 z-30 ${laptopReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
+          className={`relative z-30 mx-auto mt-20 w-full max-w-[1200px] transition-all duration-1000 delay-200 md:mt-24 ${laptopReveal.isVisible ? "reveal-visible" : "reveal-hidden"}`}
         >
-          <div 
-            className="relative w-full overflow-hidden transition-all duration-300 ease-out laptop-bezel"
-            style={{ transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1)`, transformStyle: 'preserve-3d' }}
-          >
-            {/* Laptop Camera Notch */}
-            <div className="absolute left-1/2 top-0 z-50 hidden h-6 w-32 -translate-x-1/2 items-center justify-center rounded-b-xl bg-[#1A1A1A] md:flex">
-              <div className="w-2 h-2 rounded-full bg-black/60 shadow-inner" />
-            </div>
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em]">
+              Plate 01 — the workbench
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
+              One source, dissected
+            </span>
+          </div>
 
-            <div className="relative flex aspect-[4/3] overflow-hidden rounded-t-md bg-[#FDFBF7] md:aspect-[16/10] md:min-h-[380px]">
-              {/* The full demo is a desktop-width instrument; phones get a readable sample. */}
+          <div
+            className="relative overflow-hidden border-2 border-[#1A1A1A] bg-[#FDFBF7]"
+            style={{ boxShadow: "10px 10px 0 0 rgba(26,26,26,.10)" }}
+          >
+            <div className="relative flex aspect-[4/3] overflow-hidden md:aspect-[16/10] md:min-h-[380px]">
               <div className="hidden h-full w-full md:block">
                 <InteractiveLaptop />
               </div>
+
               <div className="flex h-full w-full flex-col justify-center gap-2.5 bg-[#FDFBF7] p-5 md:hidden">
                 <div className="flex items-center justify-between border-b-2 border-[#1A1A1A] pb-1.5">
                   <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
@@ -285,12 +277,11 @@ function LandingPage() {
                 </div>
               </div>
             </div>
-            
-            {/* Laptop Base/Hinge */}
-            <div className="h-6 flex items-center justify-center bg-[#1A1A1A]"><div className="w-16 h-1 rounded-full bg-black/60" /></div>
           </div>
-          {/* Laptop Shadow Base */}
-          <div className="relative h-6 rounded-b-[1.5rem] mx-auto w-[105%] -ml-[2.5%] z-[-1] bg-[#0A0A0A]" style={{ boxShadow: '0 60px 120px -20px rgba(0,0,0,0.8)' }}><div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/60 rounded-b-lg" /></div>
+
+          <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
+            Fig. 1 — the same canvas you get after signing in · not a video
+          </p>
         </div>
 
         {/* TODAY'S BRIEF — the product proving itself, every day */}
@@ -555,7 +546,33 @@ function TodaysBrief() {
     };
   }, []);
 
-  if (!brief) return null;
+  if (!brief) {
+    return (
+      <section className="relative z-10 mx-auto mt-24 w-full max-w-[1200px] px-6 md:px-12">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em]">
+            Today&rsquo;s brief
+          </span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
+            filed every morning
+          </span>
+        </div>
+        <div className="border-2 border-dashed border-[#1A1A1A]/25 px-6 py-10 text-center">
+          <p className="font-display text-[22px] leading-tight">The agent is still reading.</p>
+          <p className="mx-auto mt-2 max-w-[46ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
+            One story, dissected every morning: what it says, how it frames it, and what it leaves
+            out. Yesterday&rsquo;s editions are in the archive.
+          </p>
+          <Link
+            to="/briefs"
+            className="mt-4 inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4"
+          >
+            Read the archive <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   const opening = (brief.bluf ?? "").split(/\n\s*\n/)[0] ?? "";
   const level = (brief.threat_level ?? "MODERATE").toUpperCase();
