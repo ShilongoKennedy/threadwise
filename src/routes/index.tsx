@@ -416,6 +416,49 @@ function LandingPage() {
           </ol>
         </section>
 
+        {/* THE DESK — a human moment, in the product's own palette */}
+        <section className="relative z-10 mx-auto mt-32 w-full max-w-[1200px] px-6 md:px-12">
+          <div className="grid grid-cols-1 items-end gap-8 md:grid-cols-[1fr_1.05fr] md:gap-12">
+            <div className="pb-2">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#1A4BFF]">
+                The desk
+              </span>
+              <h2 className="mt-3 max-w-[16ch] font-display text-[34px] leading-[0.98] tracking-tight md:text-[52px]">
+                Not a portal. A workbench.
+              </h2>
+              <p className="mt-4 max-w-[44ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/75">
+                A chat window hides the work: you ask, something answers, you nod. Threadwise puts the
+                source on the desk beside what you already believe, and makes the thread between them
+                visible — long enough to argue with.
+              </p>
+              <p className="mt-4 max-w-[44ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/75">
+                Evidence, analysis, patterns, strategy. Four things a desk should hold, and the only
+                four this one does.
+              </p>
+            </div>
+
+            <figure className="relative">
+              <div
+                className="overflow-hidden border-2 border-[#1A1A1A] bg-[#FDFBF7]"
+                style={{ boxShadow: "10px 10px 0 0 rgba(26,26,26,.10)" }}
+              >
+                <img
+                  src="/desk.webp"
+                  alt="A desk lamp, a laptop marked with the Threadwise tag, and four bound volumes labelled evidence, analysis, patterns and strategy."
+                  width={970}
+                  height={772}
+                  loading="lazy"
+                  decoding="async"
+                  className="block h-full w-full object-cover"
+                />
+              </div>
+              <figcaption className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
+                Fig. 2 — the desk, not the oracle
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
         {/* CLOSING */}
         <section className="relative z-10 mx-auto mt-32 mb-24 w-full max-w-[1200px] px-6 md:px-12">
           <div className="border-2 border-[#1A1A1A] bg-white px-6 py-12 md:px-12 md:py-16">
