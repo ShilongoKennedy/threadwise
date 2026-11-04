@@ -256,12 +256,12 @@ function LandingPage() {
                 <CanvasShot />
 
                 <Link
-                  to="/demo"
+                  to="/app"
                   className="group absolute inset-0 flex items-end justify-end p-4 md:p-6"
-                  aria-label="Open the live canvas"
+                  aria-label="Open the workspace"
                 >
                   <span className="translate-y-1 border-2 border-[#1A1A1A] bg-[#FDFBF7] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] opacity-0 shadow-[4px_4px_0_0_#1A1A1A] transition-all group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
-                    Open the live canvas →
+                    Open the workspace →
                   </span>
                 </Link>
               </div>
@@ -275,7 +275,7 @@ function LandingPage() {
           </div>
 
           <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
-            Fig. 1 — the canvas runs live, seeded with one source
+            Fig. 1 — one source, dissected · the real canvas
           </p>
         </div>
 
