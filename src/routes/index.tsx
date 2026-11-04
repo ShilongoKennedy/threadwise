@@ -166,13 +166,13 @@ function LandingPage() {
           className={`relative z-20 mb-10 w-full transition-all duration-1000 ${heroReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
         >
           {/* Left Side: Massive Typography */}
-          <div className="flex max-w-[22ch] flex-col items-start text-left">
+          <div className="flex max-w-[900px] flex-col items-start text-left">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-[1px] bg-[#1A4BFF]" />
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A4BFF] font-bold">Forensic Intelligence OS</span>
             </div>
             
-            <h1 className="font-display text-[54px] sm:text-[72px] md:text-[120px] lg:text-[150px] tracking-tighter text-[#1A1A1A] leading-[0.85] mb-8">
+            <h1 className="mb-8 font-display text-[54px] leading-[0.86] tracking-tighter text-[#1A1A1A] sm:text-[72px] md:text-[120px] lg:text-[150px] whitespace-nowrap">
               See what <br />
               <span className="text-[#1A4BFF] pr-4 tracking-normal" style={{ fontFamily: "Fraunces, serif", fontStyle: "normal", fontWeight: 600 }}>hides.</span>
             </h1>
