@@ -165,42 +165,51 @@ function LandingPage() {
           ref={heroReveal.ref}
           className={`relative z-20 mb-10 w-full transition-all duration-1000 ${heroReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
         >
-          {/* Left Side: Massive Typography */}
-          <div className="flex max-w-[900px] flex-col items-start text-left">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-[1px] bg-[#1A4BFF]" />
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A4BFF] font-bold">Forensic Intelligence OS</span>
+          {/* HERO — the type fills the page, the actions sit on the baseline */}
+          <div className="flex w-full flex-col items-start text-left">
+            <div className="mb-5 flex items-center gap-4">
+              <div className="h-px w-12 bg-[#1A4BFF]" />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+                Forensic Intelligence OS
+              </span>
             </div>
-            
-            <h1 className="mb-8 font-display text-[54px] leading-[0.86] tracking-tighter text-[#1A1A1A] sm:text-[72px] md:text-[120px] lg:text-[150px] whitespace-nowrap">
-              See what <br />
-              <span className="text-[#1A4BFF] pr-4 tracking-normal" style={{ fontFamily: "Fraunces, serif", fontStyle: "normal", fontWeight: 600 }}>hides.</span>
+
+            <h1 className="w-full font-display text-[clamp(64px,10.2vw,158px)] leading-[0.84] tracking-[-0.035em] text-[#1A1A1A]">
+              <span className="whitespace-nowrap">See what</span>{" "}
+              <span
+                className="whitespace-nowrap text-[#1A4BFF]"
+                style={{ fontStyle: "normal", fontWeight: 600, letterSpacing: "-0.025em" }}
+              >
+                hides.
+              </span>
             </h1>
 
-            <p className="max-w-xl text-lg font-light leading-relaxed text-[#1A1A1A]/70 md:text-2xl">
-              A workbench for sources that are arguing with you. The lab marks the framing, the
-              omissions and the claims it cannot support — then you map the reasoning and keep score.
-            </p>
+            <div className="mt-8 grid w-full grid-cols-1 gap-8 border-t border-[#1A1A1A]/15 pt-6 md:mt-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-16">
+              <p className="max-w-[52ch] text-[17px] font-light leading-[1.55] text-[#1A1A1A]/70 md:text-[21px]">
+                A workbench for sources that are arguing with you. The lab marks the framing, the
+                omissions and the claims it cannot support — then you map the reasoning and keep score.
+              </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
-              <Link
-                to="/app"
-                className="inline-flex items-center gap-2.5 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-7 py-4 font-mono text-[12px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
-              >
-                Start an investigation
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/briefing"
-                className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
-              >
-                Read today&rsquo;s brief
-                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
-              </Link>
+              <div className="flex flex-col items-start gap-3 md:items-end">
+                <Link
+                  to="/app"
+                  className="inline-flex items-center gap-2.5 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-7 py-4 font-mono text-[12px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+                >
+                  Start an investigation
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to="/briefing"
+                  className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+                >
+                  Read today&rsquo;s brief
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
+                </Link>
+                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/60 md:text-right">
+                  One story, dissected daily
+                </span>
+              </div>
             </div>
-            <span className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
-              One story, dissected daily by the autonomous agent
-            </span>
           </div>
 
         </div>
