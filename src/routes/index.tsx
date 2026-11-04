@@ -5,7 +5,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { SpecimenCanvas } from "@/components/threadwise/SpecimenCanvas";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 
 export const Route = createFileRoute("/")({
@@ -244,20 +243,51 @@ function LandingPage() {
           </div>
 
           <div
-            className="relative overflow-hidden border-2 border-[#1A1A1A] bg-[#FDFBF7]"
+            className="relative overflow-hidden border-2 border-[#1A1A1A] bg-white"
             style={{ boxShadow: "10px 10px 0 0 rgba(26,26,26,.10)" }}
           >
-            <div className="relative flex overflow-hidden">
-              <div className="flex h-full w-full items-center justify-center p-3 md:p-6">
-                <SpecimenCanvas />
+            <div className="grid grid-cols-1 md:grid-cols-[1.15fr_1fr]">
+              <div className="border-b-2 border-[#1A1A1A] p-6 md:border-b-0 md:border-r-2 md:p-8">
+                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#1A4BFF]">
+                  Nothing here is a screenshot
+                </p>
+                <h3 className="mt-3 max-w-[20ch] font-display text-[30px] leading-[1.02] md:text-[38px]">
+                  Open the canvas and pull a cord.
+                </h3>
+                <p className="mt-3 max-w-[42ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/70">
+                  The demo is the product: five cards of one source, the cords between them, and a
+                  tag on every cord. Drag a card. Press O. Nothing is a mock-up.
+                </p>
+                <Link
+                  to="/demo"
+                  className="mt-5 inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+                >
+                  Open the live canvas
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
               </div>
 
-              
+              <ul className="divide-y divide-[#1A1A1A]/12">
+                {[
+                  ["Cards", "Every claim is a card with a status, a source and a spine that names its type."],
+                  ["Cords", "Relations are physical: they sag, they carry a tag, they break when the evidence does."],
+                  ["Marks", "Risks and blind spots are the only red in the product — one meaning, never decoration."],
+                ].map(([title, body]) => (
+                  <li key={title} className="px-6 py-5 md:px-8">
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/60">
+                      {title}
+                    </span>
+                    <p className="mt-1.5 max-w-[36ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/70">
+                      {body}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
           <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
-            Fig. 1 — the same cards and cords you get after signing in · click one
+            Fig. 1 — the canvas runs live, seeded with one source
           </p>
         </div>
 

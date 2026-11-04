@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as BriefsRouteImport } from './routes/briefs'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LabArchiveRouteImport } from './routes/lab-archive'
 import { Route as LabBriefRouteImport } from './routes/lab-brief'
@@ -44,6 +45,11 @@ const BriefingRoute = BriefingRouteImport.update({
 const BriefsRoute = BriefsRouteImport.update({
   id: '/briefs',
   path: '/briefs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DigestRoute = DigestRouteImport.update({
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/briefs': typeof BriefsRoute
+  '/demo': typeof DemoRoute
   '/digest': typeof DigestRoute
   '/lab-archive': typeof LabArchiveRoute
   '/lab-brief': typeof LabBriefRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/briefs': typeof BriefsRoute
+  '/demo': typeof DemoRoute
   '/digest': typeof DigestRoute
   '/lab-archive': typeof LabArchiveRoute
   '/lab-brief': typeof LabBriefRoute
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/briefs': typeof BriefsRoute
+  '/demo': typeof DemoRoute
   '/digest': typeof DigestRoute
   '/lab-archive': typeof LabArchiveRoute
   '/lab-brief': typeof LabBriefRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/briefing'
     | '/briefs'
+    | '/demo'
     | '/digest'
     | '/lab-archive'
     | '/lab-brief'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/briefing'
     | '/briefs'
+    | '/demo'
     | '/digest'
     | '/lab-archive'
     | '/lab-brief'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/briefing'
     | '/briefs'
+    | '/demo'
     | '/digest'
     | '/lab-archive'
     | '/lab-brief'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRoute
   BriefingRoute: typeof BriefingRoute
   BriefsRoute: typeof BriefsRoute
+  DemoRoute: typeof DemoRoute
   DigestRoute: typeof DigestRoute
   LabArchiveRoute: typeof LabArchiveRoute
   LabBriefRoute: typeof LabBriefRoute
@@ -266,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/briefs'
       fullPath: '/briefs'
       preLoaderRoute: typeof BriefsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/digest': {
@@ -360,6 +380,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRoute,
   BriefingRoute: BriefingRoute,
   BriefsRoute: BriefsRoute,
+  DemoRoute: DemoRoute,
   DigestRoute: DigestRoute,
   LabArchiveRoute: LabArchiveRoute,
   LabBriefRoute: LabBriefRoute,
