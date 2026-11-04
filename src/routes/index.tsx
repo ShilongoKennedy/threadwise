@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
   ArrowUpRight, ArrowRight, FileText, Activity, ShieldAlert, 
-  FileWarning, Search, Crosshair
+  FileWarning, Search
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -163,10 +163,10 @@ function LandingPage() {
         {/* HERO SECTION - ASYMMETRICAL EDITORIAL */}
         <div 
           ref={heroReveal.ref}
-          className={`relative z-20 grid grid-cols-1 md:grid-cols-12 gap-8 mb-24 w-full transition-all duration-1000 ${heroReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
+          className={`relative z-20 mb-10 w-full transition-all duration-1000 ${heroReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
         >
           {/* Left Side: Massive Typography */}
-          <div className="md:col-span-8 flex flex-col items-start text-left">
+          <div className="flex max-w-[22ch] flex-col items-start text-left">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-[1px] bg-[#1A4BFF]" />
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A4BFF] font-bold">Forensic Intelligence OS</span>
@@ -185,7 +185,7 @@ function LandingPage() {
             <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
               <Link
                 to="/app"
-                className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+                className="inline-flex items-center gap-2.5 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-7 py-4 font-mono text-[12px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
               >
                 Start an investigation
                 <ArrowRight className="h-4 w-4" />
@@ -203,35 +203,13 @@ function LandingPage() {
             </span>
           </div>
 
-          {/* Right Side: Technical Annotations */}
-          <div className="md:col-span-4 hidden md:flex flex-col justify-end pb-8 border-l border-[#1A1A1A]/10 pl-8">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65 space-y-4">
-              <div className="flex justify-between border-b border-[#1A1A1A]/10 pb-2">
-                <span>Status</span>
-                <span className="text-[#1A4BFF]">Ready</span>
-              </div>
-              <div className="flex justify-between border-b border-[#1A1A1A]/10 pb-2">
-                <span>AI Models</span>
-                <span>DeepSeek / OpenAI</span>
-              </div>
-              <div className="flex justify-between border-b border-[#1A1A1A]/10 pb-2">
-                <span>Latency</span>
-                <span>&lt; 2.4s</span>
-              </div>
-              <div className="flex justify-between pb-2">
-                <span>Clearance</span>
-                <span>Level 4</span>
-              </div>
-            </div>
-            <Crosshair className="w-8 h-8 text-[#1A1A1A]/10 mt-8 self-end" />
-          </div>
         </div>
 
         {/* PLATE 01 — the instrument, printed rather than mocked up */}
         <div
           id="demo"
           ref={laptopReveal.ref}
-          className={`relative z-30 mx-auto mt-20 w-full max-w-[1200px] transition-all duration-1000 delay-200 md:mt-24 ${laptopReveal.isVisible ? "reveal-visible" : "reveal-hidden"}`}
+          className={`relative z-30 mx-auto mt-10 w-full max-w-[1200px] transition-all duration-1000 delay-200 md:mt-12 ${laptopReveal.isVisible ? "reveal-visible" : "reveal-hidden"}`}
         >
           <div className="mb-3 flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
             <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em]">
