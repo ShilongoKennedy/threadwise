@@ -252,7 +252,7 @@ function LandingPage() {
                 <span className="h-1.5 w-1.5 rounded-full bg-black/60" />
               </div>
 
-              <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#FDFBF7]">
+              <div className="relative aspect-[2400/1207] w-full overflow-hidden bg-[#FDFBF7]">
                 <CanvasShot />
 
                 <Link
@@ -648,12 +648,12 @@ function CanvasShot() {
     <img
       src="/canvas-shot.webp"
       alt="The Threadwise canvas: four cards connected by tagged cords."
-      width={2560}
-      height={1600}
+      width={2400}
+      height={1207}
       loading="lazy"
       decoding="async"
       onError={() => setFailed(true)}
-      className="h-full w-full object-cover object-top"
+      className="h-full w-full object-cover"
     />
   );
 }
