@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { TYPE_INFO, type ThreadNodeType } from "@/lib/threadwise/model";
 
 /**
@@ -75,11 +75,24 @@ export function SpecimenCanvas() {
   const wrap = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [selected, setSelected] = useState<string | null>(null);
+  const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [rects, setRects] = useState<Record<string, { x: number; y: number; w: number; h: number }>>({});
+
+  // Cords have to attach to the card's real edge, not a guess: heights vary with text.
+  useLayoutEffect(() => {
+    const next: Record<string, { x: number; y: number; w: number; h: number }> = {};
+    for (const card of CARDS) {
+      const node = cardRefs.current[card.id];
+      if (!node) continue;
+      next[card.id] = { x: node.offsetLeft, y: node.offsetTop, w: node.offsetWidth, h: node.offsetHeight };
+    }
+    setRects(next);
+  }, [scale]);
 
   useEffect(() => {
     const node = wrap.current;
     if (!node) return;
-    const measure = () => setScale(Math.min(1, (node.clientWidth || STAGE_W) / STAGE_W));
+    const measure = () => setScale(Math.min(1.4, (node.clientWidth || STAGE_W) / STAGE_W));
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(node);
@@ -91,11 +104,11 @@ export function SpecimenCanvas() {
   return (
     <div ref={wrap} className="relative w-full" style={{ height: STAGE_H * scale }}>
       <div
-        className="tw-canvas-specimen absolute left-0 top-0 origin-top-left"
+        className="tw-canvas-specimen absolute left-1/2 top-0 origin-top"
         style={{
           width: STAGE_W,
           height: STAGE_H,
-          transform: `scale(${scale})`,
+          transform: `translateX(-50%) scale(${scale})`,
           background: "var(--background)",
         }}
       >
@@ -108,14 +121,15 @@ export function SpecimenCanvas() {
           <rect width={STAGE_W} height={STAGE_H} fill="url(#spec-grid)" />
 
           {CORDS.map((cord) => {
-            const a = byId.get(cord.from)!;
-            const b = byId.get(cord.to)!;
-            const ax = a.x + CARD_W;
-            const ay = a.y + 96;
+            const a = rects[cord.from];
+            const b = rects[cord.to];
+            if (!a || !b) return null;
+            const ax = a.x + a.w;
+            const ay = a.y + a.h / 2;
             const bx = b.x;
-            const by = b.y + 96;
+            const by = b.y + b.h / 2;
             const mx = (ax + bx) / 2;
-            const my = (ay + by) / 2 + 44;
+            const my = Math.max(ay, by) + 34;
             const stroke = cord.tone === "red" ? "#C1121F" : cord.tone === "cobalt" ? "#1A4BFF" : "#1A1A1A";
             return (
               <g key={`${cord.from}-${cord.to}`}>
@@ -127,29 +141,30 @@ export function SpecimenCanvas() {
                   strokeWidth={cord.tone === "ink" ? 1.3 : 1.7}
                   strokeDasharray={cord.tone === "red" ? "5 4" : undefined}
                 />
-                <circle cx={ax} cy={ay} r="3.2" fill="var(--card)" stroke={stroke} strokeWidth="1.4" />
-                <circle cx={bx} cy={by} r="3.2" fill="var(--card)" stroke={stroke} strokeWidth="1.4" />
+                <circle cx={ax} cy={ay} r="3.4" fill="#FFFFFF" stroke={stroke} strokeWidth="1.4" />
+                <circle cx={bx} cy={by} r="3.4" fill="#FFFFFF" stroke={stroke} strokeWidth="1.4" />
               </g>
             );
           })}
         </svg>
 
         {CORDS.map((cord, index) => {
-          const a = byId.get(cord.from)!;
-          const b = byId.get(cord.to)!;
-          const ax = a.x + CARD_W;
-          const ay = a.y + 96;
+          const a = rects[cord.from];
+          const b = rects[cord.to];
+          if (!a || !b) return null;
+          const ax = a.x + a.w;
+          const ay = a.y + a.h / 2;
           const bx = b.x;
-          const by = b.y + 96;
+          const by = b.y + b.h / 2;
           const tilt = [-2, 1.5, -3][index] ?? 0;
           return (
             <span
               key={`tag-${cord.from}-${cord.to}`}
               className="tw-tag absolute"
               style={{
-                left: (ax + bx) / 2 - 58,
-                top: (ay + by) / 2 + 20,
-                transform: `rotate(${tilt}deg)`,
+                left: (ax + bx) / 2,
+                top: (ay + by) / 2 + 10,
+                transform: `translate(-50%, 0) rotate(${tilt}deg)`,
                 pointerEvents: "none",
               }}
             >
@@ -170,7 +185,9 @@ export function SpecimenCanvas() {
               className={`tw-card absolute text-left ${active ? "is-selected" : ""}`}
               data-kind={card.kind}
               data-lift={card.lift}
+              data-paper="paper"
               aria-pressed={active}
+              ref={(node) => { cardRefs.current[card.id] = node; }}
               style={{
                 left: card.x,
                 top: card.y,
