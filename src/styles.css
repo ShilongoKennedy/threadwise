@@ -908,3 +908,47 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   .tw-stamp { animation: none; }
 }
+
+/* ---------- Redacted headline ---------- */
+/* The bar is a mask, not an animation: the visitor uncovers the word themselves. */
+.tw-redacted {
+  position: relative;
+  display: inline-block;
+  --rub-x: -220px;
+  --rub-y: -220px;
+  --rub-radius: 0px;
+}
+.tw-redacted-word { position: relative; display: inline-block; }
+.tw-redacted-bar {
+  position: absolute;
+  inset: -0.02em -0.015em;
+  background: #1a1a1a;
+  transform: rotate(-0.4deg);
+  -webkit-mask-image: radial-gradient(
+    circle var(--rub-radius) at var(--rub-x) var(--rub-y),
+    transparent 58%,
+    #000 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--rub-radius) at var(--rub-x) var(--rub-y),
+    transparent 58%,
+    #000 100%
+  );
+  transition: opacity 0.55s ease;
+  cursor: ew-resize;
+}
+.tw-redacted.is-open .tw-redacted-bar { opacity: 0; pointer-events: none; }
+.tw-redacted-hint {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.18em;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--foreground) 55%, transparent);
+  white-space: nowrap;
+  transition: opacity 0.4s ease;
+}
+.tw-redacted-hint.is-gone { opacity: 0; }

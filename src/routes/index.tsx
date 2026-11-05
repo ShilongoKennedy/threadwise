@@ -6,6 +6,7 @@ import {
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { RedactedWord } from "@/components/landing/RedactedWord";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -110,21 +111,6 @@ function LandingPage() {
           from { opacity: 0; transform: translateY(.16em); filter: blur(12px); }
           to { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
-        .tw-redact {
-          position: relative;
-          display: inline-block;
-        }
-        .tw-redact::after {
-          content: "";
-          position: absolute;
-          inset: -0.04em -0.02em;
-          background: #1A1A1A;
-          transform-origin: left center;
-          animation: tw-redact-lift .9s cubic-bezier(.76, 0, .24, 1) .62s forwards;
-        }
-        @keyframes tw-redact-lift {
-          to { transform: scaleX(0); }
-        }
         @media (prefers-reduced-motion: reduce) {
           .tw-letter { animation: none; opacity: 1; transform: none; filter: none; }
           .tw-redact::after { animation: none; opacity: 0; }
@@ -215,7 +201,7 @@ function LandingPage() {
                 className="whitespace-nowrap text-[#1A4BFF]"
                 style={{ fontStyle: "normal", fontWeight: 600, letterSpacing: "-0.025em" }}
               >
-                <span className="tw-redact">{letters("hides.", 9)}</span>
+                <RedactedWord>hides.</RedactedWord>
               </span>
             </h1>
 
