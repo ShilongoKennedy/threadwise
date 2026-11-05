@@ -99,6 +99,37 @@ function LandingPage() {
           opacity: 0.1;
         }
 
+        /* the headline arrives the way the product works: hidden, then revealed */
+        .tw-letter {
+          display: inline-block;
+          opacity: 0;
+          animation: tw-letter-in .78s cubic-bezier(.16, .84, .24, 1) forwards;
+          animation-delay: calc(var(--i) * 26ms);
+        }
+        @keyframes tw-letter-in {
+          from { opacity: 0; transform: translateY(.16em); filter: blur(12px); }
+          to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        .tw-redact {
+          position: relative;
+          display: inline-block;
+        }
+        .tw-redact::after {
+          content: "";
+          position: absolute;
+          inset: -0.04em -0.02em;
+          background: #1A1A1A;
+          transform-origin: left center;
+          animation: tw-redact-lift .9s cubic-bezier(.76, 0, .24, 1) .62s forwards;
+        }
+        @keyframes tw-redact-lift {
+          to { transform: scaleX(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .tw-letter { animation: none; opacity: 1; transform: none; filter: none; }
+          .tw-redact::after { animation: none; opacity: 0; }
+        }
+
         .dossier-card {
           background: #FFFFFF;
           border: 2px solid #1A1A1A;
@@ -175,12 +206,16 @@ function LandingPage() {
             </div>
 
             <h1 className="w-full font-display text-[clamp(64px,10.2vw,158px)] leading-[0.84] tracking-[-0.035em] text-[#1A1A1A]">
-              <span className="whitespace-nowrap">See what</span>{" "}
+              <span className="sr-only">See what hides.</span>
+              <span aria-hidden className="whitespace-nowrap">
+                {letters("See what", 0)}
+              </span>{" "}
               <span
+                aria-hidden
                 className="whitespace-nowrap text-[#1A4BFF]"
                 style={{ fontStyle: "normal", fontWeight: 600, letterSpacing: "-0.025em" }}
               >
-                hides.
+                <span className="tw-redact">{letters("hides.", 9)}</span>
               </span>
             </h1>
 
@@ -686,4 +721,18 @@ function CanvasShot() {
       className="h-full w-full object-cover"
     />
   );
+}
+
+
+/** Splits a line into per-letter spans so it can assemble itself. */
+function letters(text: string, start: number) {
+  return text.split("").map((char, index) => (
+    <span
+      key={`${char}-${index}`}
+      className="tw-letter"
+      style={{ ["--i" as string]: start + index }}
+    >
+      {char === " " ? "\u00A0" : char}
+    </span>
+  ));
 }
