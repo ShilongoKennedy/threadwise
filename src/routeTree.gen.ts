@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnalystRouteImport } from './routes/analyst'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as BriefsRouteImport } from './routes/briefs'
@@ -19,6 +20,7 @@ import { Route as LabBriefRouteImport } from './routes/lab-brief'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
@@ -29,6 +31,11 @@ import { Route as SocraticThreadIdRouteImport } from './routes/socratic.$threadI
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalystRoute = AnalystRouteImport.update({
+  id: '/analyst',
+  path: '/analyst',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -76,6 +83,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAnalystRoute = ApiAnalystRouteImport.update({
+  id: '/api/analyst',
+  path: '/api/analyst',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCheckWatchRoute = ApiCheckWatchRouteImport.update({
   id: '/api/check-watch',
   path: '/api/check-watch',
@@ -109,6 +121,7 @@ const SocraticThreadIdRoute = SocraticThreadIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analyst': typeof AnalystRoute
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/briefs': typeof BriefsRoute
@@ -118,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/api/analyst': typeof ApiAnalystRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
@@ -127,6 +141,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analyst': typeof AnalystRoute
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/briefs': typeof BriefsRoute
@@ -136,6 +151,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/api/analyst': typeof ApiAnalystRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
@@ -146,6 +162,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analyst': typeof AnalystRoute
   '/app': typeof AppRoute
   '/briefing': typeof BriefingRoute
   '/briefs': typeof BriefsRoute
@@ -155,6 +172,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/api/analyst': typeof ApiAnalystRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
@@ -166,6 +184,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/analyst'
     | '/app'
     | '/briefing'
     | '/briefs'
@@ -175,6 +194,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/terms'
+    | '/api/analyst'
     | '/api/check-watch'
     | '/api/news-brief'
     | '/api/threadwise'
@@ -184,6 +204,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/analyst'
     | '/app'
     | '/briefing'
     | '/briefs'
@@ -193,6 +214,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/terms'
+    | '/api/analyst'
     | '/api/check-watch'
     | '/api/news-brief'
     | '/api/threadwise'
@@ -202,6 +224,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/analyst'
     | '/app'
     | '/briefing'
     | '/briefs'
@@ -211,6 +234,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/terms'
+    | '/api/analyst'
     | '/api/check-watch'
     | '/api/news-brief'
     | '/api/threadwise'
@@ -221,6 +245,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalystRoute: typeof AnalystRoute
   AppRoute: typeof AppRoute
   BriefingRoute: typeof BriefingRoute
   BriefsRoute: typeof BriefsRoute
@@ -230,6 +255,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
+  ApiAnalystRoute: typeof ApiAnalystRoute
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
@@ -245,6 +271,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analyst': {
+      id: '/analyst'
+      path: '/analyst'
+      fullPath: '/analyst'
+      preLoaderRoute: typeof AnalystRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -310,6 +343,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/analyst': {
+      id: '/api/analyst'
+      path: '/api/analyst'
+      fullPath: '/api/analyst'
+      preLoaderRoute: typeof ApiAnalystRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/check-watch': {
       id: '/api/check-watch'
       path: '/api/check-watch'
@@ -357,6 +397,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalystRoute: AnalystRoute,
   AppRoute: AppRoute,
   BriefingRoute: BriefingRoute,
   BriefsRoute: BriefsRoute,
@@ -366,6 +407,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
+  ApiAnalystRoute: ApiAnalystRoute,
   ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
