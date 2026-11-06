@@ -164,6 +164,9 @@ function BriefingPage() {
 
   const threat = brief ? threatOf(brief.threat_level) : FALLBACK_THREAT;
   const level = (brief?.threat_level ?? "MODERATE").toUpperCase();
+  const accounts = brief?.sources ?? [];
+  const accountCount = accounts.length;
+  const outletNames = accounts.map((account) => account.outlet);
   const dossier = brief ? `D-${brief.id.slice(0, 6).toUpperCase()}` : "D-000000";
   const assessment = toParagraphs(brief?.bluf ?? "");
   const framing = brief ? toBullets(brief.framing) : [];
@@ -384,9 +387,13 @@ function BriefingPage() {
               </RailField>
 
               <RailField label="Confidence">
-                <div className="font-mono text-[12px] tracking-[0.08em]">SINGLE SOURCE</div>
+                <div className="font-mono text-[12px] tracking-[0.08em]">
+                  {accountCount >= 2 ? `${accountCount} SOURCES` : "SINGLE SOURCE"}
+                </div>
                 <p className="mt-1 text-[12px] leading-snug text-[#1A1A1A]/65">
-                  One article, no independent corroboration in this run.
+                  {accountCount >= 2
+                    ? `${outletNames.join(", ")} compared in this run.`
+                    : "One article, no independent corroboration in this run."}
                 </p>
               </RailField>
             </aside>

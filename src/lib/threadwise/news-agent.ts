@@ -74,18 +74,68 @@ const normaliseUrl = (url: string) => url.replace(/[?#].*$/, "").replace(/\/$/, 
  * dead feed degrades to the next publisher rather than an empty run. The default
  * limit of 1 makes this a single-target pick.
  */
-/** The same call as fetchTopStories, but keeps one lead per outlet instead of the first feed alone. */
-export async function fetchFeedLeads(): Promise<Story[]> {
-  const all = await fetchTopStories(NEWS_FEEDS.length * 3);
-  const seen = new Set<string>();
-  const leads: Story[] = [];
-  for (const story of all) {
-    if (seen.has(story.source)) continue;
-    seen.add(story.source);
-    leads.push(story);
+/**
+ * The same event, across outlets. Leads are unrelated, so we fetch a pool from
+ * each feed and cluster by shared entities before the model sees anything.
+ */
+export async function fetchEventCluster(): Promise<Story[]> {
+  const pool = await fetchTopStories(NEWS_FEEDS.length * 8);
+  const bySource = new Map<string, Story[]>();
+  for (const story of pool) {
+    const list = bySource.get(story.source) ?? [];
+    if (list.length < 8) list.push(story);
+    bySource.set(story.source, list);
   }
-  return leads;
+
+  const feeds = [...bySource.values()];
+  if (!feeds.length) return [];
+  if (feeds.length === 1) return [feeds[0]![0]!];
+
+  const words = (title: string) =>
+    new Set(
+      (title.toLowerCase().match(/[a-z][a-z'-]{3,}/g) ?? []).filter(
+        (word) => !STOPWORDS.has(word),
+      ),
+    );
+  const overlap = (a: Set<string>, b: Set<string>) => {
+    let shared = 0;
+    for (const word of a) if (b.has(word)) shared += 1;
+    return shared;
+  };
+
+  let best: { stories: Story[]; score: number } = { stories: [], score: 0 };
+  for (let i = 0; i < feeds.length; i += 1) {
+    for (let j = i + 1; j < feeds.length; j += 1) {
+      for (const left of feeds[i]!) {
+        const leftWords = words(left.title);
+        for (const right of feeds[j]!) {
+          const score = overlap(leftWords, words(right.title));
+          if (score > best.score) {
+            best = { stories: [left, right], score };
+            // a third outlet covering the same event joins the cluster
+            for (let k = 0; k < feeds.length; k += 1) {
+              if (k === i || k === j) continue;
+              const third = feeds[k]!.find(
+                (candidate) => overlap(leftWords, words(candidate.title)) >= 2,
+              );
+              if (third) best.stories.push(third);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Two shared significant words is the floor for "same event".
+  if (best.score >= 2) return best.stories;
+  return [pool[0]!];
 }
+
+const STOPWORDS = new Set([
+  "that","this","with","from","after","before","says","said","will","would","could","about",
+  "over","into","amid","more","than","then","they","their","them","have","has","been","were",
+  "what","when","where","which","while","your","ours","here","there","just","like","also",
+]);
 
 export async function fetchTopStories(limit = 1): Promise<Story[]> {
   const perFeed = await Promise.all(
