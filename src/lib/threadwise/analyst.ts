@@ -10,28 +10,42 @@ import { z } from "zod";
 import { extractJson, getModel } from "./ai/ai-providers.server";
 
 export const analystSchema = z.object({
-  move: z.string().trim().min(40).max(1400),
-  why_now: z.string().trim().min(60).max(1200),
+  move: z.string().trim().max(4000).default(""),
+  why_now: z.string().trim().max(4000).default(""),
   stakes: z
-    .array(z.object({ actor: z.string().trim().max(60), gains: z.string().trim().max(320), loses: z.string().trim().max(320) }))
-    .min(2)
-    .max(5),
+    .array(
+      z.object({
+        actor: z.string().trim().max(200).default(""),
+        gains: z.string().trim().max(900).default(""),
+        loses: z.string().trim().max(900).default(""),
+      }),
+    )
+    .max(6)
+    .default([]),
   precedent: z
     .array(
       z.object({
-        name: z.string().trim().max(90),
-        when: z.string().trim().max(40),
-        parallel: z.string().trim().max(360),
-        breaks: z.string().trim().max(320),
+        name: z.string().trim().max(200).default(""),
+        when: z.string().trim().max(120).default(""),
+        parallel: z.string().trim().max(1200).default(""),
+        breaks: z.string().trim().max(1200).default(""),
       }),
     )
-    .min(1)
-    .max(3),
-  second_order: z.string().trim().min(60).max(1400),
-  counter_reading: z.string().trim().min(60).max(1000),
-  watch: z.array(z.object({ signal: z.string().trim().max(240), when: z.string().trim().max(60) })).min(2).max(4),
-  falsifier: z.string().trim().min(30).max(400),
-  confidence: z.enum(["documented", "inferred", "speculative"]),
+    .max(3)
+    .default([]),
+  second_order: z.string().trim().max(4000).default(""),
+  counter_reading: z.string().trim().max(3000).default(""),
+  watch: z
+    .array(
+      z.object({
+        signal: z.string().trim().max(400).default(""),
+        when: z.string().trim().max(120).default(""),
+      }),
+    )
+    .max(5)
+    .default([]),
+  falsifier: z.string().trim().max(800).default(""),
+  confidence: z.enum(["documented", "inferred", "speculative"]).default("inferred"),
 });
 
 export type AnalystReport = z.infer<typeof analystSchema> & { sources: { title: string; url: string }[] };
@@ -51,7 +65,8 @@ HOW YOU WRITE
 - Every claim carries a name, a date, an institution or a mechanism. "Consolidates loyalist control" is banned; say who is replaced, by whom, with what effect.
 - No bullet-point generalities. No "complex web", "landscape", "underscores", "remains to be seen", "significant", "tapestry", "delve".
 - Never invent a quote, a date or an event. If you are unsure whether a precedent exists, leave it out.
-- Write about power the way a good newspaper explainer does: concrete, calm, specific.`;
+- Write about power the way a good newspaper explainer does: concrete, calm, specific.
+- Never refer to "the reader", "the prompt", "the supplied text" or "the retrieved material". Address the subject directly: "Trump named Miller…", not "The reader states that…". If the material does not confirm something, say what is unknown in plain words.`;
 
 export function analystPrompt(input: string, context: string) {
   return `THE MOVE (as supplied by the reader):
@@ -73,7 +88,19 @@ Write the read. Fields:
 - falsifier: the one fact that would prove this whole read wrong.
 - confidence: "documented" if the facts are confirmed in the retrieved material, "inferred" if they rest on the move itself, "speculative" if they depend on unnamed sources.
 
-Return ONLY JSON matching that shape.`;
+Return ONLY a JSON object with EXACTLY these keys, all present:
+{
+  "move": string,
+  "why_now": string,
+  "stakes": [{ "actor": string, "gains": string, "loses": string }],
+  "precedent": [{ "name": string, "when": string, "parallel": string, "breaks": string }],
+  "second_order": string,
+  "counter_reading": string,
+  "watch": [{ "signal": string, "when": string }],
+  "falsifier": string,
+  "confidence": "documented" | "inferred" | "speculative"
+}
+No markdown, no commentary, no code fences.`;
 }
 
 type WikiHit = { title: string; extract: string; url: string };
@@ -102,10 +129,16 @@ async function wiki(term: string): Promise<WikiHit | null> {
 /** Names and institutions worth looking up: capitalised runs, minus the obvious noise. */
 export function candidateEntities(input: string): string[] {
   const stop = new Set(["The", "A", "An", "Breaking", "New", "This", "That", "It", "He", "She", "They", "We", "I"]);
-  const runs = input.match(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\b/g) ?? [];
-  const singles = (input.match(/\b[A-Z][a-z]{3,}\b/g) ?? []).filter((word) => !stop.has(word));
-  const ranked = [...new Set([...runs, ...singles])].slice(0, 6);
-  return ranked;
+  const runs = (input.match(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\b/g) ?? []).filter(
+    (run) => run.split(" ").length <= 4,
+  );
+  const singles = (input.match(/\b[A-Z][a-z]{4,}\b/g) ?? []).filter((word) => !stop.has(word));
+
+  // "Stephen Miller" makes "Stephen" and "Miller" redundant lookups.
+  const covered = new Set(runs.flatMap((run) => run.split(" ")));
+  const keepSingles = singles.filter((word) => !covered.has(word));
+
+  return [...new Set([...runs, ...keepSingles])].slice(0, 5);
 }
 
 export async function retrieveContext(input: string): Promise<{ context: string; sources: { title: string; url: string }[] }> {
@@ -131,11 +164,13 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     system: METHOD,
     prompt: analystPrompt(input, context),
     temperature: 0.3,
+    maxOutputTokens: 3200,
     maxRetries: 1,
   });
 
   const parsed = analystSchema.safeParse(extractJson<unknown>(text));
   if (!parsed.success) {
+    console.error("[analyst] unusable output:", text.slice(0, 600));
     throw new Error(`The analyst returned an unusable read: ${parsed.error.issues[0]?.message ?? "unknown shape"}`);
   }
 
