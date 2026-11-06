@@ -21,12 +21,15 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
+import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as ReadTokenRouteImport } from './routes/read.$token'
 import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as SocraticThreadIdRouteImport } from './routes/socratic.$threadId'
+import { Route as ApiReadTokenRouteImport } from './routes/api/read.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -88,6 +91,11 @@ const ApiAnalystRoute = ApiAnalystRouteImport.update({
   path: '/api/analyst',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAnalystWatchRoute = ApiAnalystWatchRouteImport.update({
+  id: '/api/analyst-watch',
+  path: '/api/analyst-watch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCheckWatchRoute = ApiCheckWatchRouteImport.update({
   id: '/api/check-watch',
   path: '/api/check-watch',
@@ -108,6 +116,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReadTokenRoute = ReadTokenRouteImport.update({
+  id: '/read/$token',
+  path: '/read/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const STokenRoute = STokenRouteImport.update({
   id: '/s/$token',
   path: '/s/$token',
@@ -116,6 +129,11 @@ const STokenRoute = STokenRouteImport.update({
 const SocraticThreadIdRoute = SocraticThreadIdRouteImport.update({
   id: '/socratic/$threadId',
   path: '/socratic/$threadId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReadTokenRoute = ApiReadTokenRouteImport.update({
+  id: '/api/read/$token',
+  path: '/api/read/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -132,12 +150,15 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
+  '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/read/$token': typeof ReadTokenRoute
   '/s/$token': typeof STokenRoute
   '/socratic/$threadId': typeof SocraticThreadIdRoute
+  '/api/read/$token': typeof ApiReadTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -152,12 +173,15 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
+  '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/read/$token': typeof ReadTokenRoute
   '/s/$token': typeof STokenRoute
   '/socratic/$threadId': typeof SocraticThreadIdRoute
+  '/api/read/$token': typeof ApiReadTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -173,12 +197,15 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
+  '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/read/$token': typeof ReadTokenRoute
   '/s/$token': typeof STokenRoute
   '/socratic/$threadId': typeof SocraticThreadIdRoute
+  '/api/read/$token': typeof ApiReadTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -195,12 +222,15 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/api/analyst'
+    | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
+    | '/read/$token'
     | '/s/$token'
     | '/socratic/$threadId'
+    | '/api/read/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -215,12 +245,15 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/api/analyst'
+    | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
+    | '/read/$token'
     | '/s/$token'
     | '/socratic/$threadId'
+    | '/api/read/$token'
   id:
     | '__root__'
     | '/'
@@ -235,12 +268,15 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/api/analyst'
+    | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
+    | '/read/$token'
     | '/s/$token'
     | '/socratic/$threadId'
+    | '/api/read/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -256,12 +292,15 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
+  ApiAnalystWatchRoute: typeof ApiAnalystWatchRoute
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  ReadTokenRoute: typeof ReadTokenRoute
   STokenRoute: typeof STokenRoute
   SocraticThreadIdRoute: typeof SocraticThreadIdRoute
+  ApiReadTokenRoute: typeof ApiReadTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -350,6 +389,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnalystRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/analyst-watch': {
+      id: '/api/analyst-watch'
+      path: '/api/analyst-watch'
+      fullPath: '/api/analyst-watch'
+      preLoaderRoute: typeof ApiAnalystWatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/check-watch': {
       id: '/api/check-watch'
       path: '/api/check-watch'
@@ -378,6 +424,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/read/$token': {
+      id: '/read/$token'
+      path: '/read/$token'
+      fullPath: '/read/$token'
+      preLoaderRoute: typeof ReadTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/s/$token': {
       id: '/s/$token'
       path: '/s/$token'
@@ -390,6 +443,13 @@ declare module '@tanstack/react-router' {
       path: '/socratic/$threadId'
       fullPath: '/socratic/$threadId'
       preLoaderRoute: typeof SocraticThreadIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/read/$token': {
+      id: '/api/read/$token'
+      path: '/api/read/$token'
+      fullPath: '/api/read/$token'
+      preLoaderRoute: typeof ApiReadTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -408,12 +468,15 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   ApiAnalystRoute: ApiAnalystRoute,
+  ApiAnalystWatchRoute: ApiAnalystWatchRoute,
   ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  ReadTokenRoute: ReadTokenRoute,
   STokenRoute: STokenRoute,
   SocraticThreadIdRoute: SocraticThreadIdRoute,
+  ApiReadTokenRoute: ApiReadTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

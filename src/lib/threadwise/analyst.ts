@@ -317,3 +317,88 @@ Answer as the same analyst. Rules:
 
   return text.trim();
 }
+
+
+/** Saves a read and returns its token. Best-effort: a read still works unsaved. */
+export async function saveRead(input: string, report: AnalystReport): Promise<string | null> {
+  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  if (!url || !key) return null;
+
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const token = Array.from({ length: 10 }, () =>
+      "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)],
+    ).join("");
+    const supabase = createClient(url, key, { auth: { persistSession: false } });
+    const { error } = await supabase.from("analyst_reads").insert({ token, input, report });
+    if (error) {
+      console.warn("[analyst] could not save read:", error.message);
+      return null;
+    }
+    return token;
+  } catch (error) {
+    console.warn("[analyst] could not save read:", error);
+    return null;
+  }
+}
+
+export async function loadRead(token: string): Promise<{ input: string; report: AnalystReport } | null> {
+  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  if (!url || !key || !/^[a-z0-9]{6,20}$/.test(token)) return null;
+
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(url, key, { auth: { persistSession: false } });
+  const { data } = await supabase.from("analyst_reads").select("input, report").eq("token", token).maybeSingle();
+  return data ? { input: data.input as string, report: data.report as AnalystReport } : null;
+}
+
+
+/** "Within 30 days" → a real date. Unparseable conditions get a 90-day horizon. */
+export function dueDate(when: string): string {
+  const iso = when.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
+
+  const days = when.match(/(\d{1,3})\s*(day|week|month)/i);
+  const base = new Date();
+  let offset = 90;
+  if (days) {
+    const n = Number(days[1]);
+    const unit = days[2]!.toLowerCase();
+    offset = unit === "day" ? n : unit === "week" ? n * 7 : n * 30;
+  }
+  base.setUTCDate(base.getUTCDate() + offset);
+  return base.toISOString().slice(0, 10);
+}
+
+/** Creates one dated watch per signal, for the signed-in reader. */
+export async function watchSignals(
+  token: string,
+  jwt: string,
+): Promise<{ created: number }> {
+  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  if (!url || !serviceKey) throw new Error("Watches are not configured on the server.");
+
+  const { createClient } = await import("@supabase/supabase-js");
+  const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
+  const { data: userData, error: userError } = await admin.auth.getUser(jwt);
+  const userId = userData?.user?.id;
+  if (userError || !userId) throw new Error("Sign in to keep these signals.");
+
+  const read = await loadRead(token);
+  if (!read) throw new Error("That read could not be found.");
+
+  const rows = read.report.watch.map((item) => ({
+    user_id: userId,
+    claim: item.signal.slice(0, 480),
+    due_date: dueDate(item.when),
+    source_url: read.report.sources[0]?.url ?? null,
+  }));
+  if (!rows.length) return { created: 0 };
+
+  const { error } = await admin.from("claim_watches").insert(rows);
+  if (error) throw new Error(error.message);
+  return { created: rows.length };
+}

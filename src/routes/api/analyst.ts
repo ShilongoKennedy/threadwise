@@ -64,9 +64,10 @@ export const Route = createFileRoute("/api/analyst")({
         if (text.length > 4000) return json({ error: "That is longer than one move. Trim it to under 4,000 characters." }, 413);
 
         try {
-          const { analyseMove } = await import("@/lib/threadwise/analyst");
+          const { analyseMove, saveRead } = await import("@/lib/threadwise/analyst");
           const report = await analyseMove(text);
-          return json({ ok: true, report, ms: Date.now() - started }, 200);
+          const token = await saveRead(text, report);
+          return json({ ok: true, report, token, ms: Date.now() - started }, 200);
         } catch (error) {
           console.error("[analyst] failed:", error);
           return json(

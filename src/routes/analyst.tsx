@@ -42,6 +42,7 @@ function AnalystPage() {
   const [stage, setStage] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<Report | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [reading, setReading] = useState<{ text: string; context: string } | null>(null);
   const [readingBusy, setReadingBusy] = useState(false);
 
@@ -92,9 +93,10 @@ function AnalystPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: move }),
       });
-      const body = (await response.json()) as { report?: Report; error?: string };
+      const body = (await response.json()) as { report?: Report; token?: string | null; error?: string };
       if (!response.ok || !body.report) throw new Error(body.error ?? "The analyst could not finish this read.");
       setReport(body.report);
+      setToken(body.token ?? null);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Something went wrong.");
     } finally {
@@ -233,7 +235,16 @@ function AnalystPage() {
           </>
         )}
 
-        {report && <Read report={report} onAgain={() => setReport(null)} />}
+        {report && (
+          <Read
+            report={report}
+            token={token}
+            onAgain={() => {
+              setReport(null);
+              setToken(null);
+            }}
+          />
+        )}
       </main>
     </div>
   );
@@ -253,11 +264,12 @@ function Section({ n, title, children }: { n: string; title: string; children: R
 
 type Turn = { role: "user" | "assistant"; content: string };
 
-function Read({ report, onAgain }: { report: Report; onAgain: () => void }) {
+function Read({ report, token, onAgain }: { report: Report; token: string | null; onAgain: () => void }) {
   const [thread, setThread] = useState<Turn[]>([]);
   const [question, setQuestion] = useState("");
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState<string | null>(null);
+  const [watchState, setWatchState] = useState("idle");
 
   const ask = async (text: string) => {
     const prompt = text.trim();
@@ -290,13 +302,26 @@ function Read({ report, onAgain }: { report: Report; onAgain: () => void }) {
         <span className="font-mono text-[9px] font-bold uppercase tracking-[0.26em]">
           The read · confidence: {report.confidence}
         </span>
-        <button
-          type="button"
-          onClick={onAgain}
-          className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4"
-        >
-          Another move
-        </button>
+        <div className="flex items-center gap-4">
+          {token && (
+            <button
+              type="button"
+              onClick={() => {
+                void navigator.clipboard?.writeText(`${window.location.origin}/read/${token}`);
+              }}
+              className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/60 underline underline-offset-4 hover:text-[#1A4BFF]"
+            >
+              Copy link
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onAgain}
+            className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4"
+          >
+            Another move
+          </button>
+        </div>
       </div>
 
       <Section n="01" title="The move">
@@ -369,7 +394,57 @@ function Read({ report, onAgain }: { report: Report; onAgain: () => void }) {
         </ul>
       </Section>
 
-      <Section n="09" title="Interrogate this read">
+      <Section n="09" title="Keep these signals">
+        {token ? (
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                void (async () => {
+                  setWatchState("saving");
+                  try {
+                    const { supabase } = await import("@/integrations/supabase/client");
+                    const { data } = await supabase.auth.getSession();
+                    const jwt = data.session?.access_token;
+                    if (!jwt) {
+                      setWatchState("signin");
+                      return;
+                    }
+                    const response = await fetch("/api/analyst-watch", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", Authorization: `Bearer ${jwt}` },
+                      body: JSON.stringify({ token }),
+                    });
+                    const body = (await response.json()) as { created?: number; error?: string };
+                    if (!response.ok) throw new Error(body.error ?? "Could not keep those signals.");
+                    setWatchState(`done:${body.created ?? 0}`);
+                  } catch {
+                    setWatchState("failed");
+                  }
+                })();
+              }}
+              className="border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+            >
+              {watchState === "saving" ? "Keeping…" : "Watch these signals"}
+            </button>
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/60">
+              {watchState.startsWith("done:")
+                ? `${watchState.split(":")[1]} watches filed · scored each morning`
+                : watchState === "signin"
+                  ? "Sign in first — watches belong to you"
+                  : watchState === "failed"
+                    ? "Could not file them just now"
+                    : "They go to your calendar and get checked on the date"}
+            </span>
+          </div>
+        ) : (
+          <p className="text-[14px] text-[#1A1A1A]/60">
+            Signals can be kept once the read is saved.
+          </p>
+        )}
+      </Section>
+
+      <Section n="10" title="Interrogate this read">
         <div className="space-y-3">
           {thread.map((turn, index) => (
             <div
@@ -416,7 +491,7 @@ function Read({ report, onAgain }: { report: Report; onAgain: () => void }) {
       </Section>
 
       {report.sources.length > 0 && (
-        <Section n="10" title="What this rests on">
+        <Section n="11" title="What this rests on">
           <ul className="space-y-1.5">
             {report.sources.map((source) => (
               <li key={source.url}>
