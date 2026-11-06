@@ -151,6 +151,7 @@ function LandingPage() {
         <BrandLockup size="md" asLink />
         
         <nav className="hidden md:flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
+          <Link to="/analyst" className="text-[#1A4BFF] transition-colors hover:text-[#1A1A1A]">The analyst</Link>
           <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">The canvas</a>
           <a href="#features" className="hover:text-[#1A1A1A] transition-colors">The dossier</a>
           <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Briefs</Link>
@@ -221,10 +222,17 @@ function LandingPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  to="/briefing"
+                  to="/analyst"
                   className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
                 >
-                  Read today&rsquo;s brief
+                  Ask the analyst
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  to="/briefing"
+                  className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/65 underline decoration-[#1A1A1A]/20 underline-offset-4 transition-colors hover:text-[#1A1A1A]"
+                >
+                  Today&rsquo;s brief
                   <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
                 </Link>
                 <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/60 md:text-right">
@@ -562,6 +570,7 @@ function LandingPage() {
             <div className="flex flex-wrap gap-12 md:gap-24 font-mono text-[12px] uppercase tracking-widest text-[#1A1A1A]/65">
               <div className="flex flex-col gap-4">
                 <span className="text-[#1A1A1A] font-bold mb-1">Product</span>
+                <Link to="/analyst" className="hover:text-[#1A1A1A] transition-colors">The analyst</Link>
                 <Link to="/app" className="hover:text-[#1A1A1A] transition-colors">Workspace</Link>
                 <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Morning briefs</Link>
                 <a href="#features" className="hover:text-[#1A1A1A] transition-colors">Features</a>
