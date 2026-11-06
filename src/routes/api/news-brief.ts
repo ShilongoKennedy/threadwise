@@ -38,14 +38,14 @@ export const Route = createFileRoute("/api/news-brief")({
         let stage: "collect" | "read" | "generate" | "save" = "collect";
 
         try {
-          const [{ fetchTopStories, fetchArticleText, generateBrief, checkClaims }, { createClient }] =
+          const [{ fetchFeedLeads, fetchTopStories, fetchArticleText, generateBrief, checkClaims }, { createClient }] =
             await Promise.all([
               import("@/lib/threadwise/news-agent"),
               import("@supabase/supabase-js"),
             ]);
 
-          // Single target: one story, one dossier.
-          const stories = await fetchTopStories(1);
+          // One lead per outlet: the brief compares accounts of the same event.
+          const stories = await fetchFeedLeads();
           if (!stories.length) return json({ error: "No stories were found in the feeds." }, 502);
 
           stage = "read";
@@ -82,6 +82,8 @@ export const Route = createFileRoute("/api/news-brief")({
               historical_echo: brief.historical_echo,
               threat_level: brief.threat_level,
               source_url: brief.source_url,
+              sources: brief.sources ?? [],
+              gap: brief.gap || null,
               place: brief.place || null,
               lat: brief.place ? brief.lat : null,
               lon: brief.place ? brief.lon : null,

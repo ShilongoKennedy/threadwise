@@ -74,6 +74,19 @@ const normaliseUrl = (url: string) => url.replace(/[?#].*$/, "").replace(/\/$/, 
  * dead feed degrades to the next publisher rather than an empty run. The default
  * limit of 1 makes this a single-target pick.
  */
+/** The same call as fetchTopStories, but keeps one lead per outlet instead of the first feed alone. */
+export async function fetchFeedLeads(): Promise<Story[]> {
+  const all = await fetchTopStories(NEWS_FEEDS.length * 3);
+  const seen = new Set<string>();
+  const leads: Story[] = [];
+  for (const story of all) {
+    if (seen.has(story.source)) continue;
+    seen.add(story.source);
+    leads.push(story);
+  }
+  return leads;
+}
+
 export async function fetchTopStories(limit = 1): Promise<Story[]> {
   const perFeed = await Promise.all(
     NEWS_FEEDS.map(async (feed): Promise<Story[]> => {
@@ -164,12 +177,24 @@ const bullets = z.array(z.string().trim().min(4)).min(1).max(6);
 
 const briefSchema = z.object({
   headline: z.string().trim().min(3).max(90),
-  bluf: z.string().trim().min(300).max(3000),
+  bluf: z.string().trim().min(1200).max(7000),
   framing: bullets,
   omission: bullets,
   historical_echo: z.string().trim().min(20).max(320),
   threat_level: threatLevel,
   source_url: z.string().trim().default(""),
+  sources: z
+    .array(
+      z.object({
+        outlet: z.string().trim().max(40),
+        headline: z.string().trim().max(120),
+        emphasis: z.string().trim().min(20).max(320),
+        omission: z.string().trim().min(12).max(240),
+      }),
+    )
+    .max(3)
+    .default([]),
+  gap: z.string().trim().max(500).default(""),
   place: z.string().trim().max(60).default(""),
   lat: z.number().min(-90).max(90).default(0),
   lon: z.number().min(-180).max(180).default(0),
@@ -193,6 +218,8 @@ export type NewsBriefDraft = {
   historical_echo: string;
   threat_level: ThreatLevel;
   source_url: string;
+  sources: { outlet: string; headline: string; emphasis: string; omission: string }[];
+  gap: string;
   place: string;
   lat: number;
   lon: number;
@@ -205,12 +232,16 @@ Voice: cold, flat, declarative. Present tense, active voice. Short words. No hed
 
 Hard limits — break these and the dossier is rejected:
 - headline: MAXIMUM 6 WORDS. Count them before you answer. A judgement, not an event description, and never a reworded version of the published headline.
-- bluf: THE EXECUTIVE ASSESSMENT. 3 to 4 paragraphs, 200–300 words total, separated by a single blank line. Structure it exactly:
-  ¶1 THE EVENT — what actually happened, stripped of every adjective and emotional term. Actors, action, consequence.
-  ¶2 THE SPIN — the narrative the source is pushing, how it frames blame and legitimacy, what it wants you to feel.
-  ¶3 THE REALITY — the hidden geopolitical or financial truth: who gains, who pays, what the stakes actually are beneath the story.
-  ¶4 (optional) — what to watch next, and the condition that would falsify this reading.
-- framing: EXACTLY 3 bullets, each MAXIMUM 18 words. Name the technique mechanically: loaded adjectives, passive voice hiding agency, unnamed sources, false dilemma, selective quotation. Describe the technique, never the author's soul.
+- bluf: THE EXECUTIVE ASSESSMENT. SIX paragraphs, 700–1000 words total, separated by single blank lines. No headings, no numbering, no markdown. Structure it exactly:
+  ¶1 THE EVENT — what actually happened, stripped of every adjective and emotional term. Actors, action, consequence. 90–130 words.
+  ¶2 THE DISAGREEMENT — what the outlets actually disagree about: not tone but fact, sequence, attribution. Name which account is stronger and why. 120–170 words.
+  ¶3 THE SPIN — how each outlet frames blame and legitimacy, and what each wants you to feel. Quote their own words where it helps. 120–170 words.
+  ¶4 THE REALITY — the geopolitical or financial truth beneath the story: who gains, who pays, what the stakes are. Name the incentive each actor is responding to. 120–170 words.
+  ¶5 THE BLIND SPOT — what all of these accounts avoid, and why that avoidance is convenient for someone. This is the most important paragraph. 100–150 words.
+  ¶6 WHAT TO WATCH — two or three specific developments, each with a date or condition, and the one fact that would falsify this whole reading. 100–150 words.
+- sources: one entry per outlet supplied, in the order given. emphasis = what that outlet put in its lede that the others did not (one sentence, quote it). omission = what its account leaves out that another one states (one clause).
+- gap: ONE sentence — the question none of the outlets answers.
+- framing: EXACTLY 3 bullets, each MAXIMUM 18 words. Name the technique mechanically: loaded adjectives, passive voice hiding agency, unnamed sources, false dilemma, selective quotation. Describe the mechanism, never the feeling.
 - omission: EXACTLY 3 bullets, each MAXIMUM 18 words. The dog that didn't bark: missing numbers, absent parties, questions the piece never answers.
 - historical_echo: MAXIMUM 2 SENTENCES. One concrete precedent, and where the comparison breaks.
 - threat_level: exactly one of "LOW", "MODERATE", "ELEVATED", "CRITICAL".
@@ -242,7 +273,13 @@ export async function generateBrief(stories: StoryText[]): Promise<NewsBriefDraf
   const { text } = await generateText({
     model: getModel("deepseek"),
     system: SYSTEM,
-    prompt: `PUBLISHER: ${story.source}\nHEADLINE AS PUBLISHED: ${story.title}\nURL: ${story.url}\n\nARTICLE (cleaned markdown):\n${story.text}\n\nWrite the dossier. Obey every hard limit.`,
+    prompt: stories
+    .slice(0, 3)
+    .map(
+      (item, index) =>
+        `--- OUTLET ${index + 1} of ${Math.min(stories.length, 3)} ---\nPUBLISHER: ${item.source}\nHEADLINE AS PUBLISHED: ${item.title}\nURL: ${item.url}\n\nARTICLE (cleaned markdown):\n${item.text.slice(0, 9_000)}`,
+    )
+    .join("\n\n"),
     temperature: 0.2,
     maxRetries: 1,
   });

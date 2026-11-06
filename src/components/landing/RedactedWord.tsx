@@ -16,7 +16,7 @@ export function RedactedWord({ children }: { children: React.ReactNode }) {
       setOpen(true);
       return;
     }
-    const timer = window.setTimeout(() => setOpen(true), 4200);
+    const timer = window.setTimeout(() => setOpen(true), 9000);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -43,12 +43,19 @@ export function RedactedWord({ children }: { children: React.ReactNode }) {
       ref={host}
       className={`tw-redacted${open ? " is-open" : ""}`}
       onPointerMove={move}
+      onPointerDown={(event) => {
+        if (event.pointerType === "touch") setOpen(true);
+      }}
+      onClick={() => {
+        if (window.matchMedia("(pointer: coarse)").matches) setOpen(true);
+      }}
       onPointerLeave={() => {
         last.current = null;
       }}
     >
       <span className="tw-redacted-word">{children}</span>
       <span className="tw-redacted-bar" aria-hidden />
+      <span className="tw-redacted-sweep" aria-hidden />
       <span className={`tw-redacted-hint${open ? " is-gone" : ""}`} aria-hidden>
         rub to read
       </span>

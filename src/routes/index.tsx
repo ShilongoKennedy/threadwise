@@ -20,11 +20,11 @@ export const Route = createFileRoute("/")({
       { name: "twitter:title", content: "Threadwise — See what hides" },
       { name: "twitter:description", content: "Threadwise is a forensic intelligence workspace: paste a source, expose its framing, omissions and contradictions, and map what you actually know against what you are assuming." },
     
-      { property: "og:image", content: "https://threadwise-beta.vercel.app/og.png" },
+      { property: "og:image", content: "https://threadwise-beta.vercel.app/og-canvas.jpg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: "https://threadwise-beta.vercel.app/og.png" },
+      { name: "twitter:image", content: "https://threadwise-beta.vercel.app/og-canvas.jpg" },
     ],
   }),
   component: LandingPage,
@@ -151,9 +151,10 @@ function LandingPage() {
         <BrandLockup size="md" asLink />
         
         <nav className="hidden md:flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
-          <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">How it works</a>
-          <a href="#features" className="hover:text-[#1A1A1A] transition-colors">Features</a>
+          <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">The canvas</a>
+          <a href="#features" className="hover:text-[#1A1A1A] transition-colors">The dossier</a>
           <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Briefs</Link>
+          <Link to="/digest" className="hover:text-[#1A1A1A] transition-colors">Record</Link>
         </nav>
 
         <div className="flex items-center gap-3 md:gap-6">
@@ -268,7 +269,7 @@ function LandingPage() {
                   className="group absolute inset-0 flex items-end justify-end p-4 md:p-6"
                   aria-label="Open the workspace"
                 >
-                  <span className="translate-y-1 border-2 border-[#1A1A1A] bg-[#FDFBF7] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] opacity-0 shadow-[4px_4px_0_0_#1A1A1A] transition-all group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+                  <span className="border-2 border-[#1A1A1A] bg-[#FDFBF7] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] shadow-[4px_4px_0_0_#1A1A1A] transition-all md:translate-y-1 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-visible:translate-y-0 md:group-focus-visible:opacity-100">
                     Open the workspace →
                   </span>
                 </Link>
@@ -332,49 +333,70 @@ function LandingPage() {
               </div>
             </div>
 
-            {/* Card 2: Contradiction Gauge (Span 5) */}
-            <div className="col-span-1 md:col-span-5 dossier-card p-8 flex flex-col justify-between">
-              <div className="flex items-center justify-between border-b border-[#1A1A1A]/10 pb-4 mb-4">
-                <div className="text-[10px] font-mono text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2 font-bold">
-                  <ShieldAlert className="w-3.5 h-3.5 text-[#1A4BFF]" /> Contradiction Index
+            {/* Card 2: Omission ledger (Span 5) */}
+            <div className="col-span-1 md:col-span-5 dossier-card flex flex-col p-8">
+              <div className="mb-5 flex items-center justify-between border-b border-[#1A1A1A]/10 pb-4">
+                <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1A1A]">
+                  <FileWarning className="h-3.5 w-3.5 text-[#1A4BFF]" /> Omission ledger
                 </div>
-                <div className="font-mono text-[10px] text-[#1A1A1A]/65">METRIC-04</div>
+                <div className="font-mono text-[10px] text-[#1A1A1A]/65">DOC-892A</div>
               </div>
-              <div className="relative flex justify-center my-4">
-                 <svg viewBox="0 0 100 50" className="w-56 h-auto overflow-visible">
-                    <path d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="rgba(0,0,0,0.05)" strokeWidth="12" strokeLinecap="square" />
-                    <path d="M 10 45 A 35 35 0 0 1 75 18" fill="none" stroke="#1A4BFF" strokeWidth="12" strokeLinecap="square" />
-                    <circle cx="50" cy="45" r="4" fill="#1A1A1A" />
-                    <line x1="50" y1="45" x2="75" y2="18" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="square" />
-                 </svg>
-                 <div className="absolute -bottom-6 text-center bg-white px-2">
-                   <span className="font-display text-4xl text-[#1A4BFF]">85</span>
-                   <span className="text-sm text-muted-foreground">/100</span>
-                 </div>
-              </div>
-              <p className="text-center font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65 mt-8">
-                High friction detected
+
+              <ol className="flex-1 space-y-4">
+                {[
+                  { line: "“Three armies within 400 miles.”", state: "quoted" },
+                  { line: "“The gold is protected by the Atlantic.”", state: "quoted" },
+                  { line: "Who commands those armies.", state: "withheld" },
+                ].map((row) => (
+                  <li key={row.line} className="flex items-start gap-3">
+                    <span
+                      className={`mt-1.5 h-2 w-2 shrink-0 ${
+                        row.state === "withheld" ? "bg-[#C1121F]" : "bg-[#1A1A1A]"
+                      }`}
+                    />
+                    <span
+                      className={`font-serif text-[15px] leading-snug ${
+                        row.state === "withheld"
+                          ? "text-[#C1121F]/70 line-through decoration-[#C1121F]/40"
+                          : "text-[#1A1A1A]/85"
+                      }`}
+                    >
+                      {row.line}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+
+              <p className="mt-5 border-t border-dashed border-[#1A1A1A]/20 pt-3 font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-[#1A1A1A]/65">
+                What the sentence never says · the source names the threat four times and none of them
+                is a country.
               </p>
             </div>
 
-            {/* Card 3: Narrative Radar (Span 4) */}
-            <div className="col-span-1 md:col-span-4 dossier-card p-8 flex flex-col items-center">
-              <div className="text-[10px] font-mono text-[#1A1A1A] uppercase tracking-widest mb-4 flex items-center justify-between w-full border-b border-[#1A1A1A]/10 pb-4 font-bold">
-                <div className="flex items-center gap-2">
-                  <Activity className="w-3.5 h-3.5 text-[#1A4BFF]" /> Profile
+            {/* Card 3: Claim audit (Span 4) */}
+            <div className="col-span-1 md:col-span-4 dossier-card flex flex-col justify-between p-8">
+              <div>
+                <div className="mb-5 flex items-center justify-between border-b border-[#1A1A1A]/10 pb-4">
+                  <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1A1A]">
+                    <ShieldAlert className="h-3.5 w-3.5 text-[#1A4BFF]" /> Claim audit
+                  </div>
+                  <div className="font-mono text-[10px] text-[#1A1A1A]/65">C-07</div>
                 </div>
-                <div className="font-mono text-[10px] text-[#1A1A1A]/65">NAR-01</div>
+
+                <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
+                  “That gold is protected by the United States military.”
+                </p>
+                <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/65">
+                  Claimed as fact, supported by nothing in the text.
+                </p>
               </div>
-              <svg viewBox="0 0 120 120" className="w-48 h-48 mt-2">
-                <polygon points="60,10 110,45 90,105 30,105 10,45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
-                <polygon points="60,30 90,55 75,90 45,90 30,55" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
-                <polygon points="60,5 105,45 80,110 40,110 15,45" fill="#1A4BFF" fillOpacity="0.1" stroke="#1A4BFF" strokeWidth="2" />
-                <text x="60" y="5" fill="#1A1A1A" fontSize="7" textAnchor="middle" fontFamily="monospace" fontWeight="bold">BIAS</text>
-                <text x="115" y="45" fill="#1A1A1A" fontSize="7" textAnchor="start" fontFamily="monospace" fontWeight="bold">OMISSION</text>
-                <text x="90" y="115" fill="#1A1A1A" fontSize="7" textAnchor="middle" fontFamily="monospace" fontWeight="bold">URGENCY</text>
-                <text x="30" y="115" fill="#1A1A1A" fontSize="7" textAnchor="middle" fontFamily="monospace" fontWeight="bold">MOTIVE</text>
-                <text x="5" y="45" fill="#1A1A1A" fontSize="7" textAnchor="end" fontFamily="monospace" fontWeight="bold">EVIDENCE</text>
-              </svg>
+
+              <div className="mt-5 flex items-end justify-between">
+                <span className="tw-stamp is-contradicted">Unsupported</span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/65">
+                  ¶ 4
+                </span>
+              </div>
             </div>
 
             {/* Card 4: Analyst Margin (Span 8) */}
@@ -547,8 +569,13 @@ function LandingPage() {
               <div className="flex flex-col gap-4">
                 <span className="text-[#1A1A1A] font-bold mb-1">Read</span>
                 <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">How it works</a>
-                <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Archive</Link>
-                <span className="text-[#1A1A1A]/65">More soon</span>
+                <Link to="/digest" className="hover:text-[#1A1A1A] transition-colors">The record</Link>
+                <Link to="/briefing" className="hover:text-[#1A1A1A] transition-colors">Today&rsquo;s brief</Link>
+              </div>
+              <div className="flex flex-col gap-4">
+                <span className="text-[#1A1A1A] font-bold mb-1">Legal</span>
+                <Link to="/terms" className="hover:text-[#1A1A1A] transition-colors">Terms</Link>
+                <Link to="/privacy" className="hover:text-[#1A1A1A] transition-colors">Privacy</Link>
               </div>
             </div>
           </div>

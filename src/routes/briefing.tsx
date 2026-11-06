@@ -40,6 +40,8 @@ type NewsBrief = {
   threat_level: string | null;
   source_url: string;
   created_at: string;
+  sources: { outlet: string; headline: string; emphasis: string; omission: string }[] | null;
+  gap: string | null;
 };
 
 /** The assessment arrives as 3–4 paragraphs separated by blank lines. */
@@ -131,7 +133,7 @@ function BriefingPage() {
     void (async () => {
       try {
         const columns =
-          "id, headline, bluf, framing, omission, historical_echo, threat_level, source_url, created_at";
+          "id, headline, bluf, framing, omission, historical_echo, threat_level, source_url, created_at, sources, gap";
         const query = supabase.from("news_briefs").select(columns);
         const { data, error } = await (b
           ? query.eq("id", b).maybeSingle()
@@ -400,6 +402,56 @@ function BriefingPage() {
                   {brief.headline}
                 </h1>
               </div>
+
+              {/* Three accounts, and the gap between them */}
+              {(brief.sources?.length ?? 0) > 0 && (
+                <section className="mb-5 border-2 border-[#1A1A1A] bg-white">
+                  <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
+                    <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+                      Three front pages
+                    </h2>
+                    <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A4BFF]">
+                      {brief.sources!.length} accounts
+                    </span>
+                  </div>
+
+                  <ul>
+                    {brief.sources!.map((account) => (
+                      <li key={account.outlet} className="border-b border-[#1A1A1A]/10 px-3 py-3 last:border-b-0">
+                        <div className="flex flex-wrap items-baseline gap-x-3">
+                          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/70">
+                            {account.outlet}
+                          </span>
+                          <span className="font-display text-[15px] leading-tight">
+                            {account.headline}
+                          </span>
+                        </div>
+                        <p className="mt-1.5 text-[13px] leading-snug text-[#1A1A1A]/80">
+                          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A4BFF]">
+                            led with ·{" "}
+                          </span>
+                          {account.emphasis}
+                        </p>
+                        <p className="mt-1 text-[13px] leading-snug text-[#1A1A1A]/60">
+                          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#C1121F]">
+                            left out ·{" "}
+                          </span>
+                          {account.omission}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {brief.gap && (
+                    <p className="border-t-2 border-[#1A1A1A] bg-[#FDFBF7] px-3 py-3 font-serif text-[14px] leading-snug text-[#1A1A1A]">
+                      <span className="mr-2 font-mono text-[9px] uppercase tracking-[0.18em] text-[#C1121F]">
+                        the gap
+                      </span>
+                      {brief.gap}
+                    </p>
+                  )}
+                </section>
+              )}
 
               {/* Executive assessment */}
               <section className="border-y-2 border-[#1A4BFF] bg-white">

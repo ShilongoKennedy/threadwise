@@ -937,7 +937,33 @@ body::after {
   transition: opacity 0.55s ease;
   cursor: ew-resize;
 }
-.tw-redacted.is-open .tw-redacted-bar { opacity: 0; pointer-events: none; }
+.tw-redacted.is-open .tw-redacted-bar {
+  opacity: 0;
+  pointer-events: none;
+}
+/* one pass of a hand over the document, so the affordance shows itself */
+.tw-redacted-sweep {
+  position: absolute;
+  top: -0.02em;
+  bottom: -0.02em;
+  width: 0.14em;
+  background: #fdfbf7;
+  opacity: 0;
+  transform: rotate(-0.4deg);
+  animation: tw-redacted-sweep 1.5s cubic-bezier(.5, 0, .5, 1) 1.1s 1 both;
+}
+@keyframes tw-redacted-sweep {
+  0% { opacity: 0; left: 2%; }
+  12% { opacity: 0.85; }
+  78% { opacity: 0.85; }
+  100% { opacity: 0; left: 96%; }
+}
+.tw-redacted.is-open .tw-redacted-sweep { display: none; }
+.tw-redacted-hint { animation: tw-redacted-pulse 2.4s ease-in-out infinite; }
+@keyframes tw-redacted-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
 .tw-redacted-hint {
   position: absolute;
   right: 0;
@@ -951,4 +977,4 @@ body::after {
   white-space: nowrap;
   transition: opacity 0.4s ease;
 }
-.tw-redacted-hint.is-gone { opacity: 0; }
+.tw-redacted-hint.is-gone { animation: none; opacity: 0; }

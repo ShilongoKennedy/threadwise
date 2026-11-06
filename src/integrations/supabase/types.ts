@@ -371,39 +371,51 @@ export type Database = {
           bluf: string
           created_at: string
           framing: string[]
+          gap: string | null
           headline: string
-          lat: number | null
-          lon: number | null
-          place: string | null
           historical_echo: string
           id: string
+          lat: number | null
+          lon: number | null
           model: string | null
           omission: string[]
+          place: string | null
           source_url: string
+          sources: Json
           threat_level: string
         }
         Insert: {
           bluf: string
           created_at?: string
           framing: string[]
+          gap?: string | null
           headline: string
           historical_echo: string
           id?: string
+          lat?: number | null
+          lon?: number | null
           model?: string | null
           omission: string[]
+          place?: string | null
           source_url: string
+          sources?: Json
           threat_level?: string
         }
         Update: {
           bluf?: string
           created_at?: string
           framing?: string[]
+          gap?: string | null
           headline?: string
           historical_echo?: string
           id?: string
+          lat?: number | null
+          lon?: number | null
           model?: string | null
           omission?: string[]
+          place?: string | null
           source_url?: string
+          sources?: Json
           threat_level?: string
         }
         Relationships: []
