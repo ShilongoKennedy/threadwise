@@ -239,3 +239,81 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
 
   return { ...parsed.data, sources };
 }
+
+
+/** A model that can look at an image. Picks whichever provider has a key. */
+function visionModel() {
+  if (process.env["OPENAI_API_KEY"]) return getModel("openai", "gpt-4o-mini");
+  if (process.env["GEMINI_API_KEY"] || process.env["GOOGLE_GENERATIVE_AI_API_KEY"]) {
+    return getModel("gemini", "gemini-3.8-flash");
+  }
+  if (process.env["ANTHROPIC_API_KEY"]) return getModel("anthropic", "claude-3-5-sonnet-20240620");
+  throw new Error("No vision model is configured. Add GEMINI_API_KEY or OPENAI_API_KEY on the server.");
+}
+
+export type Transcription = { text: string; context: string };
+
+/**
+ * Reads a screenshot before it is analysed. The reader confirms the words, so a
+ * misread name can never become the basis of a whole assessment.
+ */
+export async function transcribeMove(image: string): Promise<Transcription> {
+  const { text } = await generateText({
+    model: visionModel(),
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: `Transcribe this screenshot exactly as written. Return ONLY JSON: {"text": string, "context": string}.
+- text: the post, headline or paragraph, verbatim, keeping punctuation and quotation marks. If there is a caption and a body, join them with a new line. Do not summarise, correct or embellish.
+- context: one sentence on what the image shows besides the words (platform, outlet, who is pictured, timestamps, view counts). Empty string if there is nothing.`,
+          },
+          { type: "image", image },
+        ],
+      },
+    ],
+    temperature: 0,
+    maxOutputTokens: 900,
+    maxRetries: 1,
+  });
+
+  const parsed = z
+    .object({ text: z.string().trim().min(1), context: z.string().trim().default("") })
+    .safeParse(extractJson<unknown>(text));
+  if (!parsed.success) throw new Error("The screenshot could not be read. Try a clearer crop.");
+  return parsed.data;
+}
+
+
+export async function askAnalyst(
+  report: AnalystReport,
+  question: string,
+  history: { role: "user" | "assistant"; content: string }[],
+): Promise<string> {
+  const transcript = history
+    .slice(-6)
+    .map((turn) => `${turn.role === "user" ? "READER" : "ANALYST"}: ${turn.content}`)
+    .join("\n\n");
+
+  const { text } = await generateText({
+    model: getModel("deepseek"),
+    system: METHOD,
+    prompt: `YOUR READ, already given to the reader:
+${JSON.stringify(report).slice(0, 9000)}
+
+${transcript ? `CONVERSATION SO FAR:\n${transcript}\n\n` : ""}THE READER ASKS: ${question.slice(0, 800)}
+
+Answer as the same analyst. Rules:
+- 2 to 4 short paragraphs. No headings, no bullet lists, no repetition of your earlier sections.
+- If the question shows you were wrong, say so in the first sentence and correct it.
+- If the answer is not knowable, say what would settle it.
+- Name actors, dates and mechanisms. No filler.`,
+    temperature: 0.3,
+    maxOutputTokens: 900,
+    maxRetries: 1,
+  });
+
+  return text.trim();
+}

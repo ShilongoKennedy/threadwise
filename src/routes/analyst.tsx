@@ -42,6 +42,35 @@ function AnalystPage() {
   const [stage, setStage] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<Report | null>(null);
+  const [reading, setReading] = useState<{ text: string; context: string } | null>(null);
+  const [readingBusy, setReadingBusy] = useState(false);
+
+  const readImage = async (file: File) => {
+    if (readingBusy) return;
+    setReadingBusy(true);
+    setError(null);
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("That image could not be opened."));
+        reader.readAsDataURL(file);
+      });
+      const response = await fetch("/api/analyst", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: dataUrl }),
+      });
+      const body = (await response.json()) as { reading?: { text: string; context: string }; error?: string };
+      if (!response.ok || !body.reading) throw new Error(body.error ?? "That screenshot could not be read.");
+      setReading(body.reading);
+      setInput(body.reading.text);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "That screenshot could not be read.");
+    } finally {
+      setReadingBusy(false);
+    }
+  };
 
   const run = async (text: string) => {
     const move = text.trim();
@@ -119,9 +148,23 @@ function AnalystPage() {
                 className="w-full resize-none bg-transparent px-4 py-4 font-serif text-[16px] leading-relaxed outline-none placeholder:text-[#1A1A1A]/35"
               />
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 px-4 py-3">
-                <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
-                  {input.trim().length}/4000 · reads take about 40s
-                </span>
+                <div className="flex items-center gap-3">
+                  <label className="cursor-pointer border-2 border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]">
+                    {readingBusy ? "Reading image…" : "Screenshot"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) void readImage(file);
+                      }}
+                    />
+                  </label>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
+                    {input.trim().length}/4000 · ~40s
+                  </span>
+                </div>
                 <button
                   type="button"
                   onClick={() => void run(input)}
@@ -144,6 +187,17 @@ function AnalystPage() {
                   ),
                 )}
               </ol>
+            )}
+
+            {reading && !report && (
+              <div className="mt-4 border-2 border-[#1A4BFF] bg-white px-4 py-3">
+                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+                  This is what I read — correct anything wrong, then read it
+                </p>
+                {reading.context && (
+                  <p className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/60">{reading.context}</p>
+                )}
+              </div>
             )}
 
             {error && (
@@ -197,7 +251,39 @@ function Section({ n, title, children }: { n: string; title: string; children: R
   );
 }
 
+type Turn = { role: "user" | "assistant"; content: string };
+
 function Read({ report, onAgain }: { report: Report; onAgain: () => void }) {
+  const [thread, setThread] = useState<Turn[]>([]);
+  const [question, setQuestion] = useState("");
+  const [asking, setAsking] = useState(false);
+  const [askError, setAskError] = useState<string | null>(null);
+
+  const ask = async (text: string) => {
+    const prompt = text.trim();
+    if (prompt.length < 4 || asking) return;
+    setAsking(true);
+    setAskError(null);
+    setQuestion("");
+    const nextThread: Turn[] = [...thread, { role: "user", content: prompt }];
+    setThread(nextThread);
+
+    try {
+      const response = await fetch("/api/analyst", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ report, question: prompt, history: thread }),
+      });
+      const body = (await response.json()) as { answer?: string; error?: string };
+      if (!response.ok || !body.answer) throw new Error(body.error ?? "No answer came back.");
+      setThread([...nextThread, { role: "assistant", content: body.answer }]);
+    } catch (caught) {
+      setAskError(caught instanceof Error ? caught.message : "No answer came back.");
+      setThread(nextThread);
+    } finally {
+      setAsking(false);
+    }
+  };
   return (
     <article>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#1A1A1A] pb-2">
@@ -283,8 +369,54 @@ function Read({ report, onAgain }: { report: Report; onAgain: () => void }) {
         </ul>
       </Section>
 
+      <Section n="09" title="Interrogate this read">
+        <div className="space-y-3">
+          {thread.map((turn, index) => (
+            <div
+              key={`${turn.role}-${index}`}
+              className={
+                turn.role === "user"
+                  ? "border-l-2 border-[#1A1A1A]/30 pl-3 text-[14px] text-[#1A1A1A]/70"
+                  : "whitespace-pre-line border-l-2 border-[#1A4BFF] pl-3 text-[15px] leading-relaxed"
+              }
+            >
+              {turn.role === "user" ? `You: ${turn.content}` : turn.content}
+            </div>
+          ))}
+
+          {asking && (
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">Thinking…</p>
+          )}
+          {askError && (
+            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#C1121F]">{askError}</p>
+          )}
+
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void ask(question);
+            }}
+            className="flex items-center gap-2 border-2 border-[#1A1A1A] bg-white px-3 py-2"
+          >
+            <input
+              value={question}
+              onChange={(event) => setQuestion(event.target.value)}
+              placeholder="Why not a career official? Who blocks this?"
+              className="min-w-0 flex-1 bg-transparent font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/35"
+            />
+            <button
+              type="submit"
+              disabled={asking || question.trim().length < 4}
+              className="shrink-0 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] disabled:opacity-40"
+            >
+              Ask →
+            </button>
+          </form>
+        </div>
+      </Section>
+
       {report.sources.length > 0 && (
-        <Section n="09" title="What this rests on">
+        <Section n="10" title="What this rests on">
           <ul className="space-y-1.5">
             {report.sources.map((source) => (
               <li key={source.url}>
