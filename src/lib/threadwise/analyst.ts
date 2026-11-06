@@ -5,6 +5,7 @@
  * material about the people and institutions in it, and returns a structured
  * political read. Never import this from a component: it reads server env.
  */
+import { XMLParser } from "fast-xml-parser";
 import { generateText } from "ai";
 import { z } from "zod";
 import { extractJson, getModel } from "./ai/ai-providers.server";
@@ -74,6 +75,8 @@ export function analystPrompt(input: string, context: string) {
 ${input.slice(0, 4000)}
 """
 
+TODAY IS ${new Date().toISOString().slice(0, 10)}. Recent reporting below is newer than anything you remember from training; where they conflict, the reporting wins, and where it names a current officeholder you must use that name.
+
 RETRIEVED MATERIAL (real sources; cite them where you rely on them):
 ${context || "(nothing retrieved — say so in the confidence field and stay strictly within what the move itself states)"}
 
@@ -141,17 +144,77 @@ export function candidateEntities(input: string): string[] {
   return [...new Set([...runs, ...keepSingles])].slice(0, 5);
 }
 
+type NewsHit = { title: string; date: string; outlet: string; url: string };
+
+const newsParser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" });
+const toArray = <T>(value: T | T[] | null | undefined): T[] =>
+  value === null || value === undefined ? [] : Array.isArray(value) ? value : [value];
+const textOf = (value: unknown): string => {
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object" && "#text" in (value as Record<string, unknown>)) {
+    return String((value as Record<string, unknown>)["#text"] ?? "");
+  }
+  return "";
+};
+
+/** Real reporting from the last hours, via Google News search — free, no key. */
+async function news(query: string): Promise<NewsHit[]> {
+  if (!query.trim()) return [];
+  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
+  try {
+    const response = await fetch(url, {
+      headers: { "User-Agent": "ThreadwiseAnalyst/1.0 (+https://threadwise.app)" },
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!response.ok) return [];
+    const document = newsParser.parse(await response.text()) as Record<string, unknown>;
+    const channel = ((document["rss"] as Record<string, unknown>)?.["channel"] ?? {}) as Record<string, unknown>;
+    return toArray(channel["item"] as Record<string, unknown>[])
+      .slice(0, 8)
+      .map((item) => {
+        const published = textOf(item["pubDate"]);
+        const when = published ? new Date(published) : null;
+        return {
+          title: textOf(item["title"]),
+          date: when && !Number.isNaN(when.valueOf()) ? when.toISOString().slice(0, 16).replace("T", " ") : "",
+          outlet: textOf(item["source"]) || "News",
+          url: textOf(item["link"]),
+        };
+      })
+      .filter((hit) => hit.title && hit.url);
+  } catch {
+    return [];
+  }
+}
+
 export async function retrieveContext(input: string): Promise<{ context: string; sources: { title: string; url: string }[] }> {
   const entities = candidateEntities(input);
-  const hits = (await Promise.all(entities.map((entity) => wiki(entity)))).filter(
-    (hit): hit is WikiHit => hit !== null,
-  );
+  const query = [entities[0], entities[1], "news"].filter(Boolean).join(" ");
 
-  const sources = hits.map((hit) => ({ title: hit.title, url: hit.url }));
-  const context = hits
-    .slice(0, 4)
-    .map((hit) => `[${hit.title}] ${hit.extract} (${hit.url})`)
+  const [hits, articles] = await Promise.all([news(query), Promise.all(entities.slice(0, 3).map((entity) => wiki(entity)))]);
+  const background = articles.filter((hit): hit is WikiHit => hit !== null);
+
+  const reporting = hits
+    .slice(0, 6)
+    .map((hit) => `[${hit.date}] ${hit.outlet}: ${hit.title} (${hit.url})`)
+    .join("\n");
+
+  const context = [
+    reporting ? `LATEST REPORTING (newest first, dates are UTC):\n${reporting}` : "",
+    background.length
+      ? `BACKGROUND (encyclopedia; may lag behind today's news):\n${background
+          .slice(0, 3)
+          .map((hit) => `[${hit.title}] ${hit.extract}`)
+          .join("\n\n")}`
+      : "",
+  ]
+    .filter(Boolean)
     .join("\n\n");
+
+  const sources = [
+    ...hits.slice(0, 4).map((hit) => ({ title: `${hit.outlet} · ${hit.title.slice(0, 90)}`, url: hit.url })),
+    ...background.map((hit) => ({ title: `Wikipedia · ${hit.title}`, url: hit.url })),
+  ];
 
   return { context, sources };
 }
