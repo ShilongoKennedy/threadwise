@@ -13,8 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as DigestRouteImport } from './routes/digest'
-import { Route as LabArchiveRouteImport } from './routes/lab-archive'
-import { Route as LabBriefRouteImport } from './routes/lab-brief'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -49,16 +47,6 @@ const AppRoute = AppRouteImport.update({
 const DigestRoute = DigestRouteImport.update({
   id: '/digest',
   path: '/digest',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabArchiveRoute = LabArchiveRouteImport.update({
-  id: '/lab-archive',
-  path: '/lab-archive',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabBriefRoute = LabBriefRouteImport.update({
-  id: '/lab-brief',
-  path: '/lab-brief',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -142,8 +130,6 @@ export interface FileRoutesByFullPath {
   '/analyst': typeof AnalystRoute
   '/app': typeof AppRoute
   '/digest': typeof DigestRoute
-  '/lab-archive': typeof LabArchiveRoute
-  '/lab-brief': typeof LabBriefRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -165,8 +151,6 @@ export interface FileRoutesByTo {
   '/analyst': typeof AnalystRoute
   '/app': typeof AppRoute
   '/digest': typeof DigestRoute
-  '/lab-archive': typeof LabArchiveRoute
-  '/lab-brief': typeof LabBriefRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -189,8 +173,6 @@ export interface FileRoutesById {
   '/analyst': typeof AnalystRoute
   '/app': typeof AppRoute
   '/digest': typeof DigestRoute
-  '/lab-archive': typeof LabArchiveRoute
-  '/lab-brief': typeof LabBriefRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -214,8 +196,6 @@ export interface FileRouteTypes {
     | '/analyst'
     | '/app'
     | '/digest'
-    | '/lab-archive'
-    | '/lab-brief'
     | '/login'
     | '/privacy'
     | '/terms'
@@ -237,8 +217,6 @@ export interface FileRouteTypes {
     | '/analyst'
     | '/app'
     | '/digest'
-    | '/lab-archive'
-    | '/lab-brief'
     | '/login'
     | '/privacy'
     | '/terms'
@@ -260,8 +238,6 @@ export interface FileRouteTypes {
     | '/analyst'
     | '/app'
     | '/digest'
-    | '/lab-archive'
-    | '/lab-brief'
     | '/login'
     | '/privacy'
     | '/terms'
@@ -284,8 +260,6 @@ export interface RootRouteChildren {
   AnalystRoute: typeof AnalystRoute
   AppRoute: typeof AppRoute
   DigestRoute: typeof DigestRoute
-  LabArchiveRoute: typeof LabArchiveRoute
-  LabBriefRoute: typeof LabBriefRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
@@ -331,20 +305,6 @@ declare module '@tanstack/react-router' {
       path: '/digest'
       fullPath: '/digest'
       preLoaderRoute: typeof DigestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab-archive': {
-      id: '/lab-archive'
-      path: '/lab-archive'
-      fullPath: '/lab-archive'
-      preLoaderRoute: typeof LabArchiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab-brief': {
-      id: '/lab-brief'
-      path: '/lab-brief'
-      fullPath: '/lab-brief'
-      preLoaderRoute: typeof LabBriefRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -460,8 +420,6 @@ const rootRouteChildren: RootRouteChildren = {
   AnalystRoute: AnalystRoute,
   AppRoute: AppRoute,
   DigestRoute: DigestRoute,
-  LabArchiveRoute: LabArchiveRoute,
-  LabBriefRoute: LabBriefRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,

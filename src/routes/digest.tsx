@@ -57,6 +57,24 @@ function DigestPage() {
   const [watches, setWatches] = useState<Watch[]>([]);
   const [state, setState] = useState<"loading" | "ready" | "empty" | "error">("loading");
   const [selected, setSelected] = useState<string | null>(null);
+  const [reads, setReads] = useState<{ token: string; input: string; at: string }[]>([]);
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.auth.getSession();
+      const jwt = data.session?.access_token;
+      if (!jwt) return;
+      const response = await fetch("/api/analyst-recent", { headers: { Authorization: `Bearer ${jwt}` } });
+      if (!response.ok) return;
+      const body = (await response.json()) as { reads?: { token: string; input: string; at: string }[] };
+      if (alive && body.reads) setReads(body.reads);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -162,6 +180,37 @@ function DigestPage() {
           Every claim you dated, and what the reporting actually did. Judgements only count when the
           agent could settle them.
         </p>
+
+        {reads.length > 0 && (
+          <section className="mt-8 border-2 border-[#1A1A1A]">
+            <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
+              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+                Reads you kept
+              </span>
+              <Link to="/analyst" className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">
+                new read →
+              </Link>
+            </div>
+            <ul>
+              {reads.map((read) => (
+                <li key={read.token} className="border-b border-[#1A1A1A]/10 last:border-b-0">
+                  <Link
+                    to="/read/$token"
+                    params={{ token: read.token }}
+                    className="group flex items-baseline justify-between gap-4 px-3 py-2.5"
+                  >
+                    <span className="min-w-0 truncate font-serif text-[14px] text-[#1A1A1A]/85 group-hover:text-[#1A4BFF]">
+                      {read.input}
+                    </span>
+                    <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+                      {new Date(read.at).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {state === "loading" && (
           <p className="py-16 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-[#1A1A1A]/65">
