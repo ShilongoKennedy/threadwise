@@ -22,6 +22,7 @@ import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
 import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
+import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
@@ -94,6 +95,11 @@ const ApiCheckWatchesRoute = ApiCheckWatchesRouteImport.update({
   path: '/api/check-watches',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiNewsBriefRoute = ApiNewsBriefRouteImport.update({
+  id: '/api/news-brief',
+  path: '/api/news-brief',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiThreadwiseRoute = ApiThreadwiseRouteImport.update({
   id: '/api/threadwise',
   path: '/api/threadwise',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
+  '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/read/$token': typeof ReadTokenRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
+  '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/read/$token': typeof ReadTokenRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
+  '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/read/$token': typeof ReadTokenRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/check-watches'
+    | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
     | '/read/$token'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/check-watches'
+    | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
     | '/read/$token'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/check-watches'
+    | '/api/news-brief'
     | '/api/threadwise'
     | '/auth/callback'
     | '/read/$token'
@@ -269,6 +281,7 @@ export interface RootRouteChildren {
   ApiAnalystWatchRoute: typeof ApiAnalystWatchRoute
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiCheckWatchesRoute: typeof ApiCheckWatchesRoute
+  ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   ReadTokenRoute: typeof ReadTokenRoute
@@ -370,6 +383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCheckWatchesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/news-brief': {
+      id: '/api/news-brief'
+      path: '/api/news-brief'
+      fullPath: '/api/news-brief'
+      preLoaderRoute: typeof ApiNewsBriefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/threadwise': {
       id: '/api/threadwise'
       path: '/api/threadwise'
@@ -429,6 +449,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAnalystWatchRoute: ApiAnalystWatchRoute,
   ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiCheckWatchesRoute: ApiCheckWatchesRoute,
+  ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   ReadTokenRoute: ReadTokenRoute,
