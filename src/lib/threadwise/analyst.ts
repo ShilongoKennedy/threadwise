@@ -46,6 +46,7 @@ export const analystSchema = z.object({
     .max(5)
     .default([]),
   falsifier: z.string().trim().max(800).default(""),
+  questions: z.array(z.string().trim().max(160)).max(3).default([]),
   confidence: z.enum(["documented", "inferred", "speculative"]).default("inferred"),
 });
 
@@ -82,13 +83,14 @@ ${context || "(nothing retrieved — say so in the confidence field and stay str
 
 Write the read. Fields:
 - move: what was actually announced or argued, by whom, with what authority, in 2-4 plain sentences. No adjectives.
-- why_now: the political logic of this timing. What problem does it solve for the actor this week? 3-5 sentences.
+- why_now: the logic of this timing. Do NOT restate what the "move" field already established; start from the purpose the decision serves. What problem does it solve for the actor this week? 3-5 sentences.
 - stakes: 2-5 actors. For each: what they gain and what they lose, concretely.
 - precedent: 1-3 real historical analogues. Name them, date them, state the parallel and exactly where it breaks. If you cannot date one, omit it.
 - second_order: what this changes downstream — institutions, appointments, policy lanes, elections. 3-5 sentences.
 - counter_reading: the strongest case that this is routine rather than a rupture. Argue it properly.
 - watch: 2-4 dated or conditioned signals that will show which reading is right.
 - falsifier: the one fact that would prove this whole read wrong.
+- questions: three sharp questions this specific read invites, in the reader's voice, each under 16 words. Not generic ("what happens next") — they must depend on a claim you just made.
 - confidence: "documented" if the facts are confirmed in the retrieved material, "inferred" if they rest on the move itself, "speculative" if they depend on unnamed sources.
 
 Return ONLY a JSON object with EXACTLY these keys, all present:
@@ -101,6 +103,7 @@ Return ONLY a JSON object with EXACTLY these keys, all present:
   "counter_reading": string,
   "watch": [{ "signal": string, "when": string }],
   "falsifier": string,
+  "questions": [string],
   "confidence": "documented" | "inferred" | "speculative"
 }
 No markdown, no commentary, no code fences.`;
@@ -211,9 +214,24 @@ export async function retrieveContext(input: string): Promise<{ context: string;
     .filter(Boolean)
     .join("\n\n");
 
+  const SOCIAL = /facebook|twitter|x\.com|instagram|reddit|tiktok|youtube|threads|linkedin/i;
+  const usable = hits.filter((hit) => !SOCIAL.test(hit.url) && !SOCIAL.test(hit.outlet));
+  const seenOutlets = new Set<string>();
+  const cited = usable
+    .filter((hit) => {
+      const key = hit.outlet.toLowerCase();
+      if (seenOutlets.has(key)) return false;
+      seenOutlets.add(key);
+      return true;
+    })
+    .slice(0, 4);
+
   const sources = [
-    ...hits.slice(0, 4).map((hit) => ({ title: `${hit.outlet} · ${hit.title.slice(0, 90)}`, url: hit.url })),
-    ...background.map((hit) => ({ title: `Wikipedia · ${hit.title}`, url: hit.url })),
+    ...cited.map((hit) => ({
+      title: `${hit.outlet} · ${hit.date ? `${hit.date} · ` : ""}${hit.title.slice(0, 80)}`,
+      url: hit.url,
+    })),
+    ...background.slice(0, 2).map((hit) => ({ title: `Background · ${hit.title}`, url: hit.url })),
   ];
 
   return { context, sources };

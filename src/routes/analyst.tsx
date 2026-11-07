@@ -27,6 +27,7 @@ type Report = {
   watch: { signal: string; when: string }[];
   falsifier: string;
   confidence: "documented" | "inferred" | "speculative";
+  questions?: string[];
   sources: { title: string; url: string }[];
 };
 
@@ -510,6 +511,22 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
             <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#C1121F]">{askError}</p>
           )}
 
+          {thread.length === 0 && (report.questions?.length ?? 0) > 0 && (
+            <ul className="flex flex-wrap gap-2">
+              {report.questions!.slice(0, 3).map((suggestion) => (
+                <li key={suggestion}>
+                  <button
+                    type="button"
+                    onClick={() => void ask(suggestion)}
+                    className="border border-[#1A1A1A]/25 px-2.5 py-1.5 text-left font-serif text-[13px] leading-snug text-[#1A1A1A]/75 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
+                  >
+                    {suggestion}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -520,7 +537,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
             <input
               value={question}
               onChange={(event) => setQuestion(event.target.value)}
-              placeholder="Why not a career official? Who blocks this?"
+              placeholder={report.questions?.[0] ?? "Push back on this read…"}
               className="min-w-0 flex-1 bg-transparent font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/35"
             />
             <button
