@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 
@@ -43,6 +43,7 @@ function AnalystPage() {
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<Report | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [recent, setRecent] = useState<{ token: string; input: string; at: string }[]>([]);
   const [reading, setReading] = useState<{ text: string; context: string } | null>(null);
   const [readingBusy, setReadingBusy] = useState(false);
 
@@ -72,6 +73,23 @@ function AnalystPage() {
       setReadingBusy(false);
     }
   };
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.auth.getSession();
+      const jwt = data.session?.access_token;
+      if (!jwt) return;
+      const response = await fetch("/api/analyst-recent", { headers: { Authorization: `Bearer ${jwt}` } });
+      if (!response.ok) return;
+      const body = (await response.json()) as { reads?: { token: string; input: string; at: string }[] };
+      if (alive && body.reads) setRecent(body.reads);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [report]);
 
   const run = async (text: string) => {
     const move = text.trim();
@@ -206,6 +224,32 @@ function AnalystPage() {
               <p className="mt-5 border-2 border-[#C1121F] bg-[#C1121F]/5 px-4 py-3 font-serif text-[14px] text-[#C1121F]">
                 {error}
               </p>
+            )}
+
+            {!busy && recent.length > 0 && (
+              <div className="mt-8">
+                <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/55">
+                  Your last reads
+                </span>
+                <ul className="mt-2 divide-y divide-[#1A1A1A]/10 border-y border-[#1A1A1A]/10">
+                  {recent.map((item) => (
+                    <li key={item.token}>
+                      <Link
+                        to="/read/$token"
+                        params={{ token: item.token }}
+                        className="group flex items-baseline justify-between gap-4 py-2.5"
+                      >
+                        <span className="min-w-0 truncate font-serif text-[14px] text-[#1A1A1A]/80 group-hover:text-[#1A4BFF]">
+                          {item.input}
+                        </span>
+                        <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+                          {new Date(item.at).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
 
             {!busy && (

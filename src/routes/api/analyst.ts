@@ -81,7 +81,9 @@ export const Route = createFileRoute("/api/analyst")({
         try {
           const { analyseMove, saveRead } = await import("@/lib/threadwise/analyst");
           const report = await analyseMove(text);
-          const token = await saveRead(text, report);
+          const header = request.headers.get("authorization") ?? "";
+          const jwt = header.startsWith("Bearer ") ? header.slice(7) : undefined;
+          const token = await saveRead(text, report, jwt);
           return json({ ok: true, report, token, ms: Date.now() - started }, 200);
         } catch (error) {
           console.error("[analyst] failed:", error);

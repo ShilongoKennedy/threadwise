@@ -19,6 +19,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
+import { Route as ApiAnalystRecentRouteImport } from './routes/api/analyst-recent'
 import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
@@ -78,6 +79,11 @@ const TermsRoute = TermsRouteImport.update({
 const ApiAnalystRoute = ApiAnalystRouteImport.update({
   id: '/api/analyst',
   path: '/api/analyst',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAnalystRecentRoute = ApiAnalystRecentRouteImport.update({
+  id: '/api/analyst-recent',
+  path: '/api/analyst-recent',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAnalystWatchRoute = ApiAnalystWatchRouteImport.update({
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
+  '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
+  '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
+  '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/api/analyst'
+    | '/api/analyst-recent'
     | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/check-watches'
@@ -233,6 +243,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/api/analyst'
+    | '/api/analyst-recent'
     | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/check-watches'
@@ -255,6 +266,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/api/analyst'
+    | '/api/analyst-recent'
     | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/check-watches'
@@ -278,6 +290,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
+  ApiAnalystRecentRoute: typeof ApiAnalystRecentRoute
   ApiAnalystWatchRoute: typeof ApiAnalystWatchRoute
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiCheckWatchesRoute: typeof ApiCheckWatchesRoute
@@ -360,6 +373,13 @@ declare module '@tanstack/react-router' {
       path: '/api/analyst'
       fullPath: '/api/analyst'
       preLoaderRoute: typeof ApiAnalystRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/analyst-recent': {
+      id: '/api/analyst-recent'
+      path: '/api/analyst-recent'
+      fullPath: '/api/analyst-recent'
+      preLoaderRoute: typeof ApiAnalystRecentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/analyst-watch': {
@@ -446,6 +466,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   ApiAnalystRoute: ApiAnalystRoute,
+  ApiAnalystRecentRoute: ApiAnalystRecentRoute,
   ApiAnalystWatchRoute: ApiAnalystWatchRoute,
   ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiCheckWatchesRoute: ApiCheckWatchesRoute,

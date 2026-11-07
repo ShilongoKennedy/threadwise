@@ -320,7 +320,7 @@ Answer as the same analyst. Rules:
 
 
 /** Saves a read and returns its token. Best-effort: a read still works unsaved. */
-export async function saveRead(input: string, report: AnalystReport): Promise<string | null> {
+export async function saveRead(input: string, report: AnalystReport, jwt?: string): Promise<string | null> {
   const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
   const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !key) return null;
@@ -331,7 +331,14 @@ export async function saveRead(input: string, report: AnalystReport): Promise<st
       "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)],
     ).join("");
     const supabase = createClient(url, key, { auth: { persistSession: false } });
-    const { error } = await supabase.from("analyst_reads").insert({ token, input, report });
+
+    let userId: string | null = null;
+    if (jwt) {
+      const { data } = await supabase.auth.getUser(jwt);
+      userId = data?.user?.id ?? null;
+    }
+
+    const { error } = await supabase.from("analyst_reads").insert({ token, input, report, user_id: userId });
     if (error) {
       console.warn("[analyst] could not save read:", error.message);
       return null;
@@ -401,4 +408,31 @@ export async function watchSignals(
   const { error } = await admin.from("claim_watches").insert(rows);
   if (error) throw new Error(error.message);
   return { created: rows.length };
+}
+
+
+/** The reader's own recent reads, newest first. */
+export async function recentReads(jwt: string, limit = 8): Promise<{ token: string; input: string; at: string }[]> {
+  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  if (!url || !key) return [];
+
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(url, key, { auth: { persistSession: false } });
+  const { data: user } = await supabase.auth.getUser(jwt);
+  const userId = user?.user?.id;
+  if (!userId) return [];
+
+  const { data } = await supabase
+    .from("analyst_reads")
+    .select("token, input, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  return (data ?? []).map((row) => ({
+    token: row.token as string,
+    input: (row.input as string).slice(0, 140),
+    at: row.created_at as string,
+  }));
 }
