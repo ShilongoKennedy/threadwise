@@ -35,10 +35,10 @@ function NotFoundComponent() {
             Back to Threadwise
           </Link>
           <Link
-            to="/briefing"
+            to="/analyst"
             className="inline-flex items-center border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
           >
-            Today&rsquo;s brief
+            Ask the analyst
           </Link>
         </div>
       </div>

@@ -12,8 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
 import { Route as AppRouteImport } from './routes/app'
-import { Route as BriefingRouteImport } from './routes/briefing'
-import { Route as BriefsRouteImport } from './routes/briefs'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LabArchiveRouteImport } from './routes/lab-archive'
 import { Route as LabBriefRouteImport } from './routes/lab-brief'
@@ -23,7 +21,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
 import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
-import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
+import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
@@ -44,16 +42,6 @@ const AnalystRoute = AnalystRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BriefingRoute = BriefingRouteImport.update({
-  id: '/briefing',
-  path: '/briefing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BriefsRoute = BriefsRouteImport.update({
-  id: '/briefs',
-  path: '/briefs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DigestRoute = DigestRouteImport.update({
@@ -101,9 +89,9 @@ const ApiCheckWatchRoute = ApiCheckWatchRouteImport.update({
   path: '/api/check-watch',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiNewsBriefRoute = ApiNewsBriefRouteImport.update({
-  id: '/api/news-brief',
-  path: '/api/news-brief',
+const ApiCheckWatchesRoute = ApiCheckWatchesRouteImport.update({
+  id: '/api/check-watches',
+  path: '/api/check-watches',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiThreadwiseRoute = ApiThreadwiseRouteImport.update({
@@ -141,8 +129,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
   '/app': typeof AppRoute
-  '/briefing': typeof BriefingRoute
-  '/briefs': typeof BriefsRoute
   '/digest': typeof DigestRoute
   '/lab-archive': typeof LabArchiveRoute
   '/lab-brief': typeof LabBriefRoute
@@ -152,7 +138,7 @@ export interface FileRoutesByFullPath {
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
-  '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/read/$token': typeof ReadTokenRoute
@@ -164,8 +150,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
   '/app': typeof AppRoute
-  '/briefing': typeof BriefingRoute
-  '/briefs': typeof BriefsRoute
   '/digest': typeof DigestRoute
   '/lab-archive': typeof LabArchiveRoute
   '/lab-brief': typeof LabBriefRoute
@@ -175,7 +159,7 @@ export interface FileRoutesByTo {
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
-  '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/read/$token': typeof ReadTokenRoute
@@ -188,8 +172,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
   '/app': typeof AppRoute
-  '/briefing': typeof BriefingRoute
-  '/briefs': typeof BriefsRoute
   '/digest': typeof DigestRoute
   '/lab-archive': typeof LabArchiveRoute
   '/lab-brief': typeof LabBriefRoute
@@ -199,7 +181,7 @@ export interface FileRoutesById {
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
-  '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/read/$token': typeof ReadTokenRoute
@@ -213,8 +195,6 @@ export interface FileRouteTypes {
     | '/'
     | '/analyst'
     | '/app'
-    | '/briefing'
-    | '/briefs'
     | '/digest'
     | '/lab-archive'
     | '/lab-brief'
@@ -224,7 +204,7 @@ export interface FileRouteTypes {
     | '/api/analyst'
     | '/api/analyst-watch'
     | '/api/check-watch'
-    | '/api/news-brief'
+    | '/api/check-watches'
     | '/api/threadwise'
     | '/auth/callback'
     | '/read/$token'
@@ -236,8 +216,6 @@ export interface FileRouteTypes {
     | '/'
     | '/analyst'
     | '/app'
-    | '/briefing'
-    | '/briefs'
     | '/digest'
     | '/lab-archive'
     | '/lab-brief'
@@ -247,7 +225,7 @@ export interface FileRouteTypes {
     | '/api/analyst'
     | '/api/analyst-watch'
     | '/api/check-watch'
-    | '/api/news-brief'
+    | '/api/check-watches'
     | '/api/threadwise'
     | '/auth/callback'
     | '/read/$token'
@@ -259,8 +237,6 @@ export interface FileRouteTypes {
     | '/'
     | '/analyst'
     | '/app'
-    | '/briefing'
-    | '/briefs'
     | '/digest'
     | '/lab-archive'
     | '/lab-brief'
@@ -270,7 +246,7 @@ export interface FileRouteTypes {
     | '/api/analyst'
     | '/api/analyst-watch'
     | '/api/check-watch'
-    | '/api/news-brief'
+    | '/api/check-watches'
     | '/api/threadwise'
     | '/auth/callback'
     | '/read/$token'
@@ -283,8 +259,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalystRoute: typeof AnalystRoute
   AppRoute: typeof AppRoute
-  BriefingRoute: typeof BriefingRoute
-  BriefsRoute: typeof BriefsRoute
   DigestRoute: typeof DigestRoute
   LabArchiveRoute: typeof LabArchiveRoute
   LabBriefRoute: typeof LabBriefRoute
@@ -294,7 +268,7 @@ export interface RootRouteChildren {
   ApiAnalystRoute: typeof ApiAnalystRoute
   ApiAnalystWatchRoute: typeof ApiAnalystWatchRoute
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
-  ApiNewsBriefRoute: typeof ApiNewsBriefRoute
+  ApiCheckWatchesRoute: typeof ApiCheckWatchesRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   ReadTokenRoute: typeof ReadTokenRoute
@@ -324,20 +298,6 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/briefing': {
-      id: '/briefing'
-      path: '/briefing'
-      fullPath: '/briefing'
-      preLoaderRoute: typeof BriefingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/briefs': {
-      id: '/briefs'
-      path: '/briefs'
-      fullPath: '/briefs'
-      preLoaderRoute: typeof BriefsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/digest': {
@@ -403,11 +363,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCheckWatchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/news-brief': {
-      id: '/api/news-brief'
-      path: '/api/news-brief'
-      fullPath: '/api/news-brief'
-      preLoaderRoute: typeof ApiNewsBriefRouteImport
+    '/api/check-watches': {
+      id: '/api/check-watches'
+      path: '/api/check-watches'
+      fullPath: '/api/check-watches'
+      preLoaderRoute: typeof ApiCheckWatchesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/threadwise': {
@@ -459,8 +419,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalystRoute: AnalystRoute,
   AppRoute: AppRoute,
-  BriefingRoute: BriefingRoute,
-  BriefsRoute: BriefsRoute,
   DigestRoute: DigestRoute,
   LabArchiveRoute: LabArchiveRoute,
   LabBriefRoute: LabBriefRoute,
@@ -470,7 +428,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAnalystRoute: ApiAnalystRoute,
   ApiAnalystWatchRoute: ApiAnalystWatchRoute,
   ApiCheckWatchRoute: ApiCheckWatchRoute,
-  ApiNewsBriefRoute: ApiNewsBriefRoute,
+  ApiCheckWatchesRoute: ApiCheckWatchesRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   ReadTokenRoute: ReadTokenRoute,

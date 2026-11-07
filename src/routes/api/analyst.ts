@@ -22,6 +22,8 @@ export const Route = createFileRoute("/api/analyst")({
       DELETE: methodNotAllowed,
       POST: async ({ request }) => {
         const started = Date.now();
+        const { clientKey, rateLimit, pruneBuckets } = await import("@/lib/threadwise/rate-limit");
+        pruneBuckets();
         let body: unknown;
         try {
           body = await request.json();
@@ -30,6 +32,17 @@ export const Route = createFileRoute("/api/analyst")({
         }
 
         const image = typeof (body as { image?: unknown })?.image === "string" ? (body as { image: string }).image : "";
+
+        // Screenshots and reads are the expensive calls: cap them separately.
+        const scope = image ? "analyst-image" : "analyst-read";
+        const limit = image ? 8 : 6;
+        const gate = rateLimit(clientKey(request, scope), limit, 60 * 60 * 1000);
+        if (!gate.ok) {
+          return json(
+            { error: `That is a lot of reads in an hour. Try again in ${Math.ceil(gate.retryAfter / 60)} minutes.` },
+            429,
+          );
+        }
         if (image) {
           if (image.length > 6_000_000) return json({ error: "That image is too large. Use a screenshot under 4 MB." }, 413);
           try {
@@ -44,6 +57,8 @@ export const Route = createFileRoute("/api/analyst")({
 
         const question = typeof (body as { question?: unknown })?.question === "string" ? (body as { question: string }).question.trim() : "";
         if (question) {
+          const askGate = rateLimit(clientKey(request, "analyst-ask"), 40, 60 * 60 * 1000);
+          if (!askGate.ok) return json({ error: "Too many questions in an hour. Give it a minute." }, 429);
           const report = (body as { report?: unknown }).report;
           const history = Array.isArray((body as { history?: unknown }).history)
             ? ((body as { history: { role: "user" | "assistant"; content: string }[] }).history)

@@ -154,7 +154,6 @@ function LandingPage() {
           <Link to="/analyst" className="text-[#1A4BFF] transition-colors hover:text-[#1A1A1A]">The analyst</Link>
           <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">The canvas</a>
           <a href="#features" className="hover:text-[#1A1A1A] transition-colors">The dossier</a>
-          <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Briefs</Link>
           <Link to="/digest" className="hover:text-[#1A1A1A] transition-colors">Record</Link>
         </nav>
 
@@ -229,14 +228,14 @@ function LandingPage() {
                   <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
                 </Link>
                 <Link
-                  to="/briefing"
+                  to="/analyst"
                   className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/65 underline decoration-[#1A1A1A]/20 underline-offset-4 transition-colors hover:text-[#1A1A1A]"
                 >
-                  Today&rsquo;s brief
+                  Ask the analyst
                   <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
                 </Link>
                 <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/60 md:text-right">
-                  One story, dissected daily
+                  Any move, read properly
                 </span>
               </div>
             </div>
@@ -296,8 +295,31 @@ function LandingPage() {
           </p>
         </div>
 
-        {/* TODAY'S BRIEF — the product proving itself, every day */}
-        <TodaysBrief />
+        {/* THE ANALYST — the thing you come back for */}
+        <section className="relative z-10 mx-auto mt-24 w-full max-w-[1200px] px-6 md:px-12">
+          <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em]">The analyst</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">any move, any hour</span>
+          </div>
+          <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-[1.1fr_auto] md:items-end">
+            <div>
+              <h2 className="max-w-[20ch] font-display text-[30px] leading-[1.0] md:text-[42px]">
+                Something happened. Bring it here.
+              </h2>
+              <p className="mt-3 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/70">
+                Paste the post or drop a screenshot. You get the read: what it is, why now, who it costs,
+                what it echoes, what would prove it wrong — and you can argue with it afterwards.
+              </p>
+            </div>
+            <Link
+              to="/analyst"
+              className="inline-flex shrink-0 items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+            >
+              Ask the analyst
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
 
         {/* THE DOSSIER SECTION (BRUTALIST EDITORIAL) */}
         <section 
@@ -541,10 +563,10 @@ function LandingPage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                to="/briefing"
+                to="/analyst"
                 className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
               >
-                Read today&rsquo;s brief
+                Ask the analyst
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
@@ -572,14 +594,12 @@ function LandingPage() {
                 <span className="text-[#1A1A1A] font-bold mb-1">Product</span>
                 <Link to="/analyst" className="hover:text-[#1A1A1A] transition-colors">The analyst</Link>
                 <Link to="/app" className="hover:text-[#1A1A1A] transition-colors">Workspace</Link>
-                <Link to="/briefs" className="hover:text-[#1A1A1A] transition-colors">Morning briefs</Link>
                 <a href="#features" className="hover:text-[#1A1A1A] transition-colors">Features</a>
               </div>
               <div className="flex flex-col gap-4">
                 <span className="text-[#1A1A1A] font-bold mb-1">Read</span>
                 <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">How it works</a>
                 <Link to="/digest" className="hover:text-[#1A1A1A] transition-colors">The record</Link>
-                <Link to="/briefing" className="hover:text-[#1A1A1A] transition-colors">Today&rsquo;s brief</Link>
               </div>
               <div className="flex flex-col gap-4">
                 <span className="text-[#1A1A1A] font-bold mb-1">Legal</span>
@@ -598,118 +618,6 @@ function LandingPage() {
         </div>
       </footer>
     </div>
-  );
-}
-/**
- * The landing page proves itself: it renders the most recent brief rather than
- * describing one. Signed-out readers get it because 0008 opened the read policy.
- */
-function TodaysBrief() {
-  const [brief, setBrief] = useState<{
-    headline: string;
-    bluf: string;
-    threat_level: string | null;
-    created_at: string;
-  } | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    void supabase
-      .from("news_briefs")
-      .select("headline, bluf, threat_level, created_at")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (active && data) setBrief(data);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  if (!brief) {
-    return (
-      <section className="relative z-10 mx-auto mt-24 w-full max-w-[1200px] px-6 md:px-12">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em]">
-            Today&rsquo;s brief
-          </span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
-            filed every morning
-          </span>
-        </div>
-        <div className="border-2 border-dashed border-[#1A1A1A]/25 px-6 py-10 text-center">
-          <p className="font-display text-[22px] leading-tight">The agent is still reading.</p>
-          <p className="mx-auto mt-2 max-w-[46ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
-            One story, dissected every morning: what it says, how it frames it, and what it leaves
-            out. Yesterday&rsquo;s editions are in the archive.
-          </p>
-          <Link
-            to="/briefs"
-            className="mt-4 inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4"
-          >
-            Read the archive <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-      </section>
-    );
-  }
-
-  const opening = (brief.bluf ?? "").split(/\n\s*\n/)[0] ?? "";
-  const level = (brief.threat_level ?? "MODERATE").toUpperCase();
-  const filed = new Date(brief.created_at).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-
-  return (
-    <section className="relative z-10 mx-auto mt-24 w-full max-w-[1200px] px-6 md:px-12">
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
-        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em]">
-          Today&rsquo;s brief
-        </span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
-          {filed} · one story, dissected
-        </span>
-      </div>
-
-      <article className="tw-sheet grid grid-cols-1 gap-0 overflow-hidden lg:grid-cols-[220px_minmax(0,1fr)]">
-        <div className="flex flex-col justify-between gap-4 border-b-2 border-[#1A1A1A] p-4 lg:border-b-0 lg:border-r-2">
-          <div>
-            <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
-              Threat level
-            </div>
-            <div
-              className="mt-1 inline-block px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-white"
-              style={{ backgroundColor: level === "CRITICAL" || level === "ELEVATED" ? "#C1121F" : "#1A1A1A" }}
-            >
-              {level}
-            </div>
-          </div>
-          <p className="font-mono text-[9px] uppercase leading-relaxed tracking-[0.16em] text-[#1A1A1A]/65">
-            Machine assessment · verify before action
-          </p>
-        </div>
-
-        <div className="p-5 md:p-7">
-          <h2 className="max-w-[24ch] font-display text-[26px] leading-[1.05] md:text-[38px]">
-            {brief.headline}
-          </h2>
-          <p className="mt-3 max-w-[62ch] font-serif text-[15px] leading-[1.6] text-[#1A1A1A]/80">
-            {opening}
-          </p>
-          <Link
-            to="/briefing"
-            className="group mt-5 inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
-          >
-            Read the full brief
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-          </Link>
-        </div>
-      </article>
-    </section>
   );
 }
 

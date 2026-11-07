@@ -7,7 +7,7 @@ import { emptySuite } from "@/lib/threadwise/advanced";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { WorkspaceBar } from "./WorkspaceBar";
-import { Columns, LayoutPanelTop, PanelRight, X, Command, Keyboard, Newspaper } from "lucide-react";
+import { Columns, LayoutPanelTop, PanelRight, X, Command, Keyboard, Scale } from "lucide-react";
 import { CommandPalette } from "./CommandPalette";
 import { ShortcutsModal } from "./ShortcutsModal";
 
@@ -213,11 +213,11 @@ export function WorkspaceShell() {
           </Button>
 
           <Link
-            to="/briefing"
-            title="Read today's Morning Brief"
+            to="/analyst"
+            title="Bring a move to the analyst"
             className="inline-flex h-8 shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-white shadow-[2px_2px_0_0_#1A1A1A] transition-all hover:bg-[#1A1A1A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
           >
-            <Newspaper className="h-3.5 w-3.5" />
+            <Scale className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Morning Brief</span>
           </Link>
         </div>

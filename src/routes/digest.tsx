@@ -137,20 +137,20 @@ function DigestPage() {
         <div className="mx-auto flex w-full max-w-[1100px] flex-wrap items-center justify-between gap-3 px-4 py-2.5 md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Link
-              to="/briefs"
+              to="/app"
               className="flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
             >
-              <ArrowLeft className="h-3 w-3" /> Archive
+              <ArrowLeft className="h-3 w-3" /> Workspace
             </Link>
             <span className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.24em]">
               Threadwise <span className="text-[#1A4BFF]">//</span> The record
             </span>
           </div>
           <Link
-            to="/briefing"
+            to="/analyst"
             className="group flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white shadow-[2px_2px_0_0_#1A1A1A] transition-all hover:bg-[#1A1A1A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
           >
-            Today&rsquo;s brief
+            Ask the analyst
             <ArrowUpRight className="h-3 w-3" />
           </Link>
         </div>

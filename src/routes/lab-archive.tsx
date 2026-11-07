@@ -131,7 +131,7 @@ function ArchiveDepth() {
       <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b-2 border-[#1A1A1A] px-4 py-2">
         <div className="flex items-center gap-3">
           <Link
-            to="/briefs"
+            to="/analyst"
             className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
           >
             <ArrowLeft className="h-3 w-3" /> Archive
@@ -226,7 +226,7 @@ function Dossier({
           {firstLine(row.bluf)}
         </p>
         <Link
-          to="/briefing"
+          to="/analyst"
           search={{ b: row.id }}
           className="mt-3 inline-flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4"
         >

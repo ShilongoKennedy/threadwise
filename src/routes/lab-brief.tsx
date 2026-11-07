@@ -73,7 +73,7 @@ function BriefDepth() {
       <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b-2 border-[#1A1A1A] px-4 py-2">
         <div className="flex min-w-0 items-center gap-3">
           <Link
-            to="/briefing"
+            to="/analyst"
             className="flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
           >
             <Back className="h-3 w-3" /> Brief
@@ -145,7 +145,7 @@ function BriefDepth() {
               )}
 
               <Link
-                to="/briefing"
+                to="/analyst"
                 className="inline-flex items-center gap-1.5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]"
               >
                 The full brief <ArrowUpRight className="h-3 w-3" />
