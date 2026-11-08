@@ -296,9 +296,36 @@ function AnalystPage() {
   );
 }
 
+const SECTIONS = [
+  ["01", "The move"], ["02", "Why now"], ["03", "Who gains, who pays"], ["04", "What it echoes"],
+  ["05", "What it changes downstream"], ["06", "The counter-reading"], ["07", "What would prove this wrong"],
+  ["08", "What to watch"], ["09", "Keep these signals"], ["10", "Interrogate this read"], ["11", "What this rests on"],
+];
+
+function Index() {
+  return (
+    <nav className="fixed left-6 top-32 hidden w-[150px] xl:block" aria-label="Sections">
+      <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/45">Contents</span>
+      <ul className="mt-2 space-y-1">
+        {SECTIONS.map(([n, title]) => (
+          <li key={n}>
+            <a
+              href={`#s-${n}`}
+              className="flex gap-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/45 transition-colors hover:text-[#1A4BFF]"
+            >
+              <span className="text-[#1A4BFF]">{n}</span>
+              <span className="truncate">{title}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
 function Section({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {
   return (
-    <section className="border-t border-[#1A1A1A]/15 py-5 first:border-t-0 first:pt-0">
+    <section id={`s-${n}`} className="scroll-mt-24 border-t border-[#1A1A1A]/15 py-5 first:border-t-0 first:pt-0">
       <div className="mb-2 flex items-baseline gap-2">
         <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">{n}</span>
         <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]">{title}</h2>
@@ -370,6 +397,8 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
           </button>
         </div>
       </div>
+
+      <Index />
 
       <Section n="01" title="The move">
         <p>{report.move}</p>

@@ -10,7 +10,7 @@ export const Route = createFileRoute("/api/read/$token")({
         const { loadRead } = await import("@/lib/threadwise/analyst");
         const read = await loadRead(params.token);
         if (!read) return json({ error: "Not found." }, 404);
-        return json({ ok: true, ...read }, 200);
+        return json({ ok: true, ...read, at: read.at ?? null }, 200);
       },
     },
   },

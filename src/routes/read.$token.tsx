@@ -24,16 +24,24 @@ type Report = {
 function SharedRead() {
   const { token } = Route.useParams();
   const [report, setReport] = useState<Report | null>(null);
+  const [input, setInput] = useState<string>("");
+  const [at, setAt] = useState<string | null>(null);
+  const [again, setAgain] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<"loading" | "missing" | "ready">("loading");
 
   useEffect(() => {
     let alive = true;
     fetch(`/api/read/${token}`)
-      .then(async (response) => (response.ok ? ((await response.json()) as { report: Report }) : null))
+      .then(async (response) =>
+        response.ok ? ((await response.json()) as { report: Report; input?: string; at?: string | null }) : null,
+      )
       .then((body) => {
         if (!alive) return;
         if (!body?.report) return setStatus("missing");
         setReport(body.report);
+        setInput(body.input ?? "");
+        setAt(body.at ?? null);
         setStatus("ready");
       })
       .catch(() => alive && setStatus("missing"));
@@ -68,9 +76,62 @@ function SharedRead() {
         )}
         {status === "ready" && report && (
           <article className="space-y-5">
-            <div className="border-b-2 border-[#1A1A1A] pb-2 font-mono text-[9px] font-bold uppercase tracking-[0.26em]">
-              The read · confidence: {report.confidence}
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.26em]">
+                The read · {report.confidence}
+                {at && (
+                  <span className="ml-2 font-normal text-[#1A1A1A]/50">
+                    as of {new Date(at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                  </span>
+                )}
+              </span>
+              {input && (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => {
+                    void (async () => {
+                      setBusy(true);
+                      setAgain(null);
+                      try {
+                        const response = await fetch("/api/analyst", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ text: input }),
+                        });
+                        const body = (await response.json()) as { token?: string | null };
+                        setAgain(body.token ?? "none");
+                      } catch {
+                        setAgain("none");
+                      } finally {
+                        setBusy(false);
+                      }
+                    })();
+                  }}
+                  className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4 disabled:opacity-40"
+                >
+                  {busy ? "Re-reading…" : "Re-read with today's reporting"}
+                </button>
+              )}
             </div>
+
+            {again && (
+              <div className="border-2 border-[#1A4BFF] bg-[#1A4BFF]/5 px-3 py-2">
+                <p className="font-serif text-[14px]">
+                  A fresh read has been written from the same move.{" "}
+                  {again !== "none" ? (
+                    <Link to="/read/$token" params={{ token: again }} className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4">
+                      Open it →
+                    </Link>
+                  ) : (
+                    <span className="text-[#1A1A1A]/60">It could not be saved, so it is not available by link.</span>
+                  )}
+                </p>
+                <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">
+                  This page keeps the original, as written.
+                </p>
+              </div>
+            )}
             {[
               ["01", "The move", report.move],
               ["02", "Why now", report.why_now],

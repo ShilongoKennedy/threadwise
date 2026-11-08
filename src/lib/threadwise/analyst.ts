@@ -271,13 +271,18 @@ Examples: "US-Iran war 2026" · "UK budget crisis" · "Tesla Cybertruck disconti
   }
 }
 
-/** Fresher reporting wins: recent hits count double. */
-function freshness(hits: { date: string }[]): number {
-  const horizon = Date.now() - 14 * 24 * 60 * 60 * 1000;
-  return hits.reduce((score, hit) => {
+/** How many hits fall inside the window. Undated hits never count as recent. */
+function recentCount(hits: { date: string }[], days: number): number {
+  const horizon = Date.now() - days * 24 * 60 * 60 * 1000;
+  return hits.filter((hit) => {
     const at = hit.date ? Date.parse(hit.date.replace(" ", "T") + "Z") : Number.NaN;
-    return score + (Number.isNaN(at) ? 1 : at > horizon ? 2 : 1);
-  }, 0);
+    return !Number.isNaN(at) && at > horizon;
+  }).length;
+}
+
+/** Fresh reporting wins decisively; a pile of old reports is not a substitute. */
+function freshness(hits: { date: string }[]): number {
+  return recentCount(hits, 14) * 10 + recentCount(hits, 90);
 }
 
 export async function analyseMove(input: string): Promise<AnalystReport> {
@@ -323,14 +328,18 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
 
   // The confidence badge is derived from what was actually retrieved, not from
   // the model's own opinion of its work.
-  const dated = situationHits.length + (sources.length - situationSources.length > 2 ? sources.length - situationSources.length : 0);
+  const freshSituation = recentCount(situationHits, 28);
   const confidence: AnalystReport["confidence"] =
-    situationHits.length >= 2 || dated >= 3 ? "documented" : sources.length > 2 ? "inferred" : "speculative";
+    freshSituation >= 2 ? "documented" : situationHits.length >= 2 || sources.length > 2 ? "inferred" : "speculative";
   const basis =
     confidence === "documented"
-      ? `${situationHits.length} dated reports on the situation`
+      ? `${freshSituation} dated reports from the last four weeks`
       : confidence === "inferred"
-        ? "reporting on the move, but no dated picture of the situation"
+        ? situationHits.length >= 2
+          ? freshSituation >= 1
+            ? `the situation is reported, but only ${freshSituation} of them in the last four weeks`
+            : "the situation is reported, but nothing from the last four weeks"
+          : "reporting on the move, but no picture of the situation"
         : "the move itself — no independent reporting found";
 
   return {
@@ -475,15 +484,21 @@ export async function saveRead(input: string, report: AnalystReport, jwt?: strin
   }
 }
 
-export async function loadRead(token: string): Promise<{ input: string; report: AnalystReport } | null> {
+export async function loadRead(token: string): Promise<{ input: string; report: AnalystReport; at: string | null } | null> {
   const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
   const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !key || !/^[a-z0-9]{6,20}$/.test(token)) return null;
 
   const { createClient } = await import("@supabase/supabase-js");
   const supabase = createClient(url, key, { auth: { persistSession: false } });
-  const { data } = await supabase.from("analyst_reads").select("input, report").eq("token", token).maybeSingle();
-  return data ? { input: data.input as string, report: data.report as AnalystReport } : null;
+  const { data } = await supabase
+    .from("analyst_reads")
+    .select("input, report, created_at")
+    .eq("token", token)
+    .maybeSingle();
+  return data
+    ? { input: data.input as string, report: data.report as AnalystReport, at: (data.created_at as string) ?? null }
+    : null;
 }
 
 

@@ -310,6 +310,16 @@ function LandingPage() {
                 Paste the post or drop a screenshot. You get the read: what it is, why now, who it costs,
                 what it echoes, what would prove it wrong — and you can argue with it afterwards.
               </p>
+
+              {/* a real read, quoted — not copy written for the page */}
+              <figure className="mt-5 border-l-2 border-[#C1121F] pl-4">
+                <blockquote className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/85">
+                  “{FALSIFIER}”
+                </blockquote>
+                <figcaption className="mt-2 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/50">
+                  Falsifier from a read on Musk’s Cybertruck post · 8 Nov 2026
+                </figcaption>
+              </figure>
             </div>
             <Link
               to="/analyst"
@@ -666,3 +676,8 @@ function letters(text: string, start: number) {
     </span>
   ));
 }
+
+
+/** Quoted from a real run of the Analyst, not written for the page. */
+const FALSIFIER =
+  "If Tesla extends Cybertruck production past mid-2027, or announces a next-generation Cybertruck, the read that this is a permanent exit to make room for Cybercab is wrong.";
