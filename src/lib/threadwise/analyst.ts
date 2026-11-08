@@ -50,7 +50,10 @@ export const analystSchema = z.object({
   confidence: z.enum(["documented", "inferred", "speculative"]).default("inferred"),
 });
 
-export type AnalystReport = z.infer<typeof analystSchema> & { sources: { title: string; url: string }[] };
+export type AnalystReport = z.infer<typeof analystSchema> & {
+  sources: { title: string; url: string }[];
+  basis?: string;
+};
 
 const METHOD = `You are The Analyst at Threadwise: a political and geopolitical analyst briefing a smart reader who is new to the subject.
 
@@ -67,6 +70,7 @@ HOW YOU WRITE
 - Every claim carries a name, a date, an institution or a mechanism. "Consolidates loyalist control" is banned; say who is replaced, by whom, with what effect.
 - No bullet-point generalities. No "complex web", "landscape", "underscores", "remains to be seen", "significant", "tapestry", "delve".
 - Never invent a quote, a date or an event. If you are unsure whether a precedent exists, leave it out.
+- Absence of reporting is not absence of events. Never write "there is no X" when you mean "I found no reporting on X". If the move implies a wider situation you cannot see, say exactly that.
 - Write about power the way a good newspaper explainer does: concrete, calm, specific.
 - Never refer to "the reader", "the prompt", "the supplied text" or "the retrieved material". Address the subject directly: "Trump named Miller…", not "The reader states that…". If the material does not confirm something, say what is unknown in plain words.`;
 
@@ -77,6 +81,8 @@ ${input.slice(0, 4000)}
 """
 
 TODAY IS ${new Date().toISOString().slice(0, 10)}. Recent reporting below is newer than anything you remember from training; where they conflict, the reporting wins, and where it names a current officeholder you must use that name.
+
+SITUATION reporting describes the wider events the move sits inside; it is not optional colour. If it contradicts what the move implies — a war the move never mentions, a crisis, an election — say so in the read, because the reader needs the world before the detail.
 
 RETRIEVED MATERIAL (real sources; cite them where you rely on them):
 ${context || "(nothing retrieved — say so in the confidence field and stay strictly within what the move itself states)"}
@@ -237,13 +243,73 @@ export async function retrieveContext(input: string): Promise<{ context: string;
   return { context, sources };
 }
 
+/**
+ * The move is rarely the whole story: a reward offer in November 2026 sits
+ * inside a war. Name that wider situation with one cheap call and search it,
+ * so the read is written against the world rather than against one post.
+ */
+async function nameSituation(move: string): Promise<string[]> {
+  try {
+    const { text } = await generateText({
+      model: getModel("deepseek"),
+      prompt: `Name the wider situation this belongs to. Give TWO candidates on separate lines, each 2-6 words, nothing else.
+
+MOVE: ${move.slice(0, 1200)}
+
+Examples: "US-Iran war 2026" · "UK budget crisis" · "Tesla Cybertruck discontinuation" · "Kenya election dispute"`,
+      temperature: 0,
+      maxOutputTokens: 40,
+      maxRetries: 0,
+    });
+    return text
+      .split("\n")
+      .map((line) => line.replace(/^[-*\d.\s]+/, "").replace(/["'.]/g, "").trim().slice(0, 60))
+      .filter((line) => line.length > 3)
+      .slice(0, 2);
+  } catch {
+    return [];
+  }
+}
+
+/** Fresher reporting wins: recent hits count double. */
+function freshness(hits: { date: string }[]): number {
+  const horizon = Date.now() - 14 * 24 * 60 * 60 * 1000;
+  return hits.reduce((score, hit) => {
+    const at = hit.date ? Date.parse(hit.date.replace(" ", "T") + "Z") : Number.NaN;
+    return score + (Number.isNaN(at) ? 1 : at > horizon ? 2 : 1);
+  }, 0);
+}
+
 export async function analyseMove(input: string): Promise<AnalystReport> {
   const { context, sources } = await retrieveContext(input);
+
+  // Second pass: the events underneath the move. Two candidate readings of the
+  // situation are searched, and whichever returns fresher reporting is used.
+  const candidates = await nameSituation(input);
+  const searched = await Promise.all(candidates.map(async (candidate) => ({ candidate, hits: await news(candidate) })));
+  const best = searched
+    .map((entry) => ({ ...entry, score: freshness(entry.hits) }))
+    .sort((a, b) => b.score - a.score)[0];
+  const situation = best?.score ? best.candidate : "";
+  const situationHits = best?.score ? best.hits : [];
+  const situationContext = situationHits
+    .slice(0, 6)
+    .map((hit) => `[${hit.date}] ${hit.outlet}: ${hit.title} (${hit.url})`)
+    .join("\n");
+  const situationSources = situationHits.slice(0, 3).map((hit) => ({
+    title: `Situation · ${hit.outlet} · ${hit.date}`,
+    url: hit.url,
+  }));
 
   const { text } = await generateText({
     model: getModel("deepseek"),
     system: METHOD,
-    prompt: analystPrompt(input, context),
+    prompt: analystPrompt(
+      input,
+      [situationContext ? `SITUATION — ${situation}, as reported:\n${situationContext}` : "", context]
+        .filter(Boolean)
+        .join("\n\n"),
+    ),
     temperature: 0.3,
     maxOutputTokens: 3200,
     maxRetries: 1,
@@ -255,7 +321,24 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     throw new Error(`The analyst returned an unusable read: ${parsed.error.issues[0]?.message ?? "unknown shape"}`);
   }
 
-  return { ...parsed.data, sources };
+  // The confidence badge is derived from what was actually retrieved, not from
+  // the model's own opinion of its work.
+  const dated = situationHits.length + (sources.length - situationSources.length > 2 ? sources.length - situationSources.length : 0);
+  const confidence: AnalystReport["confidence"] =
+    situationHits.length >= 2 || dated >= 3 ? "documented" : sources.length > 2 ? "inferred" : "speculative";
+  const basis =
+    confidence === "documented"
+      ? `${situationHits.length} dated reports on the situation`
+      : confidence === "inferred"
+        ? "reporting on the move, but no dated picture of the situation"
+        : "the move itself — no independent reporting found";
+
+  return {
+    ...parsed.data,
+    confidence,
+    basis,
+    sources: [...sources, ...situationSources],
+  };
 }
 
 
@@ -305,6 +388,12 @@ export async function transcribeMove(image: string): Promise<Transcription> {
 }
 
 
+const QUESTION_NOISE = new Set([
+  "what","when","where","which","who","whom","whose","why","how","does","did","was","were","is","are",
+  "the","that","this","with","from","have","has","had","been","about","into","over","after","before",
+  "reason","really","actually","mean","means","there","their","they","would","could","should","started",
+]);
+
 export async function askAnalyst(
   report: AnalystReport,
   question: string,
@@ -315,18 +404,37 @@ export async function askAnalyst(
     .map((turn) => `${turn.role === "user" ? "READER" : "ANALYST"}: ${turn.content}`)
     .join("\n\n");
 
+  // A follow-up is a new question about the world: look it up before answering.
+  const entities = candidateEntities(question);
+  const keywords = question
+    .toLowerCase()
+    .match(/[a-z][a-z'-]{3,}/g)
+    ?.filter((word) => !QUESTION_NOISE.has(word))
+    .slice(0, 4) ?? [];
+  const queries = [entities.slice(0, 3).join(" "), keywords.join(" ")].filter((query) => query.trim().length > 2);
+  const hits = (await Promise.all(queries.map((query) => news(query)))).flat();
+  const fresh = hits
+    .slice(0, 6)
+    .map((hit) => `[${hit.date}] ${hit.outlet}: ${hit.title} (${hit.url})`)
+    .join("\n");
+
   const { text } = await generateText({
     model: getModel("deepseek"),
     system: METHOD,
     prompt: `YOUR READ, already given to the reader:
-${JSON.stringify(report).slice(0, 9000)}
+${JSON.stringify(report).slice(0, 7000)}
 
-${transcript ? `CONVERSATION SO FAR:\n${transcript}\n\n` : ""}THE READER ASKS: ${question.slice(0, 800)}
+${fresh ? `REPORTING RETRIEVED FOR THIS QUESTION (newer than your training; trust it over memory):\n${fresh}\n` : "NO REPORTING WAS RETRIEVED FOR THIS QUESTION.\n"}
+${transcript ? `\nCONVERSATION SO FAR:\n${transcript}\n` : ""}
+TODAY IS ${new Date().toISOString().slice(0, 10)}.
+
+THE READER ASKS: ${question.slice(0, 800)}
 
 Answer as the same analyst. Rules:
 - 2 to 4 short paragraphs. No headings, no bullet lists, no repetition of your earlier sections.
 - If the question shows you were wrong, say so in the first sentence and correct it.
-- If the answer is not knowable, say what would settle it.
+- NEVER claim something did not happen because you have no reporting on it. Say "I have no reporting on X" and state what would settle it. Treat the absence of evidence as ignorance, not proof.
+- If the retrieved reporting contradicts your earlier answer, the reporting wins.
 - Name actors, dates and mechanisms. No filler.`,
     temperature: 0.3,
     maxOutputTokens: 900,
@@ -335,7 +443,6 @@ Answer as the same analyst. Rules:
 
   return text.trim();
 }
-
 
 /** Saves a read and returns its token. Best-effort: a read still works unsaved. */
 export async function saveRead(input: string, report: AnalystReport, jwt?: string): Promise<string | null> {

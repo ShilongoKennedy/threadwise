@@ -28,6 +28,7 @@ type Report = {
   falsifier: string;
   confidence: "documented" | "inferred" | "speculative";
   questions?: string[];
+  basis?: string;
   sources: { title: string; url: string }[];
 };
 
@@ -346,6 +347,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#1A1A1A] pb-2">
         <span className="font-mono text-[9px] font-bold uppercase tracking-[0.26em]">
           The read · confidence: {report.confidence}
+          {report.basis ? <span className="text-[#1A1A1A]/50"> · {report.basis}</span> : null}
         </span>
         <div className="flex items-center gap-4">
           {token && (
