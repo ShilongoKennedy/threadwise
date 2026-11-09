@@ -366,6 +366,18 @@ export type Database = {
         }
         Relationships: []
       }
+      analyst_questions: {
+        Row: { id: string; user_id: string; question: string; status: string; created_at: string }
+        Insert: { id?: string; user_id?: string; question: string; status?: string; created_at?: string }
+        Update: { question?: string; status?: string }
+        Relationships: []
+      }
+      analyst_findings: {
+        Row: { id: string; user_id: string; question_id: string; read_token: string | null; stance: string; note: string; created_at: string }
+        Insert: { id?: string; user_id?: string; question_id: string; read_token?: string | null; stance: string; note: string; created_at?: string }
+        Update: { note?: string; stance?: string }
+        Relationships: []
+      }
       news_briefs: {
         Row: {
           bluf: string

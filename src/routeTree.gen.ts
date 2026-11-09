@@ -15,10 +15,12 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as ReadsRouteImport } from './routes/reads'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
 import { Route as ApiAnalystRecentRouteImport } from './routes/api/analyst-recent'
+import { Route as ApiAnalystRedteamRouteImport } from './routes/api/analyst-redteam'
 import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
@@ -62,6 +64,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuestionsRoute = QuestionsRouteImport.update({
+  id: '/questions',
+  path: '/questions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReadsRoute = ReadsRouteImport.update({
   id: '/reads',
   path: '/reads',
@@ -80,6 +87,11 @@ const ApiAnalystRoute = ApiAnalystRouteImport.update({
 const ApiAnalystRecentRoute = ApiAnalystRecentRouteImport.update({
   id: '/api/analyst-recent',
   path: '/api/analyst-recent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAnalystRedteamRoute = ApiAnalystRedteamRouteImport.update({
+  id: '/api/analyst-redteam',
+  path: '/api/analyst-redteam',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAnalystWatchRoute = ApiAnalystWatchRouteImport.update({
@@ -150,10 +162,12 @@ export interface FileRoutesByFullPath {
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
+  '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
@@ -174,10 +188,12 @@ export interface FileRoutesByTo {
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
+  '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
@@ -199,10 +215,12 @@ export interface FileRoutesById {
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
+  '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
@@ -225,10 +243,12 @@ export interface FileRouteTypes {
     | '/digest'
     | '/login'
     | '/privacy'
+    | '/questions'
     | '/reads'
     | '/terms'
     | '/api/analyst'
     | '/api/analyst-recent'
+    | '/api/analyst-redteam'
     | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/check-watches'
@@ -249,10 +269,12 @@ export interface FileRouteTypes {
     | '/digest'
     | '/login'
     | '/privacy'
+    | '/questions'
     | '/reads'
     | '/terms'
     | '/api/analyst'
     | '/api/analyst-recent'
+    | '/api/analyst-redteam'
     | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/check-watches'
@@ -273,10 +295,12 @@ export interface FileRouteTypes {
     | '/digest'
     | '/login'
     | '/privacy'
+    | '/questions'
     | '/reads'
     | '/terms'
     | '/api/analyst'
     | '/api/analyst-recent'
+    | '/api/analyst-redteam'
     | '/api/analyst-watch'
     | '/api/check-watch'
     | '/api/check-watches'
@@ -298,10 +322,12 @@ export interface RootRouteChildren {
   DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
+  QuestionsRoute: typeof QuestionsRoute
   ReadsRoute: typeof ReadsRoute
   TermsRoute: typeof TermsRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
   ApiAnalystRecentRoute: typeof ApiAnalystRecentRoute
+  ApiAnalystRedteamRoute: typeof ApiAnalystRedteamRoute
   ApiAnalystWatchRoute: typeof ApiAnalystWatchRoute
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiCheckWatchesRoute: typeof ApiCheckWatchesRoute
@@ -360,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/questions': {
+      id: '/questions'
+      path: '/questions'
+      fullPath: '/questions'
+      preLoaderRoute: typeof QuestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reads': {
       id: '/reads'
       path: '/reads'
@@ -386,6 +419,13 @@ declare module '@tanstack/react-router' {
       path: '/api/analyst-recent'
       fullPath: '/api/analyst-recent'
       preLoaderRoute: typeof ApiAnalystRecentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/analyst-redteam': {
+      id: '/api/analyst-redteam'
+      path: '/api/analyst-redteam'
+      fullPath: '/api/analyst-redteam'
+      preLoaderRoute: typeof ApiAnalystRedteamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/analyst-watch': {
@@ -482,10 +522,12 @@ const rootRouteChildren: RootRouteChildren = {
   DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
+  QuestionsRoute: QuestionsRoute,
   ReadsRoute: ReadsRoute,
   TermsRoute: TermsRoute,
   ApiAnalystRoute: ApiAnalystRoute,
   ApiAnalystRecentRoute: ApiAnalystRecentRoute,
+  ApiAnalystRedteamRoute: ApiAnalystRedteamRoute,
   ApiAnalystWatchRoute: ApiAnalystWatchRoute,
   ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiCheckWatchesRoute: ApiCheckWatchesRoute,

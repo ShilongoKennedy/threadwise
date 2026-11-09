@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 
@@ -215,6 +215,10 @@ function SharedRead() {
               <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">07 · What would prove this wrong</p>
               <p className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 font-serif text-[15px]">{report.falsifier}</p>
             </section>
+            <FileFinding token={token} note={report.falsifier} />
+
+            <RedTeam report={report} />
+
             <p className="border-t border-[#1A1A1A]/15 pt-3 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
               Produced by The Analyst · verify before you act
             </p>
@@ -249,4 +253,188 @@ function changedSince(before: Report, after: Report): string[] {
   }
 
   return changes.length ? changes : ["Nothing material changed — the same facts still support the same read."];
+}
+
+
+type Round = { attack: string; strongest: string; concession: string; settle: string };
+
+function RedTeam({ report }: { report: Report }) {
+  const [position, setPosition] = useState("");
+  const [rounds, setRounds] = useState<Round[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const spar = async (text: string) => {
+    const claim = text.trim();
+    if (claim.length < 20 || busy) return;
+    setBusy(true);
+    setError(null);
+    setPosition("");
+    try {
+      const response = await fetch("/api/analyst-redteam", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ report, position: claim }),
+      });
+      const body = (await response.json()) as Round & { error?: string };
+      if (!response.ok) throw new Error(body.error ?? "No argument came back.");
+      setRounds([...rounds, body]);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "No argument came back.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
+      <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">Red team</span>
+        <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">argue with the read</span>
+      </div>
+
+      <div className="px-4 py-4">
+        {rounds.length === 0 && (
+          <p className="max-w-[58ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/70">
+            State your own position on this move. The analyst will attack it with the evidence in the
+            read — and tell you where you are right.
+          </p>
+        )}
+
+        {rounds.map((round, index) => (
+          <div key={index} className="mb-5 space-y-3 border-b border-[#1A1A1A]/10 pb-4 last:border-b-0">
+            <div>
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#C1121F]">the attack</p>
+              <p className="mt-1 whitespace-pre-line font-serif text-[15px] leading-relaxed">{round.attack}</p>
+            </div>
+            <div className="border-l-2 border-[#1A1A1A]/30 pl-3">
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/60">strongest point for you</p>
+              <p className="mt-1 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/80">{round.strongest}</p>
+            </div>
+            <div className="border-l-2 border-[#1A4BFF] pl-3">
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">where you are right</p>
+              <p className="mt-1 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/80">{round.concession}</p>
+            </div>
+            <div>
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/60">what would settle it</p>
+              <p className="mt-1 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/80">{round.settle}</p>
+            </div>
+          </div>
+        ))}
+
+        {error && <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#C1121F]">{error}</p>}
+
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            void spar(position);
+          }}
+          className="flex items-center gap-2 border-2 border-[#1A1A1A] px-3 py-2"
+        >
+          <input
+            value={position}
+            onChange={(event) => setPosition(event.target.value)}
+            placeholder="I think the reward is a sign of weakness, not strength…"
+            className="min-w-0 flex-1 bg-transparent font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/35"
+          />
+          <button
+            type="submit"
+            disabled={busy || position.trim().length < 20}
+            className="shrink-0 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] disabled:opacity-40"
+          >
+            {busy ? "Thinking…" : "Argue →"}
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
+
+/** Files one line of evidence from this read against an open question. */
+function FileFinding({ token, note }: { token: string; note: string }) {
+  const [questions, setQuestions] = useState<{ id: string; question: string }[]>([]);
+  const [selected, setSelected] = useState("");
+  const [text, setText] = useState(note.slice(0, 240));
+  const [done, setDone] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) return;
+      const { data } = await supabase
+        .from("analyst_questions")
+        .select("id, question")
+        .eq("status", "open")
+        .order("created_at", { ascending: false });
+      if (!alive) return;
+      setQuestions((data as { id: string; question: string }[]) ?? []);
+      if (data?.[0]) setSelected((data[0] as { id: string }).id);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (questions.length === 0) return null;
+
+  const file = async (stance: "for" | "against") => {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { error } = await supabase.from("analyst_findings").insert({
+      question_id: selected,
+      read_token: token,
+      stance,
+      note: text.trim().slice(0, 400),
+    });
+    setDone(error ? error.message : `Filed ${stance} — it is on the question now.`);
+  };
+
+  return (
+    <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
+      <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">File a finding</span>
+        <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">
+          questions →
+        </Link>
+      </div>
+      <div className="space-y-3 px-4 py-4">
+        <select
+          value={selected}
+          onChange={(event) => setSelected(event.target.value)}
+          className="w-full border-2 border-[#1A1A1A] bg-white px-2 py-2 font-serif text-[14px] outline-none"
+        >
+          {questions.map((question) => (
+            <option key={question.id} value={question.id}>
+              {question.question}
+            </option>
+          ))}
+        </select>
+        <textarea
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          rows={3}
+          className="w-full resize-none border-2 border-[#1A1A1A] px-2 py-2 font-serif text-[14px] leading-relaxed outline-none"
+        />
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => void file("for")}
+            className="border-2 border-[#1A4BFF] bg-[#1A4BFF] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white"
+          >
+            This supports it
+          </button>
+          <button
+            type="button"
+            onClick={() => void file("against")}
+            className="border-2 border-[#C1121F] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#C1121F]"
+          >
+            This argues against it
+          </button>
+          {done && <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">{done}</span>}
+        </div>
+      </div>
+    </section>
+  );
 }

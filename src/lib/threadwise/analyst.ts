@@ -906,3 +906,53 @@ export async function publicReads(limit = 12): Promise<{ token: string; input: s
     };
   });
 }
+
+
+export const redTeamSchema = z.object({
+  attack: z.string().trim().max(4000).default(""),
+  strongest: z.string().trim().max(1200).default(""),
+  concession: z.string().trim().max(1200).default(""),
+  settle: z.string().trim().max(800).default(""),
+});
+
+export type RedTeam = z.infer<typeof redTeamSchema>;
+
+/**
+ * The reader states a position; the analyst attacks it using the read's own
+ * evidence — and must say where the reader is right, or it is not a fair fight.
+ */
+export async function redTeam(
+  report: AnalystReport,
+  position: string,
+  history: { role: "user" | "assistant"; content: string }[],
+): Promise<RedTeam> {
+  const transcript = history
+    .slice(-6)
+    .map((turn) => `${turn.role === "user" ? "READER" : "ANALYST"}: ${turn.content}`)
+    .join("\n\n");
+
+  const { text } = await generateText({
+    model: getModel("deepseek"),
+    system: METHOD,
+    prompt: `THE READ UNDER DISCUSSION:
+${JSON.stringify(report).slice(0, 7000)}
+
+${transcript ? `THE ARGUMENT SO FAR:\n${transcript}\n\n` : ""}
+THE READER'S POSITION: ${position.slice(0, 1200)}
+
+Your job is to stress-test that position, hard but fairly. Return JSON only:
+{
+  "attack": string,      // 3-5 paragraphs. Attack the weakest joints of the position, using dated facts and mechanisms. Not tone, not opinion — structure. Say what would have to be true for them to be right, and why it probably is not.
+  "strongest": string,   // the single strongest point in their favour, stated at full strength, in one paragraph
+  "concession": string,  // where the reader is right and your read was weak — be specific, this is not politeness
+  "settle": string       // the observation or date that would end the argument
+}`,
+    temperature: 0.35,
+    maxOutputTokens: 2200,
+    maxRetries: 1,
+  });
+
+  const parsed = redTeamSchema.safeParse(extractJson<unknown>(text));
+  if (!parsed.success) throw new Error("The red team could not be assembled.");
+  return parsed.data;
+}
