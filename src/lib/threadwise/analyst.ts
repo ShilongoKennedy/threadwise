@@ -100,6 +100,17 @@ const MODES = {
   },
 } as const;
 
+/** How much room each kind of read genuinely needs. */
+const DEPTH: Record<keyof typeof MODES, { short: [number, number]; long: [number, number] }> = {
+  legal: { short: [900, 1200], long: [1400, 1900] },
+  institution: { short: [850, 1150], long: [1300, 1800] },
+  document: { short: [800, 1100], long: [1200, 1700] },
+  report: { short: [700, 950], long: [1100, 1500] },
+  comparison: { short: [650, 900], long: [950, 1300] },
+  signal: { short: [450, 650], long: [650, 900] },
+  discourse: { short: [550, 750], long: [750, 1050] },
+};
+
 const LAYERS: Record<string, string> = {
   institution: `INSTITUTION LAYER — the named body is itself evidence. Cover, as its own section:
 - WHO PAYS: its budget and the largest contributors, with the actual figures and the year they refer to, drawn ONLY from the retrieved material. If you cannot find a figure, write "no current figure retrieved" — never estimate.
@@ -189,6 +200,8 @@ export function analystPrompt(
   layers: string[] = [],
 ) {
   const shape = MODES[mode] ?? MODES.report;
+  const depth = DEPTH[mode] ?? DEPTH.report;
+  const words = input.length < 400 ? depth.short : depth.long;
   const layerRules = layers.map((layer) => LAYERS[layer]).filter(Boolean).join("\n\n");
   return `THE MOVE (as supplied by the reader):
 """
