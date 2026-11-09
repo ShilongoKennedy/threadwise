@@ -400,6 +400,22 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
 
       <Index />
 
+      <details className="mb-4 border-2 border-[#1A1A1A] px-3 py-2 xl:hidden">
+        <summary className="cursor-pointer font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+          Contents
+        </summary>
+        <ul className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2">
+          {SECTIONS.map(([n, title]) => (
+            <li key={n}>
+              <a href={`#s-${n}`} className="flex gap-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/60">
+                <span className="text-[#1A4BFF]">{n}</span>
+                <span className="truncate">{title}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+
       <Section n="01" title="The move">
         <p>{report.move}</p>
       </Section>

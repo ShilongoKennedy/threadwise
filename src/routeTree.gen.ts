@@ -15,6 +15,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ReadsRouteImport } from './routes/reads'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
 import { Route as ApiAnalystRecentRouteImport } from './routes/api/analyst-recent'
@@ -22,6 +23,8 @@ import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
+import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
+import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
@@ -59,6 +62,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReadsRoute = ReadsRouteImport.update({
+  id: '/reads',
+  path: '/reads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -92,6 +100,16 @@ const ApiCheckWatchesRoute = ApiCheckWatchesRouteImport.update({
 const ApiNewsBriefRoute = ApiNewsBriefRouteImport.update({
   id: '/api/news-brief',
   path: '/api/news-brief',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublishReadRoute = ApiPublishReadRouteImport.update({
+  id: '/api/publish-read',
+  path: '/api/publish-read',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReadsPublicRoute = ApiReadsPublicRouteImport.update({
+  id: '/api/reads-public',
+  path: '/api/reads-public',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiThreadwiseRoute = ApiThreadwiseRouteImport.update({
@@ -132,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
@@ -139,6 +158,8 @@ export interface FileRoutesByFullPath {
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/publish-read': typeof ApiPublishReadRoute
+  '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/read/$token': typeof ReadTokenRoute
@@ -153,6 +174,7 @@ export interface FileRoutesByTo {
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
@@ -160,6 +182,8 @@ export interface FileRoutesByTo {
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/publish-read': typeof ApiPublishReadRoute
+  '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/read/$token': typeof ReadTokenRoute
@@ -175,6 +199,7 @@ export interface FileRoutesById {
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
@@ -182,6 +207,8 @@ export interface FileRoutesById {
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/publish-read': typeof ApiPublishReadRoute
+  '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/read/$token': typeof ReadTokenRoute
@@ -198,6 +225,7 @@ export interface FileRouteTypes {
     | '/digest'
     | '/login'
     | '/privacy'
+    | '/reads'
     | '/terms'
     | '/api/analyst'
     | '/api/analyst-recent'
@@ -205,6 +233,8 @@ export interface FileRouteTypes {
     | '/api/check-watch'
     | '/api/check-watches'
     | '/api/news-brief'
+    | '/api/publish-read'
+    | '/api/reads-public'
     | '/api/threadwise'
     | '/auth/callback'
     | '/read/$token'
@@ -219,6 +249,7 @@ export interface FileRouteTypes {
     | '/digest'
     | '/login'
     | '/privacy'
+    | '/reads'
     | '/terms'
     | '/api/analyst'
     | '/api/analyst-recent'
@@ -226,6 +257,8 @@ export interface FileRouteTypes {
     | '/api/check-watch'
     | '/api/check-watches'
     | '/api/news-brief'
+    | '/api/publish-read'
+    | '/api/reads-public'
     | '/api/threadwise'
     | '/auth/callback'
     | '/read/$token'
@@ -240,6 +273,7 @@ export interface FileRouteTypes {
     | '/digest'
     | '/login'
     | '/privacy'
+    | '/reads'
     | '/terms'
     | '/api/analyst'
     | '/api/analyst-recent'
@@ -247,6 +281,8 @@ export interface FileRouteTypes {
     | '/api/check-watch'
     | '/api/check-watches'
     | '/api/news-brief'
+    | '/api/publish-read'
+    | '/api/reads-public'
     | '/api/threadwise'
     | '/auth/callback'
     | '/read/$token'
@@ -262,6 +298,7 @@ export interface RootRouteChildren {
   DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
+  ReadsRoute: typeof ReadsRoute
   TermsRoute: typeof TermsRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
   ApiAnalystRecentRoute: typeof ApiAnalystRecentRoute
@@ -269,6 +306,8 @@ export interface RootRouteChildren {
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiCheckWatchesRoute: typeof ApiCheckWatchesRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
+  ApiPublishReadRoute: typeof ApiPublishReadRoute
+  ApiReadsPublicRoute: typeof ApiReadsPublicRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   ReadTokenRoute: typeof ReadTokenRoute
@@ -321,6 +360,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reads': {
+      id: '/reads'
+      path: '/reads'
+      fullPath: '/reads'
+      preLoaderRoute: typeof ReadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -368,6 +414,20 @@ declare module '@tanstack/react-router' {
       path: '/api/news-brief'
       fullPath: '/api/news-brief'
       preLoaderRoute: typeof ApiNewsBriefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/publish-read': {
+      id: '/api/publish-read'
+      path: '/api/publish-read'
+      fullPath: '/api/publish-read'
+      preLoaderRoute: typeof ApiPublishReadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reads-public': {
+      id: '/api/reads-public'
+      path: '/api/reads-public'
+      fullPath: '/api/reads-public'
+      preLoaderRoute: typeof ApiReadsPublicRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/threadwise': {
@@ -422,6 +482,7 @@ const rootRouteChildren: RootRouteChildren = {
   DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
+  ReadsRoute: ReadsRoute,
   TermsRoute: TermsRoute,
   ApiAnalystRoute: ApiAnalystRoute,
   ApiAnalystRecentRoute: ApiAnalystRecentRoute,
@@ -429,6 +490,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiCheckWatchesRoute: ApiCheckWatchesRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
+  ApiPublishReadRoute: ApiPublishReadRoute,
+  ApiReadsPublicRoute: ApiReadsPublicRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   ReadTokenRoute: ReadTokenRoute,

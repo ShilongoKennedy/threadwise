@@ -576,3 +576,68 @@ export async function recentReads(jwt: string, limit = 8): Promise<{ token: stri
     at: row.created_at as string,
   }));
 }
+
+
+/**
+ * Publishing is an owner action. A read with an owner can only be published by
+ * that reader; an unowned read may be claimed by the signed-in reader who
+ * publishes it. No session, no publishing.
+ */
+export async function publishRead(
+  token: string,
+  publish: boolean,
+  jwt: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  if (!url || !key) return { ok: false, error: "Publishing is not configured on the server." };
+
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(url, key, { auth: { persistSession: false } });
+
+  const { data: userData } = await supabase.auth.getUser(jwt);
+  const userId = userData?.user?.id;
+  if (!userId) return { ok: false, error: "Sign in to publish a read." };
+
+  const { data: row } = await supabase
+    .from("analyst_reads")
+    .select("user_id")
+    .eq("token", token)
+    .maybeSingle();
+
+  if (!row) return { ok: false, error: "That read does not exist." };
+  if (row.user_id && row.user_id !== userId) {
+    return { ok: false, error: "This read belongs to someone else." };
+  }
+
+  const { error } = await supabase
+    .from("analyst_reads")
+    .update({ is_public: publish, published_by: userId, ...(row.user_id ? {} : { user_id: userId }) })
+    .eq("token", token);
+
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
+export async function publicReads(limit = 12): Promise<{ token: string; input: string; at: string; falsifier: string }[]> {
+  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  if (!url || !key) return [];
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(url, key, { auth: { persistSession: false } });
+  const { data } = await supabase
+    .from("analyst_reads")
+    .select("token, input, report, created_at")
+    .eq("is_public", true)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  return (data ?? []).map((row) => {
+    const report = row.report as AnalystReport;
+    return {
+      token: row.token as string,
+      input: (row.input as string).slice(0, 160),
+      at: row.created_at as string,
+      falsifier: (report?.falsifier ?? "").slice(0, 200),
+    };
+  });
+}
