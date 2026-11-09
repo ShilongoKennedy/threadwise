@@ -299,18 +299,21 @@ function AnalystPage() {
   );
 }
 
-const SECTIONS = [
+const SECTIONS: [string, string][] = [
   ["01", "The move"], ["02", "Why now"], ["03", "Who gains, who pays"], ["04", "What it echoes"],
   ["05", "What it changes downstream"], ["06", "The counter-reading"], ["07", "What would prove this wrong"],
   ["08", "What to watch"], ["09", "Keep these signals"], ["10", "Interrogate this read"], ["11", "What this rests on"],
 ];
 
-function Index() {
+function Index({ titles }: { titles: string[] }) {
   return (
     <nav className="fixed left-6 top-32 hidden w-[150px] xl:block" aria-label="Sections">
       <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/45">Contents</span>
       <ul className="mt-2 space-y-1">
-        {SECTIONS.map(([n, title]) => (
+        {titles.map((title, position) => (
+          <IndexLink key={title} n={String(position + 1).padStart(2, "0")} title={title} />
+        ))}
+        {[].map(([n, title]: [string, string]) => (
           <li key={n}>
             <a
               href={`#s-${n}`}
@@ -323,6 +326,18 @@ function Index() {
         ))}
       </ul>
     </nav>
+  );
+}
+
+function IndexLink({ n, title }: { n: string; title: string }) {
+  return (
+    <a
+      href={`#s-${n}`}
+      className="flex gap-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/45 transition-colors hover:text-[#1A4BFF]"
+    >
+      <span className="text-[#1A4BFF]">{n}</span>
+      <span className="truncate">{title}</span>
+    </a>
   );
 }
 
@@ -401,7 +416,13 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         </div>
       </div>
 
-      <Index />
+      <Index
+        titles={
+          report.sections?.length
+            ? report.sections.map((section) => section.title ?? "Untitled")
+            : SECTIONS.map(([, title]) => title)
+        }
+      />
 
       <details className="mb-4 border-2 border-[#1A1A1A] px-3 py-2 xl:hidden">
         <summary className="cursor-pointer font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">

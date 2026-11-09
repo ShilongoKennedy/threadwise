@@ -16,9 +16,11 @@ const sectionSchema = z.object({
 });
 
 export const analystSchema = z.object({
-  mode: z.enum(["report", "document", "institution", "signal"]).default("report"),
+  mode: z
+    .enum(["report", "document", "institution", "signal", "discourse", "legal", "comparison"])
+    .default("report"),
   layers: z.array(z.string().trim().max(40)).max(6).default([]),
-  sections: z.array(sectionSchema).max(9).default([]),
+  sections: z.array(sectionSchema).max(14).default([]),
   move: z.string().trim().max(4000).default(""),
   why_now: z.string().trim().max(4000).default(""),
   stakes: z
@@ -29,7 +31,7 @@ export const analystSchema = z.object({
         loses: z.string().trim().max(900).default(""),
       }),
     )
-    .max(8)
+    .max(12)
     .default([]),
   precedent: z
     .array(
@@ -40,7 +42,7 @@ export const analystSchema = z.object({
         breaks: z.string().trim().max(1200).default(""),
       }),
     )
-    .max(5)
+    .max(6)
     .default([]),
   second_order: z.string().trim().max(4000).default(""),
   counter_reading: z.string().trim().max(3000).default(""),
@@ -51,7 +53,7 @@ export const analystSchema = z.object({
         when: z.string().trim().max(120).default(""),
       }),
     )
-    .max(8)
+    .max(12)
     .default([]),
   falsifier: z.string().trim().max(800).default(""),
   questions: z.array(z.string().trim().max(200)).max(5).default([]),
@@ -81,6 +83,21 @@ const MODES = {
     label: "a signal",
     sections: "what it says · who it is aimed at · what it reveals unintentionally · whether it holds up",
   },
+  legal: {
+    label: "a ruling",
+    sections:
+      "what was decided · what it actually binds · the precedent chain it joins · whether it can be enforced · who it costs and who it protects",
+  },
+  comparison: {
+    label: "two accounts",
+    sections:
+      "what each account says · where they actually diverge · why they diverge · which is stronger and why · who benefits from each version",
+  },
+  discourse: {
+    label: "a remark about people",
+    sections:
+      "the claim · who is speaking and from where · the tradition it draws on · what it explains and what it explains away · the strongest counter-argument · how you would test it · what the framing does politically",
+  },
 } as const;
 
 const LAYERS: Record<string, string> = {
@@ -90,7 +107,14 @@ const LAYERS: Record<string, string> = {
 - TRACK RECORD: two or three comparable past findings, dated, and how they aged.
 - WHAT ITS WORD IS WORTH HERE: whether this body can even pronounce on the question the story needs it to pronounce on.`,
   state: `STATE LAYER — the state actor behaves according to a pattern. Cover: what this state usually does in this position (dated examples), how this instance fits or breaks the pattern, and what it gains either way.`,
-  ownership: `OWNERSHIP LAYER — follow the chain of ownership and what it is for: which entity holds the asset, what sits above it, why the structure exists (sanctions, tax, opacity), and what the chain means for accountability.`,
+  theory: `THEORY LAYER — this is a claim about human behaviour, so bring the intellectual traditions that actually address it. Cover:
+- name the traditions the sentence is drawing on, if any: colonial psychology and its critics, development discourse, mimetic rivalry, status competition, nationalism as emulation.
+- for each, say in one sentence what it would say here, and whether the sentence is using it consciously or just echoing it.
+- distinguish what is established from what is the analyst's inference. Write "echoes" and "reads like", never "this is [thinker]'s theory".
+- name thinkers only where you are certain of the attribution and the period. No invented quotations, no invented page numbers. If unsure, describe the tradition without the name.
+- the psychology must be treated as a hypothesis about a group, not a diagnosis: say what evidence would distinguish feeling inferior from responding to incentives.
+
+OWNERSHIP LAYER — follow the chain of ownership and what it is for: which entity holds the asset, what sits above it, why the structure exists (sanctions, tax, opacity), and what the chain means for accountability.`,
 };
 
 export async function classify(move: string): Promise<{ mode: keyof typeof MODES; layers: string[]; subject: string }> {
@@ -98,11 +122,14 @@ export async function classify(move: string): Promise<{ mode: keyof typeof MODES
     const { text } = await generateText({
       model: getModel("deepseek"),
       prompt: `Classify what the reader pasted. Reply with JSON only:
-{"mode":"report|document|institution|signal","layers":["institution"|"state"|"ownership"],"subject":"2-6 words naming the wider situation"}
+{"mode":"report|document|institution|signal|discourse|legal|comparison","layers":["institution"|"state"|"ownership"],"subject":"2-6 words naming the wider situation"}
 
 - document: the evidence is a PAPER described second-hand — "a report seen by", "according to a draft", "a filing shows", "an internal memo". The question is what the document is worth.
 - institution: a BODY is the actor — a court rules, a regulator blocks, an agency raises concerns, a central bank moves. The question is what the body can actually do.
 - signal: a short post or quote by a PERSON, aimed at an audience. The question is what it reveals.
+- legal: a COURT, TRIBUNAL or REGULATOR has ruled — a judgment, an injunction, a fine, a stay. The question is what it binds and whether it can be enforced.
+- comparison: TWO OR MORE ACCOUNTS of the same event are supplied. The question is why they differ, not what happened.
+- discourse: an OPINION or general observation about people, culture or behaviour — "maybe it is an inferiority complex", "these people always…". No event, no named authority. The question is what the claim does and whether it is true of anyone.
 - report: none of the above — journalism narrating an event.
 
 When two fit, choose by what the reader needs to distrust: a paper's provenance (document), a body's authority (institution), a person's motive (signal), or an account's framing (report).
@@ -115,7 +142,7 @@ INPUT: ${move.slice(0, 1500)}`,
     });
     const parsed = z
       .object({
-        mode: z.enum(["report", "document", "institution", "signal"]).catch("report"),
+        mode: z.enum(["report", "document", "institution", "signal", "discourse", "legal", "comparison"]).catch("report"),
         layers: z.array(z.string()).catch([]),
         subject: z.string().trim().catch(""),
       })
@@ -123,7 +150,12 @@ INPUT: ${move.slice(0, 1500)}`,
     if (!parsed.success) return { mode: "report", layers: [], subject: "" };
     return {
       mode: parsed.data.mode,
-      layers: parsed.data.layers.filter((layer) => layer in LAYERS).slice(0, 2),
+      layers: (() => {
+      const chosen = [...parsed.data.layers];
+      if (parsed.data.mode === "discourse" && !chosen.includes("theory")) chosen.unshift("theory");
+      if (parsed.data.mode === "institution" && !chosen.includes("institution")) chosen.unshift("institution");
+      return chosen.filter((layer) => layer in LAYERS).slice(0, 2);
+    })(),
       subject: parsed.data.subject.slice(0, 60),
     };
   } catch {
@@ -176,7 +208,11 @@ Put those sections in "sections" as { "title", "body" } pairs, in that order, an
 
 ${layerRules}
 
-FIGURES RULE: any number you give — a budget, a contribution, a share — must come from the retrieved material and must be stated with its year and source inline, like "about €400m in 2025 (IAEA programme and budget)". If no figure was retrieved, write "no current figure retrieved". Never estimate, never recall a figure from training.
+FIGURES RULE:
+- Every number must come from the retrieved material and carry its year and source inline: "€344 million in 2014 (assessed to member states)".
+- Use the MOST RECENT figure available, even if it is years old. Stale and dated beats absent: "the most recent figure the record carries is X, from YYYY — no newer figure was retrieved".
+- Never estimate, never invent a figure, never recall one from training.
+- If no figure exists anywhere in the material, do not stop there: write that section analytically instead — what the funding structure is, how it is decided, and what that structure implies for the finding. A refusal is a last resort and may appear in ONE section only; the rest must reason from what is known, saying plainly what is not.
 
 Fields:
 - move: what was actually announced or argued, by whom, with what authority, in 2-4 plain sentences. No adjectives.
@@ -201,7 +237,7 @@ Return ONLY a JSON object with EXACTLY these keys, all present:
   "watch": [{ "signal": string, "when": string }],
   "falsifier": string,
   "questions": [string],
-  "mode": "report" | "document" | "institution" | "signal",
+  "mode": "report" | "document" | "institution" | "signal" | "discourse" | "legal" | "comparison",
   "layers": [string],
   "sections": [{ "title": string, "body": string }],
   "confidence": "documented" | "inferred" | "speculative"
@@ -263,11 +299,13 @@ function moneySentences(text: string, limit = 5): string[] {
 export function candidateEntities(input: string): string[] {
   const stop = new Set(["The", "A", "An", "Breaking", "New", "This", "That", "It", "He", "She", "They", "We", "I"]);
   const runs = (input.match(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\b/g) ?? []).filter(
-    (run) => run.split(" ").length <= 4,
+    (run) => run.split(" ").length <= 6,
   );
   const singles = (input.match(/\b[A-Z][a-z]{4,}\b/g) ?? []).filter((word) => !stop.has(word));
 
   // "Stephen Miller" makes "Stephen" and "Miller" redundant lookups.
+  // A five-word name consumes the words a shorter one would need, so treat every
+  // word of every run as covered before ranking.
   const covered = new Set(runs.flatMap((run) => run.split(" ")));
   const keepSingles = singles.filter((word) => !covered.has(word));
 
@@ -333,7 +371,11 @@ export async function retrieveContext(input: string): Promise<{ context: string;
     .map((hit) => `[${hit.date}] ${hit.outlet}: ${hit.title} (${hit.url})`)
     .join("\n");
 
+  const lead = entities[0] ? await wikiBody(entities[0]) : "";
+  const money = lead ? moneySentences(lead, 6) : [];
+
   const context = [
+    money.length ? `FIGURES AND GOVERNANCE (from the reference entry on ${entities[0]}):\n${money.join(" ").slice(0, 1400)}` : "",
     reporting ? `LATEST REPORTING (newest first, dates are UTC):\n${reporting}` : "",
     background.length
       ? `BACKGROUND (encyclopedia; may lag behind today's news):\n${background
@@ -440,7 +482,9 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
         ? ["foreign policy strategy record"]
         : decision.layers.includes("ownership")
           ? ["ownership subsidiary parent company"]
-          : [];
+          : decision.layers.includes("theory")
+            ? ["development discourse", "postcolonial theory inferiority"]
+            : [];
   const layerHits = institutionName
     ? (await Promise.all(layerQueries.map((query) => news(`${institutionName} ${query}`)))).flat()
     : [];
@@ -514,7 +558,7 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
       decision.layers,
     ),
     temperature: 0.3,
-    maxOutputTokens: 3200,
+    maxOutputTokens: 7000,
     maxRetries: 1,
   });
 
@@ -528,9 +572,17 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
   // the model's own opinion of its work.
   const freshSituation = recentCount(situationHits, 28);
   const confidence: AnalystReport["confidence"] =
-    freshSituation >= 2 ? "documented" : situationHits.length >= 2 || sources.length > 2 ? "inferred" : "speculative";
+    decision.mode === "discourse"
+      ? "inferred"
+      : freshSituation >= 2
+        ? "documented"
+        : situationHits.length >= 2 || sources.length > 2
+          ? "inferred"
+          : "speculative";
   const basis =
-    confidence === "documented"
+    decision.mode === "discourse"
+      ? "a statement about people, not an event — judged on argument, not reporting"
+      : confidence === "documented"
       ? `${freshSituation} dated reports from the last four weeks`
       : confidence === "inferred"
         ? situationHits.length >= 2
