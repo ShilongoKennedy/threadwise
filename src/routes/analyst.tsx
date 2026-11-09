@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
@@ -42,6 +42,7 @@ const EXAMPLES = [
 ];
 
 function AnalystPage() {
+  const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [stage, setStage] = useState(0);
@@ -120,6 +121,12 @@ function AnalystPage() {
       if (!response.ok || !body.report) throw new Error(body.error ?? "The analyst could not finish this read.");
       setReport(body.report);
       setToken(body.token ?? null);
+
+      // The read's own page is where red team, findings and publishing live.
+      if (body.token) {
+        navigate({ to: "/read/$token", params: { token: body.token } });
+        return;
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Something went wrong.");
     } finally {
@@ -187,7 +194,7 @@ function AnalystPage() {
                     />
                   </label>
                   <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
-                    {input.trim().length}/4000 · ~40s
+                    {input.trim().length}/4000 · ~40s · saved to its own page
                   </span>
                 </div>
                 <button
