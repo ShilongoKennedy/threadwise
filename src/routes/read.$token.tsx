@@ -72,7 +72,16 @@ function SharedRead() {
       <main className="mx-auto w-full max-w-[760px] px-5 pb-24 pt-8">
         {status === "missing" && (
           <div className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-4 py-3">
-            <p className="font-serif text-[15px]">That read does not exist, or the link is wrong.</p>
+            <p className="font-serif text-[15px]">
+              That read does not exist, or the link is wrong.
+            </p>
+            <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+              token {token}
+            </p>
+            <p className="mt-2 max-w-[52ch] font-serif text-[13px] leading-relaxed text-[#1A1A1A]/60">
+              If you just created this read, the server could not read the database. Check that
+              SUPABASE_SERVICE_ROLE_KEY and SUPABASE_URL are set for the deployment.
+            </p>
             <Link to="/analyst" className="mt-2 inline-block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4">
               Ask the analyst something new →
             </Link>
