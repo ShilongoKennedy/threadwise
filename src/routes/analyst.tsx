@@ -562,7 +562,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
                   ? "Sign in first — watches belong to you"
                   : watchState === "failed"
                     ? "Could not file them just now"
-                    : "They go to your calendar and get checked on the date"}
+                    : "They get checked on the date, and scored here"}
             </span>
           </div>
         ) : (

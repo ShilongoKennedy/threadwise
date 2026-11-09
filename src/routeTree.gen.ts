@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
-import { Route as AppRouteImport } from './routes/app'
+import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -19,6 +19,7 @@ import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as ReadsRouteImport } from './routes/reads'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
+import { Route as ApiAnalystFindingsRouteImport } from './routes/api/analyst-findings'
 import { Route as ApiAnalystRecentRouteImport } from './routes/api/analyst-recent'
 import { Route as ApiAnalystRedteamRouteImport } from './routes/api/analyst-redteam'
 import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
@@ -29,9 +30,8 @@ import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
 import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
-import { Route as STokenRouteImport } from './routes/s.$token'
-import { Route as SocraticThreadIdRouteImport } from './routes/socratic.$threadId'
 import { Route as ApiReadTokenRouteImport } from './routes/api/read.$token'
 
 const IndexRoute = IndexRouteImport.update({
@@ -44,9 +44,9 @@ const AnalystRoute = AnalystRouteImport.update({
   path: '/analyst',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
+const CasesRoute = CasesRouteImport.update({
+  id: '/cases',
+  path: '/cases',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DigestRoute = DigestRouteImport.update({
@@ -82,6 +82,11 @@ const TermsRoute = TermsRouteImport.update({
 const ApiAnalystRoute = ApiAnalystRouteImport.update({
   id: '/api/analyst',
   path: '/api/analyst',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAnalystFindingsRoute = ApiAnalystFindingsRouteImport.update({
+  id: '/api/analyst-findings',
+  path: '/api/analyst-findings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAnalystRecentRoute = ApiAnalystRecentRouteImport.update({
@@ -134,19 +139,14 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CaseSubjectRoute = CaseSubjectRouteImport.update({
+  id: '/case/$subject',
+  path: '/case/$subject',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReadTokenRoute = ReadTokenRouteImport.update({
   id: '/read/$token',
   path: '/read/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const STokenRoute = STokenRouteImport.update({
-  id: '/s/$token',
-  path: '/s/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SocraticThreadIdRoute = SocraticThreadIdRouteImport.update({
-  id: '/socratic/$threadId',
-  path: '/socratic/$threadId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiReadTokenRoute = ApiReadTokenRouteImport.update({
@@ -158,7 +158,7 @@ const ApiReadTokenRoute = ApiReadTokenRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
-  '/app': typeof AppRoute
+  '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
@@ -166,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
+  '/api/analyst-findings': typeof ApiAnalystFindingsRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
@@ -176,15 +177,14 @@ export interface FileRoutesByFullPath {
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/case/$subject': typeof CaseSubjectRoute
   '/read/$token': typeof ReadTokenRoute
-  '/s/$token': typeof STokenRoute
-  '/socratic/$threadId': typeof SocraticThreadIdRoute
   '/api/read/$token': typeof ApiReadTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
-  '/app': typeof AppRoute
+  '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
@@ -192,6 +192,7 @@ export interface FileRoutesByTo {
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
+  '/api/analyst-findings': typeof ApiAnalystFindingsRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
@@ -202,16 +203,15 @@ export interface FileRoutesByTo {
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/case/$subject': typeof CaseSubjectRoute
   '/read/$token': typeof ReadTokenRoute
-  '/s/$token': typeof STokenRoute
-  '/socratic/$threadId': typeof SocraticThreadIdRoute
   '/api/read/$token': typeof ApiReadTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
-  '/app': typeof AppRoute
+  '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
@@ -219,6 +219,7 @@ export interface FileRoutesById {
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
   '/api/analyst': typeof ApiAnalystRoute
+  '/api/analyst-findings': typeof ApiAnalystFindingsRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
@@ -229,9 +230,8 @@ export interface FileRoutesById {
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/case/$subject': typeof CaseSubjectRoute
   '/read/$token': typeof ReadTokenRoute
-  '/s/$token': typeof STokenRoute
-  '/socratic/$threadId': typeof SocraticThreadIdRoute
   '/api/read/$token': typeof ApiReadTokenRoute
 }
 export interface FileRouteTypes {
@@ -239,7 +239,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/analyst'
-    | '/app'
+    | '/cases'
     | '/digest'
     | '/login'
     | '/privacy'
@@ -247,6 +247,7 @@ export interface FileRouteTypes {
     | '/reads'
     | '/terms'
     | '/api/analyst'
+    | '/api/analyst-findings'
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
@@ -257,15 +258,14 @@ export interface FileRouteTypes {
     | '/api/reads-public'
     | '/api/threadwise'
     | '/auth/callback'
+    | '/case/$subject'
     | '/read/$token'
-    | '/s/$token'
-    | '/socratic/$threadId'
     | '/api/read/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/analyst'
-    | '/app'
+    | '/cases'
     | '/digest'
     | '/login'
     | '/privacy'
@@ -273,6 +273,7 @@ export interface FileRouteTypes {
     | '/reads'
     | '/terms'
     | '/api/analyst'
+    | '/api/analyst-findings'
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
@@ -283,15 +284,14 @@ export interface FileRouteTypes {
     | '/api/reads-public'
     | '/api/threadwise'
     | '/auth/callback'
+    | '/case/$subject'
     | '/read/$token'
-    | '/s/$token'
-    | '/socratic/$threadId'
     | '/api/read/$token'
   id:
     | '__root__'
     | '/'
     | '/analyst'
-    | '/app'
+    | '/cases'
     | '/digest'
     | '/login'
     | '/privacy'
@@ -299,6 +299,7 @@ export interface FileRouteTypes {
     | '/reads'
     | '/terms'
     | '/api/analyst'
+    | '/api/analyst-findings'
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
@@ -309,16 +310,15 @@ export interface FileRouteTypes {
     | '/api/reads-public'
     | '/api/threadwise'
     | '/auth/callback'
+    | '/case/$subject'
     | '/read/$token'
-    | '/s/$token'
-    | '/socratic/$threadId'
     | '/api/read/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalystRoute: typeof AnalystRoute
-  AppRoute: typeof AppRoute
+  CasesRoute: typeof CasesRoute
   DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -326,6 +326,7 @@ export interface RootRouteChildren {
   ReadsRoute: typeof ReadsRoute
   TermsRoute: typeof TermsRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
+  ApiAnalystFindingsRoute: typeof ApiAnalystFindingsRoute
   ApiAnalystRecentRoute: typeof ApiAnalystRecentRoute
   ApiAnalystRedteamRoute: typeof ApiAnalystRedteamRoute
   ApiAnalystWatchRoute: typeof ApiAnalystWatchRoute
@@ -336,9 +337,8 @@ export interface RootRouteChildren {
   ApiReadsPublicRoute: typeof ApiReadsPublicRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  CaseSubjectRoute: typeof CaseSubjectRoute
   ReadTokenRoute: typeof ReadTokenRoute
-  STokenRoute: typeof STokenRoute
-  SocraticThreadIdRoute: typeof SocraticThreadIdRoute
   ApiReadTokenRoute: typeof ApiReadTokenRoute
 }
 
@@ -358,11 +358,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalystRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
+    '/cases': {
+      id: '/cases'
+      path: '/cases'
+      fullPath: '/cases'
+      preLoaderRoute: typeof CasesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/digest': {
@@ -412,6 +412,13 @@ declare module '@tanstack/react-router' {
       path: '/api/analyst'
       fullPath: '/api/analyst'
       preLoaderRoute: typeof ApiAnalystRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/analyst-findings': {
+      id: '/api/analyst-findings'
+      path: '/api/analyst-findings'
+      fullPath: '/api/analyst-findings'
+      preLoaderRoute: typeof ApiAnalystFindingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/analyst-recent': {
@@ -484,25 +491,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/case/$subject': {
+      id: '/case/$subject'
+      path: '/case/$subject'
+      fullPath: '/case/$subject'
+      preLoaderRoute: typeof CaseSubjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/read/$token': {
       id: '/read/$token'
       path: '/read/$token'
       fullPath: '/read/$token'
       preLoaderRoute: typeof ReadTokenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/s/$token': {
-      id: '/s/$token'
-      path: '/s/$token'
-      fullPath: '/s/$token'
-      preLoaderRoute: typeof STokenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/socratic/$threadId': {
-      id: '/socratic/$threadId'
-      path: '/socratic/$threadId'
-      fullPath: '/socratic/$threadId'
-      preLoaderRoute: typeof SocraticThreadIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/read/$token': {
@@ -518,7 +518,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalystRoute: AnalystRoute,
-  AppRoute: AppRoute,
+  CasesRoute: CasesRoute,
   DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
@@ -526,6 +526,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReadsRoute: ReadsRoute,
   TermsRoute: TermsRoute,
   ApiAnalystRoute: ApiAnalystRoute,
+  ApiAnalystFindingsRoute: ApiAnalystFindingsRoute,
   ApiAnalystRecentRoute: ApiAnalystRecentRoute,
   ApiAnalystRedteamRoute: ApiAnalystRedteamRoute,
   ApiAnalystWatchRoute: ApiAnalystWatchRoute,
@@ -536,9 +537,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiReadsPublicRoute: ApiReadsPublicRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  CaseSubjectRoute: CaseSubjectRoute,
   ReadTokenRoute: ReadTokenRoute,
-  STokenRoute: STokenRoute,
-  SocraticThreadIdRoute: SocraticThreadIdRoute,
   ApiReadTokenRoute: ApiReadTokenRoute,
 }
 export const routeTree = rootRouteImport

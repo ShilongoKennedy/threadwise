@@ -30,7 +30,7 @@ function AuthCallback() {
 
       window.history.replaceState({}, document.title, "/auth/callback");
       
-      if (active) await navigate({ to: "/app", replace: true });
+      if (active) await navigate({ to: "/analyst", replace: true });
     };
     
     void finish().catch((error: unknown) => {

@@ -22,7 +22,7 @@ export const Route = createFileRoute("/read/$token")({
         { property: "og:title", content: move },
         { property: "og:description", content: description },
         { property: "og:type", content: "article" },
-        { property: "og:image", content: "https://threadwise-beta.vercel.app/og-canvas.jpg" },
+        { property: "og:image", content: "https://threadwise-beta.vercel.app/og.png" },
         { name: "twitter:card", content: "summary_large_image" },
       ],
     };
@@ -215,6 +215,8 @@ function SharedRead() {
               <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">07 · What would prove this wrong</p>
               <p className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 font-serif text-[15px]">{report.falsifier}</p>
             </section>
+            <Proposals report={report} token={token} />
+
             <FileFinding token={token} note={report.falsifier} />
 
             <RedTeam report={report} />
@@ -434,6 +436,92 @@ function FileFinding({ token, note }: { token: string; note: string }) {
           </button>
           {done && <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">{done}</span>}
         </div>
+      </div>
+    </section>
+  );
+}
+
+
+/** What this read adds to the reader's open questions, proposed by the analyst. */
+function Proposals({ report, token }: { report: Report; token: string }) {
+  const [items, setItems] = useState<{ question_id: string; question: string; stance: "for" | "against"; note: string }[]>([]);
+  const [filed, setFiled] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) return;
+      const { data } = await supabase.from("analyst_questions").select("id, question").eq("status", "open").limit(8);
+      const questions = (data as { id: string; question: string }[]) ?? [];
+      if (!questions.length) return;
+
+      const response = await fetch("/api/analyst-findings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ report, questions }),
+      });
+      if (!response.ok) return;
+      const body = (await response.json()) as { findings?: { question_id: string; stance: "for" | "against"; note: string }[] };
+      if (!alive || !body.findings?.length) return;
+      setItems(
+        body.findings.map((finding) => ({
+          ...finding,
+          question: questions.find((question) => question.id === finding.question_id)?.question ?? "",
+        })),
+      );
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [report]);
+
+  if (items.length === 0) return null;
+
+  const fileAll = async () => {
+    const { supabase } = await import("@/integrations/supabase/client");
+    await supabase.from("analyst_findings").insert(
+      items.map((item) => ({ question_id: item.question_id, read_token: token, stance: item.stance, note: item.note })),
+    );
+    setFiled(true);
+  };
+
+  return (
+    <section className="mt-8 border-2 border-[#1A4BFF] bg-white">
+      <div className="flex items-center justify-between bg-[#1A4BFF] px-3 py-1.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-white">
+          This read bears on {items.length} of your questions
+        </span>
+        <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.16em] text-white/80">
+          questions →
+        </Link>
+      </div>
+      <ul className="divide-y divide-[#1A1A1A]/10">
+        {items.map((item) => (
+          <li key={`${item.question_id}-${item.note.slice(0, 12)}`} className="px-4 py-3">
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">{item.question}</p>
+            <p className="mt-1 font-serif text-[14px] leading-snug">
+              <span className={`mr-1.5 font-mono text-[9px] uppercase tracking-[0.14em] ${item.stance === "for" ? "text-[#1A4BFF]" : "text-[#C1121F]"}`}>
+                {item.stance}
+              </span>
+              {item.note}
+            </p>
+          </li>
+        ))}
+      </ul>
+      <div className="flex items-center gap-3 px-4 py-3">
+        <button
+          type="button"
+          onClick={() => void fileAll()}
+          disabled={filed}
+          className="border-2 border-[#1A4BFF] bg-[#1A4BFF] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white disabled:opacity-40"
+        >
+          {filed ? "Filed" : "File all"}
+        </button>
+        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+          or file one by hand below
+        </span>
       </div>
     </section>
   );

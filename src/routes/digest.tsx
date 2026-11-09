@@ -155,7 +155,7 @@ function DigestPage() {
         <div className="mx-auto flex w-full max-w-[1100px] flex-wrap items-center justify-between gap-3 px-4 py-2.5 md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Link
-              to="/app"
+              to="/analyst"
               className="flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
             >
               <ArrowLeft className="h-3 w-3" /> Workspace
@@ -228,7 +228,7 @@ function DigestPage() {
           <div className="mt-10 border-2 border-dashed border-[#1A1A1A]/25 p-10 text-center">
             <p className="font-display text-2xl">Nothing filed yet.</p>
             <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
-              Add a dated claim in the calendar and it will start keeping score.
+              Keep a signal from a read and it will start keeping score.
             </p>
           </div>
         )}

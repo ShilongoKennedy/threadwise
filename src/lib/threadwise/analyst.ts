@@ -63,6 +63,7 @@ export const analystSchema = z.object({
 export type AnalystReport = z.infer<typeof analystSchema> & {
   sources: { title: string; url: string }[];
   basis?: string;
+  subject?: string;
 };
 
 /** What kind of artefact this is decides which questions the read asks. */
@@ -607,6 +608,7 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
 
   return {
     ...parsed.data,
+    subject: decision.subject || situation,
     mode: parsed.data.mode ?? decision.mode,
     layers: parsed.data.layers?.length ? parsed.data.layers : decision.layers,
     confidence,
@@ -737,7 +739,13 @@ export async function saveRead(input: string, report: AnalystReport, jwt?: strin
       userId = data?.user?.id ?? null;
     }
 
-    const { error } = await supabase.from("analyst_reads").insert({ token, input, report, user_id: userId });
+    const { error } = await supabase.from("analyst_reads").insert({
+      token,
+      input,
+      report,
+      user_id: userId,
+      subject: (report as AnalystReport).subject ?? null,
+    });
     if (error) {
       console.warn("[analyst] could not save read:", error.message);
       return null;
@@ -955,4 +963,107 @@ Your job is to stress-test that position, hard but fairly. Return JSON only:
   const parsed = redTeamSchema.safeParse(extractJson<unknown>(text));
   if (!parsed.success) throw new Error("The red team could not be assembled.");
   return parsed.data;
+}
+
+
+export type FindingProposal = { question_id: string; stance: "for" | "against"; note: string };
+
+/** Which of the reader's open questions this read actually bears on, and how. */
+export async function proposeFindings(
+  report: AnalystReport,
+  questions: { id: string; question: string }[],
+): Promise<FindingProposal[]> {
+  if (!questions.length) return [];
+
+  const { text } = await generateText({
+    model: getModel("deepseek"),
+    system: METHOD,
+    prompt: `THE READ:
+${JSON.stringify(report).slice(0, 6000)}
+
+THE READER'S OPEN QUESTIONS:
+${questions.map((question) => `- ${question.id}: ${question.question}`).join("\n")}
+
+For each question this read genuinely bears on, return one entry. Be strict: most reads bear on none.
+JSON only: {"findings":[{"question_id":string,"stance":"for"|"against","note":string}]}
+
+- stance: "for" if the read is evidence toward a yes, "against" if toward a no.
+- note: ONE sentence, under 30 words, carrying the date and the specific fact. "The IAEA objection (11 Nov 2026) delays the licence, not the ownership." No hedging, no restating the question.
+- If nothing bears on a question, omit it entirely. Never invent relevance.`,
+    temperature: 0.2,
+    maxOutputTokens: 700,
+    maxRetries: 0,
+  });
+
+  const parsed = z
+    .object({
+      findings: z
+        .array(
+          z.object({
+            question_id: z.string(),
+            stance: z.enum(["for", "against"]).catch("for"),
+            note: z.string().trim().max(300),
+          }),
+        )
+        .catch([]),
+    })
+    .safeParse(extractJson<unknown>(text));
+
+  if (!parsed.success) return [];
+  const known = new Set(questions.map((question) => question.id));
+  return parsed.data.findings.filter((finding) => known.has(finding.question_id)).slice(0, 3);
+}
+
+
+/** Every case, newest activity first. */
+export async function listCases(limit = 40): Promise<{ subject: string; reads: number; latest: string }[]> {
+  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  if (!url || !key) return [];
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(url, key, { auth: { persistSession: false } });
+  const { data } = await supabase
+    .from("analyst_reads")
+    .select("subject, created_at")
+    .not("subject", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(400);
+
+  const cases = new Map<string, { subject: string; reads: number; latest: string }>();
+  for (const row of data ?? []) {
+    const subject = (row.subject as string | null)?.trim();
+    if (!subject) continue;
+    const existing = cases.get(subject.toLowerCase());
+    if (existing) existing.reads += 1;
+    else cases.set(subject.toLowerCase(), { subject, reads: 1, latest: row.created_at as string });
+  }
+  return [...cases.values()].sort((a, b) => b.reads - a.reads).slice(0, limit);
+}
+
+/** The reads that make up one case. */
+export async function caseReads(subject: string, limit = 20): Promise<
+  { token: string; input: string; at: string; mode: string | null; falsifier: string }[]
+> {
+  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  if (!url || !key) return [];
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(url, key, { auth: { persistSession: false } });
+  const { data } = await supabase
+    .from("analyst_reads")
+    .select("token, input, report, created_at")
+    .ilike("subject", subject)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  return (data ?? []).map((row) => {
+    const report = row.report as AnalystReport;
+    return {
+      token: row.token as string,
+      input: (row.input as string).slice(0, 180),
+      at: row.created_at as string,
+      mode: report?.mode ?? null,
+      falsifier: (report?.falsifier ?? "").slice(0, 220),
+    };
+  });
 }

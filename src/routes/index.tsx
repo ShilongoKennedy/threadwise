@@ -20,11 +20,11 @@ export const Route = createFileRoute("/")({
       { name: "twitter:title", content: "Threadwise — See what hides" },
       { name: "twitter:description", content: "Threadwise is a forensic intelligence workspace: paste a source, expose its framing, omissions and contradictions, and map what you actually know against what you are assuming." },
     
-      { property: "og:image", content: "https://threadwise-beta.vercel.app/og-canvas.jpg" },
+      { property: "og:image", content: "https://threadwise-beta.vercel.app/og.png" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: "https://threadwise-beta.vercel.app/og-canvas.jpg" },
+      { name: "twitter:image", content: "https://threadwise-beta.vercel.app/og.png" },
     ],
   }),
   component: LandingPage,
@@ -152,14 +152,14 @@ function LandingPage() {
         
         <nav className="hidden md:flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
           <Link to="/analyst" className="text-[#1A4BFF] transition-colors hover:text-[#1A1A1A]">The analyst</Link>
-          <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">The canvas</a>
-          <a href="#features" className="hover:text-[#1A1A1A] transition-colors">The dossier</a>
+          <Link to="/questions" className="hover:text-[#1A1A1A] transition-colors">Questions</Link>
+          <Link to="/cases" className="hover:text-[#1A1A1A] transition-colors">Cases</Link>
           <Link to="/digest" className="hover:text-[#1A1A1A] transition-colors">Record</Link>
         </nav>
 
         <div className="flex items-center gap-3 md:gap-6">
           {session ? (
-            <Link to="/app" className="group flex shrink-0 items-center gap-1.5 rounded-sm bg-[#1A1A1A] px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-white shadow-sm transition-colors duration-300 hover:bg-[#1A4BFF] md:gap-2 md:px-5 md:py-2.5 md:text-[12px]">
+            <Link to="/analyst" className="group flex shrink-0 items-center gap-1.5 rounded-sm bg-[#1A1A1A] px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-white shadow-sm transition-colors duration-300 hover:bg-[#1A4BFF] md:gap-2 md:px-5 md:py-2.5 md:text-[12px]">
               Go to Workspace <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
           ) : (
@@ -214,7 +214,7 @@ function LandingPage() {
 
               <div className="flex flex-col items-start gap-3 md:items-end">
                 <Link
-                  to="/app"
+                  to="/analyst"
                   className="inline-flex items-center gap-2.5 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-7 py-4 font-mono text-[12px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
                 >
                   Start an investigation
@@ -251,10 +251,10 @@ function LandingPage() {
         >
           <div className="mb-3 flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
             <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em]">
-              Plate 01 — the workbench
+              Plate 01 — a read
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
-              One source, dissected
+              One move, argued
             </span>
           </div>
 
@@ -269,15 +269,15 @@ function LandingPage() {
               </div>
 
               <div className="relative aspect-[2400/1207] w-full overflow-hidden bg-[#FDFBF7]">
-                <CanvasShot />
+                <ReadSpecimen />
 
                 <Link
-                  to="/app"
+                  to="/analyst"
                   className="group absolute inset-0 flex items-end justify-end p-4 md:p-6"
-                  aria-label="Open the workspace"
+                  aria-label="Open the analyst"
                 >
                   <span className="border-2 border-[#1A1A1A] bg-[#FDFBF7] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] shadow-[4px_4px_0_0_#1A1A1A] transition-all md:translate-y-1 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-visible:translate-y-0 md:group-focus-visible:opacity-100">
-                    Open the workspace →
+                    Open the analyst →
                   </span>
                 </Link>
               </div>
@@ -343,7 +343,7 @@ function LandingPage() {
                 <FileText className="w-4 h-4" /> Case File 092-A
               </div>
               <h2 className="font-display text-4xl md:text-6xl text-[#1A1A1A] leading-none tracking-tight">The Dossier.</h2>
-              <p className="text-[#1A1A1A]/65 text-base md:text-lg mt-4">Cross-reference sources, expose contradictions, and map the truth on a structured forensic board.</p>
+              <p className="text-[#1A1A1A]/65 text-base md:text-lg mt-4">A read that shows its evidence, states what would prove it wrong, and lets you argue with it.</p>
             </div>
             <div className="mt-6 md:mt-0">
               <span className="stamp text-xs">Classified</span>
@@ -478,12 +478,12 @@ function LandingPage() {
             {[
               {
                 n: "01",
-                title: "Clip a source",
+                title: "Bring a move",
                 body: "An article, a speech, a transcript. The lab reads what it argues — framing, omissions, the dog that didn't bark — not just what it says.",
               },
               {
                 n: "02",
-                title: "Map the reasoning",
+                title: "Read the evidence",
                 body: "What you know sits on the floor; what you assume floats above it. Every card is tied to its evidence by a cord, and the unsupported ones hang in red.",
               },
               {
@@ -566,7 +566,7 @@ function LandingPage() {
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Link
-                to="/app"
+                to="/analyst"
                 className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
               >
                 Start an investigation
@@ -603,7 +603,7 @@ function LandingPage() {
               <div className="flex flex-col gap-4">
                 <span className="text-[#1A1A1A] font-bold mb-1">Product</span>
                 <Link to="/analyst" className="hover:text-[#1A1A1A] transition-colors">The analyst</Link>
-                <Link to="/app" className="hover:text-[#1A1A1A] transition-colors">Workspace</Link>
+                <Link to="/analyst" className="hover:text-[#1A1A1A] transition-colors">Workspace</Link>
                 <a href="#features" className="hover:text-[#1A1A1A] transition-colors">Features</a>
               </div>
               <div className="flex flex-col gap-4">
@@ -636,30 +636,48 @@ function LandingPage() {
  * The screen's contents: a real capture of the canvas. It is lazy, sized to
  * avoid layout shift, and falls back to a plain note if the file is missing.
  */
-function CanvasShot() {
-  const [failed, setFailed] = useState(false);
+function ReadSpecimen() {
+  return (
+    <div className="h-full w-full overflow-y-auto bg-[#FDFBF7] px-5 py-5 md:px-8 md:py-6">
+      <div className="flex items-center justify-between border-b border-[#1A1A1A]/20 pb-1.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]">
+          The read · institution · confidence documented
+        </span>
+        <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/50">
+          as of 09 Nov 2026
+        </span>
+      </div>
 
-  if (failed) {
-    return (
-      <div className="flex h-full w-full items-center justify-center bg-[#FDFBF7] px-6 text-center">
-        <p className="max-w-[40ch] font-mono text-[10px] uppercase leading-relaxed tracking-[0.16em] text-[#1A1A1A]/60">
-          Capture pending — drop the canvas screenshot at <code>/canvas-shot.webp</code>
+      <p className="mt-3 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">01 · what it did</p>
+      <p className="mt-1 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/85">
+        The IAEA produced an expert report on the Wings uranium project in Namibia&rsquo;s Omaheke region,
+        operated by Headspring Investments, a Rosatom subsidiary via Uranium One Group. The agency did
+        not permit or block anything; it issued a technical judgement into a live Namibian licensing process.
+      </p>
+
+      <p className="mt-3 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">05 · what its word is worth here</p>
+      <p className="mt-1 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/85">
+        The IAEA can pronounce on whether the evidence for water protection is adequate; it cannot decide
+        whether the mine is built. If Namibia permits it anyway, the finding will have shown the limits of
+        the agency&rsquo;s influence rather than its authority.
+      </p>
+
+      <div className="mt-3 border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2">
+        <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#C1121F]">07 · what would prove this wrong</p>
+        <p className="mt-1 max-w-[62ch] font-serif text-[12.5px] leading-snug text-[#1A1A1A]/85">
+          If the ministry approves the mine without a water monitoring condition, the &ldquo;technical
+          objection that matters&rdquo; reading is wrong.
         </p>
       </div>
-    );
-  }
 
-  return (
-    <img
-      src="/canvas-shot.webp"
-      alt="The Threadwise canvas: four cards connected by tagged cords."
-      width={2400}
-      height={1207}
-      loading="lazy"
-      decoding="async"
-      onError={() => setFailed(true)}
-      className="h-full w-full object-cover"
-    />
+      <div className="mt-3 border-l-2 border-[#1A1A1A] pl-3">
+        <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/60">red team · the attack</p>
+        <p className="mt-1 max-w-[62ch] font-serif text-[12.5px] leading-snug text-[#1A1A1A]/80">
+          Your position needs three things to be true at once, and the first is the load-bearing claim you
+          cannot see: that a reward is evidence of absence rather than a solicitation.
+        </p>
+      </div>
+    </div>
   );
 }
 

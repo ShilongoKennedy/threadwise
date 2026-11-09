@@ -23,13 +23,13 @@ function LoginPage() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate({ to: "/app", replace: true });
+        navigate({ to: "/analyst", replace: true });
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        navigate({ to: "/app", replace: true });
+        navigate({ to: "/analyst", replace: true });
       }
     });
 
