@@ -27,6 +27,9 @@ type Report = {
   watch: { signal: string; when: string }[];
   falsifier: string;
   confidence: "documented" | "inferred" | "speculative";
+  mode?: "report" | "document" | "institution" | "signal";
+  layers?: string[];
+  sections?: { title: string; body: string }[];
   questions?: string[];
   basis?: string;
   sources: { title: string; url: string }[];
@@ -416,13 +419,25 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         </ul>
       </details>
 
-      <Section n="01" title="The move">
-        <p>{report.move}</p>
-      </Section>
+      {(report.sections?.length ?? 0) > 0 ? (
+        <>
+          {report.sections!.map((section, index) => (
+            <Section key={section.title} n={String(index + 1).padStart(2, "0")} title={section.title}>
+              <p className="whitespace-pre-line">{section.body}</p>
+            </Section>
+          ))}
+        </>
+      ) : (
+        <>
+          <Section n="01" title="The move">
+            <p>{report.move}</p>
+          </Section>
 
-      <Section n="02" title="Why now">
-        <p>{report.why_now}</p>
-      </Section>
+          <Section n="02" title="Why now">
+            <p>{report.why_now}</p>
+          </Section>
+        </>
+      )}
 
       <Section n="03" title="Who gains, who pays">
         <ul className="space-y-3">

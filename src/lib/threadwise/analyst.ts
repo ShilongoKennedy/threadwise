@@ -10,7 +10,15 @@ import { generateText } from "ai";
 import { z } from "zod";
 import { extractJson, getModel } from "./ai/ai-providers.server";
 
+const sectionSchema = z.object({
+  title: z.string().trim().max(80).default(""),
+  body: z.string().trim().max(2200).default(""),
+});
+
 export const analystSchema = z.object({
+  mode: z.enum(["report", "document", "institution", "signal"]).default("report"),
+  layers: z.array(z.string().trim().max(40)).max(6).default([]),
+  sections: z.array(sectionSchema).max(9).default([]),
   move: z.string().trim().max(4000).default(""),
   why_now: z.string().trim().max(4000).default(""),
   stakes: z
@@ -21,7 +29,7 @@ export const analystSchema = z.object({
         loses: z.string().trim().max(900).default(""),
       }),
     )
-    .max(6)
+    .max(8)
     .default([]),
   precedent: z
     .array(
@@ -32,7 +40,7 @@ export const analystSchema = z.object({
         breaks: z.string().trim().max(1200).default(""),
       }),
     )
-    .max(3)
+    .max(5)
     .default([]),
   second_order: z.string().trim().max(4000).default(""),
   counter_reading: z.string().trim().max(3000).default(""),
@@ -43,10 +51,10 @@ export const analystSchema = z.object({
         when: z.string().trim().max(120).default(""),
       }),
     )
-    .max(5)
+    .max(8)
     .default([]),
   falsifier: z.string().trim().max(800).default(""),
-  questions: z.array(z.string().trim().max(160)).max(3).default([]),
+  questions: z.array(z.string().trim().max(200)).max(5).default([]),
   confidence: z.enum(["documented", "inferred", "speculative"]).default("inferred"),
 });
 
@@ -54,6 +62,74 @@ export type AnalystReport = z.infer<typeof analystSchema> & {
   sources: { title: string; url: string }[];
   basis?: string;
 };
+
+/** What kind of artefact this is decides which questions the read asks. */
+const MODES = {
+  report: {
+    label: "a report",
+    sections: "the event · the disagreement · the spin · the reality · the blind spot · what to watch",
+  },
+  document: {
+    label: "a document quoted second-hand",
+    sections: "provenance · what it actually says · who wrote it and for whom · what it leaves out · what its word is worth",
+  },
+  institution: {
+    label: "an institution acting",
+    sections: "what it did · who pays it · who decides · its track record · what its word is worth here",
+  },
+  signal: {
+    label: "a signal",
+    sections: "what it says · who it is aimed at · what it reveals unintentionally · whether it holds up",
+  },
+} as const;
+
+const LAYERS: Record<string, string> = {
+  institution: `INSTITUTION LAYER — the named body is itself evidence. Cover, as its own section:
+- WHO PAYS: its budget and the largest contributors, with the actual figures and the year they refer to, drawn ONLY from the retrieved material. If you cannot find a figure, write "no current figure retrieved" — never estimate.
+- WHO DECIDES: how its decisions are made, who appoints its head, whether members can block access.
+- TRACK RECORD: two or three comparable past findings, dated, and how they aged.
+- WHAT ITS WORD IS WORTH HERE: whether this body can even pronounce on the question the story needs it to pronounce on.`,
+  state: `STATE LAYER — the state actor behaves according to a pattern. Cover: what this state usually does in this position (dated examples), how this instance fits or breaks the pattern, and what it gains either way.`,
+  ownership: `OWNERSHIP LAYER — follow the chain of ownership and what it is for: which entity holds the asset, what sits above it, why the structure exists (sanctions, tax, opacity), and what the chain means for accountability.`,
+};
+
+export async function classify(move: string): Promise<{ mode: keyof typeof MODES; layers: string[]; subject: string }> {
+  try {
+    const { text } = await generateText({
+      model: getModel("deepseek"),
+      prompt: `Classify what the reader pasted. Reply with JSON only:
+{"mode":"report|document|institution|signal","layers":["institution"|"state"|"ownership"],"subject":"2-6 words naming the wider situation"}
+
+- document: the evidence is a PAPER described second-hand — "a report seen by", "according to a draft", "a filing shows", "an internal memo". The question is what the document is worth.
+- institution: a BODY is the actor — a court rules, a regulator blocks, an agency raises concerns, a central bank moves. The question is what the body can actually do.
+- signal: a short post or quote by a PERSON, aimed at an audience. The question is what it reveals.
+- report: none of the above — journalism narrating an event.
+
+When two fit, choose by what the reader needs to distrust: a paper's provenance (document), a body's authority (institution), a person's motive (signal), or an account's framing (report).
+- layers: add "institution" if a named body's neutrality or funding matters here; "state" if a government is acting; "ownership" if a corporate chain matters.
+
+INPUT: ${move.slice(0, 1500)}`,
+      temperature: 0,
+      maxOutputTokens: 120,
+      maxRetries: 0,
+    });
+    const parsed = z
+      .object({
+        mode: z.enum(["report", "document", "institution", "signal"]).catch("report"),
+        layers: z.array(z.string()).catch([]),
+        subject: z.string().trim().catch(""),
+      })
+      .safeParse(extractJson<unknown>(text));
+    if (!parsed.success) return { mode: "report", layers: [], subject: "" };
+    return {
+      mode: parsed.data.mode,
+      layers: parsed.data.layers.filter((layer) => layer in LAYERS).slice(0, 2),
+      subject: parsed.data.subject.slice(0, 60),
+    };
+  } catch {
+    return { mode: "report", layers: [], subject: "" };
+  }
+}
 
 const METHOD = `You are The Analyst at Threadwise: a political and geopolitical analyst briefing a smart reader who is new to the subject.
 
@@ -74,7 +150,14 @@ HOW YOU WRITE
 - Write about power the way a good newspaper explainer does: concrete, calm, specific.
 - Never refer to "the reader", "the prompt", "the supplied text" or "the retrieved material". Address the subject directly: "Trump named Miller…", not "The reader states that…". If the material does not confirm something, say what is unknown in plain words.`;
 
-export function analystPrompt(input: string, context: string) {
+export function analystPrompt(
+  input: string,
+  context: string,
+  mode: keyof typeof MODES = "report",
+  layers: string[] = [],
+) {
+  const shape = MODES[mode] ?? MODES.report;
+  const layerRules = layers.map((layer) => LAYERS[layer]).filter(Boolean).join("\n\n");
   return `THE MOVE (as supplied by the reader):
 """
 ${input.slice(0, 4000)}
@@ -87,7 +170,15 @@ SITUATION reporting describes the wider events the move sits inside; it is not o
 RETRIEVED MATERIAL (real sources; cite them where you rely on them):
 ${context || "(nothing retrieved — say so in the confidence field and stay strictly within what the move itself states)"}
 
-Write the read. Fields:
+THIS IS READ AS: ${shape.label}.
+Its sections are: ${shape.sections}.
+Put those sections in "sections" as { "title", "body" } pairs, in that order, and set "mode" to "${mode}" and "layers" to ${JSON.stringify(layers)}.
+
+${layerRules}
+
+FIGURES RULE: any number you give — a budget, a contribution, a share — must come from the retrieved material and must be stated with its year and source inline, like "about €400m in 2025 (IAEA programme and budget)". If no figure was retrieved, write "no current figure retrieved". Never estimate, never recall a figure from training.
+
+Fields:
 - move: what was actually announced or argued, by whom, with what authority, in 2-4 plain sentences. No adjectives.
 - why_now: the logic of this timing. Do NOT restate what the "move" field already established; start from the purpose the decision serves. What problem does it solve for the actor this week? 3-5 sentences.
 - stakes: 2-5 actors. For each: what they gain and what they lose, concretely.
@@ -110,6 +201,9 @@ Return ONLY a JSON object with EXACTLY these keys, all present:
   "watch": [{ "signal": string, "when": string }],
   "falsifier": string,
   "questions": [string],
+  "mode": "report" | "document" | "institution" | "signal",
+  "layers": [string],
+  "sections": [{ "title": string, "body": string }],
   "confidence": "documented" | "inferred" | "speculative"
 }
 No markdown, no commentary, no code fences.`;
@@ -138,6 +232,33 @@ async function wiki(term: string): Promise<WikiHit | null> {
   }
 }
 
+/** The full article, not the summary: funding and governance live in the body. */
+async function wikiBody(term: string): Promise<string> {
+  try {
+    const response = await fetch(
+      `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&explaintext=1&redirects=1&titles=${encodeURIComponent(term)}`,
+      { headers: { "User-Agent": "ThreadwiseAnalyst/1.0 (+https://threadwise.app)" }, signal: AbortSignal.timeout(9000) },
+    );
+    if (!response.ok) return "";
+    const data = (await response.json()) as { query?: { pages?: Record<string, { extract?: string }> } };
+    const pages = data.query?.pages ?? {};
+    const first = Object.values(pages)[0];
+    return first?.extract?.slice(0, 40_000) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+const MONEY = /(budget|contribution|contributor|donor|funding|funded|million|billion|€|\$|percent|share)/i;
+
+/** Sentences that actually carry figures about money. */
+function moneySentences(text: string, limit = 5): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .filter((line) => /\d/.test(line) && MONEY.test(line))
+    .slice(0, limit);
+}
+
 /** Names and institutions worth looking up: capitalised runs, minus the obvious noise. */
 export function candidateEntities(input: string): string[] {
   const stop = new Set(["The", "A", "An", "Breaking", "New", "This", "That", "It", "He", "She", "They", "We", "I"]);
@@ -150,7 +271,11 @@ export function candidateEntities(input: string): string[] {
   const covered = new Set(runs.flatMap((run) => run.split(" ")));
   const keepSingles = singles.filter((word) => !covered.has(word));
 
-  return [...new Set([...runs, ...keepSingles])].slice(0, 5);
+  // Longest names first: "International Atomic Energy Agency" beats "International".
+  const trimmed = runs.map((run) => run.replace(/^(The|A|An)\s+/, ""));
+  return [...new Set([...trimmed, ...keepSingles])]
+    .sort((a, b) => b.split(" ").length - a.split(" ").length || b.length - a.length)
+    .slice(0, 5);
 }
 
 type NewsHit = { title: string; date: string; outlet: string; url: string };
@@ -286,17 +411,80 @@ function freshness(hits: { date: string }[]): number {
 }
 
 export async function analyseMove(input: string): Promise<AnalystReport> {
-  const { context, sources } = await retrieveContext(input);
+  // Classify and retrieve at the same time: they do not depend on each other.
+  const [decision, base, candidates] = await Promise.all([
+    classify(input),
+    retrieveContext(input),
+    nameSituation(input),
+  ]);
+  const { context, sources } = base;
 
-  // Second pass: the events underneath the move. Two candidate readings of the
-  // situation are searched, and whichever returns fresher reporting is used.
-  const candidates = await nameSituation(input);
+  // Two candidate readings of the situation are searched; fresher reporting wins.
   const searched = await Promise.all(candidates.map(async (candidate) => ({ candidate, hits: await news(candidate) })));
   const best = searched
     .map((entry) => ({ ...entry, score: freshness(entry.hits) }))
     .sort((a, b) => b.score - a.score)[0];
   const situation = best?.score ? best.candidate : "";
   const situationHits = best?.score ? best.hits : [];
+
+  // Layer evidence: money and mandate are searched, never remembered.
+  const institutionName = candidateEntities(input)[0] ?? "";
+  const layerQueries =
+    decision.layers.includes("institution")
+      ? [
+          "annual report programme and budget",
+          "largest contributors funding share",
+          "board of governors composition",
+        ]
+      : decision.layers.includes("state")
+        ? ["foreign policy strategy record"]
+        : decision.layers.includes("ownership")
+          ? ["ownership subsidiary parent company"]
+          : [];
+  const layerHits = institutionName
+    ? (await Promise.all(layerQueries.map((query) => news(`${institutionName} ${query}`)))).flat()
+    : [];
+  void layerHits.length;
+  const layerList = layerHits
+    .slice(0, 6)
+    .map((hit) => `[${hit.date}] ${hit.outlet}: ${hit.title} (${hit.url})`)
+    .join("\n");
+
+  // Figures live inside documents, never in headlines: read the two newest.
+  const excerpts: string[] = [];
+  // Encyclopedia bodies carry the funding tables that news headlines omit.
+  if ((decision.layers.includes("institution") || decision.layers.includes("ownership")) && institutionName) {
+    const body = await wikiBody(institutionName);
+    const money = moneySentences(body, 5);
+    if (process.env["ANALYST_DEBUG"]) console.log("[analyst] ref", institutionName, body.length, money.length);
+    if (money.length) excerpts.push(`FROM THE REFERENCE ENTRY ON ${institutionName}: ${money.join(" ").slice(0, 1200)}`);
+  }
+
+  if (decision.layers.includes("institution") || decision.layers.includes("ownership")) {
+    const { fetchArticleText } = await import("@/lib/threadwise/news-agent");
+    const picks = layerHits.slice(0, 2);
+    const texts = await Promise.all(
+      picks.map(async (hit) => {
+        try {
+          return { hit, text: await fetchArticleText(hit.url) };
+        } catch {
+          return null;
+        }
+      }),
+    );
+    for (const entry of texts) {
+      if (!entry?.text) continue;
+      const numbers = entry.text
+        .split(/(?<=[.!?])\s+/)
+        .filter((line) => /\d/.test(line) && /(budget|contribution|donor|fund|million|billion|%|share|euro|dollar)/i.test(line))
+        .slice(0, 4)
+        .join(" ");
+      if (numbers) excerpts.push(`FROM ${entry.hit.outlet} (${entry.hit.date}): ${numbers.slice(0, 900)}`);
+    }
+  }
+
+  const layerContext = [layerList, ...excerpts].filter(Boolean).join("\n\n");
+
   const situationContext = situationHits
     .slice(0, 6)
     .map((hit) => `[${hit.date}] ${hit.outlet}: ${hit.title} (${hit.url})`)
@@ -305,15 +493,25 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     title: `Situation · ${hit.outlet} · ${hit.date}`,
     url: hit.url,
   }));
+  const layerSources = layerHits.slice(0, 3).map((hit) => ({
+    title: `Layer · ${hit.outlet} · ${hit.date}`,
+    url: hit.url,
+  }));
 
   const { text } = await generateText({
     model: getModel("deepseek"),
     system: METHOD,
     prompt: analystPrompt(
       input,
-      [situationContext ? `SITUATION — ${situation}, as reported:\n${situationContext}` : "", context]
+      [
+        situationContext ? `SITUATION — ${situation}, as reported:\n${situationContext}` : "",
+        layerContext ? `ON THE ACTORS — money, mandate and ownership, as reported:\n${layerContext}` : "",
+        context,
+      ]
         .filter(Boolean)
         .join("\n\n"),
+      decision.mode,
+      decision.layers,
     ),
     temperature: 0.3,
     maxOutputTokens: 3200,
@@ -344,9 +542,11 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
 
   return {
     ...parsed.data,
+    mode: parsed.data.mode ?? decision.mode,
+    layers: parsed.data.layers?.length ? parsed.data.layers : decision.layers,
     confidence,
     basis,
-    sources: [...sources, ...situationSources],
+    sources: [...sources, ...situationSources, ...layerSources],
   };
 }
 
