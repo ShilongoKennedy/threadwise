@@ -1,3 +1,4 @@
+import { serverEnv } from "@/lib/threadwise/env.server";
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/api/check-watch")({
         const startedAt = Date.now();
 
         const token = request.headers.get("Authorization")?.replace(/^Bearer /, "");
-        const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+        const url = serverEnv("SUPABASE_URL");
         const key =
           process.env["SUPABASE_PUBLISHABLE_KEY"] ??
           process.env["VITE_SUPABASE_PUBLISHABLE_KEY"];

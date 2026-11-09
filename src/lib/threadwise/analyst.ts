@@ -1,3 +1,4 @@
+import { serverEnv } from "./env.server";
 /**
  * The Analyst — server only.
  *
@@ -722,7 +723,7 @@ Answer as the same analyst. Rules:
 
 /** Saves a read and returns its token. Best-effort: a read still works unsaved. */
 export async function saveRead(input: string, report: AnalystReport, jwt?: string): Promise<string | null> {
-  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const url = serverEnv("SUPABASE_URL");
   const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !key) return null;
 
@@ -758,7 +759,7 @@ export async function saveRead(input: string, report: AnalystReport, jwt?: strin
 }
 
 export async function loadRead(token: string): Promise<{ input: string; report: AnalystReport; at: string | null } | null> {
-  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const url = serverEnv("SUPABASE_URL");
   const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !key || !/^[a-z0-9]{6,20}$/.test(token)) return null;
 
@@ -797,7 +798,7 @@ export async function watchSignals(
   token: string,
   jwt: string,
 ): Promise<{ created: number }> {
-  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const url = serverEnv("SUPABASE_URL");
   const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !serviceKey) throw new Error("Watches are not configured on the server.");
 
@@ -826,7 +827,7 @@ export async function watchSignals(
 
 /** The reader's own recent reads, newest first. */
 export async function recentReads(jwt: string, limit = 8): Promise<{ token: string; input: string; at: string }[]> {
-  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const url = serverEnv("SUPABASE_URL");
   const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !key) return [];
 
@@ -861,7 +862,7 @@ export async function publishRead(
   publish: boolean,
   jwt: string,
 ): Promise<{ ok: boolean; error?: string }> {
-  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const url = serverEnv("SUPABASE_URL");
   const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !key) return { ok: false, error: "Publishing is not configured on the server." };
 
@@ -892,7 +893,7 @@ export async function publishRead(
 }
 
 export async function publicReads(limit = 12): Promise<{ token: string; input: string; at: string; falsifier: string }[]> {
-  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const url = serverEnv("SUPABASE_URL");
   const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !key) return [];
   const { createClient } = await import("@supabase/supabase-js");
@@ -1017,7 +1018,7 @@ JSON only: {"findings":[{"question_id":string,"stance":"for"|"against","note":st
 
 /** Every case, newest activity first. */
 export async function listCases(limit = 40): Promise<{ subject: string; reads: number; latest: string }[]> {
-  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const url = serverEnv("SUPABASE_URL");
   const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !key) return [];
   const { createClient } = await import("@supabase/supabase-js");
@@ -1044,7 +1045,7 @@ export async function listCases(limit = 40): Promise<{ subject: string; reads: n
 export async function caseReads(subject: string, limit = 20): Promise<
   { token: string; input: string; at: string; mode: string | null; falsifier: string }[]
 > {
-  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+  const url = serverEnv("SUPABASE_URL");
   const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !key) return [];
   const { createClient } = await import("@supabase/supabase-js");

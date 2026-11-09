@@ -1,3 +1,4 @@
+import { serverEnv } from "@/lib/threadwise/env.server";
 import { createClient } from "@supabase/supabase-js";
 import { convertToModelMessages, streamText, validateUIMessages, generateText, type UIMessage } from "ai";
 import { z } from "zod";
@@ -28,7 +29,7 @@ const inputSchema = z.object({
 export async function handleThreadwise(request: Request) {
   try {
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"] || process.env["SUPABASE_ANON_KEY"] || process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || process.env["VITE_SUPABASE_ANON_KEY"];
-    const url = process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"];
+    const url = serverEnv("SUPABASE_URL");
     const host = new URL(request.url).hostname;
     const isLoopback = host === "localhost" || host === "127.0.0.1" || host === "::1";
     const allowLocalTest = process.env["ALLOW_LOCAL_AI_UNAUTHENTICATED"] === "true" && isLoopback && !process.env["VERCEL"];

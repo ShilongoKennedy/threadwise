@@ -1,3 +1,4 @@
+import { serverEnv } from "./env.server";
 import type {} from "@tanstack/react-router";
 
 const json = (body: unknown, status: number) =>
@@ -16,7 +17,7 @@ const secret = process.env["CRON_SECRET"];
 if (!secret) return json({ error: "CRON_SECRET is not configured on the server." }, 503);
 if (request.headers.get("x-cron-secret") !== secret) return json({ error: "Unauthorized." }, 401);
 
-const supabaseUrl = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+const supabaseUrl = serverEnv("SUPABASE_URL");
 const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
 if (!supabaseUrl || !serviceKey) return json({ error: "Supabase service credentials are missing." }, 503);
 
