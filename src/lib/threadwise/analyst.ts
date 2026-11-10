@@ -330,11 +330,29 @@ export function distinctiveTerms(input: string): string[] {
   return [...new Set([...named, ...phrases, ...years])].slice(0, 6);
 }
 
+const PLACES = new Set([
+  "kenya","nairobi","mombasa","kisumu","namibia","windhoek","omaheke","swakopmund","nigeria",
+  "lagos","abuja","kano","south","africa","johannesburg","cape","town","pretoria","durban",
+  "ghana","accra","uganda","kampala","tanzania","dar","salaam","dodoma","britain","london",
+  "westminster","india","delhi","mumbai","brazil","sao","paulo","united","kingdom","states",
+]);
+
+/**
+ * How strongly a headline is actually about the move:
+ * 2 = it names the specific thing (an act, a person, an institution),
+ * 1 = it only names the place, 0 = neither.
+ */
+export function matchStrength(title: string, terms: string[]): number {
+  if (!terms.length) return 2;
+  const haystack = title.toLowerCase();
+  const matched = terms.filter((term) => haystack.includes(term));
+  if (!matched.length) return 0;
+  return matched.some((term) => !PLACES.has(term)) ? 2 : 1;
+}
+
 /** A hit is on topic only if its headline names something the move names. */
 export function mentionsTerm(title: string, terms: string[]): boolean {
-  if (!terms.length) return true;
-  const haystack = title.toLowerCase();
-  return terms.some((term) => haystack.includes(term));
+  return matchStrength(title, terms) > 0;
 }
 
 export function candidateEntities(input: string): string[] {
@@ -453,7 +471,10 @@ export async function retrieveContext(input: string): Promise<{ context: string;
     ]).then((batches) => batches.flat()),
     Promise.all(entities.slice(0, 3).map((entity) => wiki(entity))),
   ]);
-  const hits = rawHits.filter((hit) => mentionsTerm(hit.title, terms));
+  const strong = rawHits.filter((hit) => matchStrength(hit.title, terms) === 2);
+  const related = rawHits.filter((hit) => matchStrength(hit.title, terms) === 1);
+  // Only specifics count as evidence; place-only coverage is related, not proof.
+  const hits = strong.length ? strong : related.slice(0, 3);
   const background = articles.filter((hit): hit is WikiHit => hit !== null);
 
   const reporting = hits
@@ -491,7 +512,7 @@ export async function retrieveContext(input: string): Promise<{ context: string;
 
   const sources = [
     ...cited.map((hit) => ({
-      title: `${hit.outlet} · ${hit.date ? `${hit.date} · ` : ""}${hit.title.slice(0, 80)}`,
+      title: `${strong.length ? "" : "Related · "}${hit.outlet} · ${hit.date ? `${hit.date} · ` : ""}${hit.title.slice(0, 80)}`,
       url: hit.url,
     })),
     ...background.slice(0, 2).map((hit) => ({ title: `Background · ${hit.title}`, url: hit.url })),
@@ -562,7 +583,9 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
   // ruling. A hit must also name something the move names.
   const anchors = distinctiveTerms(input);
   const onTopic = (title: string) => mentionsTerm(title, anchors);
-  const situationHits = best?.score ? best.hits.filter((hit) => onTopic(hit.title)) : [];
+  const situationHits = best?.score
+    ? best.hits.filter((hit) => matchStrength(hit.title, anchors) === 2)
+    : [];
 
   // Layer evidence: money and mandate are searched, never remembered.
   const institutionName = candidateEntities(input)[0] ?? "";
