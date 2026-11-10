@@ -895,9 +895,9 @@ export async function retrieveContext(input: string): Promise<{
     )
     .slice(0, 2);
   const articleReads = await bounded(
-    Promise.all(readable.slice(0, 2).map((hit) => readArticle(hit))),
+    Promise.all(readable.slice(0, 1).map((hit) => readArticle(hit))),
     [],
-    15_000,
+    12_000,
   );
   const articleContext = readable
     .map((hit, index) => {
