@@ -276,6 +276,8 @@ function SharedRead() {
 
             <FileFinding token={token} note={report.falsifier} />
 
+            <OpenQuestions questions={report.questions ?? []} />
+
             <RedTeam report={report} />
 
             {report.sources.length > 0 && (
@@ -858,9 +860,89 @@ function FileFinding({ token, note }: { token: string; note: string }) {
 }
 
 
+/** Questions this read opens, one click from becoming standing questions. */
+function OpenQuestions({ questions }: { questions: string[] }) {
+  const list = [...new Set(questions)].slice(0, 3);
+  const [state, setState] = useState<Record<string, "adding" | "added" | "error">>({});
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.auth.getSession();
+      if (alive) setSignedIn(Boolean(data.session));
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (!list.length) return null;
+
+  const add = async (question: string) => {
+    setState((current) => ({ ...current, [question]: "adding" }));
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        setSignedIn(false);
+        setState((current) => ({ ...current, [question]: "error" }));
+        return;
+      }
+      const { error } = await supabase.from("analyst_questions").insert({ question });
+      setState((current) => ({ ...current, [question]: error ? "error" : "added" }));
+    } catch {
+      setState((current) => ({ ...current, [question]: "error" }));
+    }
+  };
+
+  return (
+    <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
+      <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+          Questions this read opens
+        </span>
+        <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">
+          questions →
+        </Link>
+      </div>
+      <ul className="divide-y divide-[#1A1A1A]/10">
+        {list.map((question) => (
+          <li key={question} className="flex items-start justify-between gap-3 px-4 py-3">
+            <p className="font-serif text-[14px] leading-snug text-[#1A1A1A]/85">{question}</p>
+            <button
+              type="button"
+              disabled={state[question] === "adding" || state[question] === "added"}
+              onClick={() => void add(question)}
+              className="shrink-0 border border-[#1A1A1A]/25 px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/60 transition-colors hover:border-[#1A1A1A] hover:text-[#1A1A1A] disabled:opacity-40"
+            >
+              {state[question] === "added"
+                ? "Added"
+                : state[question] === "adding"
+                  ? "Adding…"
+                  : state[question] === "error"
+                    ? "Retry"
+                    : "Add"}
+            </button>
+          </li>
+        ))}
+      </ul>
+      {signedIn === false && (
+        <p className="px-4 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+          Sign in to keep these questions.
+        </p>
+      )}
+    </section>
+  );
+}
+
+
 /** What this read adds to the reader's open questions, proposed by the analyst. */
 function Proposals({ report, token }: { report: Report; token: string }) {
-  const [items, setItems] = useState<{ question_id: string; question: string; stance: "for" | "against"; note: string }[]>([]);
+  const [items, setItems] = useState<
+    { question_id: string; question: string; stance: "for" | "against"; claim?: string; note: string }[]
+  >([]);
   const [filed, setFiled] = useState(false);
 
   useEffect(() => {
@@ -879,7 +961,14 @@ function Proposals({ report, token }: { report: Report; token: string }) {
         body: JSON.stringify({ report, questions }),
       });
       if (!response.ok) return;
-      const body = (await response.json()) as { findings?: { question_id: string; stance: "for" | "against"; note: string }[] };
+      const body = (await response.json()) as {
+        findings?: {
+          question_id: string;
+          stance: "for" | "against";
+          claim?: string;
+          note: string;
+        }[];
+      };
       if (!alive || !body.findings?.length) return;
       setItems(
         body.findings.map((finding) => ({
@@ -900,7 +989,12 @@ function Proposals({ report, token }: { report: Report; token: string }) {
     const questionIds = [...new Set(items.map((item) => item.question_id))];
     await supabase.from("analyst_findings").delete().eq("read_token", token).in("question_id", questionIds);
     await supabase.from("analyst_findings").insert(
-      items.map((item) => ({ question_id: item.question_id, read_token: token, stance: item.stance, note: item.note })),
+      items.map((item) => ({
+        question_id: item.question_id,
+        read_token: token,
+        stance: item.stance,
+        note: (item.claim ? `${item.claim} — ${item.note}` : item.note).slice(0, 400),
+      })),
     );
     setFiled(true);
   };
@@ -919,6 +1013,11 @@ function Proposals({ report, token }: { report: Report; token: string }) {
         {items.map((item) => (
           <li key={`${item.question_id}-${item.note.slice(0, 12)}`} className="px-4 py-3">
             <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">{item.question}</p>
+            {item.claim ? (
+              <p className="mt-1 border-l-2 border-[#1A4BFF] pl-2 font-serif text-[13px] leading-snug text-[#1A1A1A]/65">
+                “{item.claim}”
+              </p>
+            ) : null}
             <p className="mt-1 font-serif text-[14px] leading-snug">
               <span className={`mr-1.5 font-mono text-[9px] uppercase tracking-[0.14em] ${item.stance === "for" ? "text-[#1A4BFF]" : "text-[#C1121F]"}`}>
                 {item.stance}

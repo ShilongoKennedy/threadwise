@@ -1948,7 +1948,12 @@ Your job is to stress-test that position, hard but fairly. Return JSON only:
 }
 
 
-export type FindingProposal = { question_id: string; stance: "for" | "against"; note: string };
+export type FindingProposal = {
+  question_id: string;
+  stance: "for" | "against";
+  claim: string;
+  note: string;
+};
 
 /** Which of the reader's open questions this read actually bears on, and how. */
 export async function proposeFindings(
@@ -1957,23 +1962,36 @@ export async function proposeFindings(
 ): Promise<FindingProposal[]> {
   if (!questions.length) return [];
 
+  const claimList = (report.claims ?? [])
+    .map(
+      (claim, index) =>
+        `${index + 1}. [${claim.kind}/${claim.confidence}] ${claim.text} (source: ${
+          claim.source || "none"
+        })`,
+    )
+    .join("\n");
+
   const { text } = await generateText({
     model: getModel("deepseek"),
     system: METHOD,
     prompt: `THE READ:
 ${JSON.stringify(report).slice(0, 6000)}
 
+THE READ'S CLAIMS:
+${claimList || "(no structured claims)"}
+
 THE READER'S OPEN QUESTIONS:
 ${questions.map((question) => `- ${question.id}: ${question.question}`).join("\n")}
 
 For each question this read genuinely bears on, return one entry. Be strict: most reads bear on none.
-JSON only: {"findings":[{"question_id":string,"stance":"for"|"against","note":string}]}
+JSON only: {"findings":[{"question_id":string,"stance":"for"|"against","claim":string,"note":string}]}
 
-- stance: "for" if the read is evidence toward a yes, "against" if toward a no.
-- note: ONE sentence, under 30 words, carrying the date and the specific fact. "The IAEA objection (11 Nov 2026) delays the licence, not the ownership." No hedging, no restating the question.
+- stance: "for" if the claim is evidence toward a yes, "against" if toward a no.
+- claim: copy one claim from the list above verbatim, max 25 words. If no listed claim bears on the question, omit the question.
+- note: ONE sentence, under 30 words, saying what that claim does to the question. Carry the date or figure. No hedging, no restating the question.
 - If nothing bears on a question, omit it entirely. Never invent relevance.`,
     temperature: 0.2,
-    maxOutputTokens: 700,
+    maxOutputTokens: 800,
     maxRetries: 0,
   });
 
@@ -1984,6 +2002,7 @@ JSON only: {"findings":[{"question_id":string,"stance":"for"|"against","note":st
           z.object({
             question_id: z.string(),
             stance: z.enum(["for", "against"]).catch("for"),
+            claim: z.string().trim().max(300).catch(""),
             note: z.string().trim().max(300),
           }),
         )
@@ -1993,7 +2012,9 @@ JSON only: {"findings":[{"question_id":string,"stance":"for"|"against","note":st
 
   if (!parsed.success) return [];
   const known = new Set(questions.map((question) => question.id));
-  return parsed.data.findings.filter((finding) => known.has(finding.question_id)).slice(0, 3);
+  return parsed.data.findings
+    .filter((finding) => known.has(finding.question_id))
+    .slice(0, 3);
 }
 
 

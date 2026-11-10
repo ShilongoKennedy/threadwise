@@ -126,6 +126,23 @@ function QuestionsPage() {
                         {forCount} for · {againstCount} against
                         {mine.length >= 4 ? (forCount > againstCount ? " · leaning yes" : forCount < againstCount ? " · leaning no" : " · balanced") : ""}
                       </p>
+                      {mine.length === 0 ? (
+                        <p className="mt-2 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/50">
+                          No evidence filed yet. A read that bears on this will file it here.
+                        </p>
+                      ) : (
+                        <p className="mt-2 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/55">
+                          Last filed{" "}
+                          {new Date(mine[0]!.created_at).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                          })}
+                          .
+                          {mine.length >= 3 && (forCount === 0 || againstCount === 0)
+                            ? " All the evidence is one way — that is a warning sign, not a conclusion. Ask what the strongest case against it is."
+                            : ""}
+                        </p>
+                      )}
                     </div>
                     <div className="grid grid-cols-1 divide-y divide-[#1A1A1A]/10 md:grid-cols-2 md:divide-x md:divide-y-0">
                       {(["for", "against"] as const).map((side) => (
