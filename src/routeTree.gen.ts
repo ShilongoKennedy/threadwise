@@ -26,6 +26,7 @@ import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
 import { Route as ApiCasesRouteImport } from './routes/api/cases'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
+import { Route as ApiModelHealthRouteImport } from './routes/api/model-health'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
 import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
@@ -121,6 +122,11 @@ const ApiCheckWatchesRoute = ApiCheckWatchesRouteImport.update({
   path: '/api/check-watches',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiModelHealthRoute = ApiModelHealthRouteImport.update({
+  id: '/api/model-health',
+  path: '/api/model-health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiNewsBriefRoute = ApiNewsBriefRouteImport.update({
   id: '/api/news-brief',
   path: '/api/news-brief',
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
+  '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
+  '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
+  '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
@@ -272,6 +281,7 @@ export interface FileRouteTypes {
     | '/api/cases'
     | '/api/check-watch'
     | '/api/check-watches'
+    | '/api/model-health'
     | '/api/news-brief'
     | '/api/publish-read'
     | '/api/reads-public'
@@ -300,6 +310,7 @@ export interface FileRouteTypes {
     | '/api/cases'
     | '/api/check-watch'
     | '/api/check-watches'
+    | '/api/model-health'
     | '/api/news-brief'
     | '/api/publish-read'
     | '/api/reads-public'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/api/cases'
     | '/api/check-watch'
     | '/api/check-watches'
+    | '/api/model-health'
     | '/api/news-brief'
     | '/api/publish-read'
     | '/api/reads-public'
@@ -357,6 +369,7 @@ export interface RootRouteChildren {
   ApiCasesRoute: typeof ApiCasesRoute
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiCheckWatchesRoute: typeof ApiCheckWatchesRoute
+  ApiModelHealthRoute: typeof ApiModelHealthRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiPublishReadRoute: typeof ApiPublishReadRoute
   ApiReadsPublicRoute: typeof ApiReadsPublicRoute
@@ -489,6 +502,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCheckWatchesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/model-health': {
+      id: '/api/model-health'
+      path: '/api/model-health'
+      fullPath: '/api/model-health'
+      preLoaderRoute: typeof ApiModelHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/news-brief': {
       id: '/api/news-brief'
       path: '/api/news-brief'
@@ -573,6 +593,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCasesRoute: ApiCasesRoute,
   ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiCheckWatchesRoute: ApiCheckWatchesRoute,
+  ApiModelHealthRoute: ApiModelHealthRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiPublishReadRoute: ApiPublishReadRoute,
   ApiReadsPublicRoute: ApiReadsPublicRoute,

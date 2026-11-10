@@ -20,7 +20,7 @@ export function getModel(provider: "deepseek" | "gemini" | "openai" | "anthropic
       const apiKey = process.env["ANTHROPIC_API_KEY"];
       if (!apiKey) throw new Error("Anthropic API key is missing. Add ANTHROPIC_API_KEY to .env.");
       const anthropic = createAnthropic({ apiKey });
-      return anthropic(modelOverride || "claude-3-5-sonnet-20240620");
+      return anthropic(modelOverride || process.env["ANTHROPIC_MODEL"] || "claude-3-5-sonnet-latest");
     }
 
     case "openai": {

@@ -1139,6 +1139,9 @@ function writerCandidates(): ModelChoice[] {
   if (process.env["OPENAI_API_KEY"]) {
     candidates.push({ model: getModel("openai", "gpt-6.1-sol"), label: "GPT-6.1 Sol" });
   }
+  if (process.env["ANTHROPIC_API_KEY"]) {
+    candidates.push({ model: getModel("anthropic"), label: "Claude" });
+  }
   return candidates;
 }
 
@@ -1162,6 +1165,9 @@ function reviewerCandidates(fast = false): ModelChoice[] {
   }
   if (process.env["DEEPSEEK_API_KEY"]) {
     candidates.push({ model: getModel("deepseek", "deepseek-reasoner"), label: "DeepSeek Reasoner" });
+  }
+  if (process.env["ANTHROPIC_API_KEY"]) {
+    candidates.push({ model: getModel("anthropic"), label: "Claude" });
   }
   if (process.env["GEMINI_API_KEY"] || process.env["GOOGLE_GENERATIVE_AI_API_KEY"]) {
     candidates.push({ model: getModel("gemini", "gemini-pro-latest"), label: "Gemini Pro" });
