@@ -128,7 +128,7 @@ function SharedRead() {
                 ) : null}
                 {at && (
                   <span className="ml-2 font-normal text-[#1A1A1A]/50">
-                    as of {new Date(at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                    · as of {new Date(at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                   </span>
                 )}
               </span>
