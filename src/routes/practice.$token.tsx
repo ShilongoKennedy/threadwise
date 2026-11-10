@@ -5,10 +5,12 @@ import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import {
   checkPractice,
   completeWeeklyDrill,
+  loadWeeklyDrill,
   recordPracticeAttempt,
   type PracticeKind,
 } from "@/lib/threadwise/practice";
 import { savePracticeAttempt } from "@/lib/threadwise/practice-sync";
+import { completeRemoteDrill } from "@/lib/threadwise/drill-sync";
 
 export const Route = createFileRoute("/practice/$token")({
   head: ({ params }) => ({
@@ -115,7 +117,11 @@ function PracticePage() {
       at: new Date().toISOString(),
     };
     recordPracticeAttempt(attempt);
-    completeWeeklyDrill(token, kind);
+    const completed = completeWeeklyDrill(token, kind);
+    if (completed) {
+      const drill = loadWeeklyDrill();
+      if (drill) void completeRemoteDrill(drill);
+    }
     void savePracticeAttempt(attempt);
   }, [revealed, checks, report, kind, token]);
 

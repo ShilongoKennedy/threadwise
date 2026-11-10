@@ -372,3 +372,13 @@ export function chooseDrill(
     reason,
   };
 }
+
+/** One completion per week; the account copy wins when both exist. */
+export function mergeDrillHistory(
+  local: DrillCompletion[],
+  remote: DrillCompletion[],
+): DrillCompletion[] {
+  const byWeek = new Map<string, DrillCompletion>();
+  for (const item of [...local, ...remote]) byWeek.set(item.week, item);
+  return [...byWeek.values()].sort((a, b) => a.week.localeCompare(b.week));
+}

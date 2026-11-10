@@ -6,6 +6,7 @@ import {
   loadDrillHistory,
   loadPracticeAttempts,
   loadWeeklyDrill,
+  mergeDrillHistory,
   mergePracticeAttempts,
   namedEntities,
   practiceSummary,
@@ -237,5 +238,21 @@ describe("drill completion", () => {
       history,
     );
     expect(drill?.reason).toContain("completed last week's drill");
+  });
+});
+
+describe("mergeDrillHistory", () => {
+  it("keeps one completion per week and prefers the account copy", () => {
+    const merged = mergeDrillHistory(
+      [
+        { week: "2026-W45", kind: "falsifier", token: "read-a", completedAt: "2026-11-02T10:00:00Z" },
+        { week: "2026-W46", kind: "falsifier", token: "read-b", completedAt: "2026-11-09T10:00:00Z" },
+      ],
+      [
+        { week: "2026-W46", kind: "steelman", token: "read-b", completedAt: "2026-11-10T10:00:00Z" },
+      ],
+    );
+    expect(merged).toHaveLength(2);
+    expect(merged.find((item) => item.week === "2026-W46")?.kind).toBe("steelman");
   });
 });

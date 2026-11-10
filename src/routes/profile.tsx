@@ -8,6 +8,7 @@ import {
   loadDrillHistory,
   loadPracticeAttempts,
   loadWeeklyDrill,
+  mergeDrillHistory,
   mergePracticeAttempts,
   practiceSummary,
   saveWeeklyDrill,
@@ -18,7 +19,16 @@ import {
   type PracticeAttempt,
   type PracticeSummary,
 } from "@/lib/threadwise/practice";
-import { loadRemotePractice } from "@/lib/threadwise/practice-sync";
+import {
+  loadRemotePractice,
+  syncMissingPracticeAttempts,
+} from "@/lib/threadwise/practice-sync";
+import {
+  completeRemoteDrill,
+  loadRemoteDrillState,
+  saveRemoteDrill,
+  syncMissingDrillHistory,
+} from "@/lib/threadwise/drill-sync";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -89,9 +99,12 @@ function ProfilePage() {
       const local = loadPracticeAttempts();
       const remote = await loadRemotePractice();
       if (!alive) return;
-      const merged = mergePracticeAttempts(local, remote);
+      const merged = mergePracticeAttempts(local, remote.attempts);
       setAttempts(merged);
       setPractice(practiceSummary(merged));
+      if (!remote.pending) {
+        void syncMissingPracticeAttempts(local, remote.attempts);
+      }
     })();
     return () => {
       alive = false;
@@ -100,17 +113,55 @@ function ProfilePage() {
 
   useEffect(() => {
     if (!practice || !reads.length) return;
-    const stored = loadWeeklyDrill();
-    const history = loadDrillHistory();
-    const current = weekKey();
-    setDrillHistory(history);
-    if (stored?.week === current) {
-      setDrill(stored);
-      return;
-    }
-    const chosen = chooseDrill(practice, attempts, reads, new Date(), history);
-    setDrill(chosen);
-    if (chosen) saveWeeklyDrill(chosen);
+    let alive = true;
+    void (async () => {
+      const current = weekKey();
+      const localDrill = loadWeeklyDrill();
+      const localHistory = loadDrillHistory();
+      const remote = await loadRemoteDrillState(current);
+      if (!alive) return;
+
+      const history = mergeDrillHistory(localHistory, remote.history);
+      setDrillHistory(history);
+      if (!remote.pending) {
+        void syncMissingDrillHistory(
+          localHistory.filter((item) => item.week !== current),
+          remote.history,
+        );
+      }
+
+      if (remote.drill) {
+        const merged = { ...remote.drill };
+        if (
+          localDrill?.week === current &&
+          localDrill.completedAt &&
+          !merged.completedAt
+        ) {
+          merged.completedAt = localDrill.completedAt;
+          void completeRemoteDrill(merged);
+        }
+        setDrill(merged);
+        saveWeeklyDrill(merged);
+        return;
+      }
+
+      if (localDrill?.week === current) {
+        setDrill(localDrill);
+        if (localDrill.completedAt) void completeRemoteDrill(localDrill);
+        else void saveRemoteDrill(localDrill);
+        return;
+      }
+
+      const chosen = chooseDrill(practice, attempts, reads, new Date(), history);
+      setDrill(chosen);
+      if (chosen) {
+        saveWeeklyDrill(chosen);
+        void saveRemoteDrill(chosen);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
   }, [practice, attempts, reads]);
 
   return (

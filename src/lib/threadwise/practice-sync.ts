@@ -25,18 +25,25 @@ export async function savePracticeAttempt(attempt: PracticeAttempt): Promise<boo
   }
 }
 
-export async function loadRemotePractice(): Promise<PracticeAttempt[]> {
+export type RemotePracticeState = {
+  attempts: PracticeAttempt[];
+  pending: boolean;
+};
+
+export async function loadRemotePractice(): Promise<RemotePracticeState> {
+  const empty = { attempts: [], pending: true };
   const jwt = await accessToken();
-  if (!jwt) return [];
+  if (!jwt) return empty;
   try {
     const response = await fetch("/api/practice", {
       headers: { Authorization: `Bearer ${jwt}` },
       cache: "no-store",
     });
-    if (!response.ok) return [];
-    const body = (await response.json()) as { attempts?: unknown };
-    if (!Array.isArray(body.attempts)) return [];
-    return body.attempts.filter(
+    if (!response.ok) return empty;
+    const body = (await response.json()) as { attempts?: unknown; pending?: unknown };
+    if (!Array.isArray(body.attempts)) return empty;
+    return {
+      attempts: body.attempts.filter(
       (attempt): attempt is PracticeAttempt =>
         Boolean(attempt) &&
         typeof attempt === "object" &&
@@ -45,8 +52,29 @@ export async function loadRemotePractice(): Promise<PracticeAttempt[]> {
         typeof (attempt as PracticeAttempt).passed === "number" &&
         typeof (attempt as PracticeAttempt).total === "number" &&
         typeof (attempt as PracticeAttempt).at === "string",
-    );
+      ),
+      pending: Boolean(body.pending),
+    };
   } catch {
-    return [];
+    return empty;
   }
+}
+
+/**
+ * Pushes attempts made while signed out, or before the table existed, up to the
+ * account. Bounded per load so a profile visit cannot stampede the API.
+ */
+export async function syncMissingPracticeAttempts(
+  local: PracticeAttempt[],
+  remote: PracticeAttempt[],
+): Promise<number> {
+  const key = (attempt: PracticeAttempt) =>
+    `${attempt.token}|${attempt.kind}|${attempt.at}`;
+  const remoteKeys = new Set(remote.map(key));
+  const missing = local.filter((attempt) => !remoteKeys.has(key(attempt))).slice(0, 10);
+  let synced = 0;
+  for (const attempt of missing) {
+    if (await savePracticeAttempt(attempt)) synced += 1;
+  }
+  return synced;
 }
