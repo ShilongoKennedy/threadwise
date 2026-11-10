@@ -278,6 +278,11 @@ function SharedRead() {
 
             <OpenQuestions questions={report.questions ?? []} />
 
+            <Predictions
+              claims={report.claims ?? []}
+              sourceUrl={typeof window !== "undefined" ? window.location.href : undefined}
+            />
+
             <RedTeam report={report} />
 
             {report.sources.length > 0 && (
@@ -859,6 +864,110 @@ function FileFinding({ token, note }: { token: string; note: string }) {
   );
 }
 
+
+/** Predictions from the claim table, filed so the Digest can score them. */
+function Predictions({
+  claims,
+  sourceUrl,
+}: {
+  claims: NonNullable<Report["claims"]>;
+  sourceUrl?: string;
+}) {
+  const predictions = claims.filter((claim) => claim.kind === "prediction");
+  const defaultDue = new Date(Date.now() + 90 * 86_400_000).toISOString().slice(0, 10);
+  const [dates, setDates] = useState<Record<number, string>>({});
+  const [state, setState] = useState<Record<number, "saving" | "saved" | "error">>({});
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.auth.getSession();
+      if (alive) setSignedIn(Boolean(data.session));
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (!predictions.length) return null;
+
+  const file = async (index: number) => {
+    setState((current) => ({ ...current, [index]: "saving" }));
+    try {
+      const { addPrediction } = await import("@/lib/threadwise/watches");
+      await addPrediction({
+        claim: predictions[index]!.text,
+        dueDate: dates[index] ?? defaultDue,
+        confidence: predictions[index]!.confidence,
+        sourceUrl,
+      });
+      setState((current) => ({ ...current, [index]: "saved" }));
+    } catch {
+      setState((current) => ({ ...current, [index]: "error" }));
+    }
+  };
+
+  return (
+    <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
+      <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+          Predictions to score
+        </span>
+        <Link to="/digest" className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">
+          the record →
+        </Link>
+      </div>
+      <ul className="divide-y divide-[#1A1A1A]/10">
+        {predictions.map((claim, index) => (
+          <li key={`${claim.text.slice(0, 20)}-${index}`} className="px-4 py-3">
+            <p className="font-serif text-[14px] leading-snug text-[#1A1A1A]/85">{claim.text}</p>
+            {claim.falsifier ? (
+              <p className="mt-1 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/55">
+                Would be wrong if: {claim.falsifier}
+              </p>
+            ) : null}
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A4BFF]">
+                {claim.confidence} confidence
+              </span>
+              <input
+                type="date"
+                value={dates[index] ?? defaultDue}
+                onChange={(event) =>
+                  setDates((current) => ({ ...current, [index]: event.target.value }))
+                }
+                className="border border-[#1A1A1A]/20 bg-transparent px-2 py-1 font-mono text-[10px] outline-none"
+              />
+              <button
+                type="button"
+                disabled={
+                  signedIn === false || state[index] === "saving" || state[index] === "saved"
+                }
+                onClick={() => void file(index)}
+                className="border border-[#1A1A1A] px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7] disabled:opacity-40"
+              >
+                {state[index] === "saved"
+                  ? "Filed"
+                  : state[index] === "saving"
+                    ? "Filing…"
+                    : state[index] === "error"
+                      ? "Retry"
+                      : "File prediction"}
+              </button>
+              {signedIn === false && (
+                <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+                  Sign in to file
+                </span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 /** Questions this read opens, one click from becoming standing questions. */
 function OpenQuestions({ questions }: { questions: string[] }) {

@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { PredictionConfidence } from "./calibration";
 
 /**
  * A watch is a dated claim: something a report says will happen on a given day.
@@ -51,6 +52,46 @@ export async function addWatch(input: {
 /** Keeps an agent suggestion as one of your own claims. */
 export async function claimWatch(id: string): Promise<void> {
   const { error } = await supabase.rpc("claim_suggested_watch", { watch_id: id });
+  if (error) throw error;
+}
+
+/** Files a prediction from a read so the Digest can score it later. */
+export async function addPrediction(input: {
+  claim: string;
+  dueDate: string;
+  confidence: PredictionConfidence;
+  sourceUrl?: string;
+}): Promise<Watch> {
+  const claim = input.claim.trim();
+  if (!claim) throw new Error("A prediction needs a claim to score.");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.dueDate)) {
+    throw new Error("Pick the day this prediction should be scored.");
+  }
+
+  const { data, error } = await supabase
+    .from("claim_watches")
+    .insert({
+      claim,
+      due_date: input.dueDate,
+      source_url: input.sourceUrl?.trim() || null,
+      origin: `prediction:${input.confidence}`,
+    })
+    .select("id, claim, due_date, source_url, status, resolution, checked_at, scope, origin")
+    .single();
+  if (error) throw error;
+  return data as Watch;
+}
+
+/** Scores a prediction by hand when the agent cannot settle it from reporting. */
+export async function resolveWatch(
+  id: string,
+  status: "confirmed" | "contradicted",
+  note = "Scored by the owner",
+): Promise<void> {
+  const { error } = await supabase
+    .from("claim_watches")
+    .update({ status, resolution: note, checked_at: new Date().toISOString() })
+    .eq("id", id);
   if (error) throw error;
 }
 

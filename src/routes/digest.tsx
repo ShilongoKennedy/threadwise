@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { listWatches, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
+import { listWatches, resolveWatch, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
+import { calibrationStats, isPrediction, predictionConfidence } from "@/lib/threadwise/calibration";
 import { VerdictStamp } from "@/components/threadwise/VerdictStamp";
 
 export const Route = createFileRoute("/digest")({
@@ -254,6 +255,19 @@ function DigestPage() {
               ))}
             </section>
 
+            <CalibrationSection
+              watches={watches}
+              onResolved={(id, status) =>
+                setWatches((current) =>
+                  current.map((watch) =>
+                    watch.id === id
+                      ? { ...watch, status, checked_at: new Date().toISOString() }
+                      : watch,
+                  ),
+                )
+              }
+            />
+
             <section className="mt-4 flex flex-wrap items-end justify-between gap-3 border-2 border-[#1A1A1A] px-4 py-3">
               <div>
                 <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
@@ -402,5 +416,135 @@ function DigestPage() {
         )}
       </main>
     </div>
+  );
+}
+
+/** Prediction calibration: did "high confidence" actually mean high confidence? */
+function CalibrationSection({
+  watches,
+  onResolved,
+}: {
+  watches: Watch[];
+  onResolved: (id: string, status: "confirmed" | "contradicted") => void;
+}) {
+  const predictions = watches.filter((watch) => isPrediction(watch.origin));
+  const stats = calibrationStats(
+    predictions.map((watch) => ({
+      confidence: predictionConfidence(watch.origin)!,
+      status: watch.status,
+      origin: watch.origin,
+    })),
+  );
+  const open = predictions
+    .filter((watch) => watch.status === "pending")
+    .sort((a, b) => a.due_date.localeCompare(b.due_date))
+    .slice(0, 4);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const score = async (id: string, status: "confirmed" | "contradicted") => {
+    setBusy(id);
+    setError(null);
+    try {
+      await resolveWatch(id, status);
+      onResolved(id, status);
+    } catch {
+      setError("Could not score that prediction just now.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  if (!predictions.length) {
+    return (
+      <section className="mt-4 border-2 border-dashed border-[#1A1A1A]/25 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em]">
+            Calibration
+          </span>
+          <Link to="/reads" className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">
+            reads →
+          </Link>
+        </div>
+        <p className="mt-2 font-serif text-[13px] leading-snug text-[#1A1A1A]/60">
+          File a prediction from a read and this becomes a track record, not a mood.
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="mt-4 border-2 border-[#1A1A1A] bg-white">
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1A1A1A] px-3 py-1.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+          Calibration
+        </span>
+        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A4BFF]">
+          {stats.settled}/{stats.predictions} settled
+          {stats.brier !== null ? ` · Brier ${stats.brier.toFixed(2)}` : ""}
+        </span>
+      </div>
+      <div className="grid grid-cols-3 divide-x divide-[#1A1A1A]/10 border-b border-[#1A1A1A]/10">
+        {stats.buckets.map((bucket) => (
+          <div key={bucket.confidence} className="px-3 py-3">
+            <div className="font-mono text-[8px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
+              {bucket.confidence}
+            </div>
+            <div className="mt-1 font-display text-[22px] leading-none">
+              {bucket.accuracy === null ? "—" : `${Math.round(bucket.accuracy * 100)}%`}
+            </div>
+            <div className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+              {bucket.correct}/{bucket.settled} right
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {open.length > 0 ? (
+        <ul className="divide-y divide-[#1A1A1A]/10">
+          {open.map((watch) => (
+            <li key={watch.id} className="px-3 py-2.5">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <p className="font-serif text-[13.5px] leading-snug">{watch.claim}</p>
+                <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                  {watch.due_date}
+                </span>
+              </div>
+              <div className="mt-1.5 flex gap-2">
+                <button
+                  type="button"
+                  disabled={busy === watch.id}
+                  onClick={() => void score(watch.id, "confirmed")}
+                  className="border border-[#1A4BFF] px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] disabled:opacity-40"
+                >
+                  Confirmed
+                </button>
+                <button
+                  type="button"
+                  disabled={busy === watch.id}
+                  onClick={() => void score(watch.id, "contradicted")}
+                  className="border border-[#C1121F] px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#C1121F] disabled:opacity-40"
+                >
+                  Contradicted
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="px-3 py-2.5 font-serif text-[12.5px] text-[#1A1A1A]/55">
+          No open predictions.
+        </p>
+      )}
+
+      {error && (
+        <p className="px-3 pb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#C1121F]">
+          {error}
+        </p>
+      )}
+      <p className="border-t border-[#1A1A1A]/10 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+        Brier: lower is better · confidence maps to 80 / 55 / 30%
+      </p>
+    </section>
   );
 }
