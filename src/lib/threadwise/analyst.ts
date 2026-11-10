@@ -806,8 +806,18 @@ function writerCandidates(): ModelChoice[] {
 }
 
 /** A different family edits the read, so it is not marking its own homework. */
-function reviewerCandidates(): ModelChoice[] {
+function reviewerCandidates(fast = false): ModelChoice[] {
   const candidates: ModelChoice[] = [];
+  if (fast) {
+    if (process.env["OPENAI_API_KEY"]) {
+      candidates.push({ model: getModel("openai", "gpt-4o"), label: "GPT-4o" });
+    }
+    if (process.env["DEEPSEEK_API_KEY"]) {
+      candidates.push({ model: getModel("deepseek"), label: "DeepSeek" });
+    }
+    return candidates;
+  }
+
   if (process.env["OPENAI_API_KEY"]) {
     candidates.push({ model: getModel("openai", "gpt-6.1-sol"), label: "GPT-6.1 Sol" });
     candidates.push({ model: getModel("openai", "gpt-6-astra"), label: "GPT-6 Astra" });
@@ -831,6 +841,7 @@ async function reviewRead(
   draft: z.infer<typeof analystSchema>,
   evidence: string,
   move: string,
+  fast = false,
 ): Promise<ReadReview | null> {
   const material = evidence.trim().slice(0, 18_000);
   if (!material) return null;
@@ -873,7 +884,7 @@ Rules:
 - If the read says a fact is unknown or unretrieved, do not flag it.
 - The move is the input under analysis, not a retrieved source. Do not flag a claim that merely restates the move; flag only specific facts the read adds beyond the move and presents as retrieved.`;
 
-  for (const candidate of reviewerCandidates()) {
+  for (const candidate of reviewerCandidates(fast)) {
     try {
       const { text } = await generateText({
         model: candidate.model,
@@ -892,6 +903,7 @@ Rules:
 }
 
 export async function analyseMove(input: string): Promise<AnalystReport> {
+  const startedAt = Date.now();
   // Classify and retrieve at the same time: they do not depend on each other.
   const [decision, base, candidates] = await Promise.all([
     classify(input),
@@ -1055,7 +1067,14 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
   if (!parsedData) throw new Error("The analyst could not produce a usable read.");
 
   // A different model edits the draft against the material it was written from.
-  const review = await reviewRead(parsedData, evidenceContext, input);
+  // If the read has already been slow, use the fast editor to stay inside the
+  // serverless window.
+  const review = await reviewRead(
+    parsedData,
+    evidenceContext,
+    input,
+    Date.now() - startedAt > 40_000,
+  );
 
   // The confidence badge is derived from what was actually retrieved, then the
   // editor may lower it. A review can never raise it.
