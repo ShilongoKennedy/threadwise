@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import {
   checkPractice,
+  completeWeeklyDrill,
   recordPracticeAttempt,
   type PracticeKind,
 } from "@/lib/threadwise/practice";
@@ -114,6 +115,7 @@ function PracticePage() {
       at: new Date().toISOString(),
     };
     recordPracticeAttempt(attempt);
+    completeWeeklyDrill(token, kind);
     void savePracticeAttempt(attempt);
   }, [revealed, checks, report, kind, token]);
 

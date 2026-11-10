@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   checkPractice,
   chooseDrill,
+  completeWeeklyDrill,
+  loadDrillHistory,
   loadPracticeAttempts,
   loadWeeklyDrill,
   mergePracticeAttempts,
@@ -9,6 +11,7 @@ import {
   practiceSummary,
   recordPracticeAttempt,
   saveWeeklyDrill,
+  type DrillCompletion,
   weekKey,
   type PracticeAttempt,
 } from "./practice";
@@ -182,5 +185,57 @@ describe("weekly drill", () => {
     )!;
     saveWeeklyDrill(drill);
     expect(loadWeeklyDrill()?.week).toBe(drill.week);
+  });
+});
+
+describe("drill completion", () => {
+  const reads = [
+    { token: "read-a", input: "The IAEA raised concerns about Iran.", at: "2026-11-09T10:00:00Z" },
+    { token: "read-b", input: "The court ruled against the finance act.", at: "2026-11-08T10:00:00Z" },
+  ];
+
+  beforeEach(() => localStorage.clear());
+
+  it("marks the pinned drill done and records it in history", () => {
+    const drill = chooseDrill(
+      practiceSummary([]),
+      [],
+      reads,
+      new Date("2026-11-10T12:00:00Z"),
+    )!;
+    saveWeeklyDrill(drill);
+    expect(completeWeeklyDrill(drill.token, drill.kind)).toBe(true);
+    expect(loadWeeklyDrill()?.completedAt).toBeTruthy();
+    expect(loadDrillHistory()).toHaveLength(1);
+  });
+
+  it("does not complete a drill with a different read", () => {
+    const drill = chooseDrill(
+      practiceSummary([]),
+      [],
+      reads,
+      new Date("2026-11-10T12:00:00Z"),
+    )!;
+    saveWeeklyDrill(drill);
+    expect(completeWeeklyDrill("another-read", drill.kind)).toBe(false);
+  });
+
+  it("tells next week that the last drill was completed", () => {
+    const history: DrillCompletion[] = [
+      {
+        week: weekKey(new Date("2026-11-03T12:00:00Z")),
+        kind: "falsifier",
+        token: "read-a",
+        completedAt: "2026-11-04T12:00:00Z",
+      },
+    ];
+    const drill = chooseDrill(
+      practiceSummary([]),
+      [],
+      reads,
+      new Date("2026-11-10T12:00:00Z"),
+      history,
+    );
+    expect(drill?.reason).toContain("completed last week's drill");
   });
 });

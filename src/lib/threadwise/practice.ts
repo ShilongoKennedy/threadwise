@@ -231,9 +231,18 @@ export type Drill = {
   token: string;
   title: string;
   reason: string;
+  completedAt?: string;
+};
+
+export type DrillCompletion = {
+  week: string;
+  kind: PracticeKind;
+  token: string;
+  completedAt: string;
 };
 
 const DRILL_KEY = "threadwise:drill:v1";
+const HISTORY_KEY = "threadwise:drill-history:v1";
 
 /** ISO week, so the drill changes on Monday rather than on every profile load. */
 export function weekKey(date = new Date()): string {
@@ -274,12 +283,55 @@ export function saveWeeklyDrill(drill: Drill): void {
   }
 }
 
+export function loadDrillHistory(): DrillCompletion[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (item): item is DrillCompletion =>
+        Boolean(item) &&
+        typeof item === "object" &&
+        typeof (item as DrillCompletion).week === "string" &&
+        ["falsifier", "steelman", "teach"].includes((item as DrillCompletion).kind) &&
+        typeof (item as DrillCompletion).token === "string" &&
+        typeof (item as DrillCompletion).completedAt === "string",
+    );
+  } catch {
+    return [];
+  }
+}
+
+/** Marks the pinned drill done once the matching exercise has been compared. */
+export function completeWeeklyDrill(token: string, kind: PracticeKind): boolean {
+  const drill = loadWeeklyDrill();
+  if (!drill || drill.week !== weekKey() || drill.token !== token || drill.kind !== kind) {
+    return false;
+  }
+  if (drill.completedAt) return true;
+
+  const completedAt = new Date().toISOString();
+  saveWeeklyDrill({ ...drill, completedAt });
+  try {
+    const history = loadDrillHistory()
+      .filter((item) => item.week !== drill.week)
+      .slice(-51);
+    history.push({ week: drill.week, kind, token, completedAt });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch {
+    // The drill is still marked done even if history cannot be kept.
+  }
+  return true;
+}
+
 /** The weakest practiced exercise, applied to a read not yet drilled for it. */
 export function chooseDrill(
   summary: PracticeSummary,
   attempts: PracticeAttempt[],
   reads: DrillRead[],
   now = new Date(),
+  history: DrillCompletion[] = [],
 ): Drill | null {
   if (!reads.length) return null;
 
@@ -297,12 +349,20 @@ export function chooseDrill(
   );
   const read = reads.find((candidate) => !practiced.has(candidate.token)) ?? reads[0]!;
 
+  const lastCompleted = [...history].sort((a, b) =>
+    b.completedAt.localeCompare(a.completedAt),
+  )[0];
+  const completedPrefix =
+    lastCompleted && lastCompleted.week !== weekKey(now)
+      ? "You completed last week's drill. "
+      : "";
   const reason =
-    weakest?.trend === "slipping"
+    completedPrefix +
+    (weakest?.trend === "slipping"
       ? `Your ${label} is slipping (${weakest.deltaPct} points). This read needs that move.`
       : weakest
         ? `Your ${label} average is ${weakest.averagePct}% — the weakest of the exercises you have practiced.`
-        : "No practice recorded yet. Start with the falsifier: it is the move everything else depends on.";
+        : "No practice recorded yet. Start with the falsifier: it is the move everything else depends on.");
 
   return {
     week: weekKey(now),

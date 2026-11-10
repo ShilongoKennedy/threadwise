@@ -5,6 +5,7 @@ import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import type { ThinkingProfile } from "@/lib/threadwise/thinking-profile";
 import {
   chooseDrill,
+  loadDrillHistory,
   loadPracticeAttempts,
   loadWeeklyDrill,
   mergePracticeAttempts,
@@ -12,6 +13,7 @@ import {
   saveWeeklyDrill,
   weekKey,
   type Drill,
+  type DrillCompletion,
   type DrillRead,
   type PracticeAttempt,
   type PracticeSummary,
@@ -39,6 +41,7 @@ function ProfilePage() {
   const [attempts, setAttempts] = useState<PracticeAttempt[]>([]);
   const [reads, setReads] = useState<DrillRead[]>([]);
   const [drill, setDrill] = useState<Drill | null>(null);
+  const [drillHistory, setDrillHistory] = useState<DrillCompletion[]>([]);
 
   useEffect(() => {
     let alive = true;
@@ -98,12 +101,14 @@ function ProfilePage() {
   useEffect(() => {
     if (!practice || !reads.length) return;
     const stored = loadWeeklyDrill();
+    const history = loadDrillHistory();
     const current = weekKey();
+    setDrillHistory(history);
     if (stored?.week === current) {
       setDrill(stored);
       return;
     }
-    const chosen = chooseDrill(practice, attempts, reads);
+    const chosen = chooseDrill(practice, attempts, reads, new Date(), history);
     setDrill(chosen);
     if (chosen) saveWeeklyDrill(chosen);
   }, [practice, attempts, reads]);
@@ -202,8 +207,8 @@ function ProfilePage() {
                   <section className="mt-6 border-2 border-[#1A4BFF] bg-white">
                     <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1A4BFF] px-3 py-1.5">
                       <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-white">
-                        This week&rsquo;s drill ·{" "}
-                        {drill.kind === "teach" ? "teach-back" : drill.kind}
+                        {drill.completedAt ? "This week's drill · done" : "This week's drill"}{" "}
+                        · {drill.kind === "teach" ? "teach-back" : drill.kind}
                       </span>
                       <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-white/70">
                         {drill.week}
@@ -216,14 +221,21 @@ function ProfilePage() {
                       <p className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/60">
                         {drill.reason}
                       </p>
-                      <Link
-                        to="/practice/$token"
-                        params={{ token: drill.token }}
-                        search={{ kind: drill.kind }}
-                        className="mt-3 inline-flex border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]"
-                      >
-                        Start drill →
-                      </Link>
+                      <div className="mt-3 flex flex-wrap items-center gap-3">
+                        <Link
+                          to="/practice/$token"
+                          params={{ token: drill.token }}
+                          search={{ kind: drill.kind }}
+                          className="inline-flex border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]"
+                        >
+                          {drill.completedAt ? "Practice again →" : "Start drill →"}
+                        </Link>
+                        {drillHistory.length > 0 && (
+                          <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                            {drillHistory.length} drill{drillHistory.length === 1 ? "" : "s"} completed
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </section>
                 )}
