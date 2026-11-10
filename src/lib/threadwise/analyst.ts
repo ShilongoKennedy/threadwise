@@ -1243,7 +1243,7 @@ export async function publicReads(limit = 12): Promise<{ token: string; input: s
       token: row.token as string,
       input: (row.input as string).slice(0, 160),
       at: row.created_at as string,
-      falsifier: (report?.falsifier ?? "").slice(0, 200),
+      falsifier: report?.falsifier ?? "",
     };
   });
 }
@@ -1398,7 +1398,7 @@ export async function caseReads(subject: string, limit = 20): Promise<
       input: (row.input as string).slice(0, 180),
       at: row.created_at as string,
       mode: report?.mode ?? null,
-      falsifier: (report?.falsifier ?? "").slice(0, 220),
+      falsifier: report?.falsifier ?? "",
     };
   });
 }

@@ -82,7 +82,7 @@ function ReadsPage() {
                       {new Date(read.at).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
                     </span>
                   </div>
-                  <p className="mt-1.5 max-w-[62ch] border-l-2 border-[#C1121F] pl-3 font-serif text-[13.5px] leading-snug text-[#1A1A1A]/65">
+                  <p className="mt-1.5 line-clamp-3 max-w-[62ch] border-l-2 border-[#C1121F] pl-3 font-serif text-[13.5px] leading-snug text-[#1A1A1A]/65">
                     {read.falsifier}
                   </p>
                 </Link>

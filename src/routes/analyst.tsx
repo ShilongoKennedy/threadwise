@@ -442,8 +442,8 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         }
       />
 
-      <details className="mb-4 border-2 border-[#1A1A1A] px-3 py-2 xl:hidden">
-        <summary className="cursor-pointer font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+      <details className="mb-4 border-2 border-[#1A1A1A] px-3 xl:hidden">
+        <summary className="flex min-h-11 cursor-pointer items-center font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
           Contents
         </summary>
         <ul className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2">
@@ -534,9 +534,12 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
       <Section n={after(report, 2)} title="What to watch">
         <ul className="space-y-2">
           {report.watch.map((item) => (
-            <li key={item.signal} className="flex items-baseline justify-between gap-4 border-b border-[#1A1A1A]/10 pb-2">
+            <li
+              key={item.signal}
+              className="flex flex-col gap-1 border-b border-[#1A1A1A]/10 pb-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+            >
               <span className="text-[15px] leading-snug">{item.signal}</span>
-              <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">
+              <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55 sm:shrink-0 sm:text-right">
                 {item.when}
               </span>
             </li>
@@ -648,7 +651,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
             <button
               type="submit"
               disabled={asking || question.trim().length < 4}
-              className="shrink-0 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] disabled:opacity-40"
+              className="inline-flex min-h-11 shrink-0 items-center px-2 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] disabled:opacity-40"
             >
               Ask →
             </button>

@@ -5,9 +5,24 @@ import { BrandLockup } from "@/components/threadwise/BrandLockup";
 
 export const Route = createFileRoute("/read/$token")({
   // Rendered on the server so a shared link previews properly and never flashes.
+  // Client-side navigation (the analyst redirect) cannot read the database with
+  // the service key, so it asks the public read API instead.
   loader: async ({ params }) => {
-    const { loadRead } = await import("@/lib/threadwise/analyst");
-    return (await loadRead(params.token)) ?? null;
+    if (import.meta.env.SSR) {
+      const { loadRead } = await import("@/lib/threadwise/analyst");
+      return (await loadRead(params.token)) ?? null;
+    }
+
+    const response = await fetch(`/api/read/${encodeURIComponent(params.token)}`, {
+      cache: "no-store",
+    });
+    if (!response.ok) return null;
+    const body = (await response.json()) as {
+      input?: string;
+      report?: Report;
+      at?: string | null;
+    };
+    return body.report ? { input: body.input ?? "", report: body.report, at: body.at ?? null } : null;
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -40,6 +55,11 @@ type Report = {
   watch: { signal: string; when: string }[];
   falsifier: string;
   confidence: string;
+  basis?: string;
+  mode?: string;
+  layers?: string[];
+  sections?: { title: string; body: string }[];
+  questions?: string[];
   sources: { title: string; url: string }[];
 };
 
@@ -54,6 +74,17 @@ function SharedRead() {
   const [published, setPublished] = useState<boolean | null>(null);
   const [publishNote, setPublishNote] = useState<string | null>(null);
   const status = loaded ? "ready" : "missing";
+  const blocks = report ? buildBlocks(report) : [];
+  const sourceNumber = String(blocks.length + 1).padStart(2, "0");
+  const contents = report
+    ? [
+        ...blocks.map((block, index) => ({
+          n: String(index + 1).padStart(2, "0"),
+          title: block.title,
+        })),
+        ...(report.sources.length ? [{ n: sourceNumber, title: "What this rests on" }] : []),
+      ]
+    : [];
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
@@ -92,6 +123,9 @@ function SharedRead() {
             <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
               <span className="font-mono text-[9px] font-bold uppercase tracking-[0.26em]">
                 The read · {report.confidence}
+                {report.basis ? (
+                  <span className="font-normal text-[#1A1A1A]/50"> · {report.basis}</span>
+                ) : null}
                 {at && (
                   <span className="ml-2 font-normal text-[#1A1A1A]/50">
                     as of {new Date(at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
@@ -124,7 +158,7 @@ function SharedRead() {
                       }
                     })();
                   }}
-                  className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/55 underline underline-offset-4 hover:text-[#1A4BFF]"
+                  className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/55 underline underline-offset-4 hover:text-[#1A4BFF]"
                 >
                   {published ? "Published · unpublish" : "Publish to the index"}
                 </button>
@@ -156,7 +190,7 @@ function SharedRead() {
                       }
                     })();
                   }}
-                  className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4 disabled:opacity-40"
+                  className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4 disabled:opacity-40"
                 >
                   {busy ? "Re-reading…" : "Re-read with today's reporting"}
                 </button>
@@ -197,58 +231,42 @@ function SharedRead() {
               </div>
             )}
 
-            {[
-              ["01", "The move", report.move],
-              ["02", "Why now", report.why_now],
-              ["05", "What it changes downstream", report.second_order],
-              ["06", "The counter-reading", report.counter_reading],
-            ].map(([n, title, body]) => (
-              <section key={n as string}>
-                <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">{n} · {title}</p>
-                <p className="font-serif text-[16px] leading-[1.7] text-[#1A1A1A]/85">{body}</p>
-              </section>
+            <Contents items={contents} />
+
+            {blocks.map((block, index) => (
+              <Block
+                key={block.key}
+                n={contents[index]?.n ?? String(index + 1).padStart(2, "0")}
+                title={block.title}
+              >
+                {block.body}
+              </Block>
             ))}
-            <section>
-              <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">03 · Who gains, who pays</p>
-              <ul className="space-y-2">
-                {report.stakes.map((stake) => (
-                  <li key={stake.actor} className="border-l-2 border-[#1A1A1A] pl-3">
-                    <p className="font-display text-[15px]">{stake.actor}</p>
-                    <p className="text-[13.5px] text-[#1A1A1A]/75">gains · {stake.gains}</p>
-                    <p className="text-[13.5px] text-[#1A1A1A]/60">loses · {stake.loses}</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-            <section>
-              <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">07 · What would prove this wrong</p>
-              <p className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 font-serif text-[15px]">{report.falsifier}</p>
-            </section>
+
             <Proposals report={report} token={token} />
 
             <FileFinding token={token} note={report.falsifier} />
 
             <RedTeam report={report} />
 
-            <section>
-              <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
-                What this rests on
-              </p>
-              <ul className="space-y-1.5">
-                {report.sources.map((source) => (
-                  <li key={source.url}>
-                    <a
-                      href={source.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 hover:decoration-[#1A4BFF]"
-                    >
-                      {source.title} ↗
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            {report.sources.length > 0 && (
+              <Block n={sourceNumber} title="What this rests on">
+                <ul className="space-y-1.5">
+                  {report.sources.map((source) => (
+                    <li key={source.url}>
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 hover:decoration-[#1A4BFF]"
+                      >
+                        {source.title} ↗
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </Block>
+            )}
 
             <p className="border-t border-[#1A1A1A]/15 pt-3 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
               Produced by The Analyst · verify before you act
@@ -260,6 +278,182 @@ function SharedRead() {
   );
 }
 
+
+/** One numbered section of the document, with an anchor the index can hit. */
+function Block({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {
+  return (
+    <section
+      id={`s-${n}`}
+      className="scroll-mt-24 border-t border-[#1A1A1A]/15 pt-4 first:border-t-0 first:pt-0"
+    >
+      <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
+        {n} · {title}
+      </p>
+      <div className="font-serif text-[16px] leading-[1.7] text-[#1A1A1A]/85">{children}</div>
+    </section>
+  );
+}
+
+/** The document's contents: collapsible on a phone, fixed beside it on a desk. */
+function Contents({ items }: { items: { n: string; title: string }[] }) {
+  return (
+    <>
+      <details className="border-2 border-[#1A1A1A] px-3 xl:hidden">
+        <summary className="flex min-h-11 cursor-pointer items-center font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+          Contents
+        </summary>
+        <ol className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2">
+          {items.map((item) => (
+            <li key={item.n}>
+              <a
+                href={`#s-${item.n}`}
+                className="flex gap-1.5 font-mono text-[9px] uppercase leading-snug tracking-[0.1em] text-[#1A1A1A]/60"
+              >
+                <span className="shrink-0 text-[#1A4BFF]">{item.n}</span>
+                <span>{item.title}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </details>
+
+      <nav className="fixed left-4 top-28 hidden w-[150px] xl:block" aria-label="Sections">
+        <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/45">
+          Contents
+        </span>
+        <ol className="mt-2 space-y-1">
+          {items.map((item) => (
+            <li key={item.n}>
+              <a
+                href={`#s-${item.n}`}
+                className="flex gap-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/45 transition-colors hover:text-[#1A4BFF]"
+              >
+                <span className="text-[#1A4BFF]">{item.n}</span>
+                <span className="truncate">{item.title}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </>
+  );
+}
+
+/** The read's own sections when it has them, its narrative fields when it does not. */
+function buildBlocks(report: Report) {
+  const blocks: { key: string; title: string; body: React.ReactNode }[] = [];
+
+  if (report.sections?.length) {
+    report.sections.forEach((section, index) => {
+      blocks.push({
+        key: `section-${index}`,
+        title: section.title || "Untitled",
+        body: <p className="whitespace-pre-line">{section.body}</p>,
+      });
+    });
+  } else {
+    blocks.push({ key: "move", title: "The move", body: <p>{report.move}</p> });
+    blocks.push({ key: "why-now", title: "Why now", body: <p>{report.why_now}</p> });
+    blocks.push({
+      key: "downstream",
+      title: "What it changes downstream",
+      body: <p>{report.second_order}</p>,
+    });
+    blocks.push({
+      key: "counter",
+      title: "The counter-reading",
+      body: <p className="border-l-2 border-[#1A4BFF] pl-3">{report.counter_reading}</p>,
+    });
+  }
+
+  if (report.stakes.length) {
+    blocks.push({
+      key: "stakes",
+      title: "Who gains, who pays",
+      body: (
+        <ul className="space-y-3">
+          {report.stakes.map((stake) => (
+            <li key={stake.actor} className="border-l-2 border-[#1A1A1A] pl-3">
+              <p className="font-display text-[16px] leading-tight">{stake.actor}</p>
+              <p className="mt-1 text-[14px] leading-snug text-[#1A1A1A]/80">
+                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A4BFF]">
+                  gains ·{" "}
+                </span>
+                {stake.gains}
+              </p>
+              <p className="mt-0.5 text-[14px] leading-snug text-[#1A1A1A]/60">
+                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#C1121F]">
+                  loses ·{" "}
+                </span>
+                {stake.loses}
+              </p>
+            </li>
+          ))}
+        </ul>
+      ),
+    });
+  }
+
+  if (report.precedent.length) {
+    blocks.push({
+      key: "precedent",
+      title: "What it echoes",
+      body: (
+        <ul className="space-y-4">
+          {report.precedent.map((item) => (
+            <li key={item.name}>
+              <p className="font-display text-[17px] leading-tight">
+                {item.name}{" "}
+                <span className="font-mono text-[10px] text-[#1A1A1A]/55">{item.when}</span>
+              </p>
+              <p className="mt-1 text-[15px] leading-relaxed">{item.parallel}</p>
+              <p className="mt-1 text-[14px] leading-relaxed text-[#1A1A1A]/60">
+                <span className="font-mono text-[9px] uppercase tracking-[0.14em]">
+                  where it breaks ·{" "}
+                </span>
+                {item.breaks}
+              </p>
+            </li>
+          ))}
+        </ul>
+      ),
+    });
+  }
+
+  blocks.push({
+    key: "falsifier",
+    title: "What would prove this wrong",
+    body: (
+      <p className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 text-[15px] leading-relaxed">
+        {report.falsifier}
+      </p>
+    ),
+  });
+
+  if (report.watch.length) {
+    blocks.push({
+      key: "watch",
+      title: "What to watch",
+      body: (
+        <ul className="space-y-2">
+          {report.watch.map((item) => (
+            <li
+              key={item.signal}
+              className="flex flex-col gap-1 border-b border-[#1A1A1A]/10 pb-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+            >
+              <span className="text-[15px] leading-snug">{item.signal}</span>
+              <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55 sm:shrink-0 sm:text-right">
+                {item.when}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ),
+    });
+  }
+
+  return blocks;
+}
 
 /** A short, honest list of what a re-read changed — or that nothing did. */
 function changedSince(before: Report, after: Report): string[] {
@@ -365,13 +559,13 @@ function RedTeam({ report }: { report: Report }) {
           <input
             value={position}
             onChange={(event) => setPosition(event.target.value)}
-            placeholder="I think the reward is a sign of weakness, not strength…"
+            placeholder="I think this reading is wrong because…"
             className="min-w-0 flex-1 bg-transparent font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/35"
           />
           <button
             type="submit"
             disabled={busy || position.trim().length < 20}
-            className="shrink-0 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] disabled:opacity-40"
+            className="inline-flex min-h-11 shrink-0 items-center px-2 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] disabled:opacity-40"
           >
             {busy ? "Thinking…" : "Argue →"}
           </button>

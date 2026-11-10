@@ -23,6 +23,7 @@ import { Route as ApiAnalystFindingsRouteImport } from './routes/api/analyst-fin
 import { Route as ApiAnalystRecentRouteImport } from './routes/api/analyst-recent'
 import { Route as ApiAnalystRedteamRouteImport } from './routes/api/analyst-redteam'
 import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
+import { Route as ApiCasesRouteImport } from './routes/api/cases'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
@@ -32,6 +33,7 @@ import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
+import { Route as ApiCaseSubjectRouteImport } from './routes/api/case.$subject'
 import { Route as ApiReadTokenRouteImport } from './routes/api/read.$token'
 
 const IndexRoute = IndexRouteImport.update({
@@ -104,6 +106,11 @@ const ApiAnalystWatchRoute = ApiAnalystWatchRouteImport.update({
   path: '/api/analyst-watch',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCasesRoute = ApiCasesRouteImport.update({
+  id: '/api/cases',
+  path: '/api/cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCheckWatchRoute = ApiCheckWatchRouteImport.update({
   id: '/api/check-watch',
   path: '/api/check-watch',
@@ -149,6 +156,11 @@ const ReadTokenRoute = ReadTokenRouteImport.update({
   path: '/read/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCaseSubjectRoute = ApiCaseSubjectRouteImport.update({
+  id: '/api/case/$subject',
+  path: '/api/case/$subject',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiReadTokenRoute = ApiReadTokenRouteImport.update({
   id: '/api/read/$token',
   path: '/api/read/$token',
@@ -170,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
+  '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
@@ -179,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/read/$token': typeof ReadTokenRoute
+  '/api/case/$subject': typeof ApiCaseSubjectRoute
   '/api/read/$token': typeof ApiReadTokenRoute
 }
 export interface FileRoutesByTo {
@@ -196,6 +210,7 @@ export interface FileRoutesByTo {
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
+  '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
@@ -205,6 +220,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/read/$token': typeof ReadTokenRoute
+  '/api/case/$subject': typeof ApiCaseSubjectRoute
   '/api/read/$token': typeof ApiReadTokenRoute
 }
 export interface FileRoutesById {
@@ -223,6 +239,7 @@ export interface FileRoutesById {
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
+  '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
@@ -232,6 +249,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/read/$token': typeof ReadTokenRoute
+  '/api/case/$subject': typeof ApiCaseSubjectRoute
   '/api/read/$token': typeof ApiReadTokenRoute
 }
 export interface FileRouteTypes {
@@ -251,6 +269,7 @@ export interface FileRouteTypes {
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
+    | '/api/cases'
     | '/api/check-watch'
     | '/api/check-watches'
     | '/api/news-brief'
@@ -260,6 +279,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/case/$subject'
     | '/read/$token'
+    | '/api/case/$subject'
     | '/api/read/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -277,6 +297,7 @@ export interface FileRouteTypes {
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
+    | '/api/cases'
     | '/api/check-watch'
     | '/api/check-watches'
     | '/api/news-brief'
@@ -286,6 +307,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/case/$subject'
     | '/read/$token'
+    | '/api/case/$subject'
     | '/api/read/$token'
   id:
     | '__root__'
@@ -303,6 +325,7 @@ export interface FileRouteTypes {
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
+    | '/api/cases'
     | '/api/check-watch'
     | '/api/check-watches'
     | '/api/news-brief'
@@ -312,6 +335,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/case/$subject'
     | '/read/$token'
+    | '/api/case/$subject'
     | '/api/read/$token'
   fileRoutesById: FileRoutesById
 }
@@ -330,6 +354,7 @@ export interface RootRouteChildren {
   ApiAnalystRecentRoute: typeof ApiAnalystRecentRoute
   ApiAnalystRedteamRoute: typeof ApiAnalystRedteamRoute
   ApiAnalystWatchRoute: typeof ApiAnalystWatchRoute
+  ApiCasesRoute: typeof ApiCasesRoute
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiCheckWatchesRoute: typeof ApiCheckWatchesRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
@@ -339,6 +364,7 @@ export interface RootRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
   CaseSubjectRoute: typeof CaseSubjectRoute
   ReadTokenRoute: typeof ReadTokenRoute
+  ApiCaseSubjectRoute: typeof ApiCaseSubjectRoute
   ApiReadTokenRoute: typeof ApiReadTokenRoute
 }
 
@@ -442,6 +468,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnalystWatchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/cases': {
+      id: '/api/cases'
+      path: '/api/cases'
+      fullPath: '/api/cases'
+      preLoaderRoute: typeof ApiCasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/check-watch': {
       id: '/api/check-watch'
       path: '/api/check-watch'
@@ -505,6 +538,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReadTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/case/$subject': {
+      id: '/api/case/$subject'
+      path: '/api/case/$subject'
+      fullPath: '/api/case/$subject'
+      preLoaderRoute: typeof ApiCaseSubjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/read/$token': {
       id: '/api/read/$token'
       path: '/api/read/$token'
@@ -530,6 +570,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAnalystRecentRoute: ApiAnalystRecentRoute,
   ApiAnalystRedteamRoute: ApiAnalystRedteamRoute,
   ApiAnalystWatchRoute: ApiAnalystWatchRoute,
+  ApiCasesRoute: ApiCasesRoute,
   ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiCheckWatchesRoute: ApiCheckWatchesRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
@@ -539,6 +580,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackRoute: AuthCallbackRoute,
   CaseSubjectRoute: CaseSubjectRoute,
   ReadTokenRoute: ReadTokenRoute,
+  ApiCaseSubjectRoute: ApiCaseSubjectRoute,
   ApiReadTokenRoute: ApiReadTokenRoute,
 }
 export const routeTree = rootRouteImport

@@ -10,8 +10,16 @@ export const Route = createFileRoute("/cases")({
     ],
   }),
   loader: async () => {
-    const { listCases } = await import("@/lib/threadwise/analyst");
-    return { cases: await listCases() };
+    if (import.meta.env.SSR) {
+      const { listCases } = await import("@/lib/threadwise/analyst");
+      return { cases: await listCases() };
+    }
+
+    const response = await fetch("/api/cases", { cache: "no-store" });
+    const body = response.ok
+      ? ((await response.json()) as { cases?: { subject: string; reads: number; latest: string }[] })
+      : {};
+    return { cases: body.cases ?? [] };
   },
   component: CasesPage,
 });

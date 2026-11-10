@@ -5,8 +5,18 @@ import { BrandLockup } from "@/components/threadwise/BrandLockup";
 export const Route = createFileRoute("/case/$subject")({
   head: ({ params }) => ({ meta: [{ title: `${params.subject} — Threadwise` }] }),
   loader: async ({ params }) => {
-    const { caseReads } = await import("@/lib/threadwise/analyst");
-    return { subject: params.subject, reads: await caseReads(params.subject) };
+    if (import.meta.env.SSR) {
+      const { caseReads } = await import("@/lib/threadwise/analyst");
+      return { subject: params.subject, reads: await caseReads(params.subject) };
+    }
+
+    const response = await fetch(`/api/case/${encodeURIComponent(params.subject)}`, {
+      cache: "no-store",
+    });
+    const body = response.ok
+      ? ((await response.json()) as { reads?: CaseRead[] })
+      : {};
+    return { subject: params.subject, reads: body.reads ?? [] };
   },
   component: CasePage,
 });
@@ -51,7 +61,7 @@ function CasePage() {
                 </p>
                 <Link to="/read/$token" params={{ token: read.token }} className="group mt-1 block">
                   <h2 className="font-display text-[18px] leading-snug group-hover:text-[#1A4BFF]">{read.input}</h2>
-                  <p className="mt-1.5 max-w-[62ch] border-l-2 border-[#C1121F] pl-3 font-serif text-[13px] leading-snug text-[#1A1A1A]/65">
+                  <p className="mt-1.5 line-clamp-3 max-w-[62ch] border-l-2 border-[#C1121F] pl-3 font-serif text-[13px] leading-snug text-[#1A1A1A]/65">
                     {read.falsifier}
                   </p>
                 </Link>
