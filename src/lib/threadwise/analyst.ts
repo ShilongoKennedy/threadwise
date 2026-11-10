@@ -1088,7 +1088,7 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
           ? "inferred"
           : "speculative";
   const confidence = reviewedConfidence(baseConfidence, review?.verdict);
-  const basis =
+  const baseBasis =
     decision.mode === "discourse"
       ? "a statement about people, not an event — judged on argument, not reporting"
       : baseConfidence === "documented"
@@ -1100,6 +1100,10 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
             : "the situation is reported, but nothing from the last four weeks"
           : "reporting on the move, but no picture of the situation"
         : "the move itself — no independent reporting found";
+  const basis =
+    review && confidence !== baseConfidence
+      ? "the desk review lowered this read"
+      : baseBasis;
 
   return {
     ...parsedData,
