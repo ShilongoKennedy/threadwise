@@ -36,6 +36,7 @@ import { Route as ApiThinkingProfileRouteImport } from './routes/api/thinking-pr
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
+import { Route as PracticeTokenRouteImport } from './routes/practice.$token'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
 import { Route as ApiCaseSubjectRouteImport } from './routes/api/case.$subject'
 import { Route as ApiReadTokenRouteImport } from './routes/api/read.$token'
@@ -175,6 +176,11 @@ const CaseSubjectRoute = CaseSubjectRouteImport.update({
   path: '/case/$subject',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PracticeTokenRoute = PracticeTokenRouteImport.update({
+  id: '/practice/$token',
+  path: '/practice/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReadTokenRoute = ReadTokenRouteImport.update({
   id: '/read/$token',
   path: '/read/$token',
@@ -219,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
+  '/practice/$token': typeof PracticeTokenRoute
   '/read/$token': typeof ReadTokenRoute
   '/api/case/$subject': typeof ApiCaseSubjectRoute
   '/api/read/$token': typeof ApiReadTokenRoute
@@ -251,6 +258,7 @@ export interface FileRoutesByTo {
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
+  '/practice/$token': typeof PracticeTokenRoute
   '/read/$token': typeof ReadTokenRoute
   '/api/case/$subject': typeof ApiCaseSubjectRoute
   '/api/read/$token': typeof ApiReadTokenRoute
@@ -284,6 +292,7 @@ export interface FileRoutesById {
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
+  '/practice/$token': typeof PracticeTokenRoute
   '/read/$token': typeof ReadTokenRoute
   '/api/case/$subject': typeof ApiCaseSubjectRoute
   '/api/read/$token': typeof ApiReadTokenRoute
@@ -318,6 +327,7 @@ export interface FileRouteTypes {
     | '/api/threadwise'
     | '/auth/callback'
     | '/case/$subject'
+    | '/practice/$token'
     | '/read/$token'
     | '/api/case/$subject'
     | '/api/read/$token'
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/api/threadwise'
     | '/auth/callback'
     | '/case/$subject'
+    | '/practice/$token'
     | '/read/$token'
     | '/api/case/$subject'
     | '/api/read/$token'
@@ -382,6 +393,7 @@ export interface FileRouteTypes {
     | '/api/threadwise'
     | '/auth/callback'
     | '/case/$subject'
+    | '/practice/$token'
     | '/read/$token'
     | '/api/case/$subject'
     | '/api/read/$token'
@@ -415,6 +427,7 @@ export interface RootRouteChildren {
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CaseSubjectRoute: typeof CaseSubjectRoute
+  PracticeTokenRoute: typeof PracticeTokenRoute
   ReadTokenRoute: typeof ReadTokenRoute
   ApiCaseSubjectRoute: typeof ApiCaseSubjectRoute
   ApiReadTokenRoute: typeof ApiReadTokenRoute
@@ -611,6 +624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CaseSubjectRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/practice/$token': {
+      id: '/practice/$token'
+      path: '/practice/$token'
+      fullPath: '/practice/$token'
+      preLoaderRoute: typeof PracticeTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/read/$token': {
       id: '/read/$token'
       path: '/read/$token'
@@ -663,6 +683,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CaseSubjectRoute: CaseSubjectRoute,
+  PracticeTokenRoute: PracticeTokenRoute,
   ReadTokenRoute: ReadTokenRoute,
   ApiCaseSubjectRoute: ApiCaseSubjectRoute,
   ApiReadTokenRoute: ApiReadTokenRoute,

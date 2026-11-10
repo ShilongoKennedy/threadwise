@@ -212,6 +212,13 @@ function SharedRead() {
                   {busy ? "Re-reading…" : "Re-read with today's reporting"}
                 </button>
               )}
+              <Link
+                to="/practice/$token"
+                params={{ token }}
+                className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4"
+              >
+                Practice this read →
+              </Link>
             </div>
 
             {again && (
