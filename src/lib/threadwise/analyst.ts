@@ -88,12 +88,29 @@ export const reviewSchema = z.object({
 
 export type ReadReview = z.infer<typeof reviewSchema> & { by?: string };
 
+export const patchSchema = z.object({
+  patches: z
+    .array(
+      z.object({
+        section: z.string().trim().max(120).default(""),
+        find: z.string().trim().min(3).max(400),
+        replace: z.string().trim().max(400).default(""),
+        reason: z.string().trim().max(300).default(""),
+      }),
+    )
+    .max(8)
+    .default([]),
+});
+
+export type ReadRevision = { patched: number; notes: string[] };
+
 export type AnalystReport = z.infer<typeof analystSchema> & {
   sources: { title: string; url: string }[];
   basis?: string;
   subject?: string;
   writer?: string;
   review?: ReadReview;
+  revision?: ReadRevision;
 };
 
 /** What kind of artefact this is decides which questions the read asks. */
@@ -791,6 +808,103 @@ export function reviewedConfidence(
   return confidence;
 }
 
+type AnalystDraft = z.infer<typeof analystSchema>;
+type StringSlot = { label: string; get: () => string; set: (value: string) => void };
+
+const normaliseLabel = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/^sections?:\s*/, "")
+    .replace(/[^a-z0-9 ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+function slotScore(label: string, target: string): number {
+  if (!target.trim()) return 1;
+  const left = normaliseLabel(label);
+  const right = normaliseLabel(target);
+  if (!left || !right) return 0;
+  if (left === right) return 3;
+  if (left.includes(right) || right.includes(left)) return 2;
+  const words = right.split(" ").filter((word) => word.length > 3);
+  return words.some((word) => left.includes(word)) ? 1 : 0;
+}
+
+/** Apply the editor's corrections to the smallest possible text slot. */
+export function applyReadPatches(
+  draft: AnalystDraft,
+  patches: z.infer<typeof patchSchema>["patches"],
+): { draft: AnalystDraft; revision: ReadRevision } {
+  const next = structuredClone(draft);
+  const slots: StringSlot[] = [];
+  const add = (label: string, get: () => string, set: (value: string) => void) =>
+    slots.push({ label, get, set });
+
+  add("move", () => next.move, (value) => { next.move = value; });
+  add("why now", () => next.why_now, (value) => { next.why_now = value; });
+  add("what it changes downstream", () => next.second_order, (value) => { next.second_order = value; });
+  add("the counter-reading", () => next.counter_reading, (value) => { next.counter_reading = value; });
+  add("what would prove this wrong", () => next.falsifier, (value) => { next.falsifier = value; });
+  next.questions.forEach((_, index) => {
+    add(`question ${index + 1}`, () => next.questions[index]!, (value) => { next.questions[index] = value; });
+  });
+  next.sections.forEach((section) => {
+    add(`sections: ${section.title}`, () => section.body, (value) => { section.body = value; });
+  });
+  next.stakes.forEach((stake) => {
+    add(`stakes: ${stake.actor}`, () => stake.actor, (value) => { stake.actor = value; });
+    add(`stakes: ${stake.actor} gains`, () => stake.gains, (value) => { stake.gains = value; });
+    add(`stakes: ${stake.actor} loses`, () => stake.loses, (value) => { stake.loses = value; });
+  });
+  next.precedent.forEach((item) => {
+    add(`precedent: ${item.name}`, () => item.name, (value) => { item.name = value; });
+    add(`precedent: ${item.name} when`, () => item.when, (value) => { item.when = value; });
+    add(`precedent: ${item.name} parallel`, () => item.parallel, (value) => { item.parallel = value; });
+    add(`precedent: ${item.name} breaks`, () => item.breaks, (value) => { item.breaks = value; });
+  });
+  next.watch.forEach((item) => {
+    add(`watch: ${item.signal}`, () => item.signal, (value) => { item.signal = value; });
+    add(`watch: ${item.signal} when`, () => item.when, (value) => { item.when = value; });
+  });
+
+  const revision: ReadRevision = { patched: 0, notes: [] };
+  for (const patch of patches) {
+    if (!patch.find || patch.find === patch.replace) continue;
+    const ranked = slots
+      .map((slot) => ({ slot, score: slotScore(slot.label, patch.section) }))
+      .sort((a, b) => b.score - a.score);
+
+    let applied = false;
+    for (const { slot, score } of ranked) {
+      if (patch.section.trim() && score === 0) continue;
+      const text = slot.get();
+      const at = text.indexOf(patch.find);
+      if (at === -1) continue;
+      slot.set(text.slice(0, at) + patch.replace + text.slice(at + patch.find.length));
+      revision.patched += 1;
+      revision.notes.push(patch.reason || `Corrected in ${slot.label}`);
+      applied = true;
+      break;
+    }
+
+    if (!applied) {
+      // The editor may have named a section loosely; fall back to the exact text.
+      for (const slot of slots) {
+        const text = slot.get();
+        const at = text.indexOf(patch.find);
+        if (at === -1) continue;
+        slot.set(text.slice(0, at) + patch.replace + text.slice(at + patch.find.length));
+        revision.patched += 1;
+        revision.notes.push(patch.reason || `Corrected in ${slot.label}`);
+        break;
+      }
+    }
+  }
+
+  revision.notes = revision.notes.slice(0, 8);
+  return { draft: next, revision };
+}
+
 type ModelChoice = { model: ReturnType<typeof getModel>; label: string };
 
 /** The strongest working writer first; the cheap chat model is the safety net. */
@@ -900,6 +1014,80 @@ Rules:
     }
   }
   return null;
+}
+
+/**
+ * The writer's correction pass. It receives only the flags and returns surgical
+ * find/replace patches, so it cannot rewrite the whole read or add new material.
+ */
+async function reviseRead(
+  draft: AnalystDraft,
+  review: ReadReview,
+  evidence: string,
+  move: string,
+): Promise<{ draft: AnalystDraft; revision: ReadRevision } | null> {
+  if (!review.issues.length) return null;
+  const candidate = writerCandidates()[0];
+  if (!candidate) return null;
+
+  const material = evidence.trim().slice(0, 18_000);
+  if (!material) return null;
+
+  const claims = JSON.stringify({
+    move: draft.move,
+    why_now: draft.why_now,
+    stakes: draft.stakes,
+    precedent: draft.precedent,
+    second_order: draft.second_order,
+    counter_reading: draft.counter_reading,
+    sections: draft.sections,
+    watch: draft.watch,
+    falsifier: draft.falsifier,
+  }).slice(0, 16_000);
+
+  const prompt = `You are the writer. An editor flagged specific factual claims in your read as unsupported by the retrieved material. Patch only those claims. Do not rewrite the read and do not add new facts.
+
+THE MOVE:
+"""
+${move.slice(0, 2000)}
+"""
+
+THE READ:
+${claims}
+
+THE FLAGGED CLAIMS:
+${JSON.stringify(review.issues).slice(0, 5000)}
+
+THE RETRIEVED MATERIAL:
+${material}
+
+Return ONLY this JSON:
+{"patches":[{"section":string,"find":string,"replace":string,"reason":string}]}
+
+Rules:
+- find must be an exact substring copied verbatim from the read, max 25 words.
+- replace must correct the claim to what the material says, or remove the unsupported detail and say the material does not establish it. Never add a new fact.
+- Only patch a flagged claim. Do not rewrite unrelated text.
+- At most one patch per flagged claim. If a claim is already correctly qualified, omit it.
+- section is the field or section title that contains find.
+- reason is one short clause naming what changed.`;
+
+  try {
+    const { text } = await generateText({
+      model: candidate.model,
+      prompt,
+      temperature: 0,
+      maxOutputTokens: 1600,
+      maxRetries: 0,
+    });
+    const parsed = patchSchema.safeParse(extractJson<unknown>(text));
+    if (!parsed.success || !parsed.data.patches.length) return null;
+    const result = applyReadPatches(draft, parsed.data.patches);
+    return result.revision.patched ? result : null;
+  } catch (error) {
+    console.warn("[analyst] revision failed:", error);
+    return null;
+  }
 }
 
 export async function analyseMove(input: string): Promise<AnalystReport> {
@@ -1076,6 +1264,18 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     Date.now() - startedAt > 40_000,
   );
 
+  // If the editor found unsupported claims and there is still time, the writer
+  // fixes only those claims. The review is kept so the page can show both.
+  let finalDraft = parsedData;
+  let revision: ReadRevision | undefined;
+  if (review?.issues.length && Date.now() - startedAt < 45_000) {
+    const revised = await reviseRead(finalDraft, review, evidenceContext, input);
+    if (revised) {
+      finalDraft = revised.draft;
+      revision = revised.revision;
+    }
+  }
+
   // The confidence badge is derived from what was actually retrieved, then the
   // editor may lower it. A review can never raise it.
   const freshSituation = recentCount(situationHits, 28);
@@ -1102,18 +1302,21 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
         : "the move itself — no independent reporting found";
   const basis =
     review && confidence !== baseConfidence
-      ? "the desk review lowered this read"
+      ? revision
+        ? "the desk review corrected this read"
+        : "the desk review lowered this read"
       : baseBasis;
 
   return {
-    ...parsedData,
+    ...finalDraft,
     subject: decision.subject || situation,
-    mode: parsedData.mode ?? decision.mode,
-    layers: parsedData.layers?.length ? parsedData.layers : decision.layers,
+    mode: finalDraft.mode ?? decision.mode,
+    layers: finalDraft.layers?.length ? finalDraft.layers : decision.layers,
     confidence,
     basis,
     writer,
     ...(review ? { review } : {}),
+    ...(revision ? { revision } : {}),
     sources: [...sources, ...situationSources, ...layerSources, ...primary.sources],
   };
 }

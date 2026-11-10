@@ -64,6 +64,7 @@ type Report = {
     missing: string[];
     by?: string;
   };
+  revision?: { patched: number; notes: string[] };
   mode?: string;
   layers?: string[];
   sections?: { title: string; body: string }[];
@@ -240,7 +241,11 @@ function SharedRead() {
             )}
 
             {report.review ? (
-              <DeskReview review={report.review} writer={report.writer} />
+              <DeskReview
+                review={report.review}
+                revision={report.revision}
+                writer={report.writer}
+              />
             ) : null}
 
             <Contents items={contents} />
@@ -294,13 +299,17 @@ function SharedRead() {
 /** The independent editor's verdict, shown before the read itself. */
 function DeskReview({
   review,
+  revision,
   writer,
 }: {
   review: NonNullable<Report["review"]>;
+  revision?: Report["revision"];
   writer?: string;
 }) {
-  const tone =
-    review.verdict === "grounded"
+  const corrected = (revision?.patched ?? 0) > 0;
+  const tone = corrected
+    ? "border-[#1A4BFF] bg-[#1A4BFF]/5"
+    : review.verdict === "grounded"
       ? "border-[#1A4BFF] bg-[#1A4BFF]/5"
       : review.verdict === "mixed"
         ? "border-[#B26A00] bg-[#B26A00]/5"
@@ -311,6 +320,7 @@ function DeskReview({
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em]">
           Desk review · {review.verdict}
+          {corrected ? ` · ${revision!.patched} corrected` : ""}
         </span>
         <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
           {review.by ? `reviewed by ${review.by}` : "reviewed"}
@@ -325,23 +335,42 @@ function DeskReview({
         </p>
       )}
 
-      {review.issues.length > 0 && (
-        <ul className="mt-2 space-y-2">
-          {review.issues.map((issue, index) => (
-            <li
-              key={`${issue.claim.slice(0, 20)}-${index}`}
-              className="border-l-2 border-[#C1121F] pl-2"
-            >
-              <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
-                {issue.section || "claim"}
-              </p>
-              <p className="font-serif text-[13px] leading-snug">“{issue.claim}”</p>
-              <p className="font-serif text-[12px] leading-snug text-[#1A1A1A]/60">
-                {issue.problem}
-              </p>
-            </li>
-          ))}
-        </ul>
+      {corrected ? (
+        <>
+          <p className="mt-2 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/70">
+            The writer corrected {revision!.patched} flagged claim
+            {revision!.patched === 1 ? "" : "s"} before publication.
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {revision!.notes.map((note, index) => (
+              <li
+                key={`${note.slice(0, 20)}-${index}`}
+                className="border-l-2 border-[#1A4BFF] pl-2 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/70"
+              >
+                {note}
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        review.issues.length > 0 && (
+          <ul className="mt-2 space-y-2">
+            {review.issues.map((issue, index) => (
+              <li
+                key={`${issue.claim.slice(0, 20)}-${index}`}
+                className="border-l-2 border-[#C1121F] pl-2"
+              >
+                <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+                  {issue.section || "claim"}
+                </p>
+                <p className="font-serif text-[13px] leading-snug">“{issue.claim}”</p>
+                <p className="font-serif text-[12px] leading-snug text-[#1A1A1A]/60">
+                  {issue.problem}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )
       )}
 
       {review.missing.length > 0 && (

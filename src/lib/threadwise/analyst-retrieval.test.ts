@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  analystSchema,
+  applyReadPatches,
   distinctiveTerms,
   editionFor,
   editionLanguage,
@@ -93,6 +95,64 @@ describe("reviewedConfidence", () => {
 
   it("leaves confidence alone when there was no review", () => {
     expect(reviewedConfidence("documented")).toBe("documented");
+  });
+});
+
+describe("applyReadPatches", () => {
+  const draft = analystSchema.parse({
+    mode: "report",
+    move: "The court ruled.",
+    sections: [
+      {
+        title: "The move",
+        body: "The Australian High Court decided Bendel v Commissioner of Taxation.",
+      },
+    ],
+    falsifier: "If the court did not rule.",
+  });
+
+  it("patches the exact text in the named section", () => {
+    const result = applyReadPatches(draft, [
+      {
+        section: "sections: The move",
+        find: "Australian High Court decided Bendel v Commissioner of Taxation",
+        replace: "High Court decided a tax case",
+        reason: "Removed the unverified case name",
+      },
+    ]);
+
+    expect(result.revision.patched).toBe(1);
+    expect(result.revision.notes).toEqual(["Removed the unverified case name"]);
+    expect(result.draft.sections[0]?.body).toBe("The High Court decided a tax case.");
+    expect(draft.sections[0]?.body).toContain("Australian");
+  });
+
+  it("falls back to the exact text when the editor names the wrong section", () => {
+    const result = applyReadPatches(draft, [
+      {
+        section: "Precedent",
+        find: "Australian High Court decided Bendel v Commissioner of Taxation",
+        replace: "High Court decided a tax case",
+        reason: "Corrected the case name",
+      },
+    ]);
+
+    expect(result.revision.patched).toBe(1);
+    expect(result.draft.sections[0]?.body).toBe("The High Court decided a tax case.");
+  });
+
+  it("leaves the read untouched when the text is not found", () => {
+    const result = applyReadPatches(draft, [
+      {
+        section: "move",
+        find: "a sentence that is not in the read",
+        replace: "anything",
+        reason: "Should not apply",
+      },
+    ]);
+
+    expect(result.revision.patched).toBe(0);
+    expect(result.draft.move).toBe("The court ruled.");
   });
 });
 
