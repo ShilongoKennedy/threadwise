@@ -50,7 +50,7 @@ export const Route = createFileRoute("/api/model-health")({
               const { text } = await generateText({
                 model: getModel(provider, model),
                 prompt: "Reply with exactly: OK",
-                maxOutputTokens: 10,
+                maxOutputTokens: 32,
                 maxRetries: 0,
                 abortSignal: AbortSignal.timeout(15_000),
               });
