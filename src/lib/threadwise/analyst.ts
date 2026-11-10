@@ -424,29 +424,137 @@ type NewsHit = { title: string; date: string; outlet: string; url: string };
 
 /**
  * Google News editions by country, with the outlets that cover each place
- * properly. A story about Kenya should be answered by Kenyan papers, not by
- * whatever a US edition ranks highest.
+ * properly and the language its readers actually use. A story about Kenya
+ * should be answered by Kenyan papers, not by whatever a US edition ranks
+ * highest; a story about France should come back in French, not in English.
  */
 const EDITIONS: { match: RegExp; gl: string; hl: string; ceid: string; outlets: string[] }[] = [
   { match: /\bkenya|nairobi|mombasa|kisumu\b/i, gl: "KE", hl: "en-KE", ceid: "KE:en",
     outlets: ["nation.africa", "the-star.co.ke", "businessdailyafrica.com", "standardmedia.co.ke"] },
   { match: /\bnamibia|windhoek|omaheke|swakopmund\b/i, gl: "NA", hl: "en-NA", ceid: "NA:en",
     outlets: ["thenamibian.com.na", "neweralive.na", "namibian.com.na"] },
-  { match: /\bnigeria|lagos|abuja|kano\b/i, gl: "NG", hl: "en-NG", ceid: "NG:en",
+  { match: /\bnigeri|lagos|abuja|kano\b/i, gl: "NG", hl: "en-NG", ceid: "NG:en",
     outlets: ["punchng.com", "premiumtimesng.com", "businessday.ng", "thenationonlineng.net"] },
-  { match: /\bsouth africa|johannesburg|cape town|pretoria|durban\b/i, gl: "ZA", hl: "en-ZA", ceid: "ZA:en",
+  { match: /\bsouth afric|johannesburg|cape town|pretoria|durban\b/i, gl: "ZA", hl: "en-ZA", ceid: "ZA:en",
     outlets: ["dailymaverick.co.za", "mg.co.za", "businesslive.co.za", "timeslive.co.za"] },
   { match: /\bghana|accra\b/i, gl: "GH", hl: "en-GH", ceid: "GH:en", outlets: ["myjoyonline.com", "graphic.com.gh"] },
   { match: /\buganda|kampala\b/i, gl: "UG", hl: "en-UG", ceid: "UG:en", outlets: ["monitor.co.ug", "observer.ug"] },
-  { match: /\btanzania|dar es salaam|dodoma\b/i, gl: "TZ", hl: "en-TZ", ceid: "TZ:en", outlets: ["thecitizen.co.tz", "ippmedia.com"] },
-  { match: /\bunited kingdom|britain|london|westminster\b/i, gl: "GB", hl: "en-GB", ceid: "GB:en",
+  { match: /\btanzani|dar es salaam|dodoma\b/i, gl: "TZ", hl: "en-TZ", ceid: "TZ:en", outlets: ["thecitizen.co.tz", "ippmedia.com"] },
+  { match: /\bethiopi|addis ababa\b/i, gl: "ET", hl: "en-ET", ceid: "ET:en", outlets: ["addisstandard.com", "ethiopianmonitor.com"] },
+  { match: /\bsomali|mogadishu\b/i, gl: "SO", hl: "en-SO", ceid: "SO:en", outlets: ["hiiraan.com", "garoweonline.com"] },
+  { match: /\bsouth sudan|juba\b/i, gl: "SS", hl: "en-SS", ceid: "SS:en", outlets: ["radiotamazuj.org", "eyeradio.org"] },
+  { match: /\bsudan|khartoum\b/i, gl: "SD", hl: "en-SD", ceid: "SD:en", outlets: ["sudantribune.com", "alrakoba.net"] },
+  { match: /\bdrc\b|democratic republic of (the )?congo|kinshasa\b/i, gl: "CD", hl: "fr-CD", ceid: "CD:fr",
+    outlets: ["actualite.cd", "radiookapi.net"] },
+  { match: /\bsenegal|dakar\b/i, gl: "SN", hl: "fr-SN", ceid: "SN:fr", outlets: ["seneweb.com", "lequotidien.sn"] },
+  { match: /\bivory coast|côte d'ivoire|abidjan\b/i, gl: "CI", hl: "fr-CI", ceid: "CI:fr", outlets: ["fratmat.info", "abidjan.net"] },
+  { match: /\bmorocc|rabat|casablanca\b/i, gl: "MA", hl: "fr-MA", ceid: "MA:fr", outlets: ["lematin.ma", "telquel.ma", "medias24.com"] },
+  { match: /\balgeri|algiers\b/i, gl: "DZ", hl: "fr-DZ", ceid: "DZ:fr", outlets: ["elwatan.com", "tsa-algerie.com"] },
+  { match: /\btunisi|tunis\b/i, gl: "TN", hl: "fr-TN", ceid: "TN:fr", outlets: ["lapresse.tn", "businessnews.com.tn"] },
+  { match: /\begypt|cairo\b/i, gl: "EG", hl: "ar", ceid: "EG:ar", outlets: ["ahram.org.eg", "masrawy.com", "egyptindependent.com"] },
+  { match: /\bisrael|jerusalem|tel aviv\b/i, gl: "IL", hl: "en-IL", ceid: "IL:en", outlets: ["timesofisrael.com", "jpost.com", "haaretz.co.il"] },
+  { match: /\bsaudi|riyadh\b/i, gl: "SA", hl: "ar", ceid: "SA:ar", outlets: ["aleqt.com", "sabq.org", "arabnews.com"] },
+  { match: /\bemirat|\buae\b|dubai|abu dhabi\b/i, gl: "AE", hl: "ar", ceid: "AE:ar", outlets: ["albayan.ae", "gulfnews.com", "thenationalnews.com"] },
+  { match: /\bturkey|turkish|ankara|istanbul\b/i, gl: "TR", hl: "tr", ceid: "TR:tr", outlets: ["hurriyet.com.tr", "sabah.com.tr", "bianet.org"] },
+  { match: /\brussia|russian|moscow\b/i, gl: "RU", hl: "ru", ceid: "RU:ru", outlets: ["kommersant.ru", "rbc.ru", "meduza.io"] },
+  { match: /\bukrain|kyiv|kiev\b/i, gl: "UA", hl: "uk", ceid: "UA:uk", outlets: ["pravda.com.ua", "unian.ua", "kyivindependent.com"] },
+  { match: /\bpoland|polish|warsaw\b/i, gl: "PL", hl: "pl", ceid: "PL:pl", outlets: ["wyborcza.pl", "rp.pl"] },
+  { match: /\bczech|prague\b/i, gl: "CZ", hl: "cs", ceid: "CZ:cs", outlets: ["idnes.cz", "respekt.cz"] },
+  { match: /\bgerman|berlin\b/i, gl: "DE", hl: "de", ceid: "DE:de", outlets: ["spiegel.de", "zeit.de", "faz.net"] },
+  { match: /\baustria|vienna\b/i, gl: "AT", hl: "de", ceid: "AT:de", outlets: ["derstandard.at", "diepresse.com"] },
+  { match: /\bswitzerland|swiss|zurich|geneva\b/i, gl: "CH", hl: "de", ceid: "CH:de", outlets: ["nzz.ch", "tagesanzeiger.ch"] },
+  { match: /\bfrance|french|paris\b/i, gl: "FR", hl: "fr", ceid: "FR:fr", outlets: ["lemonde.fr", "lefigaro.fr", "liberation.fr"] },
+  { match: /\bnetherlands|dutch|amsterdam|the hague\b/i, gl: "NL", hl: "nl", ceid: "NL:nl", outlets: ["nrc.nl", "volkskrant.nl", "nos.nl"] },
+  { match: /\bsweden|swedish|stockholm\b/i, gl: "SE", hl: "sv", ceid: "SE:sv", outlets: ["dn.se", "svd.se"] },
+  { match: /\bnorway|norwegian|oslo\b/i, gl: "NO", hl: "no", ceid: "NO:no", outlets: ["aftenposten.no", "nrk.no"] },
+  { match: /\bdenmark|danish|copenhagen\b/i, gl: "DK", hl: "da", ceid: "DK:da", outlets: ["politiken.dk", "dr.dk"] },
+  { match: /\bfinland|finnish|helsinki\b/i, gl: "FI", hl: "fi", ceid: "FI:fi", outlets: ["hs.fi", "yle.fi"] },
+  { match: /\bitaly|italian|rome|milan\b/i, gl: "IT", hl: "it", ceid: "IT:it", outlets: ["corriere.it", "repubblica.it", "ilsole24ore.com"] },
+  { match: /\bspain|spanish|madrid|barcelona\b/i, gl: "ES", hl: "es", ceid: "ES:es", outlets: ["elpais.com", "elmundo.es", "eldiario.es"] },
+  { match: /\bportugal|portuguese|lisbon\b/i, gl: "PT", hl: "pt-PT", ceid: "PT:pt-PT", outlets: ["publico.pt", "expresso.pt"] },
+  { match: /\bmexic|mexico city\b/i, gl: "MX", hl: "es-419", ceid: "MX:es-419", outlets: ["eluniversal.com.mx", "jornada.com.mx", "reforma.com"] },
+  { match: /\bargentin|buenos aires\b/i, gl: "AR", hl: "es-419", ceid: "AR:es-419", outlets: ["clarin.com", "lanacion.com.ar", "pagina12.com.ar"] },
+  { match: /\bcolombi|bogot[aá]\b/i, gl: "CO", hl: "es-419", ceid: "CO:es-419", outlets: ["eltiempo.com", "semana.com"] },
+  { match: /\bchile|santiago\b/i, gl: "CL", hl: "es-419", ceid: "CL:es-419", outlets: ["latercera.com", "emol.com", "ciperchile.cl"] },
+  { match: /\bbrazil|brasil|brasília|sao paulo\b/i, gl: "BR", hl: "pt-BR", ceid: "BR:pt-419", outlets: ["folha.uol.com.br", "oglobo.globo.com"] },
+  { match: /\bunited states|\bu\.s\.|washington\b|\bamerican\b/i, gl: "US", hl: "en-US", ceid: "US:en",
+    outlets: ["nytimes.com", "washingtonpost.com", "wsj.com", "politico.com"] },
+  { match: /\bcanada|canadian|ottawa|toronto\b/i, gl: "CA", hl: "en-CA", ceid: "CA:en",
+    outlets: ["cbc.ca", "theglobeandmail.com", "nationalpost.com"] },
+  { match: /\bunited kingdom|britain|london|westminster|northern ireland\b/i, gl: "GB", hl: "en-GB", ceid: "GB:en",
     outlets: ["bbc.co.uk", "theguardian.com", "ft.com", "thetimes.co.uk"] },
-  { match: /\bindia|delhi|mumbai\b/i, gl: "IN", hl: "en-IN", ceid: "IN:en", outlets: ["thehindu.com", "indianexpress.com", "timesofindia.indiatimes.com"] },
-  { match: /\bbrazil|brasília|sao paulo\b/i, gl: "BR", hl: "pt-BR", ceid: "BR:pt-419", outlets: ["folha.uol.com.br", "oglobo.globo.com"] },
+  { match: /\breland|irish|dublin\b/i, gl: "IE", hl: "en-IE", ceid: "IE:en", outlets: ["irishtimes.com", "rte.ie", "independent.ie"] },
+  { match: /\bindia\b|\bindian\b|delhi|mumbai\b/i, gl: "IN", hl: "en-IN", ceid: "IN:en", outlets: ["thehindu.com", "indianexpress.com", "timesofindia.indiatimes.com"] },
+  { match: /\bpakistan|karachi|lahore|islamabad\b/i, gl: "PK", hl: "en-PK", ceid: "PK:en", outlets: ["dawn.com", "tribune.com.pk", "geo.tv"] },
+  { match: /\bbangladesh|dhaka\b/i, gl: "BD", hl: "en-BD", ceid: "BD:en", outlets: ["thedailystar.net", "bdnews24.com"] },
+  { match: /\bsri lanka|colombo\b/i, gl: "LK", hl: "en-LK", ceid: "LK:en", outlets: ["dailymirror.lk", "island.lk"] },
+  { match: /\bnepal|kathmandu\b/i, gl: "NP", hl: "en-NP", ceid: "NP:en", outlets: ["kathmandupost.com", "myrepublica.nagariknetwork.com"] },
+  { match: /\bindonesia|jakarta\b/i, gl: "ID", hl: "id", ceid: "ID:id", outlets: ["kompas.com", "tempo.co", "detik.com"] },
+  { match: /\bphilippin|filipino|manila\b/i, gl: "PH", hl: "en-PH", ceid: "PH:en", outlets: ["inquirer.net", "rappler.com", "philstar.com"] },
+  { match: /\bmalaysia|kuala lumpur\b/i, gl: "MY", hl: "en-MY", ceid: "MY:en", outlets: ["thestar.com.my", "malaysiakini.com"] },
+  { match: /\bsingapore\b/i, gl: "SG", hl: "en-SG", ceid: "SG:en", outlets: ["straitstimes.com", "channelnewsasia.com"] },
+  { match: /\bthai|bangkok\b/i, gl: "TH", hl: "en-TH", ceid: "TH:en", outlets: ["bangkokpost.com", "thaienquirer.com"] },
+  { match: /\bvietnam|hanoi|ho chi minh\b/i, gl: "VN", hl: "en-VN", ceid: "VN:en", outlets: ["e.vnexpress.net", "tuoitrenews.vn"] },
+  { match: /\bchina\b|\bchinese\b|beijing|shanghai\b/i, gl: "CN", hl: "zh", ceid: "CN:zh", outlets: ["news.cn", "thepaper.cn", "caixin.com"] },
+  { match: /\bhong kong\b/i, gl: "HK", hl: "zh-HK", ceid: "HK:zh-HK", outlets: ["scmp.com", "hk01.com"] },
+  { match: /\btaiwan|taipei\b/i, gl: "TW", hl: "zh-TW", ceid: "TW:zh-TW", outlets: ["udn.com", "cna.com.tw"] },
+  { match: /\bjapan|japanese|tokyo\b/i, gl: "JP", hl: "en-JP", ceid: "JP:en", outlets: ["japantimes.co.jp", "asahi.com", "yomiuri.co.jp"] },
+  { match: /\bsouth korea|korean|seoul\b/i, gl: "KR", hl: "en-KR", ceid: "KR:en", outlets: ["koreatimes.co.kr", "hani.co.kr", "yna.co.kr"] },
+  { match: /\baustralia|australian|sydney|canberra\b/i, gl: "AU", hl: "en-AU", ceid: "AU:en", outlets: ["abc.net.au", "smh.com.au", "theaustralian.com.au"] },
+  { match: /\bnew zealand|wellington|auckland\b/i, gl: "NZ", hl: "en-NZ", ceid: "NZ:en", outlets: ["rnz.co.nz", "nzherald.co.nz"] },
 ];
 
 export function editionFor(input: string) {
   return EDITIONS.find((edition) => edition.match.test(input));
+}
+
+const LANGUAGES: Record<string, string> = {
+  en: "English", fr: "French", de: "German", es: "Spanish", pt: "Portuguese",
+  it: "Italian", nl: "Dutch", sv: "Swedish", no: "Norwegian", da: "Danish",
+  fi: "Finnish", pl: "Polish", cs: "Czech", tr: "Turkish", ru: "Russian",
+  uk: "Ukrainian", ar: "Arabic", he: "Hebrew", zh: "Chinese", ja: "Japanese",
+  ko: "Korean", id: "Indonesian", th: "Thai", vi: "Vietnamese",
+};
+
+/** Words that carry no topic in a local query, across the editions we cover. */
+const LOCAL_NOISE = new Set([
+  "les","des","une","que","qui","dans","pour","avec","sur","par","pas","est","sont","aux","ses","son","sa",
+  "los","las","una","por","para","con","del","das","dos","uma","não","nao","com","que","em",
+  "der","die","das","und","mit","für","fur","von","den","dem","ein","eine","nicht","auf",
+  "gli","delle","della","che","con","per","non","sono",
+  "ما","في","من","على","أن","ان","هذا","هذه","التي","الذي","عن","إلى","الى","مع","كان","كانت",
+  "the","and","for","with","from","this","that","have","has","was","were","its","their",
+]);
+
+/** The language of a Google News `hl`, e.g. "pt-BR" → "Portuguese". */
+export function editionLanguage(hl: string): string {
+  return LANGUAGES[hl.split("-")[0]!.toLowerCase()] ?? "";
+}
+
+/**
+ * The move in the edition's own language. An English query on the French
+ * edition matches "French Tech" and "French Darts", not the French budget.
+ */
+async function localQuery(input: string, edition: { hl: string }): Promise<string> {
+  const language = editionLanguage(edition.hl);
+  if (!language || language === "English") return "";
+
+  try {
+    const { text } = await generateText({
+      model: getModel("deepseek"),
+      prompt: `Translate this news sentence into ${language} for a news search. Keep names, numbers and acronyms exactly as written. Return only the translation, one line, at most 25 words.\n\n${input.slice(0, 700)}`,
+      temperature: 0,
+      maxOutputTokens: 100,
+      maxRetries: 0,
+    });
+    return text
+      .replace(/\s+/g, " ")
+      .replace(/^["'“”]+|["'“”]+$/g, "")
+      .trim()
+      .slice(0, 200);
+  } catch {
+    return "";
+  }
 }
 
 const newsParser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" });
@@ -500,17 +608,33 @@ export async function retrieveContext(input: string): Promise<{
 }> {
   const entities = candidateEntities(input);
   const terms = distinctiveTerms(input);
+  const edition = editionFor(input);
+
+  // A non-English edition is searched in its own language; the translated
+  // sentence also gives us the words to match local headlines against.
+  const local = edition ? await localQuery(input, edition) : "";
+  const matchTerms = local
+    ? [
+        ...new Set(
+          local
+            .toLowerCase()
+            .split(/[^\p{L}\p{N}]+/u)
+            .filter((word) => word.length >= 3 && !LOCAL_NOISE.has(word)),
+        ),
+      ].slice(0, 6)
+    : terms;
 
   // Search the distinctive words, newest first, then keep only what is on topic:
   // "finance" alone once matched American campaign-finance coverage to a Kenyan ruling.
-  const queries = [
-    terms.slice(0, 2).join(" "),
-    [entities[0], terms[0]].filter(Boolean).join(" "),
-  ].filter((query) => query.trim().length > 2);
+  const queries = local
+    ? [local]
+    : [
+        terms.slice(0, 2).join(" "),
+        [entities[0], terms[0]].filter(Boolean).join(" "),
+      ].filter((query) => query.trim().length > 2);
 
-  const edition = editionFor(input);
   const localSearches = edition
-    ? edition.outlets.slice(0, 2).map((outlet) => news(`${terms.slice(0, 2).join(" ")} site:${outlet}`, edition))
+    ? edition.outlets.slice(0, 2).map((outlet) => news(`${local || terms.slice(0, 2).join(" ")} site:${outlet}`, edition))
     : [];
 
   const [rawHits, articles] = await Promise.all([
@@ -520,10 +644,18 @@ export async function retrieveContext(input: string): Promise<{
     ]).then((batches) => batches.flat()),
     Promise.all(entities.slice(0, 3).map((entity) => wiki(entity))),
   ]);
-  const strong = rawHits.filter((hit) => matchStrength(hit.title, terms) === 2);
-  const related = rawHits.filter((hit) => matchStrength(hit.title, terms) === 1);
+  const strong = rawHits.filter((hit) => matchStrength(hit.title, matchTerms) === 2);
+  const related = rawHits.filter((hit) => matchStrength(hit.title, matchTerms) === 1);
   // Only specifics count as evidence; place-only coverage is related, not proof.
-  const hits = strong.length ? strong : related.slice(0, 3);
+  // A local-language query is already the filter: its words rarely survive a
+  // headline word-for-word, so keep the edition's own results rather than none.
+  const hits = strong.length
+    ? strong
+    : related.length
+      ? related.slice(0, 3)
+      : local
+        ? rawHits.slice(0, 3)
+        : [];
   const background = articles.filter((hit): hit is WikiHit => hit !== null);
 
   const reporting = hits

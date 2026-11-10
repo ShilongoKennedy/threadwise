@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { distinctiveTerms, fundedBody, matchStrength, selectLayers } from "./analyst";
+import {
+  distinctiveTerms,
+  editionFor,
+  editionLanguage,
+  fundedBody,
+  matchStrength,
+  selectLayers,
+} from "./analyst";
 
 describe("matchStrength", () => {
   it("keeps years in the search terms but treats them as weak", () => {
@@ -64,5 +71,44 @@ describe("selectLayers", () => {
     expect(selectLayers("discourse", [], "Maybe it is an inferiority complex.")).toEqual([
       "theory",
     ]);
+  });
+});
+
+describe("editionFor", () => {
+  it("sends a French story to the French edition", () => {
+    expect(editionFor("The French parliament votes on the budget.")).toMatchObject({
+      gl: "FR",
+      hl: "fr",
+      ceid: "FR:fr",
+    });
+  });
+
+  it("sends an Egyptian story to the Arabic edition", () => {
+    expect(editionFor("Egypt's court reviews the case.")).toMatchObject({
+      gl: "EG",
+      hl: "ar",
+      ceid: "EG:ar",
+    });
+  });
+
+  it("matches the adjective, not just the country name", () => {
+    expect(editionFor("Kenyan court ruling")?.gl).toBe("KE");
+    expect(editionFor("Brazilian congress")?.gl).toBe("BR");
+  });
+
+  it("keeps South Sudan separate from Sudan", () => {
+    expect(editionFor("South Sudan's president spoke.")?.gl).toBe("SS");
+    expect(editionFor("Sudan's army advanced.")?.gl).toBe("SD");
+  });
+
+  it("does not mistake the pronoun for the United States", () => {
+    expect(editionFor("Tell us what happened in the budget vote.")).toBeUndefined();
+  });
+
+  it("names the language of an edition", () => {
+    expect(editionLanguage("pt-BR")).toBe("Portuguese");
+    expect(editionLanguage("ar")).toBe("Arabic");
+    expect(editionLanguage("en-KE")).toBe("English");
+    expect(editionLanguage("xx")).toBe("");
   });
 });
