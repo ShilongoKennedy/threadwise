@@ -12,11 +12,19 @@ export const Route = createFileRoute("/api/check-watch")({
       POST: async ({ request }) => {
         const startedAt = Date.now();
 
+        // Each check fetches an article and runs a paid extraction: cap them.
+        const { clientKey, rateLimit } = await import("@/lib/threadwise/rate-limit");
+        const gate = rateLimit(clientKey(request, "check-watch"), 30, 60 * 60 * 1000);
+        if (!gate.ok) {
+          return Response.json(
+            { message: "That is a lot of checks. Try again later." },
+            { status: 429 },
+          );
+        }
+
         const token = request.headers.get("Authorization")?.replace(/^Bearer /, "");
         const url = serverEnv("SUPABASE_URL");
-        const key =
-          process.env["SUPABASE_PUBLISHABLE_KEY"] ??
-          process.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+        const key = serverEnv("SUPABASE_PUBLISHABLE_KEY") ?? serverEnv("SUPABASE_ANON_KEY");
 
         if (!url || !key) {
           return Response.json({ message: "Server is not configured." }, { status: 503 });
@@ -129,10 +137,7 @@ export const Route = createFileRoute("/api/check-watch")({
         } catch (error) {
           console.error("[check-watch]", error);
           return Response.json(
-            {
-              message:
-                error instanceof Error ? error.message : "The check could not be completed.",
-            },
+            { message: "The check could not be completed just now. Try again." },
             { status: 502 },
           );
         }

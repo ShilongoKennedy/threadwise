@@ -130,6 +130,23 @@ const LAYERS: Record<string, string> = {
 OWNERSHIP LAYER — follow the chain of ownership and what it is for: which entity holds the asset, what sits above it, why the structure exists (sanctions, tax, opacity), and what the chain means for accountability.`,
 };
 
+export function selectLayers(
+  mode: keyof typeof MODES,
+  requested: string[],
+  move: string,
+): string[] {
+  // The institution layer asks who pays a body. It is only meaningful when the
+  // move names a body that is actually funded; a court or a person is not.
+  const funded = fundedBody(move);
+  const chosen = [...requested];
+  if (mode === "discourse" && !chosen.includes("theory")) chosen.unshift("theory");
+  if (mode === "institution" && funded && !chosen.includes("institution")) chosen.unshift("institution");
+  return chosen
+    .filter((layer) => layer in LAYERS)
+    .filter((layer) => layer !== "institution" || Boolean(funded))
+    .slice(0, 2);
+}
+
 export async function classify(move: string): Promise<{ mode: keyof typeof MODES; layers: string[]; subject: string }> {
   try {
     const { text } = await generateText({
@@ -163,12 +180,7 @@ INPUT: ${move.slice(0, 1500)}`,
     if (!parsed.success) return { mode: "report", layers: [], subject: "" };
     return {
       mode: parsed.data.mode,
-      layers: (() => {
-      const chosen = [...parsed.data.layers];
-      if (parsed.data.mode === "discourse" && !chosen.includes("theory")) chosen.unshift("theory");
-      if (parsed.data.mode === "institution" && !chosen.includes("institution")) chosen.unshift("institution");
-      return chosen.filter((layer) => layer in LAYERS).slice(0, 2);
-    })(),
+      layers: selectLayers(parsed.data.mode, parsed.data.layers, move),
       subject: parsed.data.subject.slice(0, 60),
     };
   } catch {
@@ -337,17 +349,28 @@ const PLACES = new Set([
   "westminster","india","delhi","mumbai","brazil","sao","paulo","united","kingdom","states",
 ]);
 
+const YEAR = /^(19|20)\d{2}$/;
+
+/**
+ * Context words identify a time or a place, not the specific thing the move is
+ * about. A headline that only says "2025" or "Kenya" is related coverage, not
+ * evidence for the move.
+ */
+function isWeakTerm(term: string): boolean {
+  return PLACES.has(term) || YEAR.test(term);
+}
+
 /**
  * How strongly a headline is actually about the move:
  * 2 = it names the specific thing (an act, a person, an institution),
- * 1 = it only names the place, 0 = neither.
+ * 1 = it only names a place or a year, 0 = neither.
  */
 export function matchStrength(title: string, terms: string[]): number {
   if (!terms.length) return 2;
   const haystack = title.toLowerCase();
   const matched = terms.filter((term) => haystack.includes(term));
   if (!matched.length) return 0;
-  return matched.some((term) => !PLACES.has(term)) ? 2 : 1;
+  return matched.some((term) => !isWeakTerm(term)) ? 2 : 1;
 }
 
 /** A hit is on topic only if its headline names something the move names. */
@@ -373,6 +396,29 @@ export function candidateEntities(input: string): string[] {
   return [...new Set([...trimmed, ...keepSingles])]
     .sort((a, b) => b.split(" ").length - a.split(" ").length || b.length - a.length)
     .slice(0, 5);
+}
+
+/**
+ * Bodies whose question is "who pays it and who decides". A court, tribunal or
+ * parliament is an institution too, but "largest donors" is not the question
+ * it answers — asking it returns whatever the search engine ranks, not evidence.
+ */
+const FUNDING_BODY =
+  /\b(agency|authority|commission|bank|fund|institute|institution|organisation|organization|office|secretariat|board|ministry|ministries|department|bureau|association|federation|coalition|alliance|broadcaster|university|foundation|trust|centre|center|laboratory|lab|programme|program|network|service)\b/i;
+const NON_FUNDING_BODY =
+  /\b(court|tribunal|judge|judiciary|parliament|senate|congress|assembly|police|army|military)\b/i;
+
+/**
+ * The one named body in the move that actually receives funding, if any.
+ * Empty when the move names only people, places, courts or governments — in
+ * that case the institution layer must not attach at all.
+ */
+export function fundedBody(input: string): string {
+  return (
+    candidateEntities(input).find(
+      (name) => FUNDING_BODY.test(name) && !NON_FUNDING_BODY.test(name),
+    ) ?? ""
+  );
 }
 
 type NewsHit = { title: string; date: string; outlet: string; url: string };
@@ -588,23 +634,28 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     : [];
 
   // Layer evidence: money and mandate are searched, never remembered.
-  const institutionName = candidateEntities(input)[0] ?? "";
-  const layerQueries =
-    decision.layers.includes("institution")
-      ? [
-          "annual report programme and budget",
-          "largest contributors funding share",
-          "board of governors composition",
-        ]
-      : decision.layers.includes("state")
-        ? ["foreign policy strategy record"]
-        : decision.layers.includes("ownership")
-          ? ["ownership subsidiary parent company"]
-          : decision.layers.includes("theory")
-            ? ["development discourse", "postcolonial theory inferiority"]
-            : [];
-  const layerHits = institutionName
-    ? (await Promise.all(layerQueries.map((query) => news(`${institutionName} ${query}`)))).flat()
+  // The institution layer may only search a body that actually receives
+  // funding; otherwise "largest donors" is asked of a court or a person and
+  // returns whatever the search engine ranks, not evidence.
+  const entityName = candidateEntities(input)[0] ?? "";
+  const funded = fundedBody(input);
+  const institution = decision.layers.includes("institution") ? funded : "";
+  const layerQueries = institution
+    ? [
+        "annual report programme and budget",
+        "largest contributors funding share",
+        "board of governors composition",
+      ]
+    : decision.layers.includes("state")
+      ? ["foreign policy strategy record"]
+      : decision.layers.includes("ownership")
+        ? ["ownership subsidiary parent company"]
+        : decision.layers.includes("theory")
+          ? ["development discourse", "postcolonial theory inferiority"]
+          : [];
+  const layerSubject = institution || entityName;
+  const layerHits = layerSubject
+    ? (await Promise.all(layerQueries.map((query) => news(`${layerSubject} ${query}`)))).flat()
     : [];
   void layerHits.length;
   const layerList = layerHits
@@ -615,14 +666,15 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
   // Figures live inside documents, never in headlines: read the two newest.
   const excerpts: string[] = [];
   // Encyclopedia bodies carry the funding tables that news headlines omit.
-  if ((decision.layers.includes("institution") || decision.layers.includes("ownership")) && institutionName) {
-    const body = await wikiBody(institutionName);
+  const referenceName = institution || (decision.layers.includes("ownership") ? entityName : "");
+  if (referenceName) {
+    const body = await wikiBody(referenceName);
     const money = moneySentences(body, 5);
-    if (process.env["ANALYST_DEBUG"]) console.log("[analyst] ref", institutionName, body.length, money.length);
-    if (money.length) excerpts.push(`FROM THE REFERENCE ENTRY ON ${institutionName}: ${money.join(" ").slice(0, 1200)}`);
+    if (process.env["ANALYST_DEBUG"]) console.log("[analyst] ref", referenceName, body.length, money.length);
+    if (money.length) excerpts.push(`FROM THE REFERENCE ENTRY ON ${referenceName}: ${money.join(" ").slice(0, 1200)}`);
   }
 
-  if (decision.layers.includes("institution") || decision.layers.includes("ownership")) {
+  if ((decision.layers.includes("institution") || decision.layers.includes("ownership")) && layerHits.length) {
     const { fetchArticleText } = await import("@/lib/threadwise/news-agent");
     const picks = layerHits.slice(0, 2);
     const texts = await Promise.all(

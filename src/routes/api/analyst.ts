@@ -51,7 +51,7 @@ export const Route = createFileRoute("/api/analyst")({
             return json({ ok: true, reading, ms: Date.now() - started }, 200);
           } catch (error) {
             console.error("[analyst] transcription failed:", error);
-            return json({ error: error instanceof Error ? error.message : "That screenshot could not be read." }, 502);
+            return json({ error: "That screenshot could not be read. Try a clearer crop." }, 502);
           }
         }
 
@@ -70,7 +70,7 @@ export const Route = createFileRoute("/api/analyst")({
             return json({ ok: true, answer, ms: Date.now() - started }, 200);
           } catch (error) {
             console.error("[analyst] question failed:", error);
-            return json({ error: error instanceof Error ? error.message : "The analyst could not answer." }, 502);
+            return json({ error: "The analyst could not answer that just now. Try again." }, 502);
           }
         }
 
@@ -87,10 +87,7 @@ export const Route = createFileRoute("/api/analyst")({
           return json({ ok: true, report, token, ms: Date.now() - started }, 200);
         } catch (error) {
           console.error("[analyst] failed:", error);
-          return json(
-            { error: error instanceof Error ? error.message : "The analyst could not finish this read." },
-            502,
-          );
+          return json({ error: "The analyst could not finish this read. Try again." }, 502);
         }
       },
     },

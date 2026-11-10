@@ -8,6 +8,11 @@ export const Route = createFileRoute("/api/publish-read")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const { clientKey, rateLimit } = await import("@/lib/threadwise/rate-limit");
+        if (!rateLimit(clientKey(request, "publish-read"), 30, 60 * 60 * 1000).ok) {
+          return json({ error: "Too many publish changes. Try again later." }, 429);
+        }
+
         let body: unknown;
         try {
           body = await request.json();

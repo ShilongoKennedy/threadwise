@@ -33,7 +33,7 @@ export const Route = createFileRoute("/api/analyst-watch")({
           return json({ ok: true, ...result }, 200);
         } catch (error) {
           console.error("[analyst-watch] failed:", error);
-          return json({ error: error instanceof Error ? error.message : "Could not keep those signals." }, 400);
+          return json({ error: "Could not keep those signals just now. Try again." }, 400);
         }
       },
     },

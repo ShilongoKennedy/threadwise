@@ -28,7 +28,7 @@ const inputSchema = z.object({
 
 export async function handleThreadwise(request: Request) {
   try {
-    const key = process.env["SUPABASE_PUBLISHABLE_KEY"] || process.env["SUPABASE_ANON_KEY"] || process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || process.env["VITE_SUPABASE_ANON_KEY"];
+    const key = serverEnv("SUPABASE_PUBLISHABLE_KEY") ?? serverEnv("SUPABASE_ANON_KEY");
     const url = serverEnv("SUPABASE_URL");
     const host = new URL(request.url).hostname;
     const isLoopback = host === "localhost" || host === "127.0.0.1" || host === "::1";

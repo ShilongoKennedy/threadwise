@@ -31,7 +31,7 @@ export const Route = createFileRoute("/api/analyst-redteam")({
           return json({ ok: true, ...result }, 200);
         } catch (error) {
           console.error("[red-team] failed:", error);
-          return json({ error: error instanceof Error ? error.message : "The red team could not be assembled." }, 502);
+          return json({ error: "The red team could not be assembled just now. Try again." }, 502);
         }
       },
     },
