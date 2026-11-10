@@ -230,6 +230,26 @@ function SharedRead() {
 
             <RedTeam report={report} />
 
+            <section>
+              <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
+                What this rests on
+              </p>
+              <ul className="space-y-1.5">
+                {report.sources.map((source) => (
+                  <li key={source.url}>
+                    <a
+                      href={source.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 hover:decoration-[#1A4BFF]"
+                    >
+                      {source.title} ↗
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
             <p className="border-t border-[#1A1A1A]/15 pt-3 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
               Produced by The Analyst · verify before you act
             </p>
@@ -393,6 +413,7 @@ function FileFinding({ token, note }: { token: string; note: string }) {
 
   const file = async (stance: "for" | "against") => {
     const { supabase } = await import("@/integrations/supabase/client");
+    await supabase.from("analyst_findings").delete().eq("question_id", selected).eq("read_token", token).eq("stance", stance);
     const { error } = await supabase.from("analyst_findings").insert({
       question_id: selected,
       read_token: token,
@@ -490,6 +511,8 @@ function Proposals({ report, token }: { report: Report; token: string }) {
 
   const fileAll = async () => {
     const { supabase } = await import("@/integrations/supabase/client");
+    const questionIds = [...new Set(items.map((item) => item.question_id))];
+    await supabase.from("analyst_findings").delete().eq("read_token", token).in("question_id", questionIds);
     await supabase.from("analyst_findings").insert(
       items.map((item) => ({ question_id: item.question_id, read_token: token, stance: item.stance, note: item.note })),
     );

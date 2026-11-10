@@ -482,7 +482,22 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     .map((entry) => ({ ...entry, score: freshness(entry.hits) }))
     .sort((a, b) => b.score - a.score)[0];
   const situation = best?.score ? best.candidate : "";
-  const situationHits = best?.score ? best.hits : [];
+
+  // Freshness alone let "campaign finance" attach American coverage to a Kenyan
+  // ruling. A hit must also name something the move names.
+  const GENERIC = new Set([
+    "court","high","supreme","finance","act","bill","law","government","minister","president",
+    "parliament","state","council","bank","party","election","police","judge","ruling","report",
+    "agency","committee","department","union","national","federal","international","new","the",
+  ]);
+  const anchors = new Set(
+    (input.match(/\b[A-Z][a-zA-Z]{4,}\b/g) ?? [])
+      .map((word) => word.toLowerCase())
+      .filter((word) => !GENERIC.has(word)),
+  );
+  const onTopic = (title: string) =>
+    anchors.size === 0 || [...anchors].some((anchor) => title.toLowerCase().includes(anchor));
+  const situationHits = best?.score ? best.hits.filter((hit) => onTopic(hit.title)) : [];
 
   // Layer evidence: money and mandate are searched, never remembered.
   const institutionName = candidateEntities(input)[0] ?? "";
@@ -1026,6 +1041,7 @@ export async function listCases(limit = 40): Promise<{ subject: string; reads: n
   const { data } = await supabase
     .from("analyst_reads")
     .select("subject, created_at")
+    .eq("is_public", true)
     .not("subject", "is", null)
     .order("created_at", { ascending: false })
     .limit(400);
@@ -1053,7 +1069,8 @@ export async function caseReads(subject: string, limit = 20): Promise<
   const { data } = await supabase
     .from("analyst_reads")
     .select("token, input, report, created_at")
-    .ilike("subject", subject)
+    .eq("is_public", true)
+    .eq("subject", subject)
     .order("created_at", { ascending: false })
     .limit(limit);
 

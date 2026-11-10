@@ -348,6 +348,17 @@ function IndexLink({ n, title }: { n: string; title: string }) {
   );
 }
 
+/** The first number after whatever sections the read actually carries. */
+function nextNumber(report: { sections?: { title: string }[] }): string {
+  const used = report.sections?.length ?? 0;
+  const fallback = used ? used : 6;
+  return String(fallback + 1).padStart(2, "0");
+}
+
+function after(report: { sections?: { title: string }[] }, offset: number): string {
+  return String((report.sections?.length ?? 6) + offset).padStart(2, "0");
+}
+
 function Section({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {
   return (
     <section id={`s-${n}`} className="scroll-mt-24 border-t border-[#1A1A1A]/15 py-5 first:border-t-0 first:pt-0">
@@ -467,6 +478,8 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         </>
       )}
 
+      {(report.sections?.length ?? 0) === 0 && (
+        <>
       <Section n="03" title="Who gains, who pays">
         <ul className="space-y-3">
           {report.stakes.map((stake) => (
@@ -509,14 +522,16 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
       <Section n="06" title="The counter-reading">
         <p className="border-l-2 border-[#1A4BFF] pl-3">{report.counter_reading}</p>
       </Section>
+        </>
+      )}
 
-      <Section n="07" title="What would prove this wrong">
+      <Section n={nextNumber(report)} title="What would prove this wrong">
         <p className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 text-[15px] leading-relaxed">
           {report.falsifier}
         </p>
       </Section>
 
-      <Section n="08" title="What to watch">
+      <Section n={after(report, 2)} title="What to watch">
         <ul className="space-y-2">
           {report.watch.map((item) => (
             <li key={item.signal} className="flex items-baseline justify-between gap-4 border-b border-[#1A1A1A]/10 pb-2">
@@ -529,7 +544,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         </ul>
       </Section>
 
-      <Section n="09" title="Keep these signals">
+      <Section n={after(report, 3)} title="Keep these signals">
         {token ? (
           <div className="flex flex-wrap items-center gap-3">
             <button
@@ -579,7 +594,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         )}
       </Section>
 
-      <Section n="10" title="Interrogate this read">
+      <Section n={after(report, 4)} title="Interrogate this read">
         <div className="space-y-3">
           {thread.map((turn, index) => (
             <div
@@ -642,7 +657,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
       </Section>
 
       {report.sources.length > 0 && (
-        <Section n="11" title="What this rests on">
+        <Section n={after(report, 5)} title="What this rests on">
           <ul className="space-y-1.5">
             {report.sources.map((source) => (
               <li key={source.url}>
