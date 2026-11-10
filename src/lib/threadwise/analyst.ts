@@ -1955,6 +1955,66 @@ export type FindingProposal = {
   note: string;
 };
 
+export type QuestionGap = {
+  counter_question: string;
+  settling_evidence: string;
+  hidden_assumption: string;
+};
+
+/**
+ * The gap finder: when the evidence is one-sided or absent, name the question
+ * that would challenge it, the evidence that would settle it, and the assumption
+ * the current evidence rests on.
+ */
+export async function questionGap(
+  question: string,
+  findings: { stance: string; note: string }[],
+): Promise<QuestionGap | null> {
+  if (!question.trim()) return null;
+
+  const evidence = findings
+    .slice(0, 20)
+    .map((finding) => `- ${finding.stance}: ${finding.note}`)
+    .join("\n");
+
+  const { text } = await generateText({
+    model: getModel("deepseek"),
+    system: METHOD,
+    prompt: `THE STANDING QUESTION:
+${question.slice(0, 500)}
+
+THE EVIDENCE FILED SO FAR:
+${evidence || "(none)"}
+
+The reader wants to think better, not to be reassured. The evidence above is ${
+      findings.length === 0 ? "empty" : "the only material on the record"
+    }.
+
+Return JSON only:
+{"counter_question":string,"settling_evidence":string,"hidden_assumption":string}
+
+Rules:
+- counter_question: the strongest question that challenges the current lean, under 30 words. It must name an actor, mechanism, comparison or time horizon. No generic "what if the opposite?".
+- settling_evidence: the specific document, number, vote, ruling, dataset or dated observation that would settle it, under 40 words. Name where to look.
+- hidden_assumption: the assumption the current evidence depends on, under 30 words.
+- If there is no evidence, counter_question asks what would count as first evidence; settling_evidence names the first document or record to get.
+- Do not restate the question. Do not offer both sides in general terms.`,
+    temperature: 0.3,
+    maxOutputTokens: 500,
+    maxRetries: 0,
+  });
+
+  const parsed = z
+    .object({
+      counter_question: z.string().trim().max(300).default(""),
+      settling_evidence: z.string().trim().max(400).default(""),
+      hidden_assumption: z.string().trim().max(300).default(""),
+    })
+    .safeParse(extractJson<unknown>(text));
+
+  return parsed.success ? parsed.data : null;
+}
+
 /** Which of the reader's open questions this read actually bears on, and how. */
 export async function proposeFindings(
   report: AnalystReport,

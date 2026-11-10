@@ -29,6 +29,7 @@ import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
 import { Route as ApiModelHealthRouteImport } from './routes/api/model-health'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
+import { Route as ApiQuestionGapRouteImport } from './routes/api/question-gap'
 import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
@@ -137,6 +138,11 @@ const ApiPublishReadRoute = ApiPublishReadRouteImport.update({
   path: '/api/publish-read',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiQuestionGapRoute = ApiQuestionGapRouteImport.update({
+  id: '/api/question-gap',
+  path: '/api/question-gap',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiReadsPublicRoute = ApiReadsPublicRouteImport.update({
   id: '/api/reads-public',
   path: '/api/reads-public',
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/publish-read': typeof ApiPublishReadRoute
+  '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/publish-read': typeof ApiPublishReadRoute
+  '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -253,6 +261,7 @@ export interface FileRoutesById {
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/publish-read': typeof ApiPublishReadRoute
+  '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -284,6 +293,7 @@ export interface FileRouteTypes {
     | '/api/model-health'
     | '/api/news-brief'
     | '/api/publish-read'
+    | '/api/question-gap'
     | '/api/reads-public'
     | '/api/threadwise'
     | '/auth/callback'
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
     | '/api/model-health'
     | '/api/news-brief'
     | '/api/publish-read'
+    | '/api/question-gap'
     | '/api/reads-public'
     | '/api/threadwise'
     | '/auth/callback'
@@ -342,6 +353,7 @@ export interface FileRouteTypes {
     | '/api/model-health'
     | '/api/news-brief'
     | '/api/publish-read'
+    | '/api/question-gap'
     | '/api/reads-public'
     | '/api/threadwise'
     | '/auth/callback'
@@ -372,6 +384,7 @@ export interface RootRouteChildren {
   ApiModelHealthRoute: typeof ApiModelHealthRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiPublishReadRoute: typeof ApiPublishReadRoute
+  ApiQuestionGapRoute: typeof ApiQuestionGapRoute
   ApiReadsPublicRoute: typeof ApiReadsPublicRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
@@ -523,6 +536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublishReadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/question-gap': {
+      id: '/api/question-gap'
+      path: '/api/question-gap'
+      fullPath: '/api/question-gap'
+      preLoaderRoute: typeof ApiQuestionGapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/reads-public': {
       id: '/api/reads-public'
       path: '/api/reads-public'
@@ -596,6 +616,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiModelHealthRoute: ApiModelHealthRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiPublishReadRoute: ApiPublishReadRoute,
+  ApiQuestionGapRoute: ApiQuestionGapRoute,
   ApiReadsPublicRoute: ApiReadsPublicRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
