@@ -165,13 +165,22 @@ function DigestPage() {
               Threadwise <span className="text-[#1A4BFF]">//</span> The record
             </span>
           </div>
-          <Link
-            to="/analyst"
-            className="group flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white shadow-[2px_2px_0_0_#1A1A1A] transition-all hover:bg-[#1A1A1A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-          >
-            Ask the analyst
-            <ArrowUpRight className="h-3 w-3" />
-          </Link>
+          <div className="flex shrink-0 items-center gap-3">
+            <Link
+              to="/profile"
+              className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/60 transition-colors hover:text-[#1A4BFF] sm:text-[9px]"
+            >
+              <span className="hidden sm:inline">Thinking profile</span>
+              <span className="sm:hidden">Profile</span>
+            </Link>
+            <Link
+              to="/analyst"
+              className="group flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white shadow-[2px_2px_0_0_#1A1A1A] transition-all hover:bg-[#1A1A1A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+            >
+              Ask the analyst
+              <ArrowUpRight className="h-3 w-3" />
+            </Link>
+          </div>
         </div>
       </header>
 

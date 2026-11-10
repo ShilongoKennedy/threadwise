@@ -15,6 +15,7 @@ import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as ReadsRouteImport } from './routes/reads'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -31,6 +32,7 @@ import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
 import { Route as ApiQuestionGapRouteImport } from './routes/api/question-gap'
 import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
+import { Route as ApiThinkingProfileRouteImport } from './routes/api/thinking-profile'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
@@ -66,6 +68,11 @@ const LoginRoute = LoginRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const QuestionsRoute = QuestionsRouteImport.update({
@@ -148,6 +155,11 @@ const ApiReadsPublicRoute = ApiReadsPublicRouteImport.update({
   path: '/api/reads-public',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiThinkingProfileRoute = ApiThinkingProfileRouteImport.update({
+  id: '/api/thinking-profile',
+  path: '/api/thinking-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiThreadwiseRoute = ApiThreadwiseRouteImport.update({
   id: '/api/threadwise',
   path: '/api/threadwise',
@@ -186,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
@@ -202,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
+  '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
@@ -216,6 +230,7 @@ export interface FileRoutesByTo {
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
@@ -232,6 +247,7 @@ export interface FileRoutesByTo {
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
+  '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
@@ -247,6 +263,7 @@ export interface FileRoutesById {
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
@@ -263,6 +280,7 @@ export interface FileRoutesById {
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
+  '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
@@ -279,6 +297,7 @@ export interface FileRouteTypes {
     | '/digest'
     | '/login'
     | '/privacy'
+    | '/profile'
     | '/questions'
     | '/reads'
     | '/terms'
@@ -295,6 +314,7 @@ export interface FileRouteTypes {
     | '/api/publish-read'
     | '/api/question-gap'
     | '/api/reads-public'
+    | '/api/thinking-profile'
     | '/api/threadwise'
     | '/auth/callback'
     | '/case/$subject'
@@ -309,6 +329,7 @@ export interface FileRouteTypes {
     | '/digest'
     | '/login'
     | '/privacy'
+    | '/profile'
     | '/questions'
     | '/reads'
     | '/terms'
@@ -325,6 +346,7 @@ export interface FileRouteTypes {
     | '/api/publish-read'
     | '/api/question-gap'
     | '/api/reads-public'
+    | '/api/thinking-profile'
     | '/api/threadwise'
     | '/auth/callback'
     | '/case/$subject'
@@ -339,6 +361,7 @@ export interface FileRouteTypes {
     | '/digest'
     | '/login'
     | '/privacy'
+    | '/profile'
     | '/questions'
     | '/reads'
     | '/terms'
@@ -355,6 +378,7 @@ export interface FileRouteTypes {
     | '/api/publish-read'
     | '/api/question-gap'
     | '/api/reads-public'
+    | '/api/thinking-profile'
     | '/api/threadwise'
     | '/auth/callback'
     | '/case/$subject'
@@ -370,6 +394,7 @@ export interface RootRouteChildren {
   DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProfileRoute: typeof ProfileRoute
   QuestionsRoute: typeof QuestionsRoute
   ReadsRoute: typeof ReadsRoute
   TermsRoute: typeof TermsRoute
@@ -386,6 +411,7 @@ export interface RootRouteChildren {
   ApiPublishReadRoute: typeof ApiPublishReadRoute
   ApiQuestionGapRoute: typeof ApiQuestionGapRoute
   ApiReadsPublicRoute: typeof ApiReadsPublicRoute
+  ApiThinkingProfileRoute: typeof ApiThinkingProfileRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CaseSubjectRoute: typeof CaseSubjectRoute
@@ -436,6 +462,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/questions': {
@@ -550,6 +583,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiReadsPublicRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/thinking-profile': {
+      id: '/api/thinking-profile'
+      path: '/api/thinking-profile'
+      fullPath: '/api/thinking-profile'
+      preLoaderRoute: typeof ApiThinkingProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/threadwise': {
       id: '/api/threadwise'
       path: '/api/threadwise'
@@ -602,6 +642,7 @@ const rootRouteChildren: RootRouteChildren = {
   DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
+  ProfileRoute: ProfileRoute,
   QuestionsRoute: QuestionsRoute,
   ReadsRoute: ReadsRoute,
   TermsRoute: TermsRoute,
@@ -618,6 +659,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublishReadRoute: ApiPublishReadRoute,
   ApiQuestionGapRoute: ApiQuestionGapRoute,
   ApiReadsPublicRoute: ApiReadsPublicRoute,
+  ApiThinkingProfileRoute: ApiThinkingProfileRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CaseSubjectRoute: CaseSubjectRoute,
