@@ -20,6 +20,12 @@ export const Route = createFileRoute("/practice/$token")({
       },
     ],
   }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    kind:
+      search.kind === "steelman" || search.kind === "teach" || search.kind === "falsifier"
+        ? search.kind
+        : undefined,
+  }),
   component: PracticePage,
 });
 
@@ -55,10 +61,11 @@ const EXERCISES: {
 
 function PracticePage() {
   const { token } = Route.useParams();
+  const { kind: requestedKind } = Route.useSearch();
   const [report, setReport] = useState<Report | null>(null);
   const [input, setInput] = useState("");
   const [state, setState] = useState<"loading" | "ready" | "missing">("loading");
-  const [kind, setKind] = useState<PracticeKind>("falsifier");
+  const [kind, setKind] = useState<PracticeKind>(requestedKind ?? "falsifier");
   const [answer, setAnswer] = useState("");
   const [revealed, setRevealed] = useState(false);
   const recorded = useRef(false);

@@ -4,9 +4,16 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import type { ThinkingProfile } from "@/lib/threadwise/thinking-profile";
 import {
+  chooseDrill,
   loadPracticeAttempts,
+  loadWeeklyDrill,
   mergePracticeAttempts,
   practiceSummary,
+  saveWeeklyDrill,
+  weekKey,
+  type Drill,
+  type DrillRead,
+  type PracticeAttempt,
   type PracticeSummary,
 } from "@/lib/threadwise/practice";
 import { loadRemotePractice } from "@/lib/threadwise/practice-sync";
@@ -29,6 +36,9 @@ function ProfilePage() {
   const [profile, setProfile] = useState<ThinkingProfile | null>(null);
   const [state, setState] = useState<"loading" | "anon" | "ready" | "error">("loading");
   const [practice, setPractice] = useState<PracticeSummary | null>(null);
+  const [attempts, setAttempts] = useState<PracticeAttempt[]>([]);
+  const [reads, setReads] = useState<DrillRead[]>([]);
+  const [drill, setDrill] = useState<Drill | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -40,9 +50,14 @@ function ProfilePage() {
         if (alive) setState("anon");
         return;
       }
-      const response = await fetch("/api/thinking-profile", {
-        headers: { Authorization: `Bearer ${jwt}` },
-      });
+      const [response, recentResponse] = await Promise.all([
+        fetch("/api/thinking-profile", {
+          headers: { Authorization: `Bearer ${jwt}` },
+        }),
+        fetch("/api/analyst-recent", {
+          headers: { Authorization: `Bearer ${jwt}` },
+        }),
+      ]);
       if (!alive) return;
       if (!response.ok) {
         setState("error");
@@ -54,6 +69,10 @@ function ProfilePage() {
         return;
       }
       setProfile(body.profile);
+      if (recentResponse.ok) {
+        const recent = (await recentResponse.json()) as { reads?: DrillRead[] };
+        setReads(recent.reads ?? []);
+      }
       setState("ready");
     })();
     return () => {
@@ -67,12 +86,27 @@ function ProfilePage() {
       const local = loadPracticeAttempts();
       const remote = await loadRemotePractice();
       if (!alive) return;
-      setPractice(practiceSummary(mergePracticeAttempts(local, remote)));
+      const merged = mergePracticeAttempts(local, remote);
+      setAttempts(merged);
+      setPractice(practiceSummary(merged));
     })();
     return () => {
       alive = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!practice || !reads.length) return;
+    const stored = loadWeeklyDrill();
+    const current = weekKey();
+    if (stored?.week === current) {
+      setDrill(stored);
+      return;
+    }
+    const chosen = chooseDrill(practice, attempts, reads);
+    setDrill(chosen);
+    if (chosen) saveWeeklyDrill(chosen);
+  }, [practice, attempts, reads]);
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
@@ -163,6 +197,36 @@ function ProfilePage() {
                     </div>
                   ))}
                 </section>
+
+                {drill && (
+                  <section className="mt-6 border-2 border-[#1A4BFF] bg-white">
+                    <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1A4BFF] px-3 py-1.5">
+                      <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-white">
+                        This week&rsquo;s drill ·{" "}
+                        {drill.kind === "teach" ? "teach-back" : drill.kind}
+                      </span>
+                      <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-white/70">
+                        {drill.week}
+                      </span>
+                    </div>
+                    <div className="px-4 py-3">
+                      <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
+                        {drill.title}
+                      </p>
+                      <p className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/60">
+                        {drill.reason}
+                      </p>
+                      <Link
+                        to="/practice/$token"
+                        params={{ token: drill.token }}
+                        search={{ kind: drill.kind }}
+                        className="mt-3 inline-flex border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]"
+                      >
+                        Start drill →
+                      </Link>
+                    </div>
+                  </section>
+                )}
 
                 <section className="mt-6">
                   <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">

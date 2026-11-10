@@ -1,11 +1,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   checkPractice,
+  chooseDrill,
   loadPracticeAttempts,
+  loadWeeklyDrill,
   mergePracticeAttempts,
   namedEntities,
   practiceSummary,
   recordPracticeAttempt,
+  saveWeeklyDrill,
+  weekKey,
   type PracticeAttempt,
 } from "./practice";
 
@@ -129,5 +133,54 @@ describe("mergePracticeAttempts", () => {
   it("prefers the synced copy when the same key appears twice", () => {
     const merged = mergePracticeAttempts([local], [{ ...local, passed: 2 }]);
     expect(merged[0]?.passed).toBe(2);
+  });
+});
+
+describe("weekly drill", () => {
+  const reads = [
+    { token: "read-a", input: "The IAEA raised concerns about Iran.", at: "2026-11-09T10:00:00Z" },
+    { token: "read-b", input: "The court ruled against the finance act.", at: "2026-11-08T10:00:00Z" },
+    { token: "read-c", input: "A minister resigned before the budget vote.", at: "2026-11-07T10:00:00Z" },
+  ];
+  const attempts: PracticeAttempt[] = [
+    { token: "read-a", kind: "falsifier", passed: 2, total: 5, at: "2026-11-01T10:00:00Z" },
+    { token: "read-b", kind: "falsifier", passed: 3, total: 5, at: "2026-11-02T10:00:00Z" },
+    { token: "read-a", kind: "steelman", passed: 5, total: 5, at: "2026-11-03T10:00:00Z" },
+  ];
+
+  it("uses the weakest practiced exercise and a read not yet drilled for it", () => {
+    const drill = chooseDrill(
+      practiceSummary(attempts),
+      attempts,
+      reads,
+      new Date("2026-11-10T12:00:00Z"),
+    );
+    expect(drill?.kind).toBe("falsifier");
+    expect(drill?.token).toBe("read-c");
+    expect(drill?.reason).toContain("50%");
+  });
+
+  it("starts with the falsifier when nothing has been practiced", () => {
+    const drill = chooseDrill(
+      practiceSummary([]),
+      [],
+      reads,
+      new Date("2026-11-10T12:00:00Z"),
+    );
+    expect(drill?.kind).toBe("falsifier");
+    expect(drill?.token).toBe("read-a");
+    expect(drill?.reason).toContain("No practice recorded");
+  });
+
+  it("pins the drill to an ISO week", () => {
+    expect(weekKey(new Date("2026-11-10T12:00:00Z"))).toMatch(/^2026-W\d{2}$/);
+    const drill = chooseDrill(
+      practiceSummary([]),
+      [],
+      reads,
+      new Date("2026-11-10T12:00:00Z"),
+    )!;
+    saveWeeklyDrill(drill);
+    expect(loadWeeklyDrill()?.week).toBe(drill.week);
   });
 });

@@ -222,3 +222,93 @@ export function mergePracticeAttempts(
   }
   return [...byKey.values()].sort((a, b) => a.at.localeCompare(b.at));
 }
+
+export type DrillRead = { token: string; input: string; at: string };
+
+export type Drill = {
+  week: string;
+  kind: PracticeKind;
+  token: string;
+  title: string;
+  reason: string;
+};
+
+const DRILL_KEY = "threadwise:drill:v1";
+
+/** ISO week, so the drill changes on Monday rather than on every profile load. */
+export function weekKey(date = new Date()): string {
+  const utc = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const day = utc.getUTCDay() || 7;
+  utc.setUTCDate(utc.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
+  const week = Math.ceil(((utc.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
+  return `${utc.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+}
+
+export function loadWeeklyDrill(): Drill | null {
+  try {
+    const raw = localStorage.getItem(DRILL_KEY);
+    if (!raw) return null;
+    const drill = JSON.parse(raw) as Drill;
+    if (
+      drill &&
+      typeof drill.week === "string" &&
+      typeof drill.token === "string" &&
+      ["falsifier", "steelman", "teach"].includes(drill.kind) &&
+      typeof drill.title === "string" &&
+      typeof drill.reason === "string"
+    ) {
+      return drill;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveWeeklyDrill(drill: Drill): void {
+  try {
+    localStorage.setItem(DRILL_KEY, JSON.stringify(drill));
+  } catch {
+    // Private mode: the drill can still be shown for this load.
+  }
+}
+
+/** The weakest practiced exercise, applied to a read not yet drilled for it. */
+export function chooseDrill(
+  summary: PracticeSummary,
+  attempts: PracticeAttempt[],
+  reads: DrillRead[],
+  now = new Date(),
+): Drill | null {
+  if (!reads.length) return null;
+
+  const tried = summary.byKind;
+  const slipping = tried.find((item) => item.trend === "slipping");
+  const weakest =
+    slipping ??
+    [...tried].sort(
+      (a, b) => a.averagePct - b.averagePct || a.attempts - b.attempts,
+    )[0];
+  const kind = weakest?.kind ?? "falsifier";
+  const label = kind === "teach" ? "teach-back" : kind;
+  const practiced = new Set(
+    attempts.filter((attempt) => attempt.kind === kind).map((attempt) => attempt.token),
+  );
+  const read = reads.find((candidate) => !practiced.has(candidate.token)) ?? reads[0]!;
+
+  const reason =
+    weakest?.trend === "slipping"
+      ? `Your ${label} is slipping (${weakest.deltaPct} points). This read needs that move.`
+      : weakest
+        ? `Your ${label} average is ${weakest.averagePct}% — the weakest of the exercises you have practiced.`
+        : "No practice recorded yet. Start with the falsifier: it is the move everything else depends on.";
+
+  return {
+    week: weekKey(now),
+    kind,
+    token: read.token,
+    title: read.input.slice(0, 160),
+    reason,
+  };
+}
