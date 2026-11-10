@@ -7,6 +7,7 @@ import {
   recordPracticeAttempt,
   type PracticeKind,
 } from "@/lib/threadwise/practice";
+import { savePracticeAttempt } from "@/lib/threadwise/practice-sync";
 
 export const Route = createFileRoute("/practice/$token")({
   head: ({ params }) => ({
@@ -98,13 +99,15 @@ function PracticePage() {
   useEffect(() => {
     if (!revealed || !report || !checks.length || recorded.current) return;
     recorded.current = true;
-    recordPracticeAttempt({
+    const attempt = {
       token,
       kind,
       passed: checks.filter((check) => check.passed).length,
       total: checks.length,
       at: new Date().toISOString(),
-    });
+    };
+    recordPracticeAttempt(attempt);
+    void savePracticeAttempt(attempt);
   }, [revealed, checks, report, kind, token]);
 
   const passed = checks.filter((check) => check.passed).length;

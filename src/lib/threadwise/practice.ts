@@ -210,3 +210,15 @@ export function practiceSummary(attempts: PracticeAttempt[]): PracticeSummary {
     byKind,
   };
 }
+
+/** Local and synced attempts share a key, so a device switch does not double-count. */
+export function mergePracticeAttempts(
+  local: PracticeAttempt[],
+  remote: PracticeAttempt[],
+): PracticeAttempt[] {
+  const byKey = new Map<string, PracticeAttempt>();
+  for (const attempt of [...local, ...remote]) {
+    byKey.set(`${attempt.token}|${attempt.kind}|${attempt.at}`, attempt);
+  }
+  return [...byKey.values()].sort((a, b) => a.at.localeCompare(b.at));
+}

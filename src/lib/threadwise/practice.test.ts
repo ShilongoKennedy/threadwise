@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   checkPractice,
   loadPracticeAttempts,
+  mergePracticeAttempts,
   namedEntities,
   practiceSummary,
   recordPracticeAttempt,
@@ -108,5 +109,25 @@ describe("practice record", () => {
     expect(falsifier?.trend).toBe("improving");
     expect(falsifier?.deltaPct).toBeGreaterThan(0);
     expect(summary.byKind.find((item) => item.kind === "steelman")?.trend).toBe("starting");
+  });
+});
+
+describe("mergePracticeAttempts", () => {
+  const local = {
+    token: "read-a",
+    kind: "falsifier" as const,
+    passed: 4,
+    total: 5,
+    at: "2026-11-01T10:00:00Z",
+  };
+
+  it("does not double-count the same attempt", () => {
+    const merged = mergePracticeAttempts([local], [{ ...local }]);
+    expect(merged).toHaveLength(1);
+  });
+
+  it("prefers the synced copy when the same key appears twice", () => {
+    const merged = mergePracticeAttempts([local], [{ ...local, passed: 2 }]);
+    expect(merged[0]?.passed).toBe(2);
   });
 });

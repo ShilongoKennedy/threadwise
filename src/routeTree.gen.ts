@@ -29,6 +29,7 @@ import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
 import { Route as ApiModelHealthRouteImport } from './routes/api/model-health'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
+import { Route as ApiPracticeRouteImport } from './routes/api/practice'
 import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
 import { Route as ApiQuestionGapRouteImport } from './routes/api/question-gap'
 import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
@@ -141,6 +142,11 @@ const ApiNewsBriefRoute = ApiNewsBriefRouteImport.update({
   path: '/api/news-brief',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPracticeRoute = ApiPracticeRouteImport.update({
+  id: '/api/practice',
+  path: '/api/practice',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublishReadRoute = ApiPublishReadRouteImport.update({
   id: '/api/publish-read',
   path: '/api/publish-read',
@@ -218,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/practice': typeof ApiPracticeRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
@@ -251,6 +258,7 @@ export interface FileRoutesByTo {
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/practice': typeof ApiPracticeRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/practice': typeof ApiPracticeRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
@@ -320,6 +329,7 @@ export interface FileRouteTypes {
     | '/api/check-watches'
     | '/api/model-health'
     | '/api/news-brief'
+    | '/api/practice'
     | '/api/publish-read'
     | '/api/question-gap'
     | '/api/reads-public'
@@ -353,6 +363,7 @@ export interface FileRouteTypes {
     | '/api/check-watches'
     | '/api/model-health'
     | '/api/news-brief'
+    | '/api/practice'
     | '/api/publish-read'
     | '/api/question-gap'
     | '/api/reads-public'
@@ -386,6 +397,7 @@ export interface FileRouteTypes {
     | '/api/check-watches'
     | '/api/model-health'
     | '/api/news-brief'
+    | '/api/practice'
     | '/api/publish-read'
     | '/api/question-gap'
     | '/api/reads-public'
@@ -420,6 +432,7 @@ export interface RootRouteChildren {
   ApiCheckWatchesRoute: typeof ApiCheckWatchesRoute
   ApiModelHealthRoute: typeof ApiModelHealthRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
+  ApiPracticeRoute: typeof ApiPracticeRoute
   ApiPublishReadRoute: typeof ApiPublishReadRoute
   ApiQuestionGapRoute: typeof ApiQuestionGapRoute
   ApiReadsPublicRoute: typeof ApiReadsPublicRoute
@@ -575,6 +588,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiNewsBriefRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/practice': {
+      id: '/api/practice'
+      path: '/api/practice'
+      fullPath: '/api/practice'
+      preLoaderRoute: typeof ApiPracticeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/publish-read': {
       id: '/api/publish-read'
       path: '/api/publish-read'
@@ -676,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCheckWatchesRoute: ApiCheckWatchesRoute,
   ApiModelHealthRoute: ApiModelHealthRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
+  ApiPracticeRoute: ApiPracticeRoute,
   ApiPublishReadRoute: ApiPublishReadRoute,
   ApiQuestionGapRoute: ApiQuestionGapRoute,
   ApiReadsPublicRoute: ApiReadsPublicRoute,

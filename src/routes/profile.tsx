@@ -5,9 +5,11 @@ import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import type { ThinkingProfile } from "@/lib/threadwise/thinking-profile";
 import {
   loadPracticeAttempts,
+  mergePracticeAttempts,
   practiceSummary,
   type PracticeSummary,
 } from "@/lib/threadwise/practice";
+import { loadRemotePractice } from "@/lib/threadwise/practice-sync";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -60,7 +62,16 @@ function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    setPractice(practiceSummary(loadPracticeAttempts()));
+    let alive = true;
+    void (async () => {
+      const local = loadPracticeAttempts();
+      const remote = await loadRemotePractice();
+      if (!alive) return;
+      setPractice(practiceSummary(mergePracticeAttempts(local, remote)));
+    })();
+    return () => {
+      alive = false;
+    };
   }, []);
 
   return (
@@ -310,7 +321,7 @@ function ProfilePage() {
                         Practice
                       </h2>
                       <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-                        {practice.total} attempt{practice.total === 1 ? "" : "s"} · this device
+                        {practice.total} attempt{practice.total === 1 ? "" : "s"} · local record
                       </span>
                     </div>
                     <ul className="mt-3 space-y-2">
@@ -331,7 +342,7 @@ function ProfilePage() {
                       ))}
                     </ul>
                     <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-                      Structural checks only · stored in this browser
+                      Structural checks only · local record; sync is best-effort
                     </p>
                   </section>
                 )}
