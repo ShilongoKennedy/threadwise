@@ -70,6 +70,13 @@ export const analystSchema = z.object({
   confidence: z.enum(["documented", "inferred", "speculative"]).default("inferred"),
 });
 
+const patchItemSchema = z.object({
+  section: z.string().trim().max(120).default(""),
+  find: z.string().trim().min(3).max(400),
+  replace: z.string().trim().max(400).default(""),
+  reason: z.string().trim().max(300).default(""),
+});
+
 export const reviewSchema = z.object({
   verdict: z.enum(["grounded", "mixed", "unsupported"]).default("mixed"),
   supported: z.number().int().min(0).max(50).default(0),
@@ -83,23 +90,14 @@ export const reviewSchema = z.object({
     )
     .max(4)
     .default([]),
+  patches: z.array(patchItemSchema).max(6).default([]),
   missing: z.array(z.string().trim().max(300)).max(3).default([]),
 });
 
 export type ReadReview = z.infer<typeof reviewSchema> & { by?: string };
 
 export const patchSchema = z.object({
-  patches: z
-    .array(
-      z.object({
-        section: z.string().trim().max(120).default(""),
-        find: z.string().trim().min(3).max(400),
-        replace: z.string().trim().max(400).default(""),
-        reason: z.string().trim().max(300).default(""),
-      }),
-    )
-    .max(8)
-    .default([]),
+  patches: z.array(patchItemSchema).max(8).default([]),
 });
 
 export type ReadRevision = { patched: number; notes: string[] };
@@ -366,16 +364,55 @@ const GENERIC_WORDS = new Set([
   "news","update","statement","official","spokesman","spokesperson","analysis","opinion",
 ]);
 
-/** The words that make this move searchable: names, places, and years. */
+/** Common words that make a search broad rather than specific. */
+const TERM_STOP = new Set([
+  "about","after","against","amid","among","and","another","are","because","been","before",
+  "being","between","both","but","called","came","can","could","during","each","even","every",
+  "from","had","has","have","having","here","into","its","just","like","made","make","many",
+  "more","most","much","must","near","need","never","now","off","once","only","other","our",
+  "out","over","own","said","same","says","seen","should","since","some","such","than","that",
+  "the","their","them","then","there","these","they","this","those","through","told","too",
+  "under","until","upon","very","was","were","what","when","where","which","while","who","why",
+  "will","with","would","year","years","concerns","according","raised","added","reports",
+  "report","programme","program","people","government","official","officials","country",
+  "state","week","day","time","case","cases","ruled","says","told","seen","blocks","decision",
+]);
+
+/** The words that make this move searchable: names, phrases, content words, and years. */
 export function distinctiveTerms(input: string): string[] {
-  const named = (input.match(/\b[A-Z][a-zA-Z]{4,}\b/g) ?? [])
+  const phraseRuns = (input.match(/\b[A-Z][\p{L}]+(?:\s+[A-Z][\p{L}]+){1,5}\b/gu) ?? [])
+    .map((run) => run.replace(/^(The|A|An)\s+/i, "").toLowerCase())
+    .filter((run) => run.split(" ").length >= 2);
+
+  const phrases: string[] = [];
+  for (const run of phraseRuns) {
+    phrases.push(run);
+    const words = run.split(" ");
+    // "International Atomic Energy Agency" also has to match "atomic energy".
+    if (words.length > 2) phrases.push(words.slice(1, 3).join(" "));
+  }
+
+  const covered = new Set(phrases.flatMap((phrase) => phrase.split(" ")));
+
+  const acronyms = (input.match(/\b[A-Z]{2,6}\b/g) ?? []).map((word) => word.toLowerCase());
+
+  const named = (input.match(/\b[A-Z][\p{L}]{2,}\b/gu) ?? [])
     .map((word) => word.toLowerCase())
-    .filter((word) => !GENERIC_WORDS.has(word));
-  const phrases = (input.match(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3}(?:\s+\d{4})?)\b/g) ?? []).map((phrase) =>
-    phrase.toLowerCase(),
-  );
+    .filter(
+      (word) =>
+        !GENERIC_WORDS.has(word) && !TERM_STOP.has(word) && !covered.has(word),
+    );
+
+  const lower = (input.match(/\b[a-z][a-z'-]{3,}\b/g) ?? [])
+    .map((word) => word.toLowerCase())
+    .filter(
+      (word) =>
+        !GENERIC_WORDS.has(word) && !TERM_STOP.has(word) && !covered.has(word),
+    );
+
   const years = (input.match(/\b(19|20)\d{2}\b/g) ?? []).map(String);
-  return [...new Set([...named, ...phrases, ...years])].slice(0, 6);
+
+  return [...new Set([...phrases, ...acronyms, ...named, ...lower, ...years])].slice(0, 8);
 }
 
 const PLACES = new Set([
@@ -412,6 +449,12 @@ export function matchStrength(title: string, terms: string[]): number {
 /** A hit is on topic only if its headline names something the move names. */
 export function mentionsTerm(title: string, terms: string[]): boolean {
   return matchStrength(title, terms) > 0;
+}
+
+/** How many of the move's terms the headline actually names. */
+export function matchCount(title: string, terms: string[]): number {
+  const haystack = title.toLowerCase();
+  return terms.filter((term) => haystack.includes(term)).length;
 }
 
 export function candidateEntities(input: string): string[] {
@@ -638,6 +681,98 @@ async function news(query: string, edition?: { gl: string; hl: string; ceid: str
   }
 }
 
+/** Bing News wraps the publisher URL in an apiclick redirect; pull it out. */
+export function publisherUrl(link: string): string {
+  try {
+    const parsed = new URL(link);
+    const target = parsed.searchParams.get("url");
+    if (target && /^https?:\/\//i.test(target)) return target;
+  } catch {
+    // fall through to the raw link
+  }
+  return /^https?:\/\//i.test(link) ? link : "";
+}
+
+/** Bing News, because it carries the publisher URL rather than a redirect. */
+async function bingNews(
+  query: string,
+  edition?: { gl: string; hl: string; ceid: string },
+): Promise<NewsHit[]> {
+  if (!query.trim()) return [];
+  const market = edition?.hl ?? "en-US";
+  const language = market.split("-")[0] ?? "en";
+  const url = `https://www.bing.com/news/search?q=${encodeURIComponent(query)}&format=rss&setmkt=${encodeURIComponent(market)}&setlang=${encodeURIComponent(language)}`;
+  try {
+    const response = await fetch(url, {
+      headers: { "User-Agent": "ThreadwiseAnalyst/1.0 (+https://threadwise.app)" },
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!response.ok) return [];
+    const document = newsParser.parse(await response.text()) as Record<string, unknown>;
+    const channel = ((document["rss"] as Record<string, unknown>)?.["channel"] ?? {}) as Record<string, unknown>;
+    return toArray(channel["item"] as Record<string, unknown>[])
+      .slice(0, 8)
+      .map((item) => {
+        const published = textOf(item["pubDate"]);
+        const when = published ? new Date(published) : null;
+        return {
+          title: textOf(item["title"]),
+          date: when && !Number.isNaN(when.valueOf()) ? when.toISOString().slice(0, 16).replace("T", " ") : "",
+          outlet: textOf(item["News:Source"]) || "News",
+          url: publisherUrl(textOf(item["link"])),
+        };
+      })
+      .filter((hit) => hit.title && /^https?:\/\//i.test(hit.url));
+  } catch {
+    return [];
+  }
+}
+
+/** Strip the reader's navigation, accessibility chrome and image markup. */
+export function cleanArticle(text: string): string {
+  const lines = text
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const heading = lines.findIndex((line) => line.startsWith("# "));
+  const body = heading >= 0 ? lines.slice(heading) : lines;
+  return body
+    .filter(
+      (line) =>
+        (line.startsWith("# ") || line.length > 50) &&
+        !line.startsWith("![") &&
+        !/^\[[^\]]*\]\([^)]*\)$/.test(line) &&
+        !/^(Press|Close|Accessibility|Popup|Follow us|Please note|Skip to)/i.test(line),
+    )
+    .join("\n")
+    .slice(0, 4000);
+}
+
+/** Read the article itself: Firecrawl first, Jina when Firecrawl cannot. */
+async function readArticle(
+  hit: { title: string; url: string },
+): Promise<{ title: string; url: string; text: string } | null> {
+  if (process.env["FIRECRAWL_API_KEY"]) {
+    try {
+      const { readWeb } = await import("./ai/url.server");
+      const page = await readWeb(hit.url, AbortSignal.timeout(20_000));
+      if (page.text.trim().length > 400) {
+        return { title: page.title || hit.title, url: page.url, text: page.text.slice(0, 80_000) };
+      }
+    } catch {
+      // fall back to Jina
+    }
+  }
+  try {
+    const { fetchArticleText } = await import("./news-agent");
+    const text = await fetchArticleText(hit.url);
+    if (text.trim().length > 400) return { title: hit.title, url: hit.url, text };
+  } catch {
+    // unreadable
+  }
+  return null;
+}
+
 export async function retrieveContext(input: string): Promise<{
   context: string;
   sources: { title: string; url: string }[];
@@ -674,15 +809,53 @@ export async function retrieveContext(input: string): Promise<{
     ? edition.outlets.slice(0, 2).map((outlet) => news(`${local || terms.slice(0, 2).join(" ")} site:${outlet}`, edition))
     : [];
 
-  const [rawHits, articles] = await Promise.all([
+  // Bing is searched with the move itself, not two loose words: "iaea iran"
+  // returns nuclear-industry noise, while the sentence finds the story.
+  const bingQueries = local
+    ? [local]
+    : [input.slice(0, 180), terms.slice(0, 4).join(" ")].filter(
+        (query) => query.trim().length > 2,
+      );
+
+  const [googleHits, bingHits, articles] = await Promise.all([
     Promise.all([
       ...queries.map((query) => news(query, edition)),
       ...localSearches,
     ]).then((batches) => batches.flat()),
+    Promise.all(bingQueries.map((query) => bingNews(query, edition))).then((batches) => batches.flat()),
     Promise.all(entities.slice(0, 3).map((entity) => wiki(entity))),
   ]);
-  const strong = rawHits.filter((hit) => matchStrength(hit.title, matchTerms) === 2);
-  const related = rawHits.filter((hit) => matchStrength(hit.title, matchTerms) === 1);
+
+  // Keep Google's ranking and order, but when Bing has the same headline with a
+  // publisher URL, prefer Bing: a Google redirect cannot be read as an article.
+  const byTitle = new Map<string, NewsHit>();
+  for (const hit of [...googleHits, ...bingHits]) {
+    const key = hit.title.toLowerCase().replace(/\s+/g, " ").trim();
+    const existing = byTitle.get(key);
+    if (!existing || /news\.google\.com/i.test(existing.url)) byTitle.set(key, hit);
+  }
+  const rawHits = [...byTitle.values()];
+  const rank = (list: NewsHit[]) =>
+    [...list].sort(
+      (a, b) =>
+        matchCount(b.title, matchTerms) - matchCount(a.title, matchTerms) ||
+        b.date.localeCompare(a.date),
+    );
+  const strong = (() => {
+    const specific = rank(
+      rawHits.filter(
+        (hit) =>
+          matchStrength(hit.title, matchTerms) === 2 &&
+          matchCount(hit.title, matchTerms) >= (matchTerms.length >= 2 ? 2 : 1),
+      ),
+    );
+    // If nothing names two of the move's terms, accept one specific match
+    // rather than returning no reporting at all.
+    return specific.length
+      ? specific
+      : rank(rawHits.filter((hit) => matchStrength(hit.title, matchTerms) === 2));
+  })();
+  const related = rank(rawHits.filter((hit) => matchStrength(hit.title, matchTerms) === 1));
   // Only specifics count as evidence; place-only coverage is related, not proof.
   // A local-language query is already the filter: its words rarely survive a
   // headline word-for-word, so keep the edition's own results rather than none.
@@ -691,9 +864,25 @@ export async function retrieveContext(input: string): Promise<{
     : related.length
       ? related.slice(0, 3)
       : local
-        ? rawHits.slice(0, 3)
+        ? rank(rawHits).slice(0, 3)
         : [];
   const background = articles.filter((hit): hit is WikiHit => hit !== null);
+
+  // Headlines tell the analyst what happened; only the article says how. Bing
+  // gives us the publisher URL, so the best two can actually be read.
+  const readable = hits
+    .filter((hit) => !/news\.google\.com/i.test(hit.url))
+    .sort((a, b) => matchCount(b.title, matchTerms) - matchCount(a.title, matchTerms))
+    .slice(0, 2);
+  const articleReads = await bounded(
+    Promise.all(readable.slice(0, 2).map((hit) => readArticle(hit))),
+    [],
+    15_000,
+  );
+  const articleContext = articleReads
+    .filter((read): read is { title: string; url: string; text: string } => read !== null)
+    .map((read) => `FROM ${read.title} (${read.url}):\n${cleanArticle(read.text)}`)
+    .join("\n\n");
 
   const reporting = hits
     .slice(0, 6)
@@ -706,6 +895,9 @@ export async function retrieveContext(input: string): Promise<{
   const context = [
     money.length ? `FIGURES AND GOVERNANCE (from the reference entry on ${entities[0]}):\n${money.join(" ").slice(0, 1400)}` : "",
     reporting ? `LATEST REPORTING (newest first, dates are UTC):\n${reporting}` : "",
+    articleContext
+      ? `REPORTING TEXT (read from the article, not just the headline):\n${articleContext}`
+      : "",
     background.length
       ? `BACKGROUND (encyclopedia; may lag behind today's news):\n${background
           .slice(0, 3)
@@ -986,7 +1178,7 @@ RETRIEVED MATERIAL:
 ${material}
 
 Return ONLY this JSON:
-{"verdict":"grounded"|"mixed"|"unsupported","supported":number,"issues":[{"section":string,"claim":string,"problem":string}],"missing":[string]}
+{"verdict":"grounded"|"mixed"|"unsupported","supported":number,"issues":[{"section":string,"claim":string,"problem":string}],"patches":[{"section":string,"find":string,"replace":string,"reason":string}],"missing":[string]}
 
 Rules:
 - At most 4 issues. Only flag a claim if (a) the material explicitly contradicts it, or (b) it is a specific number, date, vote, ruling, named appointment or direct quote presented as fact, it is central to the read, and the material is silent on that exact point.
@@ -994,6 +1186,7 @@ Rules:
 - "problem" must state what the material says that contradicts the claim, or "the material is silent on [specific fact]". Never write "confirms" or "supports" in problem.
 - "grounded" = no material contradictions. "mixed" = 1-2 issues, read still broadly supported. "unsupported" = 3+ issues or the central claim is contradicted.
 - "supported" = the number of factual claims the material supports.
+- "patches": for each issue, one surgical fix. find must be an exact substring copied verbatim from the read, max 25 words. replace must correct the claim to what the material says, or remove the unsupported detail and say the material does not establish it. Never add a new fact. If no safe fix exists, omit the patch but keep the issue.
 - "missing" = up to 3 specific facts needed to settle the central claim, not general context.
 - If the read says a fact is unknown or unretrieved, do not flag it.
 - The move is the input under analysis, not a retrieved source. Do not flag a claim that merely restates the move; flag only specific facts the read adds beyond the move and presents as retrieved.`;
@@ -1004,7 +1197,7 @@ Rules:
         model: candidate.model,
         prompt,
         temperature: 0,
-        maxOutputTokens: 2200,
+        maxOutputTokens: 2800,
         maxRetries: 0,
       });
       const parsed = reviewSchema.safeParse(extractJson<unknown>(text));
@@ -1171,15 +1364,11 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
   }
 
   if ((decision.layers.includes("institution") || decision.layers.includes("ownership")) && layerHits.length) {
-    const { fetchArticleText } = await import("@/lib/threadwise/news-agent");
     const picks = layerHits.slice(0, 2);
     const texts = await Promise.all(
       picks.map(async (hit) => {
-        try {
-          return { hit, text: await fetchArticleText(hit.url) };
-        } catch {
-          return null;
-        }
+        const read = await readArticle(hit);
+        return read ? { hit, text: read.text } : null;
       }),
     );
     for (const entry of texts) {
@@ -1264,11 +1453,19 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     Date.now() - startedAt > 40_000,
   );
 
-  // If the editor found unsupported claims and there is still time, the writer
-  // fixes only those claims. The review is kept so the page can show both.
+  // The editor returns the fixes with the review, so most corrections cost no
+  // extra model call. If it named issues but returned no safe patch, the writer
+  // gets a narrow second pass when there is still time.
   let finalDraft = parsedData;
   let revision: ReadRevision | undefined;
-  if (review?.issues.length && Date.now() - startedAt < 45_000) {
+  if (review?.patches.length) {
+    const corrected = applyReadPatches(finalDraft, review.patches);
+    if (corrected.revision.patched) {
+      finalDraft = corrected.draft;
+      revision = corrected.revision;
+    }
+  }
+  if (!revision && review?.issues.length && Date.now() - startedAt < 45_000) {
     const revised = await reviseRead(finalDraft, review, evidenceContext, input);
     if (revised) {
       finalDraft = revised.draft;

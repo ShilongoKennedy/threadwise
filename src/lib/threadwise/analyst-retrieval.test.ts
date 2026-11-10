@@ -2,11 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   analystSchema,
   applyReadPatches,
+  cleanArticle,
   distinctiveTerms,
   editionFor,
   editionLanguage,
   fundedBody,
+  matchCount,
   matchStrength,
+  publisherUrl,
   reviewedConfidence,
   selectLayers,
 } from "./analyst";
@@ -153,6 +156,47 @@ describe("applyReadPatches", () => {
 
     expect(result.revision.patched).toBe(0);
     expect(result.draft.move).toBe("The court ruled.");
+  });
+});
+
+describe("matchCount", () => {
+  it("counts how many of the move's terms a headline names", () => {
+    expect(matchCount("IAEA at COP31", ["iaea", "iran", "enrichment"])).toBe(1);
+    expect(matchCount("Iran's IAEA enrichment report", ["iaea", "iran", "enrichment"])).toBe(3);
+  });
+});
+
+describe("publisherUrl", () => {
+  it("unwraps the publisher URL from a Bing News redirect", () => {
+    const link =
+      "http://www.bing.com/news/apiclick.aspx?ref=FexRss&url=https%3A%2F%2Fwww.cnn.com%2F2026%2F11%2F07%2Fmiddleeast%2Fstory";
+    expect(publisherUrl(link)).toBe(
+      "https://www.cnn.com/2026/11/07/middleeast/story",
+    );
+  });
+
+  it("keeps a direct publisher URL", () => {
+    expect(publisherUrl("https://example.com/story")).toBe("https://example.com/story");
+  });
+
+  it("rejects a link that is not a URL", () => {
+    expect(publisherUrl("not a url")).toBe("");
+  });
+});
+
+describe("cleanArticle", () => {
+  it("drops the reader's chrome and keeps the article body", () => {
+    const text = `Accessibility
+Press enter for Accessibility
+[Follow us](https://example.com)
+# Iran holds nuclear material
+The material includes 440 kilograms of enriched uranium, according to the agency.
+![Image](https://example.com/image.png)`;
+    const cleaned = cleanArticle(text);
+    expect(cleaned).toContain("Iran holds nuclear material");
+    expect(cleaned).toContain("440 kilograms");
+    expect(cleaned).not.toContain("Accessibility");
+    expect(cleaned).not.toContain("Follow us");
   });
 });
 
