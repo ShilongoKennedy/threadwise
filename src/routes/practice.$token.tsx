@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
-import { checkPractice, type PracticeKind } from "@/lib/threadwise/practice";
+import {
+  checkPractice,
+  recordPracticeAttempt,
+  type PracticeKind,
+} from "@/lib/threadwise/practice";
 
 export const Route = createFileRoute("/practice/$token")({
   head: ({ params }) => ({
@@ -56,6 +60,7 @@ function PracticePage() {
   const [kind, setKind] = useState<PracticeKind>("falsifier");
   const [answer, setAnswer] = useState("");
   const [revealed, setRevealed] = useState(false);
+  const recorded = useRef(false);
 
   useEffect(() => {
     let alive = true;
@@ -90,6 +95,18 @@ function PracticePage() {
     () => (revealed && report ? checkPractice(kind, answer, report) : []),
     [revealed, kind, answer, report],
   );
+  useEffect(() => {
+    if (!revealed || !report || !checks.length || recorded.current) return;
+    recorded.current = true;
+    recordPracticeAttempt({
+      token,
+      kind,
+      passed: checks.filter((check) => check.passed).length,
+      total: checks.length,
+      at: new Date().toISOString(),
+    });
+  }, [revealed, checks, report, kind, token]);
+
   const passed = checks.filter((check) => check.passed).length;
   const modelAnswer =
     report && kind === "falsifier"
@@ -104,6 +121,7 @@ function PracticePage() {
     setKind(next);
     setAnswer("");
     setRevealed(false);
+    recorded.current = false;
   };
 
   return (
@@ -243,6 +261,9 @@ function PracticePage() {
                   </ul>
                   <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
                     Structural check, not a grade. The comparison is the lesson.
+                  </p>
+                  <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A4BFF]">
+                    Saved to your practice record on this device.
                   </p>
                 </section>
               </>

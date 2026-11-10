@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import type { ThinkingProfile } from "@/lib/threadwise/thinking-profile";
+import {
+  loadPracticeAttempts,
+  practiceSummary,
+  type PracticeSummary,
+} from "@/lib/threadwise/practice";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -21,6 +26,7 @@ export const Route = createFileRoute("/profile")({
 function ProfilePage() {
   const [profile, setProfile] = useState<ThinkingProfile | null>(null);
   const [state, setState] = useState<"loading" | "anon" | "ready" | "error">("loading");
+  const [practice, setPractice] = useState<PracticeSummary | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -51,6 +57,10 @@ function ProfilePage() {
     return () => {
       alive = false;
     };
+  }, []);
+
+  useEffect(() => {
+    setPractice(practiceSummary(loadPracticeAttempts()));
   }, []);
 
   return (
@@ -292,6 +302,39 @@ function ProfilePage() {
                     {profile.reviewVerdicts.unsupported} unsupported
                   </p>
                 </section>
+
+                {practice && practice.total > 0 && (
+                  <section className="mt-6 border-2 border-[#1A1A1A] bg-white p-4">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]">
+                        Practice
+                      </h2>
+                      <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                        {practice.total} attempt{practice.total === 1 ? "" : "s"} · this device
+                      </span>
+                    </div>
+                    <ul className="mt-3 space-y-2">
+                      {practice.byKind.map((item) => (
+                        <li
+                          key={item.kind}
+                          className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#1A1A1A]/10 pb-1.5"
+                        >
+                          <span className="font-serif text-[13.5px] capitalize">
+                            {item.kind === "teach" ? "Teach-back" : item.kind}
+                          </span>
+                          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/55">
+                            {item.averagePct}% avg · {item.attempts} attempt
+                            {item.attempts === 1 ? "" : "s"}
+                            {item.deltaPct !== null ? ` · ${item.trend} (${item.deltaPct > 0 ? "+" : ""}${item.deltaPct} pts)` : ""}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                      Structural checks only · stored in this browser
+                    </p>
+                  </section>
+                )}
               </>
             )}
           </>

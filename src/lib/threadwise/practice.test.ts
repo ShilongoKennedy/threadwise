@@ -1,5 +1,12 @@
-import { describe, expect, it } from "vitest";
-import { checkPractice, namedEntities } from "./practice";
+import { beforeEach, describe, expect, it } from "vitest";
+import {
+  checkPractice,
+  loadPracticeAttempts,
+  namedEntities,
+  practiceSummary,
+  recordPracticeAttempt,
+  type PracticeAttempt,
+} from "./practice";
 
 const report = {
   move: "The IAEA raised concerns about Iran's enrichment programme in a confidential report.",
@@ -53,5 +60,53 @@ describe("checkPractice", () => {
     );
     expect(checks.find((check) => check.label.includes("cause"))?.passed).toBe(true);
     expect(checks.find((check) => check.label.includes("why now"))?.passed).toBe(true);
+  });
+});
+
+describe("practice record", () => {
+  beforeEach(() => localStorage.clear());
+
+  it("stores attempts locally", () => {
+    recordPracticeAttempt({
+      token: "read-a",
+      kind: "falsifier",
+      passed: 4,
+      total: 5,
+      at: "2026-11-01T10:00:00Z",
+    });
+    expect(loadPracticeAttempts()).toHaveLength(1);
+  });
+
+  it("shows whether a practice is improving", () => {
+    const attempts: PracticeAttempt[] = [
+      ...Array.from({ length: 3 }, (_, index) => ({
+        token: "read-a",
+        kind: "falsifier" as const,
+        passed: 2,
+        total: 5,
+        at: `2026-11-0${index + 1}T10:00:00Z`,
+      })),
+      ...Array.from({ length: 3 }, (_, index) => ({
+        token: "read-b",
+        kind: "falsifier" as const,
+        passed: 4,
+        total: 5,
+        at: `2026-11-0${index + 4}T10:00:00Z`,
+      })),
+      {
+        token: "read-c",
+        kind: "steelman" as const,
+        passed: 5,
+        total: 5,
+        at: "2026-11-08T10:00:00Z",
+      },
+    ];
+    const summary = practiceSummary(attempts);
+    const falsifier = summary.byKind.find((item) => item.kind === "falsifier");
+    expect(summary.total).toBe(7);
+    expect(falsifier?.attempts).toBe(6);
+    expect(falsifier?.trend).toBe("improving");
+    expect(falsifier?.deltaPct).toBeGreaterThan(0);
+    expect(summary.byKind.find((item) => item.kind === "steelman")?.trend).toBe("starting");
   });
 });

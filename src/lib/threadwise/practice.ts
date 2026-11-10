@@ -110,3 +110,103 @@ export function checkPractice(
 
   return checks;
 }
+
+export type PracticeAttempt = {
+  token: string;
+  kind: PracticeKind;
+  passed: number;
+  total: number;
+  at: string;
+};
+
+const STORAGE_KEY = "threadwise:practice:v1";
+const MAX_ATTEMPTS = 200;
+
+/** Local only: practice is private and does not need a server round-trip. */
+export function loadPracticeAttempts(): PracticeAttempt[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (attempt): attempt is PracticeAttempt =>
+        Boolean(attempt) &&
+        typeof attempt === "object" &&
+        typeof (attempt as PracticeAttempt).token === "string" &&
+        ["falsifier", "steelman", "teach"].includes((attempt as PracticeAttempt).kind) &&
+        typeof (attempt as PracticeAttempt).passed === "number" &&
+        typeof (attempt as PracticeAttempt).total === "number" &&
+        typeof (attempt as PracticeAttempt).at === "string",
+    );
+  } catch {
+    return [];
+  }
+}
+
+export function recordPracticeAttempt(attempt: PracticeAttempt): void {
+  try {
+    const attempts = [...loadPracticeAttempts(), attempt].slice(-MAX_ATTEMPTS);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(attempts));
+  } catch {
+    // Private mode or a full store: practice still works, it just is not kept.
+  }
+}
+
+export type PracticeKindSummary = {
+  kind: PracticeKind;
+  attempts: number;
+  averagePct: number;
+  recentPct: number | null;
+  deltaPct: number | null;
+  trend: "improving" | "steady" | "slipping" | "starting";
+  lastAt: string | null;
+};
+
+export type PracticeSummary = {
+  total: number;
+  lastAt: string | null;
+  byKind: PracticeKindSummary[];
+};
+
+const percent = (attempts: PracticeAttempt[]) => {
+  const total = attempts.reduce((sum, attempt) => sum + attempt.total, 0);
+  const passed = attempts.reduce((sum, attempt) => sum + attempt.passed, 0);
+  return total ? (passed / total) * 100 : 0;
+};
+
+export function practiceSummary(attempts: PracticeAttempt[]): PracticeSummary {
+  const ordered = [...attempts].sort((a, b) => a.at.localeCompare(b.at));
+  const byKind = (["falsifier", "steelman", "teach"] as const)
+    .map((kind): PracticeKindSummary | null => {
+      const list = ordered.filter((attempt) => attempt.kind === kind);
+      if (!list.length) return null;
+      const recent = list.slice(-5);
+      const older = list.slice(-10, -5);
+      const recentPct = percent(recent);
+      const deltaPct = older.length ? recentPct - percent(older) : null;
+      return {
+        kind,
+        attempts: list.length,
+        averagePct: Math.round(percent(list)),
+        recentPct: Math.round(recentPct),
+        deltaPct: deltaPct === null ? null : Math.round(deltaPct),
+        trend:
+          deltaPct === null
+            ? "starting"
+            : deltaPct > 5
+              ? "improving"
+              : deltaPct < -5
+                ? "slipping"
+                : "steady",
+        lastAt: list.at(-1)?.at ?? null,
+      };
+    })
+    .filter((item): item is PracticeKindSummary => item !== null);
+
+  return {
+    total: ordered.length,
+    lastAt: ordered.at(-1)?.at ?? null,
+    byKind,
+  };
+}
