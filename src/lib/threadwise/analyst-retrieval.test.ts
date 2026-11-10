@@ -12,6 +12,7 @@ import {
   publisherUrl,
   reviewedConfidence,
   selectLayers,
+  urlQuality,
 } from "./analyst";
 
 describe("matchStrength", () => {
@@ -181,6 +182,14 @@ describe("publisherUrl", () => {
 
   it("rejects a link that is not a URL", () => {
     expect(publisherUrl("not a url")).toBe("");
+  });
+});
+
+describe("urlQuality", () => {
+  it("prefers the original publisher over an aggregator or a Google redirect", () => {
+    expect(urlQuality("https://news.google.com/rss/articles/abc")).toBe(0);
+    expect(urlQuality("https://www.msn.com/en-us/news/other/story")).toBe(1);
+    expect(urlQuality("https://www.reuters.com/world/middle-east/story")).toBe(2);
   });
 });
 

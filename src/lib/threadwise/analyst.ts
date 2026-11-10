@@ -457,6 +457,13 @@ export function matchCount(title: string, terms: string[]): number {
   return terms.filter((term) => haystack.includes(term)).length;
 }
 
+/** Prefer the original publisher over an aggregator or a Google redirect. */
+export function urlQuality(url: string): number {
+  if (/news\.google\.com/i.test(url)) return 0;
+  if (/(^|\.)(msn|yahoo|aol|flipboard)\./i.test(url)) return 1;
+  return 2;
+}
+
 export function candidateEntities(input: string): string[] {
   const stop = new Set(["The", "A", "An", "Breaking", "New", "This", "That", "It", "He", "She", "They", "We", "I"]);
   const runs = (input.match(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\b/g) ?? []).filter(
@@ -500,7 +507,7 @@ export function fundedBody(input: string): string {
   );
 }
 
-type NewsHit = { title: string; date: string; outlet: string; url: string };
+type NewsHit = { title: string; date: string; outlet: string; url: string; snippet?: string };
 
 /**
  * Google News editions by country, with the outlets that cover each place
@@ -720,6 +727,13 @@ async function bingNews(
           date: when && !Number.isNaN(when.valueOf()) ? when.toISOString().slice(0, 16).replace("T", " ") : "",
           outlet: textOf(item["News:Source"]) || "News",
           url: publisherUrl(textOf(item["link"])),
+          snippet: textOf(item["description"])
+            .replace(/<[^>]*>/g, " ")
+            .replace(/&nbsp;/g, " ")
+            .replace(/&amp;/g, "&")
+            .replace(/\s+/g, " ")
+            .trim()
+            .slice(0, 320),
         };
       })
       .filter((hit) => hit.title && /^https?:\/\//i.test(hit.url));
@@ -742,7 +756,9 @@ export function cleanArticle(text: string): string {
         (line.startsWith("# ") || line.length > 50) &&
         !line.startsWith("![") &&
         !/^\[[^\]]*\]\([^)]*\)$/.test(line) &&
-        !/^(Press|Close|Accessibility|Popup|Follow us|Please note|Skip to)/i.test(line),
+        !/^(Press|Close|Accessibility|Popup|Follow us|Please note|Skip to|Title|URL Source|Published Time|Warning|Markdown Content):/i.test(
+          line,
+        ),
     )
     .join("\n")
     .slice(0, 4000);
@@ -832,7 +848,7 @@ export async function retrieveContext(input: string): Promise<{
   for (const hit of [...googleHits, ...bingHits]) {
     const key = hit.title.toLowerCase().replace(/\s+/g, " ").trim();
     const existing = byTitle.get(key);
-    if (!existing || /news\.google\.com/i.test(existing.url)) byTitle.set(key, hit);
+    if (!existing || urlQuality(hit.url) > urlQuality(existing.url)) byTitle.set(key, hit);
   }
   const rawHits = [...byTitle.values()];
   const rank = (list: NewsHit[]) =>
@@ -872,21 +888,36 @@ export async function retrieveContext(input: string): Promise<{
   // gives us the publisher URL, so the best two can actually be read.
   const readable = hits
     .filter((hit) => !/news\.google\.com/i.test(hit.url))
-    .sort((a, b) => matchCount(b.title, matchTerms) - matchCount(a.title, matchTerms))
+    .sort(
+      (a, b) =>
+        matchCount(b.title, matchTerms) - matchCount(a.title, matchTerms) ||
+        urlQuality(b.url) - urlQuality(a.url),
+    )
     .slice(0, 2);
   const articleReads = await bounded(
     Promise.all(readable.slice(0, 2).map((hit) => readArticle(hit))),
     [],
     15_000,
   );
-  const articleContext = articleReads
-    .filter((read): read is { title: string; url: string; text: string } => read !== null)
-    .map((read) => `FROM ${read.title} (${read.url}):\n${cleanArticle(read.text)}`)
+  const articleContext = readable
+    .map((hit, index) => {
+      const read = articleReads[index];
+      if (read) return `FROM ${read.title} (${read.url}):\n${cleanArticle(read.text)}`;
+      // The reader can fail behind a paywall; Bing's own snippet is still evidence.
+      if (hit.snippet) return `FROM ${hit.outlet} (${hit.title}): ${hit.snippet}`;
+      return "";
+    })
+    .filter(Boolean)
     .join("\n\n");
 
   const reporting = hits
     .slice(0, 6)
-    .map((hit) => `[${hit.date}] ${hit.outlet}: ${hit.title} (${hit.url})`)
+    .map(
+      (hit) =>
+        `[${hit.date}] ${hit.outlet}: ${hit.title} (${hit.url})${
+          hit.snippet ? `\n  ${hit.snippet}` : ""
+        }`,
+    )
     .join("\n");
 
   const lead = entities[0] ? await wikiBody(entities[0]) : "";
@@ -1188,7 +1219,7 @@ Rules:
 - "supported" = the number of factual claims the material supports.
 - "patches": for each issue, one surgical fix. find must be an exact substring copied verbatim from the read, max 25 words. replace must correct the claim to what the material says, or remove the unsupported detail and say the material does not establish it. Never add a new fact. If no safe fix exists, omit the patch but keep the issue.
 - "missing" = up to 3 specific facts needed to settle the central claim, not general context.
-- If the read says a fact is unknown or unretrieved, do not flag it.
+- If the read says a fact is unknown or unretrieved, do not flag it. A sentence such as "the material is silent on X" or "X is not in the retrieved material" is the read correctly marking a gap, not an unsupported claim. Never flag the read's own statements about what the material lacks.
 - The move is the input under analysis, not a retrieved source. Do not flag a claim that merely restates the move; flag only specific facts the read adds beyond the move and presents as retrieved.`;
 
   for (const candidate of reviewerCandidates(fast)) {

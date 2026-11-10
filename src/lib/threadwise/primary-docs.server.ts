@@ -47,6 +47,123 @@ async function getJson(url: string): Promise<unknown> {
   }
 }
 
+type SearchHit = { title: string; url: string; text: string };
+
+/**
+ * Firecrawl search returns the publisher's markdown, including PDFs. That is the
+ * difference between "the budget page exists" and "the budget resolution says
+ * €430,020,873".
+ */
+async function firecrawlSearch(query: string, limit = 4): Promise<SearchHit[]> {
+  const apiKey = process.env["FIRECRAWL_API_KEY"];
+  if (!apiKey || !query.trim()) return [];
+
+  try {
+    const response = await fetch("https://api.firecrawl.dev/v1/search", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query,
+        limit,
+        scrapeOptions: { formats: ["markdown"], onlyMainContent: true },
+      }),
+      signal: AbortSignal.timeout(30_000),
+    });
+    if (!response.ok) return [];
+
+    const body = (await response.json()) as {
+      success?: boolean;
+      data?: { title?: string; url?: string; markdown?: string }[];
+    };
+    if (!body.success || !Array.isArray(body.data)) return [];
+
+    return body.data
+      .filter(
+        (item): item is { title: string; url: string; markdown: string } =>
+          Boolean(item.url && item.markdown && item.markdown.length > 400),
+      )
+      .map((item) => ({
+        title: item.title || item.url,
+        url: item.url,
+        text: item.markdown,
+      }));
+  } catch {
+    return [];
+  }
+}
+
+function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "").toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
+/** A body's own budget/assessment documents, found by search rather than guessed paths. */
+async function firecrawlFunding(entity: string, site: string): Promise<PrimaryEvidence> {
+  const docs = await firecrawlSearch(
+    `${entity} programme and budget scale of assessment contributions`,
+    5,
+  );
+  if (!docs.length) return EMPTY_PRIMARY;
+
+  const official = hostOf(site);
+  const currentYear = new Date().getUTCFullYear();
+  const scored = docs
+    .map((document) => {
+      const figures = moneySentences(document.text, 3);
+      const host = hostOf(document.url);
+      const onOfficialSite =
+        Boolean(official) && (host === official || host.endsWith(`.${official}`));
+      const aboutMoney =
+        /budget|programme|program|financial|scale of assessment|contribution|annual report/i.test(
+          `${document.title} ${document.url}`,
+        );
+      const year = Number(
+        (`${document.title} ${document.url}`.match(/\b(20\d{2})\b/) ?? [])[1] ?? 0,
+      );
+      const recency =
+        year >= currentYear - 1 ? 4 : year >= currentYear - 3 ? 2 : 0;
+      return {
+        document,
+        figures,
+        onOfficialSite,
+        score:
+          (onOfficialSite ? 5 : 0) +
+          (aboutMoney ? 3 : 0) +
+          Math.min(figures.length, 4) +
+          (/\.pdf($|\?)/i.test(document.url) ? 1 : 0) +
+          recency,
+      };
+    })
+    .filter((item) => item.figures.length > 0)
+    .sort((a, b) => b.score - a.score);
+
+  if (!scored.length) return EMPTY_PRIMARY;
+
+  // Keep the best document and anything nearly as strong; do not pad the read
+  // with an old guideline just because two sources look tidier.
+  const best = scored[0]!.score;
+  const chosen = scored.filter((item) => item.score >= best - 2).slice(0, 2);
+
+  return {
+    excerpts: chosen.map(
+      ({ document, figures, onOfficialSite }) =>
+        `FROM ${document.title} (${document.url}, ${
+          onOfficialSite ? "official document" : "external analysis"
+        }): ${figures.join(" ").slice(0, 1200)}`,
+    ),
+    sources: chosen.map(({ document }) => ({
+      title: `Primary · ${document.title}`,
+      url: document.url,
+    })),
+  };
+}
+
 /** The official site, via Wikidata, so we do not guess a domain. */
 export async function officialWebsite(entity: string): Promise<string | null> {
   const search = (await getJson(
@@ -168,6 +285,11 @@ export async function fundingDocuments(entity: string): Promise<PrimaryEvidence>
   if (!entity.trim()) return EMPTY_PRIMARY;
   const site = await officialWebsite(entity);
   if (!site) return EMPTY_PRIMARY;
+
+  // Search first: it reaches the current budget resolution, not just the links
+  // the landing page happens to carry. Guessed paths are the fallback.
+  const searched = await firecrawlFunding(entity, site);
+  if (searched.excerpts.length) return searched;
 
   let base: URL;
   try {
