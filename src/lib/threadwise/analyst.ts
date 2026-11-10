@@ -10,6 +10,15 @@ import { XMLParser } from "fast-xml-parser";
 import { generateText } from "ai";
 import { z } from "zod";
 import { extractJson, getModel } from "./ai/ai-providers.server";
+import { moneySentences } from "./figures";
+import {
+  courtDocuments,
+  EMPTY_PRIMARY,
+  fundingDocuments,
+  linkedFilingDocuments,
+  looksUSLegal,
+  type PrimaryEvidence,
+} from "./primary-docs.server";
 
 const sectionSchema = z.object({
   title: z.string().trim().max(80).default(""),
@@ -312,16 +321,6 @@ async function wikiBody(term: string): Promise<string> {
   }
 }
 
-const MONEY = /(budget|contribution|contributor|donor|funding|funded|million|billion|€|\$|percent|share)/i;
-
-/** Sentences that actually carry figures about money. */
-function moneySentences(text: string, limit = 5): string[] {
-  return text
-    .split(/(?<=[.!?])\s+/)
-    .filter((line) => /\d/.test(line) && MONEY.test(line))
-    .slice(0, limit);
-}
-
 /** Names and institutions worth looking up: capitalised runs, minus the obvious noise. */
 const GENERIC_WORDS = new Set([
   "court","high","supreme","finance","act","bill","law","government","minister","president",
@@ -494,7 +493,11 @@ async function news(query: string, edition?: { gl: string; hl: string; ceid: str
   }
 }
 
-export async function retrieveContext(input: string): Promise<{ context: string; sources: { title: string; url: string }[] }> {
+export async function retrieveContext(input: string): Promise<{
+  context: string;
+  sources: { title: string; url: string }[];
+  hits: NewsHit[];
+}> {
   const entities = candidateEntities(input);
   const terms = distinctiveTerms(input);
 
@@ -564,7 +567,7 @@ export async function retrieveContext(input: string): Promise<{ context: string;
     ...background.slice(0, 2).map((hit) => ({ title: `Background · ${hit.title}`, url: hit.url })),
   ];
 
-  return { context, sources };
+  return { context, sources, hits };
 }
 
 /**
@@ -609,6 +612,23 @@ function freshness(hits: { date: string }[]): number {
   return recentCount(hits, 14) * 10 + recentCount(hits, 90);
 }
 
+/** Primary documents enhance a read; they must never be the reason it hangs. */
+function bounded<T>(promise: Promise<T>, fallback: T, ms = 25_000): Promise<T> {
+  return new Promise<T>((resolve) => {
+    const timer = setTimeout(() => resolve(fallback), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      () => {
+        clearTimeout(timer);
+        resolve(fallback);
+      },
+    );
+  });
+}
+
 export async function analyseMove(input: string): Promise<AnalystReport> {
   // Classify and retrieve at the same time: they do not depend on each other.
   const [decision, base, candidates] = await Promise.all([
@@ -616,7 +636,26 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     retrieveContext(input),
     nameSituation(input),
   ]);
-  const { context, sources } = base;
+  const { context, sources, hits } = base;
+
+  const anchors = distinctiveTerms(input);
+  const entityName = candidateEntities(input)[0] ?? "";
+  const funded = fundedBody(input);
+  const institution = decision.layers.includes("institution") ? funded : "";
+
+  // Start the primary-document reads now: they overlap the news work below.
+  const fundingPromise = institution
+    ? fundingDocuments(institution)
+    : Promise.resolve(EMPTY_PRIMARY);
+  const courtPromise: Promise<PrimaryEvidence> =
+    decision.mode === "legal"
+      ? looksUSLegal(input)
+        ? courtDocuments(
+            [entityName, ...anchors.slice(0, 2)].filter(Boolean).join(" "),
+            candidateEntities(input),
+          )
+        : linkedFilingDocuments(hits)
+      : Promise.resolve(EMPTY_PRIMARY);
 
   // Two candidate readings of the situation are searched; fresher reporting wins.
   const searched = await Promise.all(candidates.map(async (candidate) => ({ candidate, hits: await news(candidate) })));
@@ -627,8 +666,6 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
 
   // Freshness alone let "campaign finance" attach American coverage to a Kenyan
   // ruling. A hit must also name something the move names.
-  const anchors = distinctiveTerms(input);
-  const onTopic = (title: string) => mentionsTerm(title, anchors);
   const situationHits = best?.score
     ? best.hits.filter((hit) => matchStrength(hit.title, anchors) === 2)
     : [];
@@ -637,9 +674,6 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
   // The institution layer may only search a body that actually receives
   // funding; otherwise "largest donors" is asked of a court or a person and
   // returns whatever the search engine ranks, not evidence.
-  const entityName = candidateEntities(input)[0] ?? "";
-  const funded = fundedBody(input);
-  const institution = decision.layers.includes("institution") ? funded : "";
   const layerQueries = institution
     ? [
         "annual report programme and budget",
@@ -697,6 +731,16 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     }
   }
 
+  const [funding, court] = await Promise.all([
+    bounded(fundingPromise, EMPTY_PRIMARY),
+    bounded(courtPromise, EMPTY_PRIMARY),
+  ]);
+  const primary = {
+    excerpts: [...funding.excerpts, ...court.excerpts],
+    sources: [...funding.sources, ...court.sources],
+  };
+  const primaryContext = primary.excerpts.join("\n\n");
+
   const layerContext = [layerList, ...excerpts].filter(Boolean).join("\n\n");
 
   const situationContext = situationHits
@@ -719,6 +763,7 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
       input,
       [
         situationContext ? `SITUATION — ${situation}, as reported:\n${situationContext}` : "",
+        primaryContext ? `PRIMARY DOCUMENTS — the body's own budget, or the court's own judgment:\n${primaryContext}` : "",
         layerContext ? `ON THE ACTORS — money, mandate and ownership, as reported:\n${layerContext}` : "",
         context,
       ]
@@ -769,7 +814,7 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     layers: parsed.data.layers?.length ? parsed.data.layers : decision.layers,
     confidence,
     basis,
-    sources: [...sources, ...situationSources, ...layerSources],
+    sources: [...sources, ...situationSources, ...layerSources, ...primary.sources],
   };
 }
 
