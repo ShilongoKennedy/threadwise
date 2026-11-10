@@ -359,6 +359,33 @@ export function candidateEntities(input: string): string[] {
 
 type NewsHit = { title: string; date: string; outlet: string; url: string };
 
+/**
+ * Google News editions by country, with the outlets that cover each place
+ * properly. A story about Kenya should be answered by Kenyan papers, not by
+ * whatever a US edition ranks highest.
+ */
+const EDITIONS: { match: RegExp; gl: string; hl: string; ceid: string; outlets: string[] }[] = [
+  { match: /\bkenya|nairobi|mombasa|kisumu\b/i, gl: "KE", hl: "en-KE", ceid: "KE:en",
+    outlets: ["nation.africa", "the-star.co.ke", "businessdailyafrica.com", "standardmedia.co.ke"] },
+  { match: /\bnamibia|windhoek|omaheke|swakopmund\b/i, gl: "NA", hl: "en-NA", ceid: "NA:en",
+    outlets: ["thenamibian.com.na", "neweralive.na", "namibian.com.na"] },
+  { match: /\bnigeria|lagos|abuja|kano\b/i, gl: "NG", hl: "en-NG", ceid: "NG:en",
+    outlets: ["punchng.com", "premiumtimesng.com", "businessday.ng", "thenationonlineng.net"] },
+  { match: /\bsouth africa|johannesburg|cape town|pretoria|durban\b/i, gl: "ZA", hl: "en-ZA", ceid: "ZA:en",
+    outlets: ["dailymaverick.co.za", "mg.co.za", "businesslive.co.za", "timeslive.co.za"] },
+  { match: /\bghana|accra\b/i, gl: "GH", hl: "en-GH", ceid: "GH:en", outlets: ["myjoyonline.com", "graphic.com.gh"] },
+  { match: /\buganda|kampala\b/i, gl: "UG", hl: "en-UG", ceid: "UG:en", outlets: ["monitor.co.ug", "observer.ug"] },
+  { match: /\btanzania|dar es salaam|dodoma\b/i, gl: "TZ", hl: "en-TZ", ceid: "TZ:en", outlets: ["thecitizen.co.tz", "ippmedia.com"] },
+  { match: /\bunited kingdom|britain|london|westminster\b/i, gl: "GB", hl: "en-GB", ceid: "GB:en",
+    outlets: ["bbc.co.uk", "theguardian.com", "ft.com", "thetimes.co.uk"] },
+  { match: /\bindia|delhi|mumbai\b/i, gl: "IN", hl: "en-IN", ceid: "IN:en", outlets: ["thehindu.com", "indianexpress.com", "timesofindia.indiatimes.com"] },
+  { match: /\bbrazil|brasília|sao paulo\b/i, gl: "BR", hl: "pt-BR", ceid: "BR:pt-419", outlets: ["folha.uol.com.br", "oglobo.globo.com"] },
+];
+
+export function editionFor(input: string) {
+  return EDITIONS.find((edition) => edition.match.test(input));
+}
+
 const newsParser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" });
 const toArray = <T>(value: T | T[] | null | undefined): T[] =>
   value === null || value === undefined ? [] : Array.isArray(value) ? value : [value];
@@ -371,9 +398,12 @@ const textOf = (value: unknown): string => {
 };
 
 /** Real reporting from the last hours, via Google News search — free, no key. */
-async function news(query: string): Promise<NewsHit[]> {
+async function news(query: string, edition?: { gl: string; hl: string; ceid: string }): Promise<NewsHit[]> {
   if (!query.trim()) return [];
-  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
+  const gl = edition?.gl ?? "US";
+  const hl = edition?.hl ?? "en-US";
+  const ceid = edition?.ceid ?? "US:en";
+  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=${hl}&gl=${gl}&ceid=${ceid}`;
   try {
     const response = await fetch(url, {
       headers: { "User-Agent": "ThreadwiseAnalyst/1.0 (+https://threadwise.app)" },
@@ -411,8 +441,16 @@ export async function retrieveContext(input: string): Promise<{ context: string;
     [entities[0], terms[0]].filter(Boolean).join(" "),
   ].filter((query) => query.trim().length > 2);
 
+  const edition = editionFor(input);
+  const localSearches = edition
+    ? edition.outlets.slice(0, 2).map((outlet) => news(`${terms.slice(0, 2).join(" ")} site:${outlet}`, edition))
+    : [];
+
   const [rawHits, articles] = await Promise.all([
-    Promise.all(queries.map((query) => news(query))).then((batches) => batches.flat()),
+    Promise.all([
+      ...queries.map((query) => news(query, edition)),
+      ...localSearches,
+    ]).then((batches) => batches.flat()),
     Promise.all(entities.slice(0, 3).map((entity) => wiki(entity))),
   ]);
   const hits = rawHits.filter((hit) => mentionsTerm(hit.title, terms));
