@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.18"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       ai_access_state: {
@@ -35,292 +60,98 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles: {
-        Row: {
-          avatar_url: string
-          display_name: string
-          id: string
-          preferences: Json
-        }
-        Insert: {
-          avatar_url?: string
-          display_name?: string
-          id: string
-          preferences?: Json
-        }
-        Update: {
-          avatar_url?: string
-          display_name?: string
-          id?: string
-          preferences?: Json
-        }
-        Relationships: []
-      }
-      workshop_ideas: {
-        Row: {
-          body: string
-          created_at: string
-          id: string
-          session_id: string
-          title: string
-          user_id: string
-        }
-        Insert: {
-          body?: string
-          created_at?: string
-          id?: string
-          session_id: string
-          title: string
-          user_id: string
-        }
-        Update: {
-          body?: string
-          created_at?: string
-          id?: string
-          session_id?: string
-          title?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "workshop_ideas_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: false
-            referencedRelation: "workshop_sessions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      workshop_members: {
-        Row: {
-          display_name: string
-          session_id: string
-          user_id: string
-        }
-        Insert: {
-          display_name?: string
-          session_id: string
-          user_id: string
-        }
-        Update: {
-          display_name?: string
-          session_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "workshop_members_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: false
-            referencedRelation: "workshop_sessions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      workshop_presence: {
-        Row: {
-          audio: boolean
-          client_id: string
-          display_name: string
-          session_id: string
-          updated_at: string
-          user_id: string
-          x: number
-          y: number
-        }
-        Insert: {
-          audio?: boolean
-          client_id: string
-          display_name?: string
-          session_id: string
-          updated_at?: string
-          user_id: string
-          x?: number
-          y?: number
-        }
-        Update: {
-          audio?: boolean
-          client_id?: string
-          display_name?: string
-          session_id?: string
-          updated_at?: string
-          user_id?: string
-          x?: number
-          y?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "workshop_presence_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: false
-            referencedRelation: "workshop_sessions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      workshop_sessions: {
-        Row: {
-          cards: Json
-          created_at: string
-          ends_at: string | null
-          groups: Json
-          host_id: string
-          id: string
-          join_code: string
-          phase: string
-          title: string
-          vote_budget: number
-        }
-        Insert: {
-          cards?: Json
-          created_at?: string
-          ends_at?: string | null
-          groups?: Json
-          host_id: string
-          id?: string
-          join_code?: string
-          phase?: string
-          title?: string
-          vote_budget?: number
-        }
-        Update: {
-          cards?: Json
-          created_at?: string
-          ends_at?: string | null
-          groups?: Json
-          host_id?: string
-          id?: string
-          join_code?: string
-          phase?: string
-          title?: string
-          vote_budget?: number
-        }
-        Relationships: []
-      }
-      workshop_signals: {
+      analyst_findings: {
         Row: {
           created_at: string
           id: string
-          kind: string
-          payload: Json
-          recipient_client: string
-          recipient_id: string
-          sender_client: string
-          sender_id: string
-          session_id: string
+          note: string
+          question_id: string
+          read_token: string | null
+          stance: string
+          user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          kind: string
-          payload: Json
-          recipient_client: string
-          recipient_id: string
-          sender_client: string
-          sender_id: string
-          session_id: string
+          note: string
+          question_id: string
+          read_token?: string | null
+          stance: string
+          user_id?: string
         }
         Update: {
           created_at?: string
           id?: string
-          kind?: string
-          payload?: Json
-          recipient_client?: string
-          recipient_id?: string
-          sender_client?: string
-          sender_id?: string
-          session_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "workshop_signals_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: false
-            referencedRelation: "workshop_sessions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      workshop_votes: {
-        Row: {
-          dots: number
-          node_id: string
-          session_id: string
-          user_id: string
-        }
-        Insert: {
-          dots: number
-          node_id: string
-          session_id: string
-          user_id: string
-        }
-        Update: {
-          dots?: number
-          node_id?: string
-          session_id?: string
+          note?: string
+          question_id?: string
+          read_token?: string | null
+          stance?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "workshop_votes_session_id_fkey"
-            columns: ["session_id"]
+            foreignKeyName: "analyst_findings_question_id_fkey"
+            columns: ["question_id"]
             isOneToOne: false
-            referencedRelation: "workshop_sessions"
+            referencedRelation: "analyst_questions"
             referencedColumns: ["id"]
           },
         ]
       }
-      workspaces: {
+      analyst_questions: {
         Row: {
-          document: Json
+          created_at: string
           id: string
-          revision: number
-          title: string
-          updated_at: string
+          question: string
+          status: string
           user_id: string
         }
         Insert: {
-          document?: Json
-          id: string
-          revision?: number
-          title?: string
-          updated_at?: string
-          user_id: string
+          created_at?: string
+          id?: string
+          question: string
+          status?: string
+          user_id?: string
         }
         Update: {
-          document?: Json
+          created_at?: string
           id?: string
-          revision?: number
-          title?: string
-          updated_at?: string
+          question?: string
+          status?: string
           user_id?: string
         }
         Relationships: []
       }
-      canvas_shares: {
+      analyst_reads: {
         Row: {
           created_at: string
-          id: string
-          owner_id: string
-          payload: Json
-          title: string
+          input: string
+          is_public: boolean
+          published_by: string | null
+          report: Json
+          subject: string | null
           token: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
-          id?: string
-          owner_id?: string
-          payload: Json
-          title: string
-          token?: string
+          input: string
+          is_public?: boolean
+          published_by?: string | null
+          report: Json
+          subject?: string | null
+          token: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
-          id?: string
-          owner_id?: string
-          payload?: Json
-          title?: string
+          input?: string
+          is_public?: boolean
+          published_by?: string | null
+          report?: Json
+          subject?: string | null
           token?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -366,69 +197,105 @@ export type Database = {
         }
         Relationships: []
       }
-      analyst_questions: {
-        Row: { id: string; user_id: string; question: string; status: string; created_at: string }
-        Insert: { id?: string; user_id?: string; question: string; status?: string; created_at?: string }
-        Update: { question?: string; status?: string }
-        Relationships: []
-      }
-      analyst_findings: {
-        Row: { id: string; user_id: string; question_id: string; read_token: string | null; stance: string; note: string; created_at: string }
-        Insert: { id?: string; user_id?: string; question_id: string; read_token?: string | null; stance: string; note: string; created_at?: string }
-        Update: { note?: string; stance?: string }
-        Relationships: []
-      }
-      news_briefs: {
+      news_briefs_archive: {
         Row: {
-          bluf: string
-          created_at: string
-          framing: string[]
+          bluf: string | null
+          created_at: string | null
+          framing: Json | null
           gap: string | null
-          headline: string
-          historical_echo: string
-          id: string
+          headline: string | null
+          historical_echo: string | null
+          id: string | null
           lat: number | null
           lon: number | null
           model: string | null
-          omission: string[]
+          omission: Json | null
           place: string | null
-          source_url: string
-          sources: Json
-          threat_level: string
+          source_url: string | null
+          sources: Json | null
+          threat_level: string | null
         }
         Insert: {
-          bluf: string
-          created_at?: string
-          framing: string[]
+          bluf?: string | null
+          created_at?: string | null
+          framing?: Json | null
           gap?: string | null
-          headline: string
-          historical_echo: string
-          id?: string
+          headline?: string | null
+          historical_echo?: string | null
+          id?: string | null
           lat?: number | null
           lon?: number | null
           model?: string | null
-          omission: string[]
+          omission?: Json | null
           place?: string | null
-          source_url: string
-          sources?: Json
-          threat_level?: string
+          source_url?: string | null
+          sources?: Json | null
+          threat_level?: string | null
         }
         Update: {
-          bluf?: string
-          created_at?: string
-          framing?: string[]
+          bluf?: string | null
+          created_at?: string | null
+          framing?: Json | null
           gap?: string | null
-          headline?: string
-          historical_echo?: string
-          id?: string
+          headline?: string | null
+          historical_echo?: string | null
+          id?: string | null
           lat?: number | null
           lon?: number | null
           model?: string | null
-          omission?: string[]
+          omission?: Json | null
           place?: string | null
-          source_url?: string
-          sources?: Json
-          threat_level?: string
+          source_url?: string | null
+          sources?: Json | null
+          threat_level?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string
+          display_name: string
+          id: string
+          preferences: Json
+        }
+        Insert: {
+          avatar_url?: string
+          display_name?: string
+          id: string
+          preferences?: Json
+        }
+        Update: {
+          avatar_url?: string
+          display_name?: string
+          id?: string
+          preferences?: Json
+        }
+        Relationships: []
+      }
+      workspaces: {
+        Row: {
+          document: Json
+          id: string
+          revision: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          document?: Json
+          id: string
+          revision?: number
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          document?: Json
+          id?: string
+          revision?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -437,18 +304,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      claim_suggested_watch: {
-        Args: { watch_id: string }
-        Returns: string
-      }
-      cast_workshop_vote: {
-        Args: { p_delta: number; p_node: string; p_session: string }
-        Returns: undefined
-      }
-      join_workshop: {
-        Args: { p_code: string; p_name: string }
-        Returns: string
-      }
+      claim_suggested_watch: { Args: { watch_id: string }; Returns: string }
       save_threadwise_workspace: {
         Args: {
           p_document: Json
@@ -471,7 +327,6 @@ export type Database = {
           isSetofReturn: true
         }
       }
-      workshop_access: { Args: { p_session: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
@@ -600,6 +455,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
