@@ -311,6 +311,32 @@ function moneySentences(text: string, limit = 5): string[] {
 }
 
 /** Names and institutions worth looking up: capitalised runs, minus the obvious noise. */
+const GENERIC_WORDS = new Set([
+  "court","high","supreme","finance","act","bill","law","government","minister","president",
+  "parliament","state","council","bank","party","election","police","judge","ruling","report",
+  "agency","committee","department","union","national","federal","international","breaking",
+  "news","update","statement","official","spokesman","spokesperson","analysis","opinion",
+]);
+
+/** The words that make this move searchable: names, places, and years. */
+export function distinctiveTerms(input: string): string[] {
+  const named = (input.match(/\b[A-Z][a-zA-Z]{4,}\b/g) ?? [])
+    .map((word) => word.toLowerCase())
+    .filter((word) => !GENERIC_WORDS.has(word));
+  const phrases = (input.match(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3}(?:\s+\d{4})?)\b/g) ?? []).map((phrase) =>
+    phrase.toLowerCase(),
+  );
+  const years = (input.match(/\b(19|20)\d{2}\b/g) ?? []).map(String);
+  return [...new Set([...named, ...phrases, ...years])].slice(0, 6);
+}
+
+/** A hit is on topic only if its headline names something the move names. */
+export function mentionsTerm(title: string, terms: string[]): boolean {
+  if (!terms.length) return true;
+  const haystack = title.toLowerCase();
+  return terms.some((term) => haystack.includes(term));
+}
+
 export function candidateEntities(input: string): string[] {
   const stop = new Set(["The", "A", "An", "Breaking", "New", "This", "That", "It", "He", "She", "They", "We", "I"]);
   const runs = (input.match(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\b/g) ?? []).filter(
@@ -376,9 +402,20 @@ async function news(query: string): Promise<NewsHit[]> {
 
 export async function retrieveContext(input: string): Promise<{ context: string; sources: { title: string; url: string }[] }> {
   const entities = candidateEntities(input);
-  const query = [entities[0], entities[1], "news"].filter(Boolean).join(" ");
+  const terms = distinctiveTerms(input);
 
-  const [hits, articles] = await Promise.all([news(query), Promise.all(entities.slice(0, 3).map((entity) => wiki(entity)))]);
+  // Search the distinctive words, newest first, then keep only what is on topic:
+  // "finance" alone once matched American campaign-finance coverage to a Kenyan ruling.
+  const queries = [
+    terms.slice(0, 2).join(" "),
+    [entities[0], terms[0]].filter(Boolean).join(" "),
+  ].filter((query) => query.trim().length > 2);
+
+  const [rawHits, articles] = await Promise.all([
+    Promise.all(queries.map((query) => news(query))).then((batches) => batches.flat()),
+    Promise.all(entities.slice(0, 3).map((entity) => wiki(entity))),
+  ]);
+  const hits = rawHits.filter((hit) => mentionsTerm(hit.title, terms));
   const background = articles.filter((hit): hit is WikiHit => hit !== null);
 
   const reporting = hits
@@ -485,18 +522,8 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
 
   // Freshness alone let "campaign finance" attach American coverage to a Kenyan
   // ruling. A hit must also name something the move names.
-  const GENERIC = new Set([
-    "court","high","supreme","finance","act","bill","law","government","minister","president",
-    "parliament","state","council","bank","party","election","police","judge","ruling","report",
-    "agency","committee","department","union","national","federal","international","new","the",
-  ]);
-  const anchors = new Set(
-    (input.match(/\b[A-Z][a-zA-Z]{4,}\b/g) ?? [])
-      .map((word) => word.toLowerCase())
-      .filter((word) => !GENERIC.has(word)),
-  );
-  const onTopic = (title: string) =>
-    anchors.size === 0 || [...anchors].some((anchor) => title.toLowerCase().includes(anchor));
+  const anchors = distinctiveTerms(input);
+  const onTopic = (title: string) => mentionsTerm(title, anchors);
   const situationHits = best?.score ? best.hits.filter((hit) => onTopic(hit.title)) : [];
 
   // Layer evidence: money and mandate are searched, never remembered.
