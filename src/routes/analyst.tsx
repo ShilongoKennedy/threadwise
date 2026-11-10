@@ -41,6 +41,17 @@ const EXAMPLES = [
   "The central bank raises rates the day after the election result.",
 ];
 
+const INTENTS = [
+  { value: "understand", label: "Understand" },
+  { value: "decide", label: "Decide" },
+  { value: "argue", label: "Argue" },
+  { value: "predict", label: "Predict" },
+  { value: "monitor", label: "Monitor" },
+  { value: "teach", label: "Learn" },
+] as const;
+
+type IntentMode = (typeof INTENTS)[number]["value"];
+
 function AnalystPage() {
   const navigate = useNavigate();
   const [input, setInput] = useState("");
@@ -52,6 +63,8 @@ function AnalystPage() {
   const [recent, setRecent] = useState<{ token: string; input: string; at: string }[]>([]);
   const [reading, setReading] = useState<{ text: string; context: string } | null>(null);
   const [readingBusy, setReadingBusy] = useState(false);
+  const [intentMode, setIntentMode] = useState<IntentMode>("understand");
+  const [changeMind, setChangeMind] = useState("");
 
   const readImage = async (file: File) => {
     if (readingBusy) return;
@@ -115,7 +128,13 @@ function AnalystPage() {
       const response = await fetch("/api/analyst", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: move }),
+        body: JSON.stringify({
+          text: move,
+          intent: {
+            mode: intentMode,
+            ...(changeMind.trim() ? { changeMind: changeMind.trim() } : {}),
+          },
+        }),
       });
       const body = (await response.json()) as { report?: Report; token?: string | null; error?: string };
       if (!response.ok || !body.report) throw new Error(body.error ?? "The analyst could not finish this read.");
@@ -179,6 +198,35 @@ function AnalystPage() {
                 maxLength={4000}
                 className="w-full resize-none bg-transparent px-4 py-4 font-serif text-[16px] leading-relaxed outline-none placeholder:text-[#1A1A1A]/35"
               />
+              <div className="border-t border-[#1A1A1A]/15 px-4 py-3">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="mr-1 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
+                    I&rsquo;m trying to
+                  </span>
+                  {INTENTS.map((intent) => (
+                    <button
+                      key={intent.value}
+                      type="button"
+                      aria-pressed={intentMode === intent.value}
+                      onClick={() => setIntentMode(intent.value)}
+                      className={`border px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] transition-colors ${
+                        intentMode === intent.value
+                          ? "border-[#1A4BFF] bg-[#1A4BFF] text-white"
+                          : "border-[#1A1A1A]/20 text-[#1A1A1A]/60 hover:border-[#1A1A1A]"
+                      }`}
+                    >
+                      {intent.label}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  value={changeMind}
+                  onChange={(event) => setChangeMind(event.target.value)}
+                  maxLength={300}
+                  placeholder="What would change your mind? (optional)"
+                  className="mt-2 w-full border-b border-[#1A1A1A]/20 bg-transparent px-1 py-1.5 font-serif text-[13px] outline-none placeholder:text-[#1A1A1A]/35"
+                />
+              </div>
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 px-4 py-3">
                 <div className="flex items-center gap-3">
                   <label className="cursor-pointer border-2 border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]">

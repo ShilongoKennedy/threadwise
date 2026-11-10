@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  analystPrompt,
   analystSchema,
   applyReadPatches,
   cleanArticle,
@@ -206,6 +207,46 @@ The material includes 440 kilograms of enriched uranium, according to the agency
     expect(cleaned).toContain("440 kilograms");
     expect(cleaned).not.toContain("Accessibility");
     expect(cleaned).not.toContain("Follow us");
+  });
+});
+
+describe("claims and inquiry", () => {
+  it("defaults to an empty claim table", () => {
+    const report = analystSchema.parse({ move: "A court ruled." });
+    expect(report.claims).toEqual([]);
+  });
+
+  it("makes the inquiry the purpose of the prompt", () => {
+    const prompt = analystPrompt("A court ruled.", "", "legal", [], {
+      mode: "decide",
+      changeMind: "a dated vote",
+    });
+    expect(prompt).toContain("make a decision");
+    expect(prompt).toContain("a dated vote");
+  });
+
+  it("patches a claim row", () => {
+    const draft = analystSchema.parse({
+      claims: [
+        {
+          text: "The budget passed.",
+          kind: "fact",
+          confidence: "high",
+          source: "move",
+        },
+      ],
+    });
+    const result = applyReadPatches(draft, [
+      {
+        section: "claim 1",
+        find: "The budget passed.",
+        replace: "The material does not report the budget passing.",
+        reason: "Removed an unsupported claim.",
+      },
+    ]);
+
+    expect(result.revision.patched).toBe(1);
+    expect(result.draft.claims[0]?.text).toContain("does not report");
   });
 });
 

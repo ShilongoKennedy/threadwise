@@ -78,9 +78,28 @@ export const Route = createFileRoute("/api/analyst")({
         if (text.length < 20) return json({ error: "Give the analyst at least a sentence to work with." }, 400);
         if (text.length > 4000) return json({ error: "That is longer than one move. Trim it to under 4,000 characters." }, 413);
 
+        const intentModes = ["understand", "decide", "argue", "predict", "monitor", "teach"] as const;
+        const rawIntent = (body as { intent?: unknown })?.intent;
+        const intentRecord =
+          rawIntent && typeof rawIntent === "object"
+            ? (rawIntent as { mode?: unknown; changeMind?: unknown })
+            : null;
+        const intentMode =
+          typeof intentRecord?.mode === "string" &&
+          (intentModes as readonly string[]).includes(intentRecord.mode)
+            ? (intentRecord.mode as (typeof intentModes)[number])
+            : "understand";
+        const changeMind =
+          typeof intentRecord?.changeMind === "string"
+            ? intentRecord.changeMind.trim().slice(0, 300)
+            : "";
+        const intent = intentRecord
+          ? { mode: intentMode, ...(changeMind ? { changeMind } : {}) }
+          : undefined;
+
         try {
           const { analyseMove, saveRead } = await import("@/lib/threadwise/analyst");
-          const report = await analyseMove(text);
+          const report = await analyseMove(text, intent);
           const header = request.headers.get("authorization") ?? "";
           const jwt = header.startsWith("Bearer ") ? header.slice(7) : undefined;
           const token = await saveRead(text, report, jwt);

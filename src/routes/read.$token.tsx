@@ -57,6 +57,14 @@ type Report = {
   confidence: string;
   basis?: string;
   writer?: string;
+  intent?: { mode: string; changeMind?: string };
+  claims?: {
+    text: string;
+    kind: "fact" | "inference" | "value" | "prediction";
+    confidence: "high" | "medium" | "low";
+    source: string;
+    falsifier: string;
+  }[];
   review?: {
     verdict: "grounded" | "mixed" | "unsupported";
     supported: number;
@@ -240,6 +248,8 @@ function SharedRead() {
               </div>
             )}
 
+            {report.intent ? <InquiryBar intent={report.intent} /> : null}
+
             {report.review ? (
               <DeskReview
                 review={report.review}
@@ -247,6 +257,8 @@ function SharedRead() {
                 writer={report.writer}
               />
             ) : null}
+
+            {report.claims?.length ? <ClaimTable claims={report.claims} /> : null}
 
             <Contents items={contents} />
 
@@ -295,6 +307,76 @@ function SharedRead() {
   );
 }
 
+
+/** Why this read exists, stated before the read itself. */
+function InquiryBar({ intent }: { intent: NonNullable<Report["intent"]> }) {
+  return (
+    <section className="border-l-2 border-[#1A4BFF] pl-3">
+      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
+        Inquiry · {intent.mode}
+      </p>
+      {intent.changeMind ? (
+        <p className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/70">
+          <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+            Would change their mind ·{" "}
+          </span>
+          {intent.changeMind}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+/** The load-bearing claims, separated from the prose that argues them. */
+function ClaimTable({ claims }: { claims: NonNullable<Report["claims"]> }) {
+  return (
+    <section className="border-2 border-[#1A1A1A] bg-white">
+      <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#FDFBF7]">
+          Claims
+        </span>
+        <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A4BFF]">
+          {claims.length} load-bearing
+        </span>
+      </div>
+      <ul className="divide-y divide-[#1A1A1A]/10">
+        {claims.map((claim, index) => (
+          <li key={`${claim.text.slice(0, 20)}-${index}`} className="px-3 py-2.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className={`font-mono text-[8px] font-bold uppercase tracking-[0.14em] ${
+                  claim.kind === "fact"
+                    ? "text-[#1A4BFF]"
+                    : claim.kind === "prediction"
+                      ? "text-[#B26A00]"
+                      : claim.kind === "value"
+                        ? "text-[#C1121F]"
+                        : "text-[#1A1A1A]/60"
+                }`}
+              >
+                {claim.kind}
+              </span>
+              <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+                {claim.confidence}
+              </span>
+            </div>
+            <p className="mt-1 font-serif text-[13.5px] leading-snug text-[#1A1A1A]/85">
+              {claim.text}
+            </p>
+            <p className="mt-0.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+              {claim.source || "source not stated"}
+            </p>
+            {claim.falsifier ? (
+              <p className="mt-1 font-serif text-[12px] leading-snug text-[#1A1A1A]/55">
+                Would be wrong if: {claim.falsifier}
+              </p>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 /** The independent editor's verdict, shown before the read itself. */
 function DeskReview({

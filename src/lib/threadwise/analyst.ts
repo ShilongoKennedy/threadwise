@@ -25,6 +25,19 @@ const sectionSchema = z.object({
   body: z.string().trim().max(2200).default(""),
 });
 
+export const INQUIRY_MODES = ["understand", "decide", "argue", "predict", "monitor", "teach"] as const;
+export type InquiryMode = (typeof INQUIRY_MODES)[number];
+export type Inquiry = { mode: InquiryMode; changeMind?: string };
+
+const INQUIRY_BRIEF: Record<InquiryMode, string> = {
+  understand: "understand the mechanism well enough to predict the next move",
+  decide: "make a decision, so the trade-offs and decision-relevant facts must be explicit",
+  argue: "build or attack an argument, so both the strongest case and the point that would settle it matter",
+  predict: "make a prediction, so base rates, indicators and a dated falsifier matter",
+  monitor: "monitor a situation, so the signals that would show change matter",
+  teach: "learn the subject from first principles, so terms, common misreadings and transferable moves matter",
+};
+
 export const analystSchema = z.object({
   mode: z
     .enum(["report", "document", "institution", "signal", "discourse", "legal", "comparison"])
@@ -66,6 +79,18 @@ export const analystSchema = z.object({
     .max(12)
     .default([]),
   falsifier: z.string().trim().max(800).default(""),
+  claims: z
+    .array(
+      z.object({
+        text: z.string().trim().max(400).default(""),
+        kind: z.enum(["fact", "inference", "value", "prediction"]).default("fact"),
+        confidence: z.enum(["high", "medium", "low"]).default("medium"),
+        source: z.string().trim().max(300).default(""),
+        falsifier: z.string().trim().max(300).default(""),
+      }),
+    )
+    .max(8)
+    .default([]),
   questions: z.array(z.string().trim().max(200)).max(5).default([]),
   confidence: z.enum(["documented", "inferred", "speculative"]).default("inferred"),
 });
@@ -107,6 +132,7 @@ export type AnalystReport = z.infer<typeof analystSchema> & {
   basis?: string;
   subject?: string;
   writer?: string;
+  intent?: Inquiry;
   review?: ReadReview;
   revision?: ReadRevision;
 };
@@ -256,11 +282,18 @@ export function analystPrompt(
   context: string,
   mode: keyof typeof MODES = "report",
   layers: string[] = [],
+  inquiry?: Inquiry,
 ) {
   const shape = MODES[mode] ?? MODES.report;
   const depth = DEPTH[mode] ?? DEPTH.report;
   const words = input.length < 400 ? depth.short : depth.long;
   const layerRules = layers.map((layer) => LAYERS[layer]).filter(Boolean).join("\n\n");
+  const inquiryBlock = inquiry
+    ? `THE INQUIRY THIS READ SERVES:
+- The reader is trying to ${INQUIRY_BRIEF[inquiry.mode]}.
+${inquiry.changeMind?.trim() ? `- What would change their mind: ${inquiry.changeMind.trim().slice(0, 300)}\n` : ""}- Use this to decide what to emphasise and what the questions should ask. It is the purpose of the read, not a section to fill.
+`
+    : "";
   return `THE MOVE (as supplied by the reader):
 """
 ${input.slice(0, 4000)}
@@ -277,6 +310,7 @@ THIS IS READ AS: ${shape.label}.
 Its sections are: ${shape.sections}.
 Put those sections in "sections" as { "title", "body" } pairs, in that order, and set "mode" to "${mode}" and "layers" to ${JSON.stringify(layers)}.
 
+${inquiryBlock}
 ${layerRules}
 
 FIGURES RULE:
@@ -294,7 +328,8 @@ Fields:
 - counter_reading: the strongest case that this is routine rather than a rupture. Argue it properly.
 - watch: 2-4 dated or conditioned signals that will show which reading is right.
 - falsifier: the one fact that would prove this whole read wrong.
-- questions: three sharp questions this specific read invites, in the reader's voice, each under 16 words. Not generic ("what happens next") — they must depend on a claim you just made.
+- claims: 4-8 load-bearing claims the read depends on. For each: text (one sentence), kind (fact|inference|value|prediction), confidence (high|medium|low), source (the outlet or document title from the material, or "move" if it restates the move, or "analysis" if it is your inference), falsifier (for predictions, the observation that would settle it; otherwise empty). These are the claims the reader should check.
+- questions: three sharp questions this specific read invites, in the reader's voice, each under 16 words. Not generic ("what happens next") — they must depend on a claim you just made and, where an inquiry is stated, serve that inquiry.
 - confidence: "documented" if the facts are confirmed in the retrieved material, "inferred" if they rest on the move itself, "speculative" if they depend on unnamed sources.
 
 Return ONLY a JSON object with EXACTLY these keys, all present:
@@ -307,6 +342,7 @@ Return ONLY a JSON object with EXACTLY these keys, all present:
   "counter_reading": string,
   "watch": [{ "signal": string, "when": string }],
   "falsifier": string,
+  "claims": [{ "text": string, "kind": "fact" | "inference" | "value" | "prediction", "confidence": "high" | "medium" | "low", "source": string, "falsifier": string }],
   "questions": [string],
   "mode": "report" | "document" | "institution" | "signal" | "discourse" | "legal" | "comparison",
   "layers": [string],
@@ -1089,6 +1125,11 @@ export function applyReadPatches(
     add(`watch: ${item.signal}`, () => item.signal, (value) => { item.signal = value; });
     add(`watch: ${item.signal} when`, () => item.when, (value) => { item.when = value; });
   });
+  next.claims.forEach((claim, index) => {
+    add(`claim ${index + 1}`, () => claim.text, (value) => { claim.text = value; });
+    add(`claim ${index + 1} source`, () => claim.source, (value) => { claim.source = value; });
+    add(`claim ${index + 1} falsifier`, () => claim.falsifier, (value) => { claim.falsifier = value; });
+  });
 
   const revision: ReadRevision = { patched: 0, notes: [] };
   for (const patch of patches) {
@@ -1198,6 +1239,7 @@ async function reviewRead(
     counter_reading: draft.counter_reading,
     sections: draft.sections,
     watch: draft.watch,
+    claims: draft.claims,
     falsifier: draft.falsifier,
   }).slice(0, 16_000);
 
@@ -1272,6 +1314,7 @@ async function reviseRead(
     counter_reading: draft.counter_reading,
     sections: draft.sections,
     watch: draft.watch,
+    claims: draft.claims,
     falsifier: draft.falsifier,
   }).slice(0, 16_000);
 
@@ -1320,7 +1363,7 @@ Rules:
   }
 }
 
-export async function analyseMove(input: string): Promise<AnalystReport> {
+export async function analyseMove(input: string, intent?: Inquiry): Promise<AnalystReport> {
   const startedAt = Date.now();
   // Classify and retrieve at the same time: they do not depend on each other.
   const [decision, base, candidates] = await Promise.all([
@@ -1453,7 +1496,7 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     .filter(Boolean)
     .join("\n\n");
 
-  const prompt = analystPrompt(input, evidenceContext, decision.mode, decision.layers);
+  const prompt = analystPrompt(input, evidenceContext, decision.mode, decision.layers, intent);
 
   let parsedData: z.infer<typeof analystSchema> | null = null;
   let writer = "";
@@ -1549,6 +1592,7 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     confidence,
     basis,
     writer,
+    ...(intent ? { intent } : {}),
     ...(review ? { review } : {}),
     ...(revision ? { revision } : {}),
     sources: [...sources, ...situationSources, ...layerSources, ...primary.sources],
