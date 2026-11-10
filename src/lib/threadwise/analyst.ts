@@ -70,10 +70,30 @@ export const analystSchema = z.object({
   confidence: z.enum(["documented", "inferred", "speculative"]).default("inferred"),
 });
 
+export const reviewSchema = z.object({
+  verdict: z.enum(["grounded", "mixed", "unsupported"]).default("mixed"),
+  supported: z.number().int().min(0).max(50).default(0),
+  issues: z
+    .array(
+      z.object({
+        section: z.string().trim().max(120).default(""),
+        claim: z.string().trim().max(400).default(""),
+        problem: z.string().trim().max(400).default(""),
+      }),
+    )
+    .max(4)
+    .default([]),
+  missing: z.array(z.string().trim().max(300)).max(3).default([]),
+});
+
+export type ReadReview = z.infer<typeof reviewSchema> & { by?: string };
+
 export type AnalystReport = z.infer<typeof analystSchema> & {
   sources: { title: string; url: string }[];
   basis?: string;
   subject?: string;
+  writer?: string;
+  review?: ReadReview;
 };
 
 /** What kind of artefact this is decides which questions the read asks. */
@@ -761,6 +781,116 @@ function bounded<T>(promise: Promise<T>, fallback: T, ms = 25_000): Promise<T> {
   });
 }
 
+/** A review can lower confidence, never raise it. */
+export function reviewedConfidence(
+  confidence: AnalystReport["confidence"],
+  verdict?: ReadReview["verdict"],
+): AnalystReport["confidence"] {
+  if (verdict === "unsupported") return "speculative";
+  if (verdict === "mixed" && confidence === "documented") return "inferred";
+  return confidence;
+}
+
+type ModelChoice = { model: ReturnType<typeof getModel>; label: string };
+
+/** The strongest working writer first; the cheap chat model is the safety net. */
+function writerCandidates(): ModelChoice[] {
+  const candidates: ModelChoice[] = [];
+  if (process.env["DEEPSEEK_API_KEY"]) {
+    candidates.push({ model: getModel("deepseek"), label: "DeepSeek" });
+  }
+  if (process.env["OPENAI_API_KEY"]) {
+    candidates.push({ model: getModel("openai", "gpt-6.1-sol"), label: "GPT-6.1 Sol" });
+  }
+  return candidates;
+}
+
+/** A different family edits the read, so it is not marking its own homework. */
+function reviewerCandidates(): ModelChoice[] {
+  const candidates: ModelChoice[] = [];
+  if (process.env["OPENAI_API_KEY"]) {
+    candidates.push({ model: getModel("openai", "gpt-6.1-sol"), label: "GPT-6.1 Sol" });
+    candidates.push({ model: getModel("openai", "gpt-6-astra"), label: "GPT-6 Astra" });
+    candidates.push({ model: getModel("openai", "gpt-4o"), label: "GPT-4o" });
+  }
+  if (process.env["DEEPSEEK_API_KEY"]) {
+    candidates.push({ model: getModel("deepseek", "deepseek-reasoner"), label: "DeepSeek Reasoner" });
+  }
+  if (process.env["GEMINI_API_KEY"] || process.env["GOOGLE_GENERATIVE_AI_API_KEY"]) {
+    candidates.push({ model: getModel("gemini", "gemini-pro-latest"), label: "Gemini Pro" });
+  }
+  return candidates;
+}
+
+/**
+ * The desk editor: check the draft's factual claims against the material it was
+ * written from. It may lower confidence and name what is unsupported; it never
+ * rewrites the read or supplies new facts.
+ */
+async function reviewRead(
+  draft: z.infer<typeof analystSchema>,
+  evidence: string,
+  move: string,
+): Promise<ReadReview | null> {
+  const material = evidence.trim().slice(0, 18_000);
+  if (!material) return null;
+
+  const claims = JSON.stringify({
+    move: draft.move,
+    why_now: draft.why_now,
+    stakes: draft.stakes,
+    precedent: draft.precedent,
+    second_order: draft.second_order,
+    counter_reading: draft.counter_reading,
+    sections: draft.sections,
+    watch: draft.watch,
+    falsifier: draft.falsifier,
+  }).slice(0, 16_000);
+
+  const prompt = `You are a fact-checking editor at Threadwise. A colleague wrote the read below from the retrieved material. Your job is narrow: find specific, checkable factual claims that the material CONTRADICTS, or that the read presents as coming from the material but the material does not contain. Do not review the analysis, judgments, predictions, motives or general historical context. Do not require the material to contain everything; it is a partial record.
+
+THE MOVE:
+"""
+${move.slice(0, 2000)}
+"""
+
+THE READ:
+${claims}
+
+RETRIEVED MATERIAL:
+${material}
+
+Return ONLY this JSON:
+{"verdict":"grounded"|"mixed"|"unsupported","supported":number,"issues":[{"section":string,"claim":string,"problem":string}],"missing":[string]}
+
+Rules:
+- At most 4 issues. Only flag a claim if (a) the material explicitly contradicts it, or (b) it is a specific number, date, vote, ruling, named appointment or direct quote presented as fact, it is central to the read, and the material is silent on that exact point.
+- Do NOT flag general historical background, analysis, predictions, motives, patterns, or institutional common knowledge. Do NOT flag a claim merely because the material does not mention it in passing.
+- "problem" must state what the material says that contradicts the claim, or "the material is silent on [specific fact]". Never write "confirms" or "supports" in problem.
+- "grounded" = no material contradictions. "mixed" = 1-2 issues, read still broadly supported. "unsupported" = 3+ issues or the central claim is contradicted.
+- "supported" = the number of factual claims the material supports.
+- "missing" = up to 3 specific facts needed to settle the central claim, not general context.
+- If the read says a fact is unknown or unretrieved, do not flag it.
+- The move is the input under analysis, not a retrieved source. Do not flag a claim that merely restates the move; flag only specific facts the read adds beyond the move and presents as retrieved.`;
+
+  for (const candidate of reviewerCandidates()) {
+    try {
+      const { text } = await generateText({
+        model: candidate.model,
+        prompt,
+        temperature: 0,
+        maxOutputTokens: 2200,
+        maxRetries: 0,
+      });
+      const parsed = reviewSchema.safeParse(extractJson<unknown>(text));
+      if (parsed.success) return { ...parsed.data, by: candidate.label };
+    } catch (error) {
+      console.warn(`[analyst] reviewer ${candidate.label} failed:`, error);
+    }
+  }
+  return null;
+}
+
 export async function analyseMove(input: string): Promise<AnalystReport> {
   // Classify and retrieve at the same time: they do not depend on each other.
   const [decision, base, candidates] = await Promise.all([
@@ -888,37 +1018,49 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
     url: hit.url,
   }));
 
-  const { text } = await generateText({
-    model: getModel("deepseek"),
-    system: METHOD,
-    prompt: analystPrompt(
-      input,
-      [
-        situationContext ? `SITUATION — ${situation}, as reported:\n${situationContext}` : "",
-        primaryContext ? `PRIMARY DOCUMENTS — the body's own budget, or the court's own judgment:\n${primaryContext}` : "",
-        layerContext ? `ON THE ACTORS — money, mandate and ownership, as reported:\n${layerContext}` : "",
-        context,
-      ]
-        .filter(Boolean)
-        .join("\n\n"),
-      decision.mode,
-      decision.layers,
-    ),
-    temperature: 0.3,
-    maxOutputTokens: 7000,
-    maxRetries: 1,
-  });
+  const evidenceContext = [
+    situationContext ? `SITUATION — ${situation}, as reported:\n${situationContext}` : "",
+    primaryContext ? `PRIMARY DOCUMENTS — the body's own budget, or the court's own judgment:\n${primaryContext}` : "",
+    layerContext ? `ON THE ACTORS — money, mandate and ownership, as reported:\n${layerContext}` : "",
+    context,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
-  const parsed = analystSchema.safeParse(extractJson<unknown>(text));
-  if (!parsed.success) {
-    console.error("[analyst] unusable output:", text.slice(0, 600));
-    throw new Error(`The analyst returned an unusable read: ${parsed.error.issues[0]?.message ?? "unknown shape"}`);
+  const prompt = analystPrompt(input, evidenceContext, decision.mode, decision.layers);
+
+  let parsedData: z.infer<typeof analystSchema> | null = null;
+  let writer = "";
+  for (const candidate of writerCandidates()) {
+    try {
+      const { text } = await generateText({
+        model: candidate.model,
+        system: METHOD,
+        prompt,
+        temperature: 0.3,
+        maxOutputTokens: 7000,
+        maxRetries: 0,
+      });
+      const attempt = analystSchema.safeParse(extractJson<unknown>(text));
+      if (attempt.success) {
+        parsedData = attempt.data;
+        writer = candidate.label;
+        break;
+      }
+      console.error(`[analyst] unusable output from ${candidate.label}:`, text.slice(0, 400));
+    } catch (error) {
+      console.error(`[analyst] writer ${candidate.label} failed:`, error);
+    }
   }
+  if (!parsedData) throw new Error("The analyst could not produce a usable read.");
 
-  // The confidence badge is derived from what was actually retrieved, not from
-  // the model's own opinion of its work.
+  // A different model edits the draft against the material it was written from.
+  const review = await reviewRead(parsedData, evidenceContext, input);
+
+  // The confidence badge is derived from what was actually retrieved, then the
+  // editor may lower it. A review can never raise it.
   const freshSituation = recentCount(situationHits, 28);
-  const confidence: AnalystReport["confidence"] =
+  const baseConfidence: AnalystReport["confidence"] =
     decision.mode === "discourse"
       ? "inferred"
       : freshSituation >= 2
@@ -926,12 +1068,13 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
         : situationHits.length >= 2 || sources.length > 2
           ? "inferred"
           : "speculative";
+  const confidence = reviewedConfidence(baseConfidence, review?.verdict);
   const basis =
     decision.mode === "discourse"
       ? "a statement about people, not an event — judged on argument, not reporting"
-      : confidence === "documented"
+      : baseConfidence === "documented"
       ? `${freshSituation} dated reports from the last four weeks`
-      : confidence === "inferred"
+      : baseConfidence === "inferred"
         ? situationHits.length >= 2
           ? freshSituation >= 1
             ? `the situation is reported, but only ${freshSituation} of them in the last four weeks`
@@ -940,12 +1083,14 @@ export async function analyseMove(input: string): Promise<AnalystReport> {
         : "the move itself — no independent reporting found";
 
   return {
-    ...parsed.data,
+    ...parsedData,
     subject: decision.subject || situation,
-    mode: parsed.data.mode ?? decision.mode,
-    layers: parsed.data.layers?.length ? parsed.data.layers : decision.layers,
+    mode: parsedData.mode ?? decision.mode,
+    layers: parsedData.layers?.length ? parsedData.layers : decision.layers,
     confidence,
     basis,
+    writer,
+    ...(review ? { review } : {}),
     sources: [...sources, ...situationSources, ...layerSources, ...primary.sources],
   };
 }

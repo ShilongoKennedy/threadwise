@@ -56,6 +56,14 @@ type Report = {
   falsifier: string;
   confidence: string;
   basis?: string;
+  writer?: string;
+  review?: {
+    verdict: "grounded" | "mixed" | "unsupported";
+    supported: number;
+    issues: { section: string; claim: string; problem: string }[];
+    missing: string[];
+    by?: string;
+  };
   mode?: string;
   layers?: string[];
   sections?: { title: string; body: string }[];
@@ -231,6 +239,10 @@ function SharedRead() {
               </div>
             )}
 
+            {report.review ? (
+              <DeskReview review={report.review} writer={report.writer} />
+            ) : null}
+
             <Contents items={contents} />
 
             {blocks.map((block, index) => (
@@ -278,6 +290,75 @@ function SharedRead() {
   );
 }
 
+
+/** The independent editor's verdict, shown before the read itself. */
+function DeskReview({
+  review,
+  writer,
+}: {
+  review: NonNullable<Report["review"]>;
+  writer?: string;
+}) {
+  const tone =
+    review.verdict === "grounded"
+      ? "border-[#1A4BFF] bg-[#1A4BFF]/5"
+      : review.verdict === "mixed"
+        ? "border-[#B26A00] bg-[#B26A00]/5"
+        : "border-[#C1121F] bg-[#C1121F]/5";
+
+  return (
+    <section className={`border-2 px-3 py-3 ${tone}`}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em]">
+          Desk review · {review.verdict}
+        </span>
+        <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+          {review.by ? `reviewed by ${review.by}` : "reviewed"}
+          {writer ? ` · written by ${writer}` : ""}
+        </span>
+      </div>
+
+      {review.supported > 0 && (
+        <p className="mt-1 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65">
+          {review.supported} factual claim{review.supported === 1 ? "" : "s"} supported by the
+          retrieved material.
+        </p>
+      )}
+
+      {review.issues.length > 0 && (
+        <ul className="mt-2 space-y-2">
+          {review.issues.map((issue, index) => (
+            <li
+              key={`${issue.claim.slice(0, 20)}-${index}`}
+              className="border-l-2 border-[#C1121F] pl-2"
+            >
+              <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+                {issue.section || "claim"}
+              </p>
+              <p className="font-serif text-[13px] leading-snug">“{issue.claim}”</p>
+              <p className="font-serif text-[12px] leading-snug text-[#1A1A1A]/60">
+                {issue.problem}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {review.missing.length > 0 && (
+        <p className="mt-2 font-serif text-[12px] leading-snug text-[#1A1A1A]/60">
+          <span className="font-mono text-[8px] uppercase tracking-[0.14em]">Missing · </span>
+          {review.missing.join(" · ")}
+        </p>
+      )}
+
+      {review.verdict === "grounded" && review.issues.length === 0 && (
+        <p className="mt-1 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65">
+          Every factual claim checked against the retrieved material.
+        </p>
+      )}
+    </section>
+  );
+}
 
 /** One numbered section of the document, with an anchor the index can hit. */
 function Block({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {

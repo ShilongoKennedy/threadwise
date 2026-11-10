@@ -5,6 +5,7 @@ import {
   editionLanguage,
   fundedBody,
   matchStrength,
+  reviewedConfidence,
   selectLayers,
 } from "./analyst";
 
@@ -71,6 +72,27 @@ describe("selectLayers", () => {
     expect(selectLayers("discourse", [], "Maybe it is an inferiority complex.")).toEqual([
       "theory",
     ]);
+  });
+});
+
+describe("reviewedConfidence", () => {
+  it("never raises confidence", () => {
+    expect(reviewedConfidence("documented", "grounded")).toBe("documented");
+    expect(reviewedConfidence("inferred", "grounded")).toBe("inferred");
+  });
+
+  it("lowers documented to inferred when the editor finds mixed support", () => {
+    expect(reviewedConfidence("documented", "mixed")).toBe("inferred");
+    expect(reviewedConfidence("inferred", "mixed")).toBe("inferred");
+  });
+
+  it("lowers any read to speculative when the central claims are unsupported", () => {
+    expect(reviewedConfidence("documented", "unsupported")).toBe("speculative");
+    expect(reviewedConfidence("inferred", "unsupported")).toBe("speculative");
+  });
+
+  it("leaves confidence alone when there was no review", () => {
+    expect(reviewedConfidence("documented")).toBe("documented");
   });
 });
 
