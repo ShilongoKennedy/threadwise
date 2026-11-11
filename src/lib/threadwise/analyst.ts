@@ -11,6 +11,7 @@ import { generateText } from "ai";
 import { z } from "zod";
 import { extractJson, getModel } from "./ai/ai-providers.server";
 import { moneySentences } from "./figures";
+import type { CaseRead } from "./case-ledger";
 import {
   courtDocuments,
   EMPTY_PRIMARY,
@@ -2105,9 +2106,7 @@ export async function listCases(limit = 40): Promise<{ subject: string; reads: n
 }
 
 /** The reads that make up one case. */
-export async function caseReads(subject: string, limit = 20): Promise<
-  { token: string; input: string; at: string; mode: string | null; falsifier: string }[]
-> {
+export async function caseReads(subject: string, limit = 20): Promise<CaseRead[]> {
   const url = serverEnv("SUPABASE_URL");
   const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
   if (!url || !key) return [];
@@ -2129,6 +2128,16 @@ export async function caseReads(subject: string, limit = 20): Promise<
       at: row.created_at as string,
       mode: report?.mode ?? null,
       falsifier: report?.falsifier ?? "",
+      confidence: report?.confidence ?? null,
+      claims: (report?.claims ?? []).map((claim) => ({
+        text: claim.text,
+        kind: claim.kind,
+        confidence: claim.confidence,
+        source: claim.source ?? "",
+        falsifier: claim.falsifier ?? "",
+      })),
+      counter_reading: report?.counter_reading ?? "",
+      review: report?.review?.verdict ?? null,
     };
   });
 }
