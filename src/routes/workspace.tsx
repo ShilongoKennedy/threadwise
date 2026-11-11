@@ -226,18 +226,19 @@ function WorkspacePage() {
       </header>
 
       <main className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-24 pt-10 md:px-8 md:pt-14">
-        <section className="flex flex-wrap items-end justify-between gap-4">
-          <div>
+        <section>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#1A4BFF]">
               Workspace
             </p>
-            <h1 className="mt-2 font-display text-[38px] leading-none md:text-[56px]">Your desk.</h1>
-            <p className="mt-3 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/65">
-              What is open, what you just read, and where the evidence is thin. The rest can wait.
+            <span className="h-3 w-px bg-[#1A1A1A]/20" />
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
+              {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "2-digit", month: "long" })}
             </p>
           </div>
-          <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
-            {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "2-digit", month: "long" })}
+          <h1 className="mt-2 font-display text-[38px] leading-none md:text-[56px]">Your desk.</h1>
+          <p className="mt-3 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/65">
+            What is open, what you just read, and where the evidence is thin. The rest can wait.
           </p>
         </section>
 
@@ -266,7 +267,7 @@ function WorkspacePage() {
             <button
               type="submit"
               disabled={!draft.trim()}
-              className="inline-flex items-center justify-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:opacity-40"
+              className="inline-flex items-center justify-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:border-[#1A1A1A]/20 disabled:bg-transparent disabled:text-[#1A1A1A]/35"
             >
               Open the analyst <ArrowRight className="h-3.5 w-3.5" />
             </button>

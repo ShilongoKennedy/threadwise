@@ -1826,11 +1826,14 @@ export async function recentReads(jwt: string, limit = 8): Promise<{ token: stri
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  return (data ?? []).map((row) => ({
-    token: row.token as string,
-    input: (row.input as string).slice(0, 140),
-    at: row.created_at as string,
-  }));
+  return (data ?? []).map((row) => {
+    const input = row.input as string;
+    return {
+      token: row.token as string,
+      input: input.length > 140 ? `${input.slice(0, 140).trimEnd()}…` : input,
+      at: row.created_at as string,
+    };
+  });
 }
 
 
@@ -2122,9 +2125,10 @@ export async function caseReads(subject: string, limit = 20): Promise<CaseRead[]
 
   return (data ?? []).map((row) => {
     const report = row.report as AnalystReport;
+    const input = row.input as string;
     return {
       token: row.token as string,
-      input: (row.input as string).slice(0, 180),
+      input: input.length > 180 ? `${input.slice(0, 180).trimEnd()}…` : input,
       at: row.created_at as string,
       mode: report?.mode ?? null,
       falsifier: report?.falsifier ?? "",
