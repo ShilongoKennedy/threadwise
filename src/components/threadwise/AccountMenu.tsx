@@ -81,6 +81,13 @@ export function AccountMenu({ email }: { email?: string }) {
             >
               The record
             </Link>
+            <Link
+              to="/cases"
+              onClick={() => setOpen(false)}
+              className="block px-2 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/70 hover:bg-[#FDFBF7] hover:text-[#1A4BFF]"
+            >
+              Cases
+            </Link>
           </div>
 
           <div className="border-t border-[#1A1A1A]/12 p-1">

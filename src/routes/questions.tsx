@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
-import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { QuestionGap } from "@/components/threadwise/QuestionGap";
+import { BalanceBar } from "@/components/threadwise/BalanceBar";
+import { AppHeader } from "@/components/threadwise/AppHeader";
 import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -76,17 +76,7 @@ function QuestionsPage() {
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
-      <header className="sticky top-0 z-30 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]">
-        <div className="mx-auto flex max-w-[820px] items-center justify-between gap-4 px-5 py-3">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em]">
-              <ArrowLeft className="h-3 w-3" /> Home
-            </Link>
-            <BrandLockup />
-          </div>
-          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">Standing questions</span>
-        </div>
-      </header>
+      <AppHeader section="questions" />
 
       <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
         <h1 className="font-display text-[34px] leading-none md:text-[46px]">What are you trying to decide?</h1>
@@ -166,10 +156,12 @@ function QuestionsPage() {
                           open →
                         </Link>
                       </div>
-                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
-                        {forCount} for · {againstCount} against
-                        {mine.length >= 4 ? (forCount > againstCount ? " · leaning yes" : forCount < againstCount ? " · leaning no" : " · balanced") : ""}
-                      </p>
+                      <BalanceBar forCount={forCount} againstCount={againstCount} className="mt-2 max-w-[280px]" />
+                      {mine.length >= 4 ? (
+                        <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
+                          {forCount > againstCount ? "leaning yes" : forCount < againstCount ? "leaning no" : "balanced"}
+                        </p>
+                      ) : null}
                       {mine.length === 0 ? (
                         <p className="mt-2 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/50">
                           No evidence filed yet. A read that bears on this will file it here.

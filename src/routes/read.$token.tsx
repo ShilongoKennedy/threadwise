@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AppHeader } from "@/components/threadwise/AppHeader";
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
-import { BrandLockup } from "@/components/threadwise/BrandLockup";
 
 export const Route = createFileRoute("/read/$token")({
   // Rendered on the server so a shared link previews properly and never flashes.
@@ -107,17 +106,7 @@ function SharedRead() {
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
-      <header className="sticky top-0 z-30 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]">
-        <div className="mx-auto flex max-w-[760px] items-center justify-between gap-4 px-5 py-3">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em]">
-              <ArrowLeft className="h-3 w-3" /> Home
-            </Link>
-            <BrandLockup />
-          </div>
-          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">A saved read</span>
-        </div>
-      </header>
+      <AppHeader section="digest" />
 
       <main className="mx-auto w-full max-w-[760px] px-5 pb-24 pt-8">
         {status === "missing" && (

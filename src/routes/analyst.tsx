@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ClipboardEvent, type DragEvent } from "react";
-import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
-import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { ArrowRight, ExternalLink } from "lucide-react";
+import { AppHeader } from "@/components/threadwise/AppHeader";
 import { extractPdfText, extractTextFile } from "@/lib/threadwise/extract-document";
 
 export const Route = createFileRoute("/analyst")({
@@ -285,22 +285,7 @@ function AnalystPage() {
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
-      <header className="sticky top-0 z-30 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]">
-        <div className="mx-auto flex max-w-[1100px] items-center justify-between gap-4 px-5 py-3">
-          <div className="flex items-center gap-3">
-            <Link
-              to="/"
-              className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
-            >
-              <ArrowLeft className="h-3 w-3" /> Home
-            </Link>
-            <BrandLockup />
-          </div>
-          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">
-            The Analyst
-          </span>
-        </div>
-      </header>
+      <AppHeader section="analyst" />
 
       <main className="mx-auto w-full max-w-[760px] px-5 pb-24 pt-10">
         {!report && (

@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AppHeader } from "@/components/threadwise/AppHeader";
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
-import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { QuestionGap } from "@/components/threadwise/QuestionGap";
+import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -158,22 +158,7 @@ function QuestionPage() {
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
-      <header className="sticky top-0 z-30 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]">
-        <div className="mx-auto flex max-w-[820px] items-center justify-between gap-4 px-5 py-3">
-          <div className="flex items-center gap-3">
-            <Link
-              to="/questions"
-              className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em]"
-            >
-              <ArrowLeft className="h-3 w-3" /> Questions
-            </Link>
-            <BrandLockup />
-          </div>
-          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">
-            Question
-          </span>
-        </div>
-      </header>
+      <AppHeader section="questions" />
 
       <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
         {state === "loading" && (
@@ -263,9 +248,6 @@ function QuestionPage() {
             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">
               <span className="border border-[#1A1A1A]/20 px-1.5 py-0.5">{question.status}</span>
               <span>
-                {forCount} for · {againstCount} against
-              </span>
-              <span>
                 opened{" "}
                 {new Date(question.created_at).toLocaleDateString("en-GB", {
                   day: "2-digit",
@@ -274,6 +256,8 @@ function QuestionPage() {
                 })}
               </span>
             </div>
+
+            <BalanceBar forCount={forCount} againstCount={againstCount} className="mt-3 max-w-[320px]" />
 
             {findings.length === 0 ? (
               <p className="mt-6 border-l-2 border-[#1A1A1A]/20 pl-3 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">

@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { listWatches, resolveWatch, WATCH_LABEL, type Watch } from "@/lib/threadwise/watches";
 import { calibrationStats, isPrediction, predictionConfidence } from "@/lib/threadwise/calibration";
 import { VerdictStamp } from "@/components/threadwise/VerdictStamp";
+import { AppHeader } from "@/components/threadwise/AppHeader";
 
 export const Route = createFileRoute("/digest")({
   head: () => ({
@@ -152,39 +152,9 @@ function DigestPage() {
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
-      <header className="sticky top-0 z-20 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]/95 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-[1100px] flex-wrap items-center justify-between gap-3 px-4 py-2.5 md:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <Link
-              to="/analyst"
-              className="flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
-            >
-              <ArrowLeft className="h-3 w-3" /> Workspace
-            </Link>
-            <span className="hidden truncate font-mono text-[10px] font-bold uppercase tracking-[0.24em] sm:inline">
-              Threadwise <span className="text-[#1A4BFF]">//</span> The record
-            </span>
-          </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <Link
-              to="/profile"
-              className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/60 transition-colors hover:text-[#1A4BFF] sm:text-[9px]"
-            >
-              <span className="hidden sm:inline">Thinking profile</span>
-              <span className="sm:hidden">Profile</span>
-            </Link>
-            <Link
-              to="/analyst"
-              className="group flex shrink-0 items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A4BFF] px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white shadow-[2px_2px_0_0_#1A1A1A] transition-all hover:bg-[#1A1A1A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-            >
-              Ask the analyst
-              <ArrowUpRight className="h-3 w-3" />
-            </Link>
-          </div>
-        </div>
-      </header>
+      <AppHeader section="digest" />
 
-      <main id="main" className="mx-auto w-full max-w-[1100px] px-4 py-8 md:px-6 md:py-12">
+      <main id="main" className="mx-auto w-full max-w-[1100px] px-4 pb-28 pt-8 md:px-6 md:pb-12 md:pt-12">
         <h1 className="font-display text-[38px] leading-none md:text-[58px]">The record.</h1>
         <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-[#1A1A1A]/65">
           Every claim you dated, and what the reporting actually did. Judgements only count when the

@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowRight, ArrowUpRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
-import { AccountMenu } from "@/components/threadwise/AccountMenu";
+import { AppHeader } from "@/components/threadwise/AppHeader";
+import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { supabase } from "@/integrations/supabase/client";
 import type { ThinkingProfile } from "@/lib/threadwise/thinking-profile";
 
@@ -24,18 +25,9 @@ type Read = { token: string; input: string; at: string };
 type Question = { id: string; question: string; status: string; created_at: string };
 type Finding = { question_id: string; stance: string };
 
-const NAV = [
-  { to: "/workspace", label: "Workspace" },
-  { to: "/analyst", label: "The analyst" },
-  { to: "/questions", label: "Questions" },
-  { to: "/digest", label: "Record" },
-  { to: "/cases", label: "Cases" },
-] as const;
-
 function WorkspacePage() {
   const navigate = useNavigate();
   const [state, setState] = useState<"loading" | "anon" | "ready" | "error">("loading");
-  const [email, setEmail] = useState<string | undefined>();
   const [profile, setProfile] = useState<ThinkingProfile | null>(null);
   const [reads, setReads] = useState<Read[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -51,7 +43,6 @@ function WorkspacePage() {
         if (alive) setState("anon");
         return;
       }
-      if (alive) setEmail(session.user.email ?? undefined);
 
       const jwt = session.access_token;
       try {
@@ -180,51 +171,7 @@ function WorkspacePage() {
         }}
       />
 
-      <header className="sticky top-0 z-30 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]/95 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-[1100px] items-center justify-between gap-3 px-5 py-3 md:px-8">
-          <div className="flex shrink-0 items-center gap-3">
-            <Link
-              to="/"
-              className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em]"
-            >
-              <ArrowLeft className="h-3 w-3" /> Home
-            </Link>
-            <BrandLockup size="md" asLink />
-          </div>
-          <nav className="hidden items-center gap-5 font-mono text-[9px] uppercase tracking-[0.16em] lg:flex">
-            {NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={item.to === "/workspace" ? "text-[#1A4BFF]" : "text-[#1A1A1A]/55 transition-colors hover:text-[#1A4BFF]"}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <div className="flex shrink-0 items-center gap-2">
-            <AccountMenu email={email} />
-            <Link
-              to="/analyst"
-              className="hidden items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-2.5 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] sm:inline-flex"
-            >
-              Read a source <ArrowUpRight className="h-3 w-3" />
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <nav className="flex gap-4 overflow-x-auto border-b border-[#1A1A1A]/10 bg-[#FDFBF7] px-5 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50 lg:hidden">
-        {NAV.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className={`shrink-0 ${item.to === "/workspace" ? "text-[#1A4BFF]" : "hover:text-[#1A4BFF]"}`}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
+      <AppHeader section="workspace" />
 
       <main className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-24 pt-10 md:px-8 md:pt-14">
         <section>
@@ -233,7 +180,7 @@ function WorkspacePage() {
               Workspace
             </p>
             <span className="h-3 w-px bg-[#1A1A1A]/20" />
-            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
               {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "2-digit", month: "long" })}
             </p>
           </div>
@@ -254,10 +201,10 @@ function WorkspacePage() {
             <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
               Start with a source
             </span>
-            <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
+            <span className="hidden font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 sm:inline">
               link · text · the analyst takes PDFs and screenshots
             </span>
-            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:hidden">
+            <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 sm:hidden">
               link · text · PDF · screenshot
             </span>
           </div>
@@ -266,12 +213,12 @@ function WorkspacePage() {
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               placeholder="Paste a link or the first line…"
-              className="min-w-0 flex-1 bg-transparent px-2 py-2 font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/35"
+              className="min-w-0 flex-1 bg-transparent px-2 py-2 font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/45"
             />
             <button
               type="submit"
               disabled={!draft.trim()}
-              className="inline-flex items-center justify-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:border-[#1A1A1A]/20 disabled:bg-transparent disabled:text-[#1A1A1A]/35"
+              className="inline-flex items-center justify-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:border-[#1A1A1A]/20 disabled:bg-transparent disabled:text-[#1A1A1A]/45"
             >
               Open the analyst <ArrowRight className="h-3.5 w-3.5" />
             </button>
@@ -285,7 +232,7 @@ function WorkspacePage() {
             { label: "predictions", value: profile.calibration.predictions },
             {
               label: "Brier",
-              value: brier === null ? "—" : brier.toFixed(2),
+              value: brier === null ? "Not yet" : brier.toFixed(2),
               note: brier === null ? "no settled predictions" : "lower is better",
             },
           ].map((stat, index) => (
@@ -293,12 +240,12 @@ function WorkspacePage() {
               key={stat.label}
               className={`px-4 py-3 ${index > 0 ? "border-l border-[#1A1A1A]/12" : ""} ${index === 2 ? "max-sm:border-l-0 max-sm:border-t" : ""} ${index === 3 ? "max-sm:border-t" : ""}`}
             >
-              <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+              <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
                 {stat.label}
               </p>
               <p className="mt-1 font-display text-[26px] leading-none">{stat.value}</p>
               {stat.note && (
-                <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+                <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/45">
                   {stat.note}
                 </p>
               )}
@@ -325,21 +272,18 @@ function WorkspacePage() {
                     const mine = findings.filter((finding) => finding.question_id === question.id);
                     const forCount = mine.filter((finding) => finding.stance === "for").length;
                     const againstCount = mine.length - forCount;
-                    const oneSided = mine.length >= 3 && (forCount === 0 || againstCount === 0);
                     return (
                       <li key={question.id} className="border-b border-[#1A1A1A]/12">
                         <Link
                           to="/question/$id"
                           params={{ id: question.id }}
-                          className="group grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-4 py-3.5"
+                          className="group block pt-3.5"
                         >
-                          <span className="min-w-0 font-serif text-[14.5px] leading-snug text-[#1A1A1A]/85 group-hover:text-[#1A4BFF]">
+                          <span className="font-serif text-[14.5px] leading-snug text-[#1A1A1A]/85 group-hover:text-[#1A4BFF]">
                             {question.question}
                           </span>
-                          <span className={`shrink-0 font-mono text-[8px] uppercase tracking-[0.1em] ${oneSided ? "text-[#C1121F]" : "text-[#1A1A1A]/40"}`}>
-                            {forCount} for · {againstCount} against
-                          </span>
                         </Link>
+                        <BalanceBar forCount={forCount} againstCount={againstCount} className="pb-3 pt-2" />
                       </li>
                     );
                   })}
@@ -370,7 +314,7 @@ function WorkspacePage() {
                         <span className="line-clamp-2 min-w-0 font-serif text-[14px] leading-snug text-[#1A1A1A]/80 group-hover:text-[#1A4BFF]">
                           {read.input}
                         </span>
-                        <span className="shrink-0 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+                        <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/45">
                           {new Date(read.at).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
                         </span>
                       </Link>
@@ -389,7 +333,7 @@ function WorkspacePage() {
               <ul className="divide-y divide-[#1A1A1A]/10">
                 {profile.signals.slice(0, 3).map((signal) => (
                   <li key={signal.title} className="px-3 py-3">
-                    <p className={`font-mono text-[8px] font-bold uppercase tracking-[0.12em] ${signal.tone === "warn" ? "text-[#C1121F]" : "text-[#1A4BFF]"}`}>
+                    <p className={`font-mono text-[9px] font-bold uppercase tracking-[0.12em] ${signal.tone === "warn" ? "text-[#C1121F]" : "text-[#1A4BFF]"}`}>
                       {signal.tone === "warn" ? "warning" : "note"}
                     </p>
                     <p className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/80">
@@ -404,10 +348,10 @@ function WorkspacePage() {
                 ))}
               </ul>
               <div className="flex items-center justify-between border-t border-[#1A1A1A]/12 px-3 py-2">
-                <Link to="/profile" className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4">
+                <Link to="/profile" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4">
                   thinking profile
                 </Link>
-                <Link to="/digest" className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 underline underline-offset-4">
+                <Link to="/digest" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 underline underline-offset-4">
                   the record
                 </Link>
               </div>

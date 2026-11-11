@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
-import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { AppHeader } from "@/components/threadwise/AppHeader";
 import { buildCaseLedger, type CaseRead } from "@/lib/threadwise/case-ledger";
 
 export const Route = createFileRoute("/case/$subject")({
@@ -33,17 +32,7 @@ function CasePage() {
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
-      <header className="sticky top-0 z-30 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]">
-        <div className="mx-auto flex max-w-[820px] items-center justify-between gap-4 px-5 py-3">
-          <div className="flex items-center gap-3">
-            <Link to="/cases" className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em]">
-              <ArrowLeft className="h-3 w-3" /> Cases
-            </Link>
-            <BrandLockup />
-          </div>
-          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">{reads.length} reads</span>
-        </div>
-      </header>
+      <AppHeader section="cases" />
 
       <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#1A4BFF]">Case file</p>

@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { ArrowUpRight } from "lucide-react";
 import type { ThinkingProfile } from "@/lib/threadwise/thinking-profile";
 import {
   chooseDrill,
@@ -29,6 +28,7 @@ import {
   saveRemoteDrill,
   syncMissingDrillHistory,
 } from "@/lib/threadwise/drill-sync";
+import { AppHeader } from "@/components/threadwise/AppHeader";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -166,22 +166,7 @@ function ProfilePage() {
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
-      <header className="sticky top-0 z-30 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]">
-        <div className="mx-auto flex max-w-[900px] items-center justify-between gap-4 px-5 py-3">
-          <div className="flex items-center gap-3">
-            <Link
-              to="/digest"
-              className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em]"
-            >
-              <ArrowLeft className="h-3 w-3" /> Record
-            </Link>
-            <BrandLockup />
-          </div>
-          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">
-            Thinking profile
-          </span>
-        </div>
-      </header>
+      <AppHeader section="profile" />
 
       <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-10">
         <h1 className="font-display text-[34px] leading-none md:text-[48px]">The thinking profile.</h1>
