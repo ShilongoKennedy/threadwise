@@ -25,6 +25,7 @@ type Question = { id: string; question: string; status: string; created_at: stri
 type Finding = { question_id: string; stance: string };
 
 const NAV = [
+  { to: "/workspace", label: "Workspace" },
   { to: "/analyst", label: "The analyst" },
   { to: "/questions", label: "Questions" },
   { to: "/digest", label: "Record" },
@@ -164,12 +165,12 @@ function WorkspacePage() {
     );
   }
 
-  const nextQuestions = questions.slice(0, 3);
-  const recentReads = reads.slice(0, 4);
+  const nextQuestions = questions.slice(0, 4);
+  const recentReads = reads.slice(0, 5);
   const brier = profile.calibration.brier;
 
   return (
-    <div className="relative min-h-[100dvh] overflow-x-hidden bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.025]"
         style={{
@@ -181,7 +182,7 @@ function WorkspacePage() {
 
       <header className="sticky top-0 z-30 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]/95 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-[1100px] items-center justify-between gap-3 px-5 py-3 md:px-8">
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-3">
             <Link
               to="/"
               className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em]"
@@ -190,17 +191,18 @@ function WorkspacePage() {
             </Link>
             <BrandLockup size="md" asLink />
           </div>
-          <nav className="hidden items-center gap-5 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55 md:flex">
+          <nav className="hidden items-center gap-5 font-mono text-[9px] uppercase tracking-[0.16em] lg:flex">
             {NAV.map((item) => (
-              <Link key={item.to} to={item.to} className="transition-colors hover:text-[#1A4BFF]">
+              <Link
+                key={item.to}
+                to={item.to}
+                className={item.to === "/workspace" ? "text-[#1A4BFF]" : "text-[#1A1A1A]/55 transition-colors hover:text-[#1A4BFF]"}
+              >
                 {item.label}
               </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-2">
-            <span className="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/35 lg:inline">
-              Workspace
-            </span>
+          <div className="flex shrink-0 items-center gap-2">
             <AccountMenu email={email} />
             <Link
               to="/analyst"
@@ -210,9 +212,13 @@ function WorkspacePage() {
             </Link>
           </div>
         </div>
-        <nav className="flex gap-4 overflow-x-auto border-t border-[#1A1A1A]/10 px-5 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50 md:hidden">
+        <nav className="flex gap-4 overflow-x-auto border-t border-[#1A1A1A]/10 px-5 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50 lg:hidden">
           {NAV.map((item) => (
-            <Link key={item.to} to={item.to} className="shrink-0 hover:text-[#1A4BFF]">
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`shrink-0 ${item.to === "/workspace" ? "text-[#1A4BFF]" : "hover:text-[#1A4BFF]"}`}
+            >
               {item.label}
             </Link>
           ))}
@@ -220,48 +226,54 @@ function WorkspacePage() {
       </header>
 
       <main className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-24 pt-10 md:px-8 md:pt-14">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+        <section className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#1A4BFF]">
-              Your desk
+              Workspace
             </p>
             <h1 className="mt-2 font-display text-[38px] leading-none md:text-[56px]">Your desk.</h1>
             <p className="mt-3 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/65">
-              The record you are keeping, in the order you need it: what is open, what you just read,
-              and where the evidence is thin.
+              What is open, what you just read, and where the evidence is thin. The rest can wait.
             </p>
           </div>
           <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
             {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "2-digit", month: "long" })}
           </p>
-        </div>
+        </section>
 
         <form
           onSubmit={(event) => {
             event.preventDefault();
             start();
           }}
-          className="mt-7 flex flex-col gap-2 border-2 border-[#1A1A1A] bg-white p-2 sm:flex-row sm:items-center"
+          className="mt-8 border-2 border-[#1A1A1A] bg-white"
         >
-          <input
-            value={draft}
-            onChange={(event) => setDraft(event.target.value)}
-            placeholder="Paste a link, a headline, or the first line of a source…"
-            className="min-w-0 flex-1 bg-transparent px-2 py-2 font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/35"
-          />
-          <button
-            type="submit"
-            disabled={!draft.trim()}
-            className="inline-flex items-center justify-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:opacity-40"
-          >
-            Open the analyst <ArrowRight className="h-3.5 w-3.5" />
-          </button>
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/12 px-3 py-2">
+            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
+              Start with a source
+            </span>
+            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
+              link · text · the analyst takes PDFs and screenshots
+            </span>
+          </div>
+          <div className="flex flex-col gap-2 p-2 sm:flex-row sm:items-center">
+            <input
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              placeholder="Paste a link, a headline, or the first line of a source…"
+              className="min-w-0 flex-1 bg-transparent px-2 py-2 font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/35"
+            />
+            <button
+              type="submit"
+              disabled={!draft.trim()}
+              className="inline-flex items-center justify-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:opacity-40"
+            >
+              Open the analyst <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </form>
-        <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/40">
-          Link, PDF or screenshot. The analyst takes it from there.
-        </p>
 
-        <section className="mt-8 grid grid-cols-2 border-2 border-[#1A1A1A] bg-white sm:grid-cols-4">
+        <section className="mt-8 grid grid-cols-2 border-y-2 border-[#1A1A1A] bg-[#FDFBF7] sm:grid-cols-4">
           {[
             { label: "reads", value: profile.reads },
             { label: "open questions", value: profile.questions.open },
@@ -272,7 +284,10 @@ function WorkspacePage() {
               note: brier === null ? "no settled predictions" : "lower is better",
             },
           ].map((stat, index) => (
-            <div key={stat.label} className={`px-4 py-3 ${index > 0 ? "border-l border-[#1A1A1A]/12" : ""} ${index === 2 ? "max-sm:border-l-0 max-sm:border-t" : ""} ${index === 3 ? "max-sm:border-t" : ""}`}>
+            <div
+              key={stat.label}
+              className={`px-4 py-3 ${index > 0 ? "border-l border-[#1A1A1A]/12" : ""} ${index === 2 ? "max-sm:border-l-0 max-sm:border-t" : ""} ${index === 3 ? "max-sm:border-t" : ""}`}
+            >
               <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
                 {stat.label}
               </p>
@@ -286,11 +301,11 @@ function WorkspacePage() {
           ))}
         </section>
 
-        <div className="mt-8 grid gap-8 md:grid-cols-[1.1fr_0.9fr]">
-          <div className="space-y-8">
+        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)] lg:gap-12">
+          <div className="min-w-0 space-y-10">
             <section>
               <div className="flex items-end justify-between gap-3 border-b-2 border-[#1A1A1A] pb-2">
-                <h2 className="font-display text-[24px] leading-none">Open questions.</h2>
+                <h2 className="font-display text-[26px] leading-none">Open questions.</h2>
                 <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4">
                   all questions
                 </Link>
@@ -311,13 +326,13 @@ function WorkspacePage() {
                         <Link
                           to="/question/$id"
                           params={{ id: question.id }}
-                          className="group flex items-start justify-between gap-4 py-3"
+                          className="group grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-4 py-3.5"
                         >
-                          <span className="font-serif text-[14.5px] leading-snug text-[#1A1A1A]/85 group-hover:text-[#1A4BFF]">
+                          <span className="min-w-0 font-serif text-[14.5px] leading-snug text-[#1A1A1A]/85 group-hover:text-[#1A4BFF]">
                             {question.question}
                           </span>
                           <span className={`shrink-0 font-mono text-[8px] uppercase tracking-[0.1em] ${oneSided ? "text-[#C1121F]" : "text-[#1A1A1A]/40"}`}>
-                            {forCount} / {againstCount}
+                            {forCount} for · {againstCount} against
                           </span>
                         </Link>
                       </li>
@@ -329,7 +344,7 @@ function WorkspacePage() {
 
             <section>
               <div className="flex items-end justify-between gap-3 border-b-2 border-[#1A1A1A] pb-2">
-                <h2 className="font-display text-[24px] leading-none">Recent reads.</h2>
+                <h2 className="font-display text-[26px] leading-none">Recent reads.</h2>
                 <Link to="/cases" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4">
                   by case
                 </Link>
@@ -345,9 +360,9 @@ function WorkspacePage() {
                       <Link
                         to="/read/$token"
                         params={{ token: read.token }}
-                        className="group flex items-baseline justify-between gap-4 py-3"
+                        className="group grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-4 py-3.5"
                       >
-                        <span className="min-w-0 truncate font-serif text-[14px] text-[#1A1A1A]/80 group-hover:text-[#1A4BFF]">
+                        <span className="line-clamp-2 min-w-0 font-serif text-[14px] leading-snug text-[#1A1A1A]/80 group-hover:text-[#1A4BFF]">
                           {read.input}
                         </span>
                         <span className="shrink-0 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
@@ -361,20 +376,25 @@ function WorkspacePage() {
             </section>
           </div>
 
-          <aside className="space-y-6">
+          <aside className="min-w-0 space-y-8">
             <section className="border-2 border-[#1A1A1A] bg-white">
               <div className="border-b border-[#1A1A1A]/12 px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
                 What the record says
               </div>
               <ul className="divide-y divide-[#1A1A1A]/10">
                 {profile.signals.slice(0, 3).map((signal) => (
-                  <li key={signal.title} className="px-3 py-2.5">
+                  <li key={signal.title} className="px-3 py-3">
                     <p className={`font-mono text-[8px] font-bold uppercase tracking-[0.12em] ${signal.tone === "warn" ? "text-[#C1121F]" : "text-[#1A4BFF]"}`}>
                       {signal.tone === "warn" ? "warning" : "note"}
                     </p>
-                    <p className="mt-0.5 font-serif text-[13px] leading-snug text-[#1A1A1A]/75">
+                    <p className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/80">
                       {signal.title}
                     </p>
+                    {signal.detail && (
+                      <p className="mt-1 font-serif text-[12px] leading-snug text-[#1A1A1A]/50">
+                        {signal.detail}
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -388,11 +408,11 @@ function WorkspacePage() {
               </div>
             </section>
 
-            <section className="border-2 border-[#1A1A1A] bg-white p-4">
+            <section className="border-t-2 border-[#1A1A1A] pt-4">
               <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/45">
                 This week
               </p>
-              <p className="mt-2 font-serif text-[14px] leading-snug text-[#1A1A1A]/75">
+              <p className="mt-2 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/70">
                 Your drill targets the exercise you keep getting wrong. It is chosen from your practice
                 record, not from a feed.
               </p>
@@ -404,11 +424,11 @@ function WorkspacePage() {
               </Link>
             </section>
 
-            <section className="border-2 border-[#1A1A1A] bg-white p-4">
+            <section className="border-t-2 border-[#1A1A1A] pt-4">
               <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
                 Ask your record
               </p>
-              <p className="mt-2 font-serif text-[14px] leading-snug text-[#1A1A1A]/70">
+              <p className="mt-2 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/70">
                 Ask what your own reads, questions and predictions say. One call, no web.
               </p>
               <Link
