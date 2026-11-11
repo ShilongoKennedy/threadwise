@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { QuestionGap } from "@/components/threadwise/QuestionGap";
+import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/questions")({
@@ -32,6 +33,7 @@ function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [findings, setFindings] = useState<Finding[]>([]);
   const [draft, setDraft] = useState("");
+  const [addError, setAddError] = useState<string | null>(null);
   const [state, setState] = useState<"loading" | "anon" | "ready">("loading");
 
   useEffect(() => {
@@ -59,10 +61,16 @@ function QuestionsPage() {
   const add = async () => {
     const text = draft.trim();
     if (text.length < 10) return;
+    if (!isQuestionLike(text)) {
+      setAddError("That reads like a statement. Phrase it as a question: Is…, Will…, Should…");
+      return;
+    }
+    setAddError(null);
     const { data } = await supabase.from("analyst_questions").insert({ question: text }).select("id, question, status, created_at").single();
     if (data) {
       setQuestions([data as Question, ...questions]);
       setDraft("");
+      setAddError(null);
     }
   };
 
@@ -101,7 +109,10 @@ function QuestionsPage() {
             <div className="mt-6 flex items-center gap-2 border-2 border-[#1A1A1A] bg-white px-3 py-2">
               <input
                 value={draft}
-                onChange={(event) => setDraft(event.target.value)}
+                onChange={(event) => {
+                  setDraft(event.target.value);
+                  setAddError(null);
+                }}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") void add();
                 }}
@@ -117,6 +128,11 @@ function QuestionsPage() {
                 Add →
               </button>
             </div>
+            {addError && (
+              <p className="mt-2 border-l-2 border-[#C1121F] pl-2 font-serif text-[12.5px] leading-snug text-[#C1121F]">
+                {addError}
+              </p>
+            )}
 
             {questions.length === 0 && (
               <p className="mt-6 font-serif text-[14px] text-[#1A1A1A]/60">
