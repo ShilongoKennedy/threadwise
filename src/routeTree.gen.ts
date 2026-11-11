@@ -41,6 +41,7 @@ import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
 import { Route as PracticeTokenRouteImport } from './routes/practice.$token'
+import { Route as QuestionIdRouteImport } from './routes/question.$id'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
 import { Route as ApiCaseSubjectRouteImport } from './routes/api/case.$subject'
 import { Route as ApiReadTokenRouteImport } from './routes/api/read.$token'
@@ -205,6 +206,11 @@ const PracticeTokenRoute = PracticeTokenRouteImport.update({
   path: '/practice/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuestionIdRoute = QuestionIdRouteImport.update({
+  id: '/question/$id',
+  path: '/question/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReadTokenRoute = ReadTokenRouteImport.update({
   id: '/read/$token',
   path: '/read/$token',
@@ -254,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/practice/$token': typeof PracticeTokenRoute
+  '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
   '/api/case/$subject': typeof ApiCaseSubjectRoute
   '/api/read/$token': typeof ApiReadTokenRoute
@@ -291,6 +298,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/practice/$token': typeof PracticeTokenRoute
+  '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
   '/api/case/$subject': typeof ApiCaseSubjectRoute
   '/api/read/$token': typeof ApiReadTokenRoute
@@ -329,6 +337,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/practice/$token': typeof PracticeTokenRoute
+  '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
   '/api/case/$subject': typeof ApiCaseSubjectRoute
   '/api/read/$token': typeof ApiReadTokenRoute
@@ -368,6 +377,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/case/$subject'
     | '/practice/$token'
+    | '/question/$id'
     | '/read/$token'
     | '/api/case/$subject'
     | '/api/read/$token'
@@ -405,6 +415,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/case/$subject'
     | '/practice/$token'
+    | '/question/$id'
     | '/read/$token'
     | '/api/case/$subject'
     | '/api/read/$token'
@@ -442,6 +453,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/case/$subject'
     | '/practice/$token'
+    | '/question/$id'
     | '/read/$token'
     | '/api/case/$subject'
     | '/api/read/$token'
@@ -480,6 +492,7 @@ export interface RootRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
   CaseSubjectRoute: typeof CaseSubjectRoute
   PracticeTokenRoute: typeof PracticeTokenRoute
+  QuestionIdRoute: typeof QuestionIdRoute
   ReadTokenRoute: typeof ReadTokenRoute
   ApiCaseSubjectRoute: typeof ApiCaseSubjectRoute
   ApiReadTokenRoute: typeof ApiReadTokenRoute
@@ -711,6 +724,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PracticeTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/question/$id': {
+      id: '/question/$id'
+      path: '/question/$id'
+      fullPath: '/question/$id'
+      preLoaderRoute: typeof QuestionIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/read/$token': {
       id: '/read/$token'
       path: '/read/$token'
@@ -768,6 +788,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackRoute: AuthCallbackRoute,
   CaseSubjectRoute: CaseSubjectRoute,
   PracticeTokenRoute: PracticeTokenRoute,
+  QuestionIdRoute: QuestionIdRoute,
   ReadTokenRoute: ReadTokenRoute,
   ApiCaseSubjectRoute: ApiCaseSubjectRoute,
   ApiReadTokenRoute: ApiReadTokenRoute,
