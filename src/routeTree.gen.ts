@@ -18,6 +18,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as ReadsRouteImport } from './routes/reads'
+import { Route as ReviewRouteImport } from './routes/review'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
@@ -39,6 +40,7 @@ import { Route as ApiQuestionGapRouteImport } from './routes/api/question-gap'
 import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
 import { Route as ApiThinkingProfileRouteImport } from './routes/api/thinking-profile'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
+import { Route as ApiWeeklyReviewRouteImport } from './routes/api/weekly-review'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
 import { Route as PracticeTokenRouteImport } from './routes/practice.$token'
@@ -90,6 +92,11 @@ const QuestionsRoute = QuestionsRouteImport.update({
 const ReadsRoute = ReadsRouteImport.update({
   id: '/reads',
   path: '/reads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewRoute = ReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -197,6 +204,11 @@ const ApiThreadwiseRoute = ApiThreadwiseRouteImport.update({
   path: '/api/threadwise',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWeeklyReviewRoute = ApiWeeklyReviewRouteImport.update({
+  id: '/api/weekly-review',
+  path: '/api/weekly-review',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
@@ -243,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
+  '/review': typeof ReviewRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -264,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
+  '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/practice/$token': typeof PracticeTokenRoute
@@ -282,6 +296,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
+  '/review': typeof ReviewRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -303,6 +318,7 @@ export interface FileRoutesByTo {
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
+  '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/practice/$token': typeof PracticeTokenRoute
@@ -322,6 +338,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
+  '/review': typeof ReviewRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -343,6 +360,7 @@ export interface FileRoutesById {
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
+  '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/practice/$token': typeof PracticeTokenRoute
@@ -363,6 +381,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/questions'
     | '/reads'
+    | '/review'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -384,6 +403,7 @@ export interface FileRouteTypes {
     | '/api/reads-public'
     | '/api/thinking-profile'
     | '/api/threadwise'
+    | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
     | '/practice/$token'
@@ -402,6 +422,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/questions'
     | '/reads'
+    | '/review'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -423,6 +444,7 @@ export interface FileRouteTypes {
     | '/api/reads-public'
     | '/api/thinking-profile'
     | '/api/threadwise'
+    | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
     | '/practice/$token'
@@ -441,6 +463,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/questions'
     | '/reads'
+    | '/review'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -462,6 +485,7 @@ export interface FileRouteTypes {
     | '/api/reads-public'
     | '/api/thinking-profile'
     | '/api/threadwise'
+    | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
     | '/practice/$token'
@@ -481,6 +505,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   QuestionsRoute: typeof QuestionsRoute
   ReadsRoute: typeof ReadsRoute
+  ReviewRoute: typeof ReviewRoute
   TermsRoute: typeof TermsRoute
   WorkspaceRoute: typeof WorkspaceRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
@@ -502,6 +527,7 @@ export interface RootRouteChildren {
   ApiReadsPublicRoute: typeof ApiReadsPublicRoute
   ApiThinkingProfileRoute: typeof ApiThinkingProfileRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
+  ApiWeeklyReviewRoute: typeof ApiWeeklyReviewRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CaseSubjectRoute: typeof CaseSubjectRoute
   PracticeTokenRoute: typeof PracticeTokenRoute
@@ -574,6 +600,13 @@ declare module '@tanstack/react-router' {
       path: '/reads'
       fullPath: '/reads'
       preLoaderRoute: typeof ReadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/review': {
+      id: '/review'
+      path: '/review'
+      fullPath: '/review'
+      preLoaderRoute: typeof ReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -723,6 +756,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiThreadwiseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/weekly-review': {
+      id: '/api/weekly-review'
+      path: '/api/weekly-review'
+      fullPath: '/api/weekly-review'
+      preLoaderRoute: typeof ApiWeeklyReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -785,6 +825,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   QuestionsRoute: QuestionsRoute,
   ReadsRoute: ReadsRoute,
+  ReviewRoute: ReviewRoute,
   TermsRoute: TermsRoute,
   WorkspaceRoute: WorkspaceRoute,
   ApiAnalystRoute: ApiAnalystRoute,
@@ -806,6 +847,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiReadsPublicRoute: ApiReadsPublicRoute,
   ApiThinkingProfileRoute: ApiThinkingProfileRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
+  ApiWeeklyReviewRoute: ApiWeeklyReviewRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CaseSubjectRoute: CaseSubjectRoute,
   PracticeTokenRoute: PracticeTokenRoute,

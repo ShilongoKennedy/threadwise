@@ -370,9 +370,17 @@ function WorkspacePage() {
             </section>
 
             <section className="border-t-2 border-[#1A1A1A] pt-4">
-              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/45">
-                This week
-              </p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/45">
+                  This week
+                </p>
+                <Link
+                  to="/review"
+                  className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A4BFF] underline underline-offset-4"
+                >
+                  review →
+                </Link>
+              </div>
               <p className="mt-2 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/70">
                 Your drill targets the exercise you keep getting wrong. It is chosen from your practice
                 record, not from a feed.

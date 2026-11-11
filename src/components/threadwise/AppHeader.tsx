@@ -154,9 +154,7 @@ export function AppHeader({
                 section === tab.key ? "text-[#1A4BFF]" : "text-[#1A1A1A]/50"
               } ${tab.key === "analyst" ? "border-x border-[#1A1A1A]/10 bg-white" : ""}`}
             >
-              <span className={tab.key === "analyst" ? "border-b border-[#1A1A1A] pb-0.5 text-[#1A1A1A]" : ""}>
-                {tab.label}
-              </span>
+              <span>{tab.label}</span>
             </Link>
           ))}
         </nav>
