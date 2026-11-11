@@ -206,6 +206,22 @@ function AnalystPage() {
   };
 
   useEffect(() => {
+    const link = window.sessionStorage.getItem("threadwise:analyst-link");
+    if (link) {
+      window.sessionStorage.removeItem("threadwise:analyst-link");
+      setLinkOpen(true);
+      setLinkUrl(link);
+      void readLink(link);
+      return;
+    }
+    const draft = window.sessionStorage.getItem("threadwise:analyst-draft");
+    if (draft) {
+      setInput(draft);
+      window.sessionStorage.removeItem("threadwise:analyst-draft");
+    }
+  }, []);
+
+  useEffect(() => {
     let alive = true;
     void (async () => {
       const { supabase } = await import("@/integrations/supabase/client");

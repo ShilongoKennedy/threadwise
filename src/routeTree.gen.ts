@@ -19,6 +19,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as ReadsRouteImport } from './routes/reads'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
 import { Route as ApiAnalystFindingsRouteImport } from './routes/api/analyst-findings'
 import { Route as ApiAnalystRecentRouteImport } from './routes/api/analyst-recent'
@@ -94,6 +95,11 @@ const ReadsRoute = ReadsRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAnalystRoute = ApiAnalystRouteImport.update({
@@ -238,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
+  '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-findings': typeof ApiAnalystFindingsRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
@@ -276,6 +283,7 @@ export interface FileRoutesByTo {
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
+  '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-findings': typeof ApiAnalystFindingsRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
@@ -315,6 +323,7 @@ export interface FileRoutesById {
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/terms': typeof TermsRoute
+  '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-findings': typeof ApiAnalystFindingsRoute
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
@@ -355,6 +364,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/reads'
     | '/terms'
+    | '/workspace'
     | '/api/analyst'
     | '/api/analyst-findings'
     | '/api/analyst-recent'
@@ -393,6 +403,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/reads'
     | '/terms'
+    | '/workspace'
     | '/api/analyst'
     | '/api/analyst-findings'
     | '/api/analyst-recent'
@@ -431,6 +442,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/reads'
     | '/terms'
+    | '/workspace'
     | '/api/analyst'
     | '/api/analyst-findings'
     | '/api/analyst-recent'
@@ -470,6 +482,7 @@ export interface RootRouteChildren {
   QuestionsRoute: typeof QuestionsRoute
   ReadsRoute: typeof ReadsRoute
   TermsRoute: typeof TermsRoute
+  WorkspaceRoute: typeof WorkspaceRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
   ApiAnalystFindingsRoute: typeof ApiAnalystFindingsRoute
   ApiAnalystRecentRoute: typeof ApiAnalystRecentRoute
@@ -568,6 +581,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workspace': {
+      id: '/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/analyst': {
@@ -766,6 +786,7 @@ const rootRouteChildren: RootRouteChildren = {
   QuestionsRoute: QuestionsRoute,
   ReadsRoute: ReadsRoute,
   TermsRoute: TermsRoute,
+  WorkspaceRoute: WorkspaceRoute,
   ApiAnalystRoute: ApiAnalystRoute,
   ApiAnalystFindingsRoute: ApiAnalystFindingsRoute,
   ApiAnalystRecentRoute: ApiAnalystRecentRoute,

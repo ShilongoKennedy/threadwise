@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { AccountMenu } from "@/components/threadwise/AccountMenu";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -53,6 +55,7 @@ const REAL_READ = {
 };
 
 const MOBILE_LINKS = [
+  { to: "/workspace", label: "Workspace" },
   { to: "/analyst", label: "The analyst" },
   { to: "/questions", label: "Questions" },
   { to: "/digest", label: "Record" },
@@ -84,7 +87,7 @@ const LOOP = [
 ] as const;
 
 function LandingPage() {
-  const [session, setSession] = useState<unknown>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -138,12 +141,15 @@ function LandingPage() {
 
           <div className="flex shrink-0 items-center gap-2">
             {session ? (
-              <Link
-                to="/analyst"
-                className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/60 transition-colors hover:text-[#1A4BFF] sm:inline"
-              >
-                Workspace
-              </Link>
+              <>
+                <Link
+                  to="/workspace"
+                  className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/60 transition-colors hover:text-[#1A4BFF] sm:inline"
+                >
+                  Workspace
+                </Link>
+                <AccountMenu email={session.user.email ?? undefined} />
+              </>
             ) : (
               <Link
                 to="/login"
