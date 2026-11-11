@@ -1,629 +1,487 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { 
-  ArrowUpRight, ArrowRight, FileText, Activity, ShieldAlert, 
-  FileWarning, Search
+import {
+  Activity,
+  ArrowRight,
+  ArrowUpRight,
+  FileText,
+  Menu,
+  Search,
+  Target,
+  X,
 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
-import { RedactedWord } from "@/components/landing/RedactedWord";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Threadwise — See what hides" },
-      { name: "description", content: "Threadwise is a forensic intelligence workspace: paste a source, expose its framing, omissions and contradictions, and map what you actually know against what you are assuming." },
-      { property: "og:title", content: "Threadwise — See what hides" },
-      { property: "og:description", content: "Threadwise is a forensic intelligence workspace: paste a source, expose its framing, omissions and contradictions, and map what you actually know against what you are assuming." },
+      { title: "Threadwise — read the evidence, not just the framing" },
+      {
+        name: "description",
+        content:
+          "Paste a link, a PDF or a screenshot. Threadwise shows the framing, checks the claims against primary sources, and tells you what would prove the read wrong.",
+      },
+      { property: "og:title", content: "Threadwise — read the evidence, not just the framing" },
+      {
+        property: "og:description",
+        content:
+          "Paste a link, a PDF or a screenshot. Threadwise shows the framing, checks the claims against primary sources, and tells you what would prove the read wrong.",
+      },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Threadwise — See what hides" },
-      { name: "twitter:description", content: "Threadwise is a forensic intelligence workspace: paste a source, expose its framing, omissions and contradictions, and map what you actually know against what you are assuming." },
-    
+      { property: "og:url", content: "https://threadwise-beta.vercel.app/" },
       { property: "og:image", content: "https://threadwise-beta.vercel.app/og.png" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Threadwise — read the evidence, not just the framing" },
+      {
+        name: "twitter:description",
+        content:
+          "Paste a link, a PDF or a screenshot. Threadwise shows the framing, checks the claims against primary sources, and tells you what would prove the read wrong.",
+      },
       { name: "twitter:image", content: "https://threadwise-beta.vercel.app/og.png" },
     ],
   }),
   component: LandingPage,
 });
 
-function useMousePosition() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  useEffect(() => {
-    const updateMousePosition = (ev: MouseEvent) => {
-      setMousePosition({ x: ev.clientX, y: ev.clientY });
-    };
-    window.addEventListener("mousemove", updateMousePosition);
-    return () => window.removeEventListener("mousemove", updateMousePosition);
-  }, []);
-  return mousePosition;
-}
+const SAMPLE_TOKEN = "mn4qvf4bhu";
 
-function useScrollReveal() {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+const REAL_READ = {
+  whatItDid:
+    "The IAEA sent a confidential report to member states saying it has concerns about Iran’s enrichment programme. The contents are unpublished; the public record is that inspectors have not been allowed back to the sites bombed in June 2025, and Iran has not said how much of its 60%-enriched uranium survived.",
+  wordWorth:
+    "A confidential report is a signal to governments, not an enforceable finding. Its authority is the safeguards mandate, not a power to compel access; what it changes depends on whether the Board acts and whether Iran lets inspectors back in.",
+  counter:
+    "This may be routine. The IAEA has sent confidential reports on Iran to the Board for years; a report saying it cannot verify a stockpile after a bombing campaign may be the expected result, not a rupture.",
+  falsifier:
+    "If the confidential report contains a specific, verified finding — a measured stockpile figure, a named undeclared site, or evidence of enrichment above 60% — then this is not a report about missing access, and the reading is wrong.",
+  watch:
+    "Whether the Board puts Iran on the formal agenda at its next meeting, and whether Iran lets inspectors back into Natanz, Fordow or the Isfahan tunnel site.",
+};
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) setIsVisible(true);
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => {
-      if (ref.current) observer.unobserve(ref.current);
-    };
-  }, []);
+const MOBILE_LINKS = [
+  { to: "/analyst", label: "The analyst" },
+  { to: "/questions", label: "Questions" },
+  { to: "/digest", label: "Record" },
+  { to: "/cases", label: "Cases" },
+  { to: "/profile", label: "Profile" },
+] as const;
 
-  return { ref, isVisible };
-}
+const LOOP = [
+  {
+    n: "01",
+    icon: FileText,
+    title: "Read the move",
+    body: "A link, a PDF, a screenshot. The read separates what happened from what the source wants you to think happened.",
+  },
+  {
+    n: "02",
+    icon: Search,
+    title: "Keep the questions",
+    body: "File evidence for and against. When a question is one-sided, the record says so instead of pretending it is settled.",
+  },
+  {
+    n: "03",
+    icon: Target,
+    title: "Predict and score",
+    body: "Date a claim, come back when it resolves. The record keeps the Brier score, not only the hits.",
+  },
+  {
+    n: "04",
+    icon: Activity,
+    title: "Practise the gap",
+    body: "A weekly drill targets the falsifier or steelman you are weakest at, then shows whether you are improving.",
+  },
+] as const;
 
 function LandingPage() {
-  const mouse = useMousePosition();
-  
-  // Auth State
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<unknown>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, next) => setSession(next));
     return () => subscription.unsubscribe();
   }, []);
 
-  // Disable tilt on small screens
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
-  const heroReveal = useScrollReveal();
-  const laptopReveal = useScrollReveal();
-  const commandCenterReveal = useScrollReveal();
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [menuOpen]);
 
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#1A4BFF] selection:text-white overflow-hidden relative flex flex-col">
-      
-      <style>{`
-        .reveal-hidden { opacity: 0; transform: translateY(30px); }
-        .reveal-visible { opacity: 1; transform: translateY(0); transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1); }
+    <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FDFBF7] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
+      <div className="pointer-events-none absolute left-6 top-24 z-0 h-4 w-4 border-l border-t border-[#1A1A1A]/20" />
+      <div className="pointer-events-none absolute right-6 top-24 z-0 h-4 w-4 border-r border-t border-[#1A1A1A]/20" />
 
-        .editorial-line {
-          height: 1px;
-          background: #1A1A1A;
-          opacity: 0.1;
-        }
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#1A1A1A]/10 bg-[#FDFBF7]/90 backdrop-blur-md">
+        <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between gap-3 px-5 py-3.5 md:px-8">
+          <BrandLockup size="md" asLink />
 
-        /* the headline arrives the way the product works: hidden, then revealed */
-        .tw-letter {
-          display: inline-block;
-          opacity: 0;
-          animation: tw-letter-in .78s cubic-bezier(.16, .84, .24, 1) forwards;
-          animation-delay: calc(var(--i) * 26ms);
-        }
-        @keyframes tw-letter-in {
-          from { opacity: 0; transform: translateY(.16em); filter: blur(12px); }
-          to { opacity: 1; transform: translateY(0); filter: blur(0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .tw-letter { animation: none; opacity: 1; transform: none; filter: none; }
-          .tw-redact::after { animation: none; opacity: 0; }
-        }
-
-        .dossier-card {
-          background: #FFFFFF;
-          border: 2px solid #1A1A1A;
-          border-radius: 2px;
-          box-shadow: 6px 6px 0px rgba(26,26,26,0.1);
-          position: relative;
-        }
-
-        .stamp {
-          border: 2px solid #1A4BFF;
-          color: #1A4BFF;
-          padding: 2px 8px;
-          font-family: monospace;
-          font-weight: bold;
-          text-transform: uppercase;
-          letter-spacing: 0.2em;
-          transform: rotate(-4deg);
-          display: inline-block;
-        }
-      `}</style>
-
-      {/* SUBTLE GRID */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
-
-      {/* TARGETING CROSSHAIRS IN CORNERS */}
-      <div className="absolute top-20 left-6 w-4 h-4 border-t border-l border-[#1A1A1A]/20 pointer-events-none" />
-      <div className="absolute top-20 right-6 w-4 h-4 border-t border-r border-[#1A1A1A]/20 pointer-events-none" />
-      <div className="absolute bottom-20 left-6 w-4 h-4 border-b border-l border-[#1A1A1A]/20 pointer-events-none" />
-      <div className="absolute bottom-20 right-6 w-4 h-4 border-b border-r border-[#1A1A1A]/20 pointer-events-none" />
-
-      {/* STICKY HEADER */}
-      <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 md:px-12 py-4 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-[#1A1A1A]/10">
-        <BrandLockup size="md" asLink />
-        
-        <nav className="hidden md:flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
-          <Link to="/analyst" className="text-[#1A4BFF] transition-colors hover:text-[#1A1A1A]">The analyst</Link>
-          <Link to="/questions" className="hover:text-[#1A1A1A] transition-colors">Questions</Link>
-          <Link to="/cases" className="hover:text-[#1A1A1A] transition-colors">Cases</Link>
-          <Link to="/digest" className="hover:text-[#1A1A1A] transition-colors">Record</Link>
-        </nav>
-
-        <div className="flex items-center gap-3 md:gap-6">
-          {session ? (
-            <Link to="/analyst" className="group flex shrink-0 items-center gap-1.5 rounded-sm bg-[#1A1A1A] px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-white shadow-sm transition-colors duration-300 hover:bg-[#1A4BFF] md:gap-2 md:px-5 md:py-2.5 md:text-[12px]">
-              Go to Workspace <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          <nav className="hidden items-center gap-7 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65 lg:flex">
+            <Link to="/analyst" className="text-[#1A4BFF] transition-colors hover:text-[#1A1A1A]">
+              The analyst
             </Link>
-          ) : (
-            <>
-              <Link to="/login" className="hidden sm:block text-sm font-medium text-[#1A1A1A]/70 hover:text-[#1A1A1A] transition-colors">
+            <Link to="/questions" className="transition-colors hover:text-[#1A1A1A]">
+              Questions
+            </Link>
+            <Link to="/digest" className="transition-colors hover:text-[#1A1A1A]">
+              Record
+            </Link>
+            <Link to="/cases" className="transition-colors hover:text-[#1A1A1A]">
+              Cases
+            </Link>
+          </nav>
+
+          <div className="flex shrink-0 items-center gap-2">
+            {session ? (
+              <Link
+                to="/analyst"
+                className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/60 transition-colors hover:text-[#1A4BFF] sm:inline"
+              >
+                Workspace
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/60 transition-colors hover:text-[#1A4BFF] sm:inline"
+              >
                 Sign in
               </Link>
-              <Link to="/login" className="group flex shrink-0 items-center gap-1.5 rounded-sm bg-[#1A1A1A] px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-white shadow-sm transition-colors duration-300 hover:bg-[#1A4BFF] md:gap-2 md:px-5 md:py-2.5 md:text-[12px]">
-                Start<span className="hidden sm:inline"> Investigation</span>
-                <ArrowUpRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 md:w-3.5 md:h-3.5" />
-              </Link>
-            </>
-          )}
+            )}
+            <Link
+              to="/analyst"
+              className="group inline-flex items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-2.5 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] md:px-4 md:text-[10px]"
+            >
+              <span className="hidden sm:inline">Read a source</span>
+              <span className="sm:hidden">Read</span>
+              <ArrowUpRight className="h-3 w-3" />
+            </Link>
+            <button
+              type="button"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-nav"
+              onClick={() => setMenuOpen((open) => !open)}
+              className="inline-flex h-9 w-9 items-center justify-center border-2 border-[#1A1A1A] lg:hidden"
+            >
+              {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
+
+        {menuOpen && (
+          <div id="mobile-nav" className="border-t border-[#1A1A1A]/10 bg-[#FDFBF7] px-5 py-4 lg:hidden">
+            <nav className="grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-[10px] font-bold uppercase tracking-[0.18em]">
+              {MOBILE_LINKS.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMenuOpen(false)}
+                  className="border-b border-[#1A1A1A]/10 pb-2 text-[#1A1A1A]/75 hover:text-[#1A4BFF]"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            {!session && (
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="mt-4 inline-block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4"
+              >
+                Sign in
+              </Link>
+            )}
+          </div>
+        )}
       </header>
 
-      <main id="main" className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 pt-32 md:pt-48 pb-24 flex-1">
-        
-        {/* HERO SECTION - ASYMMETRICAL EDITORIAL */}
-        <div 
-          ref={heroReveal.ref}
-          className={`relative z-20 mb-10 w-full transition-all duration-1000 ${heroReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
-        >
-          {/* HERO — the type fills the page, the actions sit on the baseline */}
-          <div className="flex w-full flex-col items-start text-left">
-            <div className="mb-5 flex items-center gap-4">
-              <div className="h-px w-12 bg-[#1A4BFF]" />
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
-                Forensic Intelligence OS
-              </span>
-            </div>
+      <main id="main" className="relative z-10 flex-1">
+        {/* HERO */}
+        <section className="mx-auto w-full max-w-[1200px] px-5 pb-16 pt-32 md:px-8 md:pb-24 md:pt-40">
+          <div className="grid items-end gap-10 md:grid-cols-[1.15fr_0.85fr] md:gap-14">
+            <div>
+              <div className="flex items-center gap-4">
+                <div className="h-px w-10 bg-[#1A4BFF]" />
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+                  Forensic intelligence, without the oracle
+                </span>
+              </div>
 
-            <h1 className="w-full font-display text-[clamp(64px,10.2vw,158px)] leading-[0.84] tracking-[-0.035em] text-[#1A1A1A]">
-              <span className="sr-only">See what hides.</span>
-              <span aria-hidden className="whitespace-nowrap">
-                {letters("See what", 0)}
-              </span>{" "}
-              <span
-                aria-hidden
-                className="whitespace-nowrap text-[#1A4BFF]"
-                style={{ fontStyle: "normal", fontWeight: 600, letterSpacing: "-0.025em" }}
-              >
-                <RedactedWord>hides.</RedactedWord>
-              </span>
-            </h1>
+              <h1 className="mt-5 max-w-[13ch] font-display text-[clamp(46px,7.2vw,96px)] leading-[0.92] tracking-[-0.035em]">
+                See what the story{" "}
+                <span className="italic text-[#1A4BFF]">hides.</span>
+              </h1>
 
-            <div className="mt-8 grid w-full grid-cols-1 gap-8 border-t border-[#1A1A1A]/15 pt-6 md:mt-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-16">
-              <p className="max-w-[52ch] text-[17px] font-light leading-[1.55] text-[#1A1A1A]/70 md:text-[21px]">
-                A workbench for sources that are arguing with you. The lab marks the framing, the
-                omissions and the claims it cannot support — then you map the reasoning and keep score.
+              <p className="mt-6 max-w-[54ch] font-serif text-[17px] font-light leading-[1.6] text-[#1A1A1A]/70 md:text-[20px]">
+                Paste a link, a PDF or a screenshot. Threadwise reads the framing, checks the claims
+                against primary sources, and shows you what would prove it wrong.
               </p>
 
-              <div className="flex flex-col items-start gap-3 md:items-end">
+              <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <Link
                   to="/analyst"
-                  className="inline-flex items-center gap-2.5 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-7 py-4 font-mono text-[12px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+                  className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
                 >
-                  Start an investigation
+                  Read a source now
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  to="/analyst"
-                  className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+                  to="/read/$token"
+                  params={{ token: SAMPLE_TOKEN }}
+                  className="group inline-flex items-center gap-2 border-b-2 border-[#1A4BFF]/30 pb-1 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] transition-colors hover:border-[#1A4BFF]"
                 >
-                  Ask the analyst
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
-                </Link>
-                <Link
-                  to="/analyst"
-                  className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/65 underline decoration-[#1A1A1A]/20 underline-offset-4 transition-colors hover:text-[#1A1A1A]"
-                >
-                  Ask the analyst
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
-                </Link>
-                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/60 md:text-right">
-                  Any move, read properly
-                </span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* PLATE 01 — the instrument, printed rather than mocked up */}
-        <div
-          id="demo"
-          ref={laptopReveal.ref}
-          className={`relative z-30 mx-auto mt-10 w-full max-w-[1200px] transition-all duration-1000 delay-200 md:mt-12 ${laptopReveal.isVisible ? "reveal-visible" : "reveal-hidden"}`}
-        >
-          <div className="mb-3 flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em]">
-              Plate 01 — a read
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
-              One move, argued
-            </span>
-          </div>
-
-          {/* the bezel returns; the screen holds a real capture, and clicks through to the live app */}
-          <div className="relative">
-            <div
-              className="relative overflow-hidden rounded-t-[10px] border-[10px] border-[#1A1A1A] bg-[#1A1A1A]"
-              style={{ boxShadow: "0 40px 80px -32px rgba(26,26,26,.45)" }}
-            >
-              <div className="absolute left-1/2 top-0 z-20 hidden h-5 w-28 -translate-x-1/2 items-center justify-center rounded-b-lg bg-[#1A1A1A] md:flex">
-                <span className="h-1.5 w-1.5 rounded-full bg-black/60" />
-              </div>
-
-              <div className="relative aspect-[2400/1207] w-full overflow-hidden bg-[#FDFBF7]">
-                <ReadSpecimen />
-
-                <Link
-                  to="/analyst"
-                  className="group absolute inset-0 flex items-end justify-end p-4 md:p-6"
-                  aria-label="Open the analyst"
-                >
-                  <span className="border-2 border-[#1A1A1A] bg-[#FDFBF7] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] shadow-[4px_4px_0_0_#1A1A1A] transition-all md:translate-y-1 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-visible:translate-y-0 md:group-focus-visible:opacity-100">
-                    Open the analyst →
-                  </span>
+                  See a real read
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
-            </div>
 
-            {/* hinge + base */}
-            <div className="h-5 rounded-b-[14px] bg-[#1A1A1A]">
-              <div className="mx-auto h-1 w-24 rounded-full bg-black/60" />
-            </div>
-            <div className="mx-auto h-2 w-[104%] -translate-x-[2%] rounded-b-[16px] bg-[#0A0A0A]/85" />
-          </div>
-
-          <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">
-            Fig. 1 — one source, dissected · the real canvas
-          </p>
-        </div>
-
-        {/* THE ANALYST — the thing you come back for */}
-        <section className="relative z-10 mx-auto mt-24 w-full max-w-[1200px] px-6 md:px-12">
-          <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em]">The analyst</span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/65">any move, any hour</span>
-          </div>
-          <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-[1.1fr_auto] md:items-end">
-            <div>
-              <h2 className="max-w-[20ch] font-display text-[30px] leading-[1.0] md:text-[42px]">
-                Something happened. Bring it here.
-              </h2>
-              <p className="mt-3 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/70">
-                Paste the post or drop a screenshot. You get the read: what it is, why now, who it costs,
-                what it echoes, what would prove it wrong — and you can argue with it afterwards.
+              <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/50">
+                Free in beta · Google sign-in · your work stays yours
               </p>
-
-              {/* a real read, quoted — not copy written for the page */}
-              <figure className="mt-5 border-l-2 border-[#C1121F] pl-4">
-                <blockquote className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/85">
-                  “{FALSIFIER}”
-                </blockquote>
-                <figcaption className="mt-2 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/50">
-                  Falsifier from a read on Musk’s Cybertruck post · 8 Nov 2026
-                </figcaption>
-              </figure>
             </div>
+
+            <HeroRead />
+          </div>
+        </section>
+
+        {/* ONE REAL READ */}
+        <section id="read" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-8 md:py-20">
+          <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+            <h2 className="font-display text-[30px] leading-none md:text-[42px]">
+              One source, read properly.
+            </h2>
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/55">
+              not a summary
+            </span>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <ReadCard label="What it actually did" body={REAL_READ.whatItDid} />
+            <ReadCard label="What its word is worth" body={REAL_READ.wordWorth} />
+            <ReadCard label="The counter-reading" body={REAL_READ.counter} />
+            <ReadCard label="What would prove this wrong" body={REAL_READ.falsifier} tone="red" />
+          </div>
+
+          <div className="mt-4 grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+            <p className="max-w-[74ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/65">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+                What to watch ·{" "}
+              </span>
+              {REAL_READ.watch}
+            </p>
             <Link
-              to="/analyst"
-              className="inline-flex shrink-0 items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+              to="/read/$token"
+              params={{ token: SAMPLE_TOKEN }}
+              className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
             >
-              Ask the analyst
-              <ArrowRight className="h-4 w-4" />
+              Open the full read
+              <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+            From a real run of the Analyst · IAEA / Iran · 9 Nov 2026
+          </p>
+        </section>
+
+        {/* THE LOOP */}
+        <section id="loop" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-8 md:py-20">
+          <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+            <h2 className="max-w-[18ch] font-display text-[30px] leading-none md:text-[42px]">
+              A read is the start, not the product.
+            </h2>
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/55">
+              read · question · predict · practise
+            </span>
+          </div>
+
+          <ol className="mt-5 grid grid-cols-1 border-b border-[#1A1A1A]/15 md:grid-cols-4">
+            {LOOP.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <li
+                  key={step.n}
+                  className={`px-1 py-6 ${index > 0 ? "border-t border-[#1A1A1A]/15 md:border-l md:border-t-0 md:pl-5" : ""}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
+                      {step.n}
+                    </span>
+                    <Icon className="h-4 w-4 text-[#1A1A1A]/35" />
+                  </div>
+                  <h3 className="mt-3 font-display text-[21px] leading-tight">{step.title}</h3>
+                  <p className="mt-2 max-w-[36ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
+                    {step.body}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+
+          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link
+              to="/questions"
+              className="inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4"
+            >
+              Open the questions <ArrowUpRight className="h-3 w-3" />
+            </Link>
+            <Link
+              to="/profile"
+              className="inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/60 underline underline-offset-4 transition-colors hover:text-[#1A4BFF]"
+            >
+              See the thinking profile <ArrowUpRight className="h-3 w-3" />
             </Link>
           </div>
         </section>
 
-        {/* THE DOSSIER SECTION (BRUTALIST EDITORIAL) */}
-        <section 
-          id="features" 
-          ref={commandCenterReveal.ref}
-          className={`w-full max-w-[1200px] mx-auto mt-48 mb-24 relative transition-all duration-1000 delay-300 ${commandCenterReveal.isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
-        >
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b-2 border-[#1A1A1A] pb-6">
-            <div className="max-w-2xl">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-[#1A4BFF] font-bold mb-3 flex items-center gap-2">
-                <FileText className="w-4 h-4" /> Case File 092-A
-              </div>
-              <h2 className="font-display text-4xl md:text-6xl text-[#1A1A1A] leading-none tracking-tight">The Dossier.</h2>
-              <p className="text-[#1A1A1A]/65 text-base md:text-lg mt-4">A read that shows its evidence, states what would prove it wrong, and lets you argue with it.</p>
-            </div>
-            <div className="mt-6 md:mt-0">
-              <span className="stamp text-xs">Classified</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            
-            {/* Card 1: Source Snippet (Span 7) */}
-            <div className="col-span-1 md:col-span-7 dossier-card p-8">
-              <div className="flex items-center justify-between mb-6 border-b border-[#1A1A1A]/10 pb-4">
-                <div className="text-[10px] font-mono text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2 font-bold">
-                  <FileText className="w-3.5 h-3.5 text-[#1A4BFF]" /> Source Ingested
-                </div>
-                <div className="font-mono text-[10px] text-[#1A1A1A]/65">DOC-892A</div>
-              </div>
-              <p className="font-serif text-xl md:text-2xl leading-relaxed text-[#1A1A1A]">
-                "You know what I said to him? <span className="bg-[#1A4BFF]/10 border-b-2 border-[#1A4BFF] px-1 py-0.5 font-medium">I said, you have three armies within 400 miles who can come take your gold.</span>"
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-2 border-t border-dashed border-[#1A1A1A]/20 pt-4">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#1A1A1A]/65">Tags</span>
-                {["Threat", "Military"].map((tag) => (
-                  <span key={tag} className="border border-[#1A1A1A]/25 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Card 2: Omission ledger (Span 5) */}
-            <div className="col-span-1 md:col-span-5 dossier-card flex flex-col p-8">
-              <div className="mb-5 flex items-center justify-between border-b border-[#1A1A1A]/10 pb-4">
-                <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1A1A]">
-                  <FileWarning className="h-3.5 w-3.5 text-[#1A4BFF]" /> Omission ledger
-                </div>
-                <div className="font-mono text-[10px] text-[#1A1A1A]/65">DOC-892A</div>
-              </div>
-
-              <ol className="flex-1 space-y-4">
-                {[
-                  { line: "“Three armies within 400 miles.”", state: "quoted" },
-                  { line: "“The gold is protected by the Atlantic.”", state: "quoted" },
-                  { line: "Who commands those armies.", state: "withheld" },
-                ].map((row) => (
-                  <li key={row.line} className="flex items-start gap-3">
-                    <span
-                      className={`mt-1.5 h-2 w-2 shrink-0 ${
-                        row.state === "withheld" ? "bg-[#C1121F]" : "bg-[#1A1A1A]"
-                      }`}
-                    />
-                    <span
-                      className={`font-serif text-[15px] leading-snug ${
-                        row.state === "withheld"
-                          ? "text-[#C1121F]/70 line-through decoration-[#C1121F]/40"
-                          : "text-[#1A1A1A]/85"
-                      }`}
-                    >
-                      {row.line}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-
-              <p className="mt-5 border-t border-dashed border-[#1A1A1A]/20 pt-3 font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-[#1A1A1A]/65">
-                What the sentence never says · the source names the threat four times and none of them
-                is a country.
-              </p>
-            </div>
-
-            {/* Card 3: Claim audit (Span 4) */}
-            <div className="col-span-1 md:col-span-4 dossier-card flex flex-col justify-between p-8">
+        {/* THE DIFFERENCE */}
+        <section className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
+          <div className="border-y-2 border-[#1A1A1A] py-9 md:py-12">
+            <div className="grid gap-8 md:grid-cols-[0.95fr_1.05fr] md:gap-14">
               <div>
-                <div className="mb-5 flex items-center justify-between border-b border-[#1A1A1A]/10 pb-4">
-                  <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1A1A]">
-                    <ShieldAlert className="h-3.5 w-3.5 text-[#1A4BFF]" /> Claim audit
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+                  The difference
+                </span>
+                <h2 className="mt-3 max-w-[18ch] font-display text-[32px] leading-[0.98] md:text-[50px]">
+                  Not a portal. A workbench.
+                </h2>
+                <p className="mt-4 max-w-[44ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/70">
+                  A chat window hides the work: you ask, something answers, you nod. Threadwise puts
+                  the source beside what you already believe and keeps the thread visible long enough
+                  to argue with.
+                </p>
+              </div>
+
+              <dl className="grid gap-4 sm:grid-cols-3">
+                {[
+                  ["Claims, not vibes", "Every load-bearing claim gets a source and a falsifier."],
+                  ["Both sides, or a warning", "Questions with one-sided evidence are flagged, not averaged."],
+                  ["A record that keeps score", "Dated predictions resolve into a Brier score; practice shows the gap."],
+                ].map(([title, body]) => (
+                  <div key={title} className="border-t-2 border-[#1A1A1A] pt-3">
+                    <dt className="font-display text-[17px] leading-tight">{title}</dt>
+                    <dd className="mt-2 font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/60">
+                      {body}
+                    </dd>
                   </div>
-                  <div className="font-mono text-[10px] text-[#1A1A1A]/65">C-07</div>
-                </div>
-
-                <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
-                  “That gold is protected by the United States military.”
-                </p>
-                <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/65">
-                  Claimed as fact, supported by nothing in the text.
-                </p>
-              </div>
-
-              <div className="mt-5 flex items-end justify-between">
-                <span className="tw-stamp is-contradicted">Unsupported</span>
-                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/65">
-                  ¶ 4
-                </span>
-              </div>
+                ))}
+              </dl>
             </div>
-
-            {/* Card 4: Analyst Margin (Span 8) */}
-            <div className="col-span-1 md:col-span-8 dossier-card p-8">
-              <div className="text-[10px] font-mono text-[#1A1A1A] uppercase tracking-widest mb-6 flex items-center justify-between border-b border-[#1A1A1A]/10 pb-4 font-bold">
-                <div className="flex items-center gap-2">
-                  <Search className="w-3.5 h-3.5 text-[#1A4BFF]" /> Analyst Margin
-                </div>
-                <div className="font-mono text-[10px] text-[#1A1A1A]/65">NOTES-09</div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="border border-[#1A1A1A]/20 border-l-4 border-l-[#1A4BFF] bg-white p-5">
-                  <span className="text-[10px] font-mono uppercase text-[#1A4BFF] block mb-2 font-bold tracking-widest">Contradiction</span>
-                  <b className="text-[15px] font-display block mb-2">Rule of Law vs. Force</b>
-                  <p className="text-[12px] text-[#1A1A1A]/65 leading-relaxed">Citing 'rule of law' alongside implicit military force reveals a protection-racket mentality.</p>
-                </div>
-                <div className="border border-[#1A1A1A]/20 border-l-4 border-l-[#1A1A1A] bg-white p-5">
-                  <span className="text-[10px] font-mono uppercase text-[#1A1A1A]/65 block mb-2 font-bold tracking-widest">Fallacy</span>
-                  <b className="text-[15px] font-display block mb-2">Appeal to Force</b>
-                  <p className="text-[12px] text-[#1A1A1A]/65 leading-relaxed">Using the threat of the US military to persuade the country to leave its gold in New York.</p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </section>
-        {/* HOW IT WORKS — the loop, stated plainly */}
-        <section className="relative z-10 mx-auto mt-32 w-full max-w-[1200px] px-6 md:px-12">
-          <div className="flex flex-wrap items-end justify-between gap-3 border-b-2 border-[#1A1A1A] pb-3">
-            <h2 className="font-display text-[30px] leading-none md:text-[42px]">
-              Three moves, repeated.
-            </h2>
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#1A1A1A]/65">
-              read · map · check
-            </span>
-          </div>
-
-          <ol className="grid grid-cols-1 border-b border-[#1A1A1A]/15 md:grid-cols-3">
-            {[
-              {
-                n: "01",
-                title: "Bring a move",
-                body: "An article, a speech, a transcript. The lab reads what it argues — framing, omissions, the dog that didn't bark — not just what it says.",
-              },
-              {
-                n: "02",
-                title: "Read the evidence",
-                body: "What you know sits on the floor; what you assume floats above it. Every card is tied to its evidence by a cord, and the unsupported ones hang in red.",
-              },
-              {
-                n: "03",
-                title: "Keep score",
-                body: "The agent files a brief every morning and checks the dated claims you filed. You find out whether the reporting was right, in public, on a record.",
-              },
-            ].map((step, index) => (
-              <li
-                key={step.n}
-                className={`px-1 py-7 ${index > 0 ? "border-t border-[#1A1A1A]/15 md:border-t-0 md:border-l md:pl-6" : ""}`}
-              >
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
-                  {step.n}
-                </span>
-                <h3 className="mt-3 font-display text-[22px] leading-tight">{step.title}</h3>
-                <p className="mt-2 max-w-[38ch] text-[14px] leading-relaxed text-[#1A1A1A]/70">
-                  {step.body}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        {/* THE DESK — a human moment, in the product's own palette */}
-        <section className="relative z-10 mx-auto mt-32 w-full max-w-[1200px] px-6 md:px-12">
-          <div className="grid grid-cols-1 items-end gap-8 md:grid-cols-[1fr_1.05fr] md:gap-12">
-            <div className="pb-2">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#1A4BFF]">
-                The desk
-              </span>
-              <h2 className="mt-3 max-w-[16ch] font-display text-[34px] leading-[0.98] tracking-tight md:text-[52px]">
-                Not a portal. A workbench.
-              </h2>
-              <p className="mt-4 max-w-[44ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/75">
-                A chat window hides the work: you ask, something answers, you nod. Threadwise puts the
-                source on the desk beside what you already believe, and makes the thread between them
-                visible — long enough to argue with.
-              </p>
-              <p className="mt-4 max-w-[44ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/75">
-                Evidence, analysis, patterns, strategy. Four things a desk should hold, and the only
-                four this one does.
-              </p>
-            </div>
-
-            <figure className="relative">
-              <div
-                className="overflow-hidden border-2 border-[#1A1A1A] bg-[#FDFBF7]"
-                style={{ boxShadow: "10px 10px 0 0 rgba(26,26,26,.10)" }}
-              >
-                <img
-                  src="/desk.webp"
-                  alt="A desk lamp, a laptop marked with the Threadwise tag, and four bound volumes labelled evidence, analysis, patterns and strategy."
-                  width={970}
-                  height={772}
-                  loading="lazy"
-                  decoding="async"
-                  className="block h-full w-full object-cover"
-                />
-              </div>
-              <figcaption className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
-                Fig. 2 — the desk, not the oracle
-              </figcaption>
-            </figure>
           </div>
         </section>
 
         {/* CLOSING */}
-        <section className="relative z-10 mx-auto mt-32 mb-24 w-full max-w-[1200px] px-6 md:px-12">
-          <div className="border-2 border-[#1A1A1A] bg-white px-6 py-12 md:px-12 md:py-16">
+        <section className="mx-auto w-full max-w-[1200px] px-5 pb-20 pt-6 md:px-8 md:pb-28">
+          <div className="border-2 border-[#1A1A1A] bg-white px-6 py-11 md:px-10 md:py-14">
             <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
               Nothing here is generated for you to nod at
             </span>
-            <h2 className="mt-4 max-w-[18ch] font-display text-[38px] leading-[0.95] tracking-tight md:text-[64px]">
+            <h2 className="mt-4 max-w-[16ch] font-display text-[38px] leading-[0.95] tracking-tight md:text-[60px]">
               Read one article properly.
             </h2>
-            <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-[#1A1A1A]/70">
+            <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-[#1A1A1A]/65">
               Ten minutes with a source you already distrust will teach you more than a month of
               summaries. Start with the one you have open in another tab.
             </p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+            <div className="mt-7 flex flex-wrap items-center gap-4">
               <Link
                 to="/analyst"
                 className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
               >
-                Start an investigation
+                Read a source now
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                to="/analyst"
+                to="/read/$token"
+                params={{ token: SAMPLE_TOKEN }}
                 className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
               >
-                Ask the analyst
+                See a real read
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
-            <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
-              Free while in beta · sign in with Google · your work stays yours
+            <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
+              Free while in beta · Google sign-in · your work stays yours
             </p>
           </div>
         </section>
-
       </main>
 
-      {/* EDITORIAL FOOTER */}
-      <footer className="relative z-30 border-t-2 border-[#1A1A1A] bg-[#FDFBF7] pt-16 pb-8">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12 mb-16">
-            <div className="max-w-sm">
+      <footer className="relative z-30 border-t-2 border-[#1A1A1A] bg-[#FDFBF7] pb-8 pt-14">
+        <div className="mx-auto max-w-[1200px] px-5 md:px-8">
+          <div className="flex flex-col justify-between gap-10 md:flex-row">
+            <div className="max-w-xs">
               <BrandLockup size="lg" asLink className="mb-4" />
-              <p className="text-sm text-[#1A1A1A]/65 leading-relaxed">
-                A spatial intelligence workbench for researchers, strategists, and complex thinkers.
+              <p className="text-sm leading-relaxed text-[#1A1A1A]/60">
+                A workbench for reading sources, keeping the receipts, and getting better at the
+                argument.
               </p>
             </div>
-            
-            <div className="flex flex-wrap gap-12 md:gap-24 font-mono text-[12px] uppercase tracking-widest text-[#1A1A1A]/65">
-              <div className="flex flex-col gap-4">
-                <span className="text-[#1A1A1A] font-bold mb-1">Product</span>
-                <Link to="/analyst" className="hover:text-[#1A1A1A] transition-colors">The analyst</Link>
-                <Link to="/analyst" className="hover:text-[#1A1A1A] transition-colors">Workspace</Link>
-                <a href="#features" className="hover:text-[#1A1A1A] transition-colors">Features</a>
+
+            <div className="grid grid-cols-2 gap-10 font-mono text-[11px] uppercase tracking-[0.14em] text-[#1A1A1A]/65 sm:grid-cols-3 md:gap-16">
+              <div className="flex flex-col gap-3">
+                <span className="mb-1 font-bold text-[#1A1A1A]">Product</span>
+                <Link to="/analyst" className="transition-colors hover:text-[#1A4BFF]">
+                  The analyst
+                </Link>
+                <Link to="/questions" className="transition-colors hover:text-[#1A4BFF]">
+                  Questions
+                </Link>
+                <Link to="/digest" className="transition-colors hover:text-[#1A4BFF]">
+                  Record
+                </Link>
+                <Link to="/profile" className="transition-colors hover:text-[#1A4BFF]">
+                  Profile
+                </Link>
               </div>
-              <div className="flex flex-col gap-4">
-                <span className="text-[#1A1A1A] font-bold mb-1">Read</span>
-                <a href="#demo" className="hover:text-[#1A1A1A] transition-colors">How it works</a>
-                <Link to="/digest" className="hover:text-[#1A1A1A] transition-colors">The record</Link>
+              <div className="flex flex-col gap-3">
+                <span className="mb-1 font-bold text-[#1A1A1A]">Read</span>
+                <Link to="/cases" className="transition-colors hover:text-[#1A4BFF]">
+                  Cases
+                </Link>
+                <a href="#read" className="transition-colors hover:text-[#1A4BFF]">
+                  A real read
+                </a>
+                <a href="#loop" className="transition-colors hover:text-[#1A4BFF]">
+                  How it works
+                </a>
               </div>
-              <div className="flex flex-col gap-4">
-                <span className="text-[#1A1A1A] font-bold mb-1">Legal</span>
-                <Link to="/terms" className="hover:text-[#1A1A1A] transition-colors">Terms</Link>
-                <Link to="/privacy" className="hover:text-[#1A1A1A] transition-colors">Privacy</Link>
+              <div className="flex flex-col gap-3">
+                <span className="mb-1 font-bold text-[#1A1A1A]">Legal</span>
+                <Link to="/terms" className="transition-colors hover:text-[#1A4BFF]">
+                  Terms
+                </Link>
+                <Link to="/privacy" className="transition-colors hover:text-[#1A4BFF]">
+                  Privacy
+                </Link>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-[#1A1A1A]/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-            <span className="text-[10px] font-mono text-[#1A1A1A]/65 uppercase tracking-widest">© 2026 Threadwise Inc. All rights reserved.</span>
-            <div className="flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
-              <span>Built for people who check.</span>
-            </div>
+          <div className="mt-12 flex flex-col justify-between gap-4 border-t border-[#1A1A1A]/10 pt-6 md:flex-row md:items-center">
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+              © 2026 Threadwise. All rights reserved.
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/50">
+              Built for people who check.
+            </span>
           </div>
         </div>
       </footer>
@@ -631,71 +489,75 @@ function LandingPage() {
   );
 }
 
-
-/**
- * The screen's contents: a real capture of the canvas. It is lazy, sized to
- * avoid layout shift, and falls back to a plain note if the file is missing.
- */
-function ReadSpecimen() {
+function HeroRead() {
   return (
-    <div className="h-full w-full overflow-y-auto bg-[#FDFBF7] px-5 py-5 md:px-8 md:py-6">
-      <div className="flex items-center justify-between border-b border-[#1A1A1A]/20 pb-1.5">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]">
-          The read · institution · confidence documented
+    <aside className="border-2 border-[#1A1A1A] bg-white p-5 shadow-[6px_6px_0_0_rgba(26,26,26,.10)] md:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-[#1A1A1A]/15 pb-2">
+        <span className="whitespace-nowrap font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
+          A real read
         </span>
-        <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/50">
-          as of 09 Nov 2026
+        <span className="whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+          IAEA / Iran · 9 Nov 2026
         </span>
       </div>
-
-      <p className="mt-3 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">01 · what it did</p>
-      <p className="mt-1 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/85">
-        The IAEA produced an expert report on the Wings uranium project in Namibia&rsquo;s Omaheke region,
-        operated by Headspring Investments, a Rosatom subsidiary via Uranium One Group. The agency did
-        not permit or block anything; it issued a technical judgement into a live Namibian licensing process.
+      <p className="mt-4 font-serif text-[16px] leading-relaxed text-[#1A1A1A]/85">
+        “The report’s contents have not been published; what is known publicly is that the Agency’s
+        inspectors have not been allowed back to the enrichment sites bombed in June 2025.”
       </p>
-
-      <p className="mt-3 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">05 · what its word is worth here</p>
-      <p className="mt-1 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/85">
-        The IAEA can pronounce on whether the evidence for water protection is adequate; it cannot decide
-        whether the mine is built. If Namibia permits it anyway, the finding will have shown the limits of
-        the agency&rsquo;s influence rather than its authority.
-      </p>
-
-      <div className="mt-3 border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2">
-        <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#C1121F]">07 · what would prove this wrong</p>
-        <p className="mt-1 max-w-[62ch] font-serif text-[12.5px] leading-snug text-[#1A1A1A]/85">
-          If the ministry approves the mine without a water monitoring condition, the &ldquo;technical
-          objection that matters&rdquo; reading is wrong.
-        </p>
-      </div>
-
-      <div className="mt-3 border-l-2 border-[#1A1A1A] pl-3">
-        <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/60">red team · the attack</p>
-        <p className="mt-1 max-w-[62ch] font-serif text-[12.5px] leading-snug text-[#1A1A1A]/80">
-          Your position needs three things to be true at once, and the first is the load-bearing claim you
-          cannot see: that a reward is evidence of absence rather than a solicitation.
-        </p>
-      </div>
-    </div>
+      <dl className="mt-4 space-y-3 border-t border-[#1A1A1A]/10 pt-3">
+        <div>
+          <dt className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+            What it did
+          </dt>
+          <dd className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/70">
+            A confidential report to member states, not a public finding against Iran.
+          </dd>
+        </div>
+        <div>
+          <dt className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#C1121F]">
+            What would prove it wrong
+          </dt>
+          <dd className="mt-1 font-serif text-[13px] leading-snug text-[#C1121F]/90">
+            A specific, verified finding: a stockpile number, a named site, or enrichment above 60%.
+          </dd>
+        </div>
+      </dl>
+      <Link
+        to="/read/$token"
+        params={{ token: SAMPLE_TOKEN }}
+        className="mt-4 inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4"
+      >
+        Open this read <ArrowUpRight className="h-3 w-3" />
+      </Link>
+    </aside>
   );
 }
 
-
-/** Splits a line into per-letter spans so it can assemble itself. */
-function letters(text: string, start: number) {
-  return text.split("").map((char, index) => (
-    <span
-      key={`${char}-${index}`}
-      className="tw-letter"
-      style={{ ["--i" as string]: start + index }}
+function ReadCard({
+  label,
+  body,
+  tone = "ink",
+}: {
+  label: string;
+  body: string;
+  tone?: "ink" | "red";
+}) {
+  return (
+    <div
+      className={`border-2 bg-white p-5 md:p-6 ${
+        tone === "red" ? "border-[#C1121F]" : "border-[#1A1A1A]"
+      }`}
     >
-      {char === " " ? "\u00A0" : char}
-    </span>
-  ));
+      <p
+        className={`font-mono text-[10px] font-bold uppercase tracking-[0.16em] ${
+          tone === "red" ? "text-[#C1121F]" : "text-[#1A4BFF]"
+        }`}
+      >
+        {label}
+      </p>
+      <p className="mt-2 font-serif text-[15px] leading-relaxed text-[#1A1A1A]/80 md:text-[16px]">
+        {body}
+      </p>
+    </div>
+  );
 }
-
-
-/** Quoted from a real run of the Analyst, not written for the page. */
-const FALSIFIER =
-  "If Tesla extends Cybertruck production past mid-2027, or announces a next-generation Cybertruck, the read that this is a permanent exit to make room for Cybercab is wrong.";
