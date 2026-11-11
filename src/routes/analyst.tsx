@@ -280,7 +280,7 @@ function AnalystPage() {
             </Link>
             <BrandLockup />
           </div>
-          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">
             The Analyst
           </span>
         </div>
@@ -302,7 +302,7 @@ function AnalystPage() {
             </p>
 
             <div
-              className="mt-6 border-2 border-[#1A1A1A] bg-white shadow-[6px_6px_0_0_rgba(26,26,26,.10)]"
+              className="mt-6 border-2 border-[#1A1A1A] bg-white"
               onDrop={handleDrop}
               onDragOver={(event) => event.preventDefault()}
             >

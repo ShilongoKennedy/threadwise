@@ -76,7 +76,7 @@ function QuestionsPage() {
             </Link>
             <BrandLockup />
           </div>
-          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">Standing questions</span>
+          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">Standing questions</span>
         </div>
       </header>
 
@@ -132,15 +132,24 @@ function QuestionsPage() {
                 return (
                   <li key={question.id} className="border-2 border-[#1A1A1A] bg-white">
                     <div className="border-b-2 border-[#1A1A1A] px-4 py-3">
-                      <h2 className="font-display text-[20px] leading-snug">
+                      <div className="flex items-start justify-between gap-3">
+                        <h2 className="font-display text-[20px] leading-snug">
+                          <Link
+                            to="/question/$id"
+                            params={{ id: question.id }}
+                            className="transition-colors hover:text-[#1A4BFF]"
+                          >
+                            {question.question}
+                          </Link>
+                        </h2>
                         <Link
                           to="/question/$id"
                           params={{ id: question.id }}
-                          className="transition-colors hover:text-[#1A4BFF]"
+                          className="shrink-0 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4"
                         >
-                          {question.question}
+                          open →
                         </Link>
-                      </h2>
+                      </div>
                       <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
                         {forCount} for · {againstCount} against
                         {mine.length >= 4 ? (forCount > againstCount ? " · leaning yes" : forCount < againstCount ? " · leaning no" : " · balanced") : ""}

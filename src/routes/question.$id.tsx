@@ -137,7 +137,7 @@ function QuestionPage() {
             </Link>
             <BrandLockup />
           </div>
-          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">
             Question
           </span>
         </div>

@@ -55,6 +55,7 @@ type Report = {
   watch: { signal: string; when: string }[];
   falsifier: string;
   confidence: string;
+  subject?: string;
   basis?: string;
   writer?: string;
   intent?: { mode: string; changeMind?: string };
@@ -93,6 +94,7 @@ function SharedRead() {
   const status = loaded ? "ready" : "missing";
   const blocks = report ? buildBlocks(report) : [];
   const sourceNumber = String(blocks.length + 1).padStart(2, "0");
+  const title = input.trim().split("\n")[0]?.slice(0, 90) || "A read";
   const contents = report
     ? [
         ...blocks.map((block, index) => ({
@@ -113,7 +115,7 @@ function SharedRead() {
             </Link>
             <BrandLockup />
           </div>
-          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">A saved read</span>
+          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">A saved read</span>
         </div>
       </header>
 
@@ -137,89 +139,114 @@ function SharedRead() {
         )}
         {status === "ready" && report && (
           <article className="space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
-              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.26em]">
+            <header className="border-b-2 border-[#1A1A1A] pb-3">
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1A4BFF]">
                 The read · {report.confidence}
                 {report.basis ? (
-                  <span className="font-normal text-[#1A1A1A]/50"> · {report.basis}</span>
+                  <span className="hidden text-[#1A1A1A]/45 sm:inline"> · {report.basis}</span>
                 ) : null}
-                {at && (
-                  <span className="ml-2 font-normal text-[#1A1A1A]/50">
-                    · as of {new Date(at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+              </p>
+              <h1 className="mt-1.5 max-w-[24ch] font-display text-[30px] leading-[1.02] md:text-[40px]">
+                {report.subject?.trim() || title}
+              </h1>
+              {at && (
+                <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+                  as of{" "}
+                  {new Date(at).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
+              )}
+
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[#1A1A1A]/12 pt-2.5">
+                {loaded && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void (async () => {
+                        const { supabase } = await import("@/integrations/supabase/client");
+                        const { data } = await supabase.auth.getSession();
+                        const jwt = data.session?.access_token;
+                        if (!jwt) {
+                          setPublishNote("Sign in to publish a read.");
+                          return;
+                        }
+                        const response = await fetch("/api/publish-read", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json", Authorization: `Bearer ${jwt}` },
+                          body: JSON.stringify({ token, publish: published !== true }),
+                        });
+                        const body = (await response.json()) as { error?: string };
+                        if (response.ok) {
+                          setPublished(published !== true);
+                          setPublishNote(published !== true ? "Private." : "On the index.");
+                        } else {
+                          setPublishNote(body.error ?? "Could not publish.");
+                        }
+                      })();
+                    }}
+                    className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/55 underline underline-offset-4 hover:text-[#1A4BFF]"
+                  >
+                    {published ? "Published · unpublish" : "Publish"}
+                  </button>
+                )}
+                {input && (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      void (async () => {
+                        setBusy(true);
+                        setAgain(null);
+                        try {
+                          const response = await fetch("/api/analyst", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ text: input }),
+                          });
+                          const body = (await response.json()) as { token?: string | null; report?: Report };
+                          if (body.report) setAgain({ token: body.token ?? null, report: body.report });
+                          else setAgain({ token: null, report });
+                        } catch {
+                          setAgain(null);
+                        } finally {
+                          setBusy(false);
+                        }
+                      })();
+                    }}
+                    className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4 disabled:opacity-40"
+                  >
+                    {busy ? "Re-reading…" : "Re-read"}
+                  </button>
+                )}
+                <Link
+                  to="/practice/$token"
+                  params={{ token }}
+                  className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4"
+                >
+                  Practise this read
+                </Link>
+                {publishNote && (
+                  <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+                    {publishNote}
                   </span>
                 )}
-              </span>
-              {loaded && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    void (async () => {
-                      const { supabase } = await import("@/integrations/supabase/client");
-                      const { data } = await supabase.auth.getSession();
-                      const jwt = data.session?.access_token;
-                      if (!jwt) {
-                        setPublishNote("Sign in to publish a read.");
-                        return;
-                      }
-                      const response = await fetch("/api/publish-read", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json", Authorization: `Bearer ${jwt}` },
-                        body: JSON.stringify({ token, publish: published !== true }),
-                      });
-                      const body = (await response.json()) as { error?: string };
-                      if (response.ok) {
-                        setPublished(published !== true);
-                        setPublishNote(published !== true ? "Private." : "On the index.");
-                      } else {
-                        setPublishNote(body.error ?? "Could not publish.");
-                      }
-                    })();
-                  }}
-                  className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/55 underline underline-offset-4 hover:text-[#1A4BFF]"
-                >
-                  {published ? "Published · unpublish" : "Publish to the index"}
-                </button>
-              )}
-              {publishNote && (
-                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">{publishNote}</span>
-              )}
-              {input && (
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => {
-                    void (async () => {
-                      setBusy(true);
-                      setAgain(null);
-                      try {
-                        const response = await fetch("/api/analyst", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ text: input }),
-                        });
-                        const body = (await response.json()) as { token?: string | null; report?: Report };
-                        if (body.report) setAgain({ token: body.token ?? null, report: body.report });
-                        else setAgain({ token: null, report });
-                      } catch {
-                        setAgain(null);
-                      } finally {
-                        setBusy(false);
-                      }
-                    })();
-                  }}
-                  className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4 disabled:opacity-40"
-                >
-                  {busy ? "Re-reading…" : "Re-read with today's reporting"}
-                </button>
-              )}
-              <Link
-                to="/practice/$token"
-                params={{ token }}
-                className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4"
-              >
-                Practice this read →
-              </Link>
-            </div>
+              </div>
+            </header>
+
+            {input && (
+              <details className="group border-y border-[#1A1A1A]/15 py-2">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/55 [&::-webkit-details-marker]:hidden">
+                  <span>The move you brought</span>
+                  <span className="text-[11px] text-[#1A1A1A]/35 transition-transform group-open:rotate-90">›</span>
+                </summary>
+                <p className="mt-2 whitespace-pre-line font-serif text-[14px] leading-relaxed text-[#1A1A1A]/70">
+                  {input}
+                </p>
+              </details>
+            )}
 
             {again && (
               <div className="border-2 border-[#1A4BFF] bg-[#1A4BFF]/5 px-3 py-2">
@@ -257,16 +284,6 @@ function SharedRead() {
 
             {report.intent ? <InquiryBar intent={report.intent} /> : null}
 
-            {report.review ? (
-              <DeskReview
-                review={report.review}
-                revision={report.revision}
-                writer={report.writer}
-              />
-            ) : null}
-
-            {report.claims?.length ? <ClaimTable claims={report.claims} /> : null}
-
             <Contents items={contents} />
 
             {blocks.map((block, index) => (
@@ -278,6 +295,16 @@ function SharedRead() {
                 {block.body}
               </Block>
             ))}
+
+            {report.claims?.length ? <ClaimTable claims={report.claims} /> : null}
+
+            {report.review ? (
+              <DeskReview
+                review={report.review}
+                revision={report.revision}
+                writer={report.writer}
+              />
+            ) : null}
 
             <Proposals report={report} token={token} />
 
@@ -412,7 +439,7 @@ function DeskReview({
         : "border-[#C1121F] bg-[#C1121F]/5";
 
   return (
-    <section className={`border-2 px-3 py-3 ${tone}`}>
+    <section className={`border-l-2 px-3 py-2 ${tone}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em]">
           Desk review · {review.verdict}
@@ -503,45 +530,28 @@ function Block({ n, title, children }: { n: string; title: string; children: Rea
 /** The document's contents: collapsible on a phone, fixed beside it on a desk. */
 function Contents({ items }: { items: { n: string; title: string }[] }) {
   return (
-    <>
-      <details className="border-2 border-[#1A1A1A] px-3 xl:hidden">
-        <summary className="flex min-h-11 cursor-pointer items-center font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+    <details className="group border-y-2 border-[#1A1A1A]/80 py-2">
+      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF] [&::-webkit-details-marker]:hidden">
+        <span className="flex items-center gap-2">
           Contents
-        </summary>
-        <ol className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2">
-          {items.map((item) => (
-            <li key={item.n}>
-              <a
-                href={`#s-${item.n}`}
-                className="flex gap-1.5 font-mono text-[9px] uppercase leading-snug tracking-[0.1em] text-[#1A1A1A]/60"
-              >
-                <span className="shrink-0 text-[#1A4BFF]">{item.n}</span>
-                <span>{item.title}</span>
-              </a>
-            </li>
-          ))}
-        </ol>
-      </details>
-
-      <nav className="fixed left-4 top-28 hidden w-[150px] xl:block" aria-label="Sections">
-        <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/45">
-          Contents
+          <span className="text-[11px] text-[#1A1A1A]/40 transition-transform group-open:rotate-90">›</span>
         </span>
-        <ol className="mt-2 space-y-1">
-          {items.map((item) => (
-            <li key={item.n}>
-              <a
-                href={`#s-${item.n}`}
-                className="flex gap-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/45 transition-colors hover:text-[#1A4BFF]"
-              >
-                <span className="text-[#1A4BFF]">{item.n}</span>
-                <span className="truncate">{item.title}</span>
-              </a>
-            </li>
-          ))}
-        </ol>
-      </nav>
-    </>
+        <span className="text-[#1A1A1A]/40">{items.length} sections</span>
+      </summary>
+      <ol className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-2">
+        {items.map((item) => (
+          <li key={item.n}>
+            <a
+              href={`#s-${item.n}`}
+              className="flex gap-2 py-0.5 font-mono text-[9px] uppercase leading-snug tracking-[0.08em] text-[#1A1A1A]/55 transition-colors hover:text-[#1A4BFF]"
+            >
+              <span className="shrink-0 text-[#1A4BFF]">{item.n}</span>
+              <span>{item.title}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </details>
   );
 }
 

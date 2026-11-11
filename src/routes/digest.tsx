@@ -161,7 +161,7 @@ function DigestPage() {
             >
               <ArrowLeft className="h-3 w-3" /> Workspace
             </Link>
-            <span className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.24em]">
+            <span className="hidden truncate font-mono text-[10px] font-bold uppercase tracking-[0.24em] sm:inline">
               Threadwise <span className="text-[#1A4BFF]">//</span> The record
             </span>
           </div>

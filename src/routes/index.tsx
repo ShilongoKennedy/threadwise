@@ -333,10 +333,10 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* WHAT THE READ LEAVES */}
+        {/* THE RECORD, SHOWN */}
         <section className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
           <div className="border-y-2 border-[#1A1A1A] py-9 md:py-12">
-            <div className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:gap-14">
+            <div className="grid gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-start md:gap-14">
               <div>
                 <h2 className="max-w-[16ch] font-display text-[32px] leading-[0.98] md:text-[48px]">
                   What the read leaves behind.
@@ -346,23 +346,66 @@ function LandingPage() {
                   the questions they bear on, the predictions that follow, and the score when the
                   date arrives.
                 </p>
+                <p className="mt-4 max-w-[40ch] font-mono text-[9px] uppercase leading-relaxed tracking-[0.12em] text-[#1A1A1A]/45">
+                  An example record, not your data.
+                </p>
               </div>
 
-              <ul className="font-serif text-[14px] leading-relaxed text-[#1A1A1A]/72">
-                {[
-                  "It can say it has no reporting on something, instead of filling the gap.",
-                  "It flags a question when every finding sits on one side.",
-                  "It dates a prediction and scores it when the date arrives.",
-                  "It shows you which exercise you keep getting wrong.",
-                ].map((line) => (
-                  <li
-                    key={line}
-                    className="border-t border-[#1A1A1A]/15 py-3 first:border-t-0 first:pt-0"
-                  >
-                    {line}
-                  </li>
-                ))}
-              </ul>
+              <div className="border-2 border-[#1A1A1A] bg-white">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/15 px-4 py-2">
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
+                    The record
+                  </span>
+                  <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/40">
+                    illustrative
+                  </span>
+                </div>
+
+                <div className="divide-y divide-[#1A1A1A]/12">
+                  <div className="grid gap-1 px-4 py-3 sm:grid-cols-[110px_1fr] sm:gap-4">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                      Calibration
+                    </p>
+                    <div>
+                      <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
+                        <span className="mr-2 font-display text-[22px]">4 of 5</span>
+                        high-confidence predictions were right.
+                      </p>
+                      <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
+                        Brier 0.18 · lower is better
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-1 px-4 py-3 sm:grid-cols-[110px_1fr] sm:gap-4">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                      Question
+                    </p>
+                    <div>
+                      <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
+                        Will Iran let inspectors back in?
+                      </p>
+                      <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]">
+                        3 for · 0 against · one-sided
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-1 px-4 py-3 sm:grid-cols-[110px_1fr] sm:gap-4">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                      Drill
+                    </p>
+                    <div>
+                      <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
+                        This week: steelman practice.
+                      </p>
+                      <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
+                        Weakest exercise · 58% structural checks
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

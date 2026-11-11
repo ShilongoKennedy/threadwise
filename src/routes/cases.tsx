@@ -37,7 +37,7 @@ function CasesPage() {
             </Link>
             <BrandLockup />
           </div>
-          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">Cases</span>
+          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">Cases</span>
         </div>
       </header>
 
@@ -70,8 +70,16 @@ function CasesPage() {
                   className="group flex items-baseline justify-between gap-4 py-4"
                 >
                   <h2 className="font-display text-[20px] leading-snug group-hover:text-[#1A4BFF]">{item.subject}</h2>
-                  <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">
-                    {item.reads} {item.reads === 1 ? "read" : "reads"}
+                  <span className="shrink-0 text-right font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+                    <span className="block">
+                      {new Date(item.latest).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                      })}
+                    </span>
+                    <span className="block text-[#1A1A1A]/35">
+                      {item.reads} {item.reads === 1 ? "read" : "reads"}
+                    </span>
                   </span>
                 </Link>
               </li>

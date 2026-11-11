@@ -253,6 +253,16 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+
+  :focus-visible {
+    outline: 2px solid #1a4bff;
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: #1a4bff;
+    color: #fdfbf7;
+  }
 }
 
 body { font-optical-sizing: auto; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }

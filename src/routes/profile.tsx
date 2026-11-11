@@ -177,7 +177,7 @@ function ProfilePage() {
             </Link>
             <BrandLockup />
           </div>
-          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
+          <span className="hidden font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF] sm:inline">
             Thinking profile
           </span>
         </div>
@@ -244,7 +244,9 @@ function ProfilePage() {
                       key={stat.label}
                       className={`px-4 py-4 ${index > 0 ? "border-l border-[#1A1A1A]/12" : ""} ${
                         index === 2 ? "max-md:border-l-0 max-md:border-t" : ""
-                      } ${index === 3 || index === 4 ? "max-md:border-t" : ""}`}
+                      } ${index === 3 || index === 4 ? "max-md:border-t" : ""} ${
+                        index === 4 ? "max-md:col-span-2 max-md:border-l-0" : ""
+                      }`}
                     >
                       <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A1A1A]/60">
                         {stat.label}
