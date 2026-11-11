@@ -1,10 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
-import { AccountMenu } from "@/components/threadwise/AccountMenu";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -54,15 +51,6 @@ const REAL_READ = {
     "Whether the Board puts Iran on the formal agenda at its next meeting, and whether Iran lets inspectors back into Natanz, Fordow or the Isfahan tunnel site.",
 };
 
-const MOBILE_LINKS = [
-  { to: "/workspace", label: "Workspace" },
-  { to: "/analyst", label: "The analyst" },
-  { to: "/questions", label: "Questions" },
-  { to: "/digest", label: "Record" },
-  { to: "/cases", label: "Cases" },
-  { to: "/profile", label: "Profile" },
-] as const;
-
 const LOOP = [
   {
     n: "01",
@@ -87,26 +75,6 @@ const LOOP = [
 ] as const;
 
 function LandingPage() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, next) => setSession(next));
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
-    };
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, [menuOpen]);
-
   return (
     <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FDFBF7] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
       <div
@@ -120,91 +88,7 @@ function LandingPage() {
       <div className="pointer-events-none absolute left-6 top-24 z-0 h-4 w-4 border-l border-t border-[#1A1A1A]/20" />
       <div className="pointer-events-none absolute right-6 top-24 z-0 h-4 w-4 border-r border-t border-[#1A1A1A]/20" />
 
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#1A1A1A]/10 bg-[#FDFBF7]/90 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between gap-3 px-5 py-3.5 md:px-8">
-          <BrandLockup size="md" asLink />
-
-          <nav className="hidden items-center gap-7 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/65 lg:flex">
-            <Link to="/analyst" className="text-[#1A4BFF] transition-colors hover:text-[#1A1A1A]">
-              The analyst
-            </Link>
-            <Link to="/questions" className="transition-colors hover:text-[#1A1A1A]">
-              Questions
-            </Link>
-            <Link to="/digest" className="transition-colors hover:text-[#1A1A1A]">
-              Record
-            </Link>
-            <Link to="/cases" className="transition-colors hover:text-[#1A1A1A]">
-              Cases
-            </Link>
-          </nav>
-
-          <div className="flex shrink-0 items-center gap-2">
-            {session ? (
-              <>
-                <Link
-                  to="/workspace"
-                  className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/60 transition-colors hover:text-[#1A4BFF] sm:inline"
-                >
-                  Workspace
-                </Link>
-                <AccountMenu email={session.user.email ?? undefined} />
-              </>
-            ) : (
-              <Link
-                to="/login"
-                className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/60 transition-colors hover:text-[#1A4BFF] sm:inline"
-              >
-                Sign in
-              </Link>
-            )}
-            <Link
-              to="/analyst"
-              className="group inline-flex items-center gap-1.5 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-2.5 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] md:px-4 md:text-[10px]"
-            >
-              <span className="hidden sm:inline">Read a source</span>
-              <span className="sm:hidden">Read</span>
-              <ArrowUpRight className="h-3 w-3" />
-            </Link>
-            <button
-              type="button"
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-nav"
-              onClick={() => setMenuOpen((open) => !open)}
-              className="inline-flex h-9 w-9 items-center justify-center border-2 border-[#1A1A1A] lg:hidden"
-            >
-              {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </button>
-          </div>
-        </div>
-
-        {menuOpen && (
-          <div id="mobile-nav" className="border-t border-[#1A1A1A]/10 bg-[#FDFBF7] px-5 py-4 lg:hidden">
-            <nav className="grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-[10px] font-bold uppercase tracking-[0.18em]">
-              {MOBILE_LINKS.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setMenuOpen(false)}
-                  className="border-b border-[#1A1A1A]/10 pb-2 text-[#1A1A1A]/75 hover:text-[#1A4BFF]"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-            {!session && (
-              <Link
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-                className="mt-4 inline-block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4"
-              >
-                Sign in
-              </Link>
-            )}
-          </div>
-        )}
-      </header>
+      <AppHeader marketing />
 
       <main id="main" className="relative z-10 flex-1">
         {/* HERO */}
