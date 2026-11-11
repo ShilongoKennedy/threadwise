@@ -16,7 +16,17 @@ export const Route = createFileRoute("/questions")({
 });
 
 type Question = { id: string; question: string; status: string; created_at: string };
-type Finding = { id: string; question_id: string; stance: string; note: string; read_token: string | null; created_at: string };
+type Finding = {
+  id: string;
+  question_id: string;
+  stance: string;
+  note: string;
+  claim: string | null;
+  source: string | null;
+  confidence: string | null;
+  read_token: string | null;
+  created_at: string;
+};
 
 function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -34,7 +44,7 @@ function QuestionsPage() {
       }
       const [{ data: qs }, { data: fs }] = await Promise.all([
         supabase.from("analyst_questions").select("id, question, status, created_at").eq("status", "open").order("created_at", { ascending: false }),
-        supabase.from("analyst_findings").select("id, question_id, stance, note, read_token, created_at").order("created_at", { ascending: false }).limit(200),
+        supabase.from("analyst_findings").select("id, question_id, stance, note, claim, source, confidence, read_token, created_at").order("created_at", { ascending: false }).limit(200),
       ]);
       if (!alive) return;
       setQuestions((qs as Question[]) ?? []);
@@ -162,12 +172,21 @@ function QuestionsPage() {
                           <ul className="mt-2 space-y-2">
                             {mine.filter((finding) => finding.stance === side).map((finding) => (
                               <li key={finding.id} className="font-serif text-[13.5px] leading-snug text-[#1A1A1A]/80">
-                                {finding.note}
-                                {finding.read_token && (
-                                  <Link to="/read/$token" params={{ token: finding.read_token }} className="ml-1 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4">
-                                    read
-                                  </Link>
+                                {finding.claim && (
+                                  <p className="mb-1 border-l-2 border-[#1A4BFF]/30 pl-2 text-[13px] text-[#1A1A1A]/65">
+                                    “{finding.claim}”
+                                  </p>
                                 )}
+                                <p>{finding.note}</p>
+                                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
+                                  {finding.source && <span>{finding.source}</span>}
+                                  {finding.confidence && <span>{finding.confidence}</span>}
+                                  {finding.read_token && (
+                                    <Link to="/read/$token" params={{ token: finding.read_token }} className="text-[#1A4BFF] underline underline-offset-4">
+                                      read
+                                    </Link>
+                                  )}
+                                </div>
                               </li>
                             ))}
                             {mine.filter((finding) => finding.stance === side).length === 0 && (

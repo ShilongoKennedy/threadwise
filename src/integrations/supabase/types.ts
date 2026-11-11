@@ -62,29 +62,38 @@ export type Database = {
       }
       analyst_findings: {
         Row: {
+          claim: string | null
+          confidence: string | null
           created_at: string
           id: string
           note: string
           question_id: string
           read_token: string | null
+          source: string | null
           stance: string
           user_id: string
         }
         Insert: {
+          claim?: string | null
+          confidence?: string | null
           created_at?: string
           id?: string
           note: string
           question_id: string
           read_token?: string | null
+          source?: string | null
           stance: string
           user_id?: string
         }
         Update: {
+          claim?: string | null
+          confidence?: string | null
           created_at?: string
           id?: string
           note?: string
           question_id?: string
           read_token?: string | null
+          source?: string | null
           stance?: string
           user_id?: string
         }

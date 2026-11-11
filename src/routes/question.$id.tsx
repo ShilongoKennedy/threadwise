@@ -24,6 +24,9 @@ type Finding = {
   question_id: string;
   stance: string;
   note: string;
+  claim: string | null;
+  source: string | null;
+  confidence: string | null;
   read_token: string | null;
   created_at: string;
 };
@@ -62,7 +65,7 @@ function QuestionPage() {
 
       const { data: evidence } = await supabase
         .from("analyst_findings")
-        .select("id, question_id, stance, note, read_token, created_at")
+        .select("id, question_id, stance, note, claim, source, confidence, read_token, created_at")
         .eq("question_id", id)
         .order("created_at", { ascending: false });
       if (!alive) return;
@@ -88,7 +91,7 @@ function QuestionPage() {
     const { data, error: insertError } = await supabase
       .from("analyst_findings")
       .insert({ question_id: question.id, stance, note: clean })
-      .select("id, question_id, stance, note, read_token, created_at")
+      .select("id, question_id, stance, note, claim, source, confidence, read_token, created_at")
       .single();
     if (insertError || !data) {
       setError("That evidence could not be filed.");
@@ -223,6 +226,11 @@ function QuestionPage() {
                       <ul className="mt-2 space-y-3">
                         {list.map((finding) => (
                           <li key={finding.id} className="border-b border-[#1A1A1A]/8 pb-2 last:border-b-0 last:pb-0">
+                            {finding.claim && (
+                              <p className="mb-1 border-l-2 border-[#1A4BFF]/30 pl-2 font-serif text-[13px] leading-snug text-[#1A1A1A]/65">
+                                “{finding.claim}”
+                              </p>
+                            )}
                             <p className="font-serif text-[13.5px] leading-snug text-[#1A1A1A]/80">
                               {finding.note}
                             </p>
@@ -233,6 +241,8 @@ function QuestionPage() {
                                   month: "short",
                                 })}
                               </span>
+                              {finding.source && <span>{finding.source}</span>}
+                              {finding.confidence && <span>{finding.confidence}</span>}
                               {finding.read_token ? (
                                 <Link
                                   to="/read/$token"

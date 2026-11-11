@@ -1105,12 +1105,28 @@ function Proposals({ report, token }: { report: Report; token: string }) {
     const questionIds = [...new Set(items.map((item) => item.question_id))];
     await supabase.from("analyst_findings").delete().eq("read_token", token).in("question_id", questionIds);
     await supabase.from("analyst_findings").insert(
-      items.map((item) => ({
-        question_id: item.question_id,
-        read_token: token,
-        stance: item.stance,
-        note: (item.claim ? `${item.claim} — ${item.note}` : item.note).slice(0, 400),
-      })),
+      items.map((item) => {
+        const claim = item.claim?.trim() ?? "";
+        const key = (value: string) =>
+          value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+        const sourceClaim = claim
+          ? report.claims?.find((candidate) => key(candidate.text) === key(claim)) ??
+            report.claims?.find(
+              (candidate) =>
+                key(candidate.text).includes(key(claim)) ||
+                key(claim).includes(key(candidate.text)),
+            )
+          : undefined;
+        return {
+          question_id: item.question_id,
+          read_token: token,
+          stance: item.stance,
+          claim: claim || null,
+          source: sourceClaim?.source?.trim() || null,
+          confidence: sourceClaim?.confidence ?? null,
+          note: item.note.slice(0, 400),
+        };
+      }),
     );
     setFiled(true);
   };
