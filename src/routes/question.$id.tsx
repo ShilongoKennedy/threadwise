@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { QuestionGap } from "@/components/threadwise/QuestionGap";
+import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/question/$id")({
@@ -42,6 +43,9 @@ function QuestionPage() {
   const [statusBusy, setStatusBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [editDraft, setEditDraft] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -70,6 +74,7 @@ function QuestionPage() {
         .order("created_at", { ascending: false });
       if (!alive) return;
       setQuestion(row as Question);
+      setEditDraft((row as Question).question);
       setFindings((evidence as Finding[]) ?? []);
       setState("ready");
     })();
@@ -102,6 +107,33 @@ function QuestionPage() {
     setNote("");
     setMessage("Filed.");
     setSaving(false);
+  };
+
+  const saveEdit = async () => {
+    if (!question || editSaving) return;
+    const clean = editDraft.trim();
+    if (clean.length < 10) {
+      setError("Keep the question at least a sentence long.");
+      return;
+    }
+    if (!isQuestionLike(clean)) {
+      setError("That reads like a statement. Phrase it as a question: Is…, Will…, Should…");
+      return;
+    }
+    setEditSaving(true);
+    setError(null);
+    const { error: updateError } = await supabase
+      .from("analyst_questions")
+      .update({ question: clean })
+      .eq("id", question.id);
+    if (updateError) {
+      setError("The question could not be saved.");
+    } else {
+      setQuestion({ ...question, question: clean });
+      setEditing(false);
+      setMessage("Question updated.");
+    }
+    setEditSaving(false);
   };
 
   const changeStatus = async (status: "open" | "answered" | "dropped") => {
@@ -179,9 +211,55 @@ function QuestionPage() {
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
               Standing question
             </p>
-            <h1 className="mt-3 max-w-[24ch] font-display text-[30px] leading-[1.02] md:text-[42px]">
-              {question.question}
-            </h1>
+            {editing ? (
+              <div className="mt-3">
+                <textarea
+                  value={editDraft}
+                  onChange={(event) => setEditDraft(event.target.value)}
+                  rows={3}
+                  maxLength={300}
+                  className="w-full resize-none border-2 border-[#1A1A1A] bg-white px-3 py-2 font-serif text-[18px] leading-snug outline-none focus:border-[#1A4BFF]"
+                />
+                <div className="mt-2 flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => void saveEdit()}
+                    disabled={editSaving}
+                    className="border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] disabled:opacity-40"
+                  >
+                    {editSaving ? "Saving…" : "Save question"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditing(false);
+                      setEditDraft(question.question);
+                      setError(null);
+                    }}
+                    className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 underline underline-offset-4"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-3 flex items-start justify-between gap-3">
+                <h1 className="max-w-[24ch] font-display text-[30px] leading-[1.02] md:text-[42px]">
+                  {question.question}
+                </h1>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditDraft(question.question);
+                    setEditing(true);
+                    setError(null);
+                  }}
+                  className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 underline underline-offset-4 hover:text-[#1A4BFF]"
+                >
+                  edit
+                </button>
+              </div>
+            )}
             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">
               <span className="border border-[#1A1A1A]/20 px-1.5 py-0.5">{question.status}</span>
               <span>
