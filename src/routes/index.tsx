@@ -1,14 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  Activity,
-  ArrowRight,
-  ArrowUpRight,
-  FileText,
-  Menu,
-  Search,
-  Target,
-  X,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRight, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
@@ -72,25 +63,21 @@ const MOBILE_LINKS = [
 const LOOP = [
   {
     n: "01",
-    icon: FileText,
     title: "Read the move",
     body: "A link, a PDF, a screenshot. The read separates what happened from what the source wants you to think happened.",
   },
   {
     n: "02",
-    icon: Search,
     title: "Keep the questions",
     body: "File evidence for and against. When a question is one-sided, the record says so instead of pretending it is settled.",
   },
   {
     n: "03",
-    icon: Target,
     title: "Predict and score",
     body: "Date a claim, come back when it resolves. The record keeps the Brier score, not only the hits.",
   },
   {
     n: "04",
-    icon: Activity,
     title: "Practise the gap",
     body: "A weekly drill targets the falsifier or steelman you are weakest at, then shows whether you are improving.",
   },
@@ -218,21 +205,13 @@ function LandingPage() {
         <section className="mx-auto w-full max-w-[1200px] px-5 pb-16 pt-32 md:px-8 md:pb-24 md:pt-40">
           <div className="grid items-end gap-10 md:grid-cols-[1.15fr_0.85fr] md:gap-14">
             <div>
-              <div className="flex items-center gap-4">
-                <div className="h-px w-10 bg-[#1A4BFF]" />
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
-                  Forensic intelligence, without the oracle
-                </span>
-              </div>
-
-              <h1 className="mt-5 max-w-[13ch] font-display text-[clamp(46px,7.2vw,96px)] leading-[0.92] tracking-[-0.035em]">
-                See what the story{" "}
-                <span className="italic text-[#1A4BFF]">hides.</span>
+              <h1 className="max-w-[13ch] font-display text-[clamp(46px,7.2vw,96px)] leading-[0.92] tracking-[-0.035em]">
+                See what the story <span className="italic">hides.</span>
               </h1>
 
               <p className="mt-6 max-w-[54ch] font-serif text-[17px] font-light leading-[1.6] text-[#1A1A1A]/70 md:text-[20px]">
-                Paste a link, a PDF or a screenshot. Threadwise reads the framing, checks the claims
-                against primary sources, and shows you what would prove it wrong.
+                Paste a link, a PDF or a screenshot. Threadwise shows you the framing, the claims it
+                cannot support, and the one fact that would prove it wrong.
               </p>
 
               <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -240,7 +219,7 @@ function LandingPage() {
                   to="/analyst"
                   className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
                 >
-                  Read a source now
+                  Read a source
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
@@ -248,13 +227,13 @@ function LandingPage() {
                   params={{ token: SAMPLE_TOKEN }}
                   className="group inline-flex items-center gap-2 border-b-2 border-[#1A4BFF]/30 pb-1 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] transition-colors hover:border-[#1A4BFF]"
                 >
-                  See a real read
+                  Open the IAEA example
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
 
               <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/50">
-                Free in beta · Google sign-in · your work stays yours
+                Free while in beta. Sign in with Google.
               </p>
             </div>
 
@@ -264,25 +243,37 @@ function LandingPage() {
 
         {/* ONE REAL READ */}
         <section id="read" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-8 md:py-20">
-          <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+          <div className="border-b-2 border-[#1A1A1A] pb-2">
             <h2 className="font-display text-[30px] leading-none md:text-[42px]">
-              One source, read properly.
+              The IAEA report, read.
             </h2>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/55">
-              not a summary
-            </span>
           </div>
 
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <ReadCard label="What it actually did" body={REAL_READ.whatItDid} />
-            <ReadCard label="What its word is worth" body={REAL_READ.wordWorth} />
-            <ReadCard label="The counter-reading" body={REAL_READ.counter} />
-            <ReadCard label="What would prove this wrong" body={REAL_READ.falsifier} tone="red" />
+          <div className="mt-5 grid gap-7 md:grid-cols-[1.05fr_0.95fr] md:gap-12">
+            <div className="border-l-2 border-[#1A1A1A] pl-4 md:pl-5">
+              <p className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">
+                The source
+              </p>
+              <p className="mt-2 font-serif text-[17px] leading-[1.65] text-[#1A1A1A]/82 md:text-[18px]">
+                {REAL_READ.whatItDid}
+              </p>
+              <p className="mt-5 font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A1A1A]/50">
+                What it can and cannot settle
+              </p>
+              <p className="mt-2 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/68">
+                {REAL_READ.wordWorth}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <ReadCard label="The counter-reading" body={REAL_READ.counter} />
+              <ReadCard label="What would prove it wrong" body={REAL_READ.falsifier} tone="red" />
+            </div>
           </div>
 
-          <div className="mt-4 grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="mt-6 grid gap-4 border-t border-[#1A1A1A]/15 pt-3 md:grid-cols-[1fr_auto] md:items-center">
             <p className="max-w-[74ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/65">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+              <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A1A1A]/50">
                 What to watch ·{" "}
               </span>
               {REAL_READ.watch}
@@ -292,47 +283,38 @@ function LandingPage() {
               params={{ token: SAMPLE_TOKEN }}
               className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
             >
-              Open the full read
+              Open the IAEA read
               <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
-          <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
-            From a real run of the Analyst · IAEA / Iran · 9 Nov 2026
+          <p className="mt-3 font-mono text-[10px] tracking-[0.12em] text-[#1A1A1A]/45">
+            Source: IAEA report to member states, seen by Reuters. Read filed 9 Nov 2026.
           </p>
         </section>
 
         {/* THE LOOP */}
         <section id="loop" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-8 md:py-20">
-          <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+          <div className="border-b-2 border-[#1A1A1A] pb-2">
             <h2 className="max-w-[18ch] font-display text-[30px] leading-none md:text-[42px]">
-              A read is the start, not the product.
+              What happens after the read.
             </h2>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/55">
-              read · question · predict · practise
-            </span>
           </div>
 
-          <ol className="mt-5 grid grid-cols-1 border-b border-[#1A1A1A]/15 md:grid-cols-4">
-            {LOOP.map((step, index) => {
-              const Icon = step.icon;
-              return (
-                <li
-                  key={step.n}
-                  className={`px-1 py-6 ${index > 0 ? "border-t border-[#1A1A1A]/15 md:border-l md:border-t-0 md:pl-5" : ""}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
-                      {step.n}
-                    </span>
-                    <Icon className="h-4 w-4 text-[#1A1A1A]/35" />
-                  </div>
-                  <h3 className="mt-3 font-display text-[21px] leading-tight">{step.title}</h3>
-                  <p className="mt-2 max-w-[36ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
-                    {step.body}
-                  </p>
-                </li>
-              );
-            })}
+          <ol className="mt-4 border-t border-[#1A1A1A]/15">
+            {LOOP.map((step) => (
+              <li
+                key={step.n}
+                className="grid grid-cols-[32px_1fr] gap-x-3 gap-y-1 border-b border-[#1A1A1A]/15 py-5 sm:grid-cols-[48px_190px_1fr] sm:items-baseline sm:gap-5"
+              >
+                <span className="row-span-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF] sm:row-span-1">
+                  {step.n}
+                </span>
+                <h3 className="font-display text-[20px] leading-tight">{step.title}</h3>
+                <p className="col-start-2 max-w-[58ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65 sm:col-start-3">
+                  {step.body}
+                </p>
+              </li>
+            ))}
           </ol>
 
           <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -351,38 +333,36 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* THE DIFFERENCE */}
+        {/* WHAT THE READ LEAVES */}
         <section className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
           <div className="border-y-2 border-[#1A1A1A] py-9 md:py-12">
-            <div className="grid gap-8 md:grid-cols-[0.95fr_1.05fr] md:gap-14">
+            <div className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:gap-14">
               <div>
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
-                  The difference
-                </span>
-                <h2 className="mt-3 max-w-[18ch] font-display text-[32px] leading-[0.98] md:text-[50px]">
-                  Not a portal. A workbench.
+                <h2 className="max-w-[16ch] font-display text-[32px] leading-[0.98] md:text-[48px]">
+                  What the read leaves behind.
                 </h2>
                 <p className="mt-4 max-w-[44ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/70">
-                  A chat window hides the work: you ask, something answers, you nod. Threadwise puts
-                  the source beside what you already believe and keeps the thread visible long enough
-                  to argue with.
+                  A chat window gives you an answer and forgets it. This leaves a record: the claims,
+                  the questions they bear on, the predictions that follow, and the score when the
+                  date arrives.
                 </p>
               </div>
 
-              <dl className="grid gap-4 sm:grid-cols-3">
+              <ul className="font-serif text-[14px] leading-relaxed text-[#1A1A1A]/72">
                 {[
-                  ["Claims, not vibes", "Every load-bearing claim gets a source and a falsifier."],
-                  ["Both sides, or a warning", "Questions with one-sided evidence are flagged, not averaged."],
-                  ["A record that keeps score", "Dated predictions resolve into a Brier score; practice shows the gap."],
-                ].map(([title, body]) => (
-                  <div key={title} className="border-t-2 border-[#1A1A1A] pt-3">
-                    <dt className="font-display text-[17px] leading-tight">{title}</dt>
-                    <dd className="mt-2 font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/60">
-                      {body}
-                    </dd>
-                  </div>
+                  "It can say it has no reporting on something, instead of filling the gap.",
+                  "It flags a question when every finding sits on one side.",
+                  "It dates a prediction and scores it when the date arrives.",
+                  "It shows you which exercise you keep getting wrong.",
+                ].map((line) => (
+                  <li
+                    key={line}
+                    className="border-t border-[#1A1A1A]/15 py-3 first:border-t-0 first:pt-0"
+                  >
+                    {line}
+                  </li>
                 ))}
-              </dl>
+              </ul>
             </div>
           </div>
         </section>
@@ -390,22 +370,22 @@ function LandingPage() {
         {/* CLOSING */}
         <section className="mx-auto w-full max-w-[1200px] px-5 pb-20 pt-6 md:px-8 md:pb-28">
           <div className="border-2 border-[#1A1A1A] bg-white px-6 py-11 md:px-10 md:py-14">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
-              Nothing here is generated for you to nod at
-            </span>
-            <h2 className="mt-4 max-w-[16ch] font-display text-[38px] leading-[0.95] tracking-tight md:text-[60px]">
+            <h2 className="max-w-[16ch] font-display text-[38px] leading-[0.95] tracking-tight md:text-[60px]">
               Read one article properly.
             </h2>
-            <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-[#1A1A1A]/65">
+            <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/68">
               Ten minutes with a source you already distrust will teach you more than a month of
               summaries. Start with the one you have open in another tab.
+            </p>
+            <p className="mt-3 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/68">
+              It will not tell you what to conclude. It will show you where the evidence stops.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-4">
               <Link
                 to="/analyst"
                 className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
               >
-                Read a source now
+                Read a source
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -413,15 +393,16 @@ function LandingPage() {
                 params={{ token: SAMPLE_TOKEN }}
                 className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
               >
-                See a real read
+                Open the IAEA example
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
             <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
-              Free while in beta · Google sign-in · your work stays yours
+              Free while in beta. Sign in with Google.
             </p>
           </div>
         </section>
+
       </main>
 
       <footer className="relative z-30 border-t-2 border-[#1A1A1A] bg-[#FDFBF7] pb-8 pt-14">
@@ -430,8 +411,7 @@ function LandingPage() {
             <div className="max-w-xs">
               <BrandLockup size="lg" asLink className="mb-4" />
               <p className="text-sm leading-relaxed text-[#1A1A1A]/60">
-                A workbench for reading sources, keeping the receipts, and getting better at the
-                argument.
+                A reading desk for sources you do not trust yet.
               </p>
             </div>
 
@@ -457,7 +437,7 @@ function LandingPage() {
                   Cases
                 </Link>
                 <a href="#read" className="transition-colors hover:text-[#1A4BFF]">
-                  A real read
+                  The IAEA read
                 </a>
                 <a href="#loop" className="transition-colors hover:text-[#1A4BFF]">
                   How it works
@@ -491,10 +471,10 @@ function LandingPage() {
 
 function HeroRead() {
   return (
-    <aside className="border-2 border-[#1A1A1A] bg-white p-5 shadow-[6px_6px_0_0_rgba(26,26,26,.10)] md:p-6">
+    <aside className="border-2 border-[#1A1A1A] bg-white p-5 md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-[#1A1A1A]/15 pb-2">
-        <span className="whitespace-nowrap font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
-          A real read
+        <span className="whitespace-nowrap font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">
+          From the record
         </span>
         <span className="whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
           IAEA / Iran · 9 Nov 2026
@@ -506,7 +486,7 @@ function HeroRead() {
       </p>
       <dl className="mt-4 space-y-3 border-t border-[#1A1A1A]/10 pt-3">
         <div>
-          <dt className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+          <dt className="font-mono text-[9px] font-bold tracking-[0.12em] text-[#1A1A1A]/50">
             What it did
           </dt>
           <dd className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/70">
@@ -514,7 +494,7 @@ function HeroRead() {
           </dd>
         </div>
         <div>
-          <dt className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#C1121F]">
+          <dt className="font-mono text-[9px] font-bold tracking-[0.12em] text-[#C1121F]">
             What would prove it wrong
           </dt>
           <dd className="mt-1 font-serif text-[13px] leading-snug text-[#C1121F]/90">
@@ -527,7 +507,7 @@ function HeroRead() {
         params={{ token: SAMPLE_TOKEN }}
         className="mt-4 inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4"
       >
-        Open this read <ArrowUpRight className="h-3 w-3" />
+        Open the IAEA read <ArrowUpRight className="h-3 w-3" />
       </Link>
     </aside>
   );
@@ -544,12 +524,12 @@ function ReadCard({
 }) {
   return (
     <div
-      className={`border-2 bg-white p-5 md:p-6 ${
+      className={`border-l-2 py-1 pl-4 ${
         tone === "red" ? "border-[#C1121F]" : "border-[#1A1A1A]"
       }`}
     >
       <p
-        className={`font-mono text-[10px] font-bold uppercase tracking-[0.16em] ${
+        className={`font-mono text-[10px] font-bold tracking-[0.12em] ${
           tone === "red" ? "text-[#C1121F]" : "text-[#1A4BFF]"
         }`}
       >
