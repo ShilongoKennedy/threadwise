@@ -28,6 +28,7 @@ import { Route as ApiCasesRouteImport } from './routes/api/cases'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
 import { Route as ApiDrillRouteImport } from './routes/api/drill'
+import { Route as ApiExtractRouteImport } from './routes/api/extract'
 import { Route as ApiModelHealthRouteImport } from './routes/api/model-health'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiPracticeRouteImport } from './routes/api/practice'
@@ -138,6 +139,11 @@ const ApiDrillRoute = ApiDrillRouteImport.update({
   path: '/api/drill',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiExtractRoute = ApiExtractRouteImport.update({
+  id: '/api/extract',
+  path: '/api/extract',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiModelHealthRoute = ApiModelHealthRouteImport.update({
   id: '/api/model-health',
   path: '/api/model-health',
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/drill': typeof ApiDrillRoute
+  '/api/extract': typeof ApiExtractRoute
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/practice': typeof ApiPracticeRoute
@@ -264,6 +271,7 @@ export interface FileRoutesByTo {
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/drill': typeof ApiDrillRoute
+  '/api/extract': typeof ApiExtractRoute
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/practice': typeof ApiPracticeRoute
@@ -300,6 +308,7 @@ export interface FileRoutesById {
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
   '/api/drill': typeof ApiDrillRoute
+  '/api/extract': typeof ApiExtractRoute
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/practice': typeof ApiPracticeRoute
@@ -337,6 +346,7 @@ export interface FileRouteTypes {
     | '/api/check-watch'
     | '/api/check-watches'
     | '/api/drill'
+    | '/api/extract'
     | '/api/model-health'
     | '/api/news-brief'
     | '/api/practice'
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
     | '/api/check-watch'
     | '/api/check-watches'
     | '/api/drill'
+    | '/api/extract'
     | '/api/model-health'
     | '/api/news-brief'
     | '/api/practice'
@@ -407,6 +418,7 @@ export interface FileRouteTypes {
     | '/api/check-watch'
     | '/api/check-watches'
     | '/api/drill'
+    | '/api/extract'
     | '/api/model-health'
     | '/api/news-brief'
     | '/api/practice'
@@ -443,6 +455,7 @@ export interface RootRouteChildren {
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiCheckWatchesRoute: typeof ApiCheckWatchesRoute
   ApiDrillRoute: typeof ApiDrillRoute
+  ApiExtractRoute: typeof ApiExtractRoute
   ApiModelHealthRoute: typeof ApiModelHealthRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiPracticeRoute: typeof ApiPracticeRoute
@@ -594,6 +607,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDrillRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/extract': {
+      id: '/api/extract'
+      path: '/api/extract'
+      fullPath: '/api/extract'
+      preLoaderRoute: typeof ApiExtractRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/model-health': {
       id: '/api/model-health'
       path: '/api/model-health'
@@ -715,6 +735,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiCheckWatchesRoute: ApiCheckWatchesRoute,
   ApiDrillRoute: ApiDrillRoute,
+  ApiExtractRoute: ApiExtractRoute,
   ApiModelHealthRoute: ApiModelHealthRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiPracticeRoute: ApiPracticeRoute,

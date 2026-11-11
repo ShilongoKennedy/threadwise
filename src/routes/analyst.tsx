@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ClipboardEvent, type DragEvent } from "react";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { extractPdfText, extractTextFile } from "@/lib/threadwise/extract-document";
 
 export const Route = createFileRoute("/analyst")({
   head: () => ({
@@ -65,11 +66,16 @@ function AnalystPage() {
   const [readingBusy, setReadingBusy] = useState(false);
   const [intentMode, setIntentMode] = useState<IntentMode>("understand");
   const [changeMind, setChangeMind] = useState("");
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [attachmentBusy, setAttachmentBusy] = useState<"pdf" | "link" | null>(null);
+  const [attachmentNote, setAttachmentNote] = useState("");
 
   const readImage = async (file: File) => {
-    if (readingBusy) return;
+    if (readingBusy || attachmentBusy) return;
     setReadingBusy(true);
     setError(null);
+    setAttachmentNote("");
     try {
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -86,10 +92,116 @@ function AnalystPage() {
       if (!response.ok || !body.reading) throw new Error(body.error ?? "That screenshot could not be read.");
       setReading(body.reading);
       setInput(body.reading.text);
+      setAttachmentNote("Screenshot transcribed — correct anything wrong, then read it.");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "That screenshot could not be read.");
     } finally {
       setReadingBusy(false);
+    }
+  };
+
+  const useSourceText = (text: string, note: string) => {
+    const clean = text.trim();
+    if (!clean) return;
+    const combined = input.trim() ? `${input.trim()}\n\n${clean}` : clean;
+    setInput(combined.slice(0, 4000));
+    setAttachmentNote(
+      `${note}${combined.length > 4000 ? " · trimmed to 4,000 characters" : ""}`,
+    );
+  };
+
+  const readDocument = async (file: File) => {
+    if (attachmentBusy || readingBusy) return;
+    setAttachmentBusy("pdf");
+    setError(null);
+    setAttachmentNote("");
+    try {
+      const text =
+        file.type.startsWith("text/") || /\.(txt|md|markdown)$/i.test(file.name)
+          ? await extractTextFile(file)
+          : await extractPdfText(file);
+      useSourceText(text, `Read ${file.name} · ${text.length.toLocaleString()} characters extracted`);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "That document could not be read.");
+    } finally {
+      setAttachmentBusy(null);
+    }
+  };
+
+  const readLink = async (raw: string) => {
+    const target = raw.trim();
+    if (!/^https?:\/\/\S+$/i.test(target)) {
+      setError("Paste a full https:// link.");
+      return;
+    }
+    if (attachmentBusy || readingBusy) return;
+    setAttachmentBusy("link");
+    setError(null);
+    setAttachmentNote("");
+    try {
+      const response = await fetch("/api/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: target }),
+      });
+      const body = (await response.json()) as {
+        text?: string;
+        title?: string;
+        error?: string;
+      };
+      if (!response.ok || !body.text) throw new Error(body.error ?? "That link could not be read.");
+      useSourceText(body.text, `Read from ${body.title ?? new URL(target).hostname}`);
+      setLinkOpen(false);
+      setLinkUrl("");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "That link could not be read.");
+    } finally {
+      setAttachmentBusy(null);
+    }
+  };
+
+  const handlePaste = (event: ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = event.clipboardData?.items;
+    if (items) {
+      for (const item of items) {
+        if (item.kind !== "file") continue;
+        const file = item.getAsFile();
+        if (!file) continue;
+        if (file.type.startsWith("image/")) {
+          event.preventDefault();
+          void readImage(file);
+          return;
+        }
+        if (file.type === "application/pdf" || /\.pdf$/i.test(file.name)) {
+          event.preventDefault();
+          void readDocument(file);
+          return;
+        }
+      }
+    }
+    const text = event.clipboardData?.getData("text")?.trim() ?? "";
+    if (/^https?:\/\/\S+$/i.test(text)) {
+      event.preventDefault();
+      setLinkOpen(true);
+      setLinkUrl(text);
+      void readLink(text);
+    }
+  };
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    const file = event.dataTransfer.files?.[0];
+    if (!file) return;
+    event.preventDefault();
+    if (file.type.startsWith("image/")) void readImage(file);
+    else if (
+      /\.pdf$/i.test(file.name) ||
+      file.type === "application/pdf" ||
+      /\.(txt|md|markdown)$/i.test(file.name) ||
+      file.type.startsWith("text/")
+    ) {
+      void readDocument(file);
+    } else {
+      setError("Drop a PDF, text file or screenshot.");
     }
   };
 
@@ -189,13 +301,18 @@ function AnalystPage() {
               wrong.
             </p>
 
-            <div className="mt-6 border-2 border-[#1A1A1A] bg-white shadow-[6px_6px_0_0_rgba(26,26,26,.10)]">
+            <div
+              className="mt-6 border-2 border-[#1A1A1A] bg-white shadow-[6px_6px_0_0_rgba(26,26,26,.10)]"
+              onDrop={handleDrop}
+              onDragOver={(event) => event.preventDefault()}
+            >
               <textarea
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="Paste the announcement, the tweet, the paragraph…"
+                placeholder="Paste the announcement, the tweet, the paragraph… or drop a PDF / link / screenshot"
                 rows={6}
                 maxLength={4000}
+                onPaste={handlePaste}
                 className="w-full resize-none bg-transparent px-4 py-4 font-serif text-[16px] leading-relaxed outline-none placeholder:text-[#1A1A1A]/35"
               />
               <div className="border-t border-[#1A1A1A]/15 px-4 py-3">
@@ -227,20 +344,77 @@ function AnalystPage() {
                   className="mt-2 w-full border-b border-[#1A1A1A]/20 bg-transparent px-1 py-1.5 font-serif text-[13px] outline-none placeholder:text-[#1A1A1A]/35"
                 />
               </div>
+
+              {linkOpen && (
+                <div className="flex flex-wrap items-center gap-2 border-t border-[#1A1A1A]/15 px-4 py-2">
+                  <input
+                    value={linkUrl}
+                    onChange={(event) => setLinkUrl(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        void readLink(linkUrl);
+                      }
+                    }}
+                    placeholder="https://…"
+                    className="min-w-0 flex-1 border-b border-[#1A1A1A]/25 bg-transparent px-1 py-1.5 font-serif text-[13px] outline-none placeholder:text-[#1A1A1A]/35"
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void readLink(linkUrl)}
+                    disabled={Boolean(attachmentBusy) || readingBusy || !linkUrl.trim()}
+                    className="border-2 border-[#1A4BFF] bg-[#1A4BFF] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white disabled:opacity-40"
+                  >
+                    {attachmentBusy === "link" ? "Reading link…" : "Read link"}
+                  </button>
+                </div>
+              )}
+
+              {attachmentNote && (
+                <p className="border-t border-[#1A1A1A]/15 px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">
+                  {attachmentNote}
+                </p>
+              )}
+
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 px-4 py-3">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2">
                   <label className="cursor-pointer border-2 border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]">
                     {readingBusy ? "Reading image…" : "Screenshot"}
                     <input
                       type="file"
                       accept="image/*"
                       className="hidden"
+                      disabled={Boolean(attachmentBusy) || readingBusy}
                       onChange={(event) => {
                         const file = event.target.files?.[0];
                         if (file) void readImage(file);
+                        event.target.value = "";
                       }}
                     />
                   </label>
+                  <label className="cursor-pointer border-2 border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]">
+                    {attachmentBusy === "pdf" ? "Reading PDF…" : "PDF"}
+                    <input
+                      type="file"
+                      accept=".pdf,application/pdf,.txt,.md,text/plain"
+                      className="hidden"
+                      disabled={Boolean(attachmentBusy) || readingBusy}
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) void readDocument(file);
+                        event.target.value = "";
+                      }}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setLinkOpen((open) => !open)}
+                    disabled={Boolean(attachmentBusy) || readingBusy}
+                    className="border-2 border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7] disabled:opacity-40"
+                  >
+                    {attachmentBusy === "link" ? "Reading link…" : "Link"}
+                  </button>
                   <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
                     {input.trim().length}/4000 · ~40s · saved to its own page
                   </span>
