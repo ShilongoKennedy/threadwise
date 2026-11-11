@@ -4,6 +4,7 @@ import { ArrowRight, ArrowLeft } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BalanceBar } from "@/components/threadwise/BalanceBar";
+import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
 import type { ThinkingProfile } from "@/lib/threadwise/thinking-profile";
 
@@ -283,7 +284,18 @@ function WorkspacePage() {
                             {question.question}
                           </span>
                         </Link>
-                        <BalanceBar forCount={forCount} againstCount={againstCount} className="pb-3 pt-2" />
+                        <BalanceBar forCount={forCount} againstCount={againstCount} className="pt-2" />
+                        {!isQuestionLike(question.question) ? (
+                          <Link
+                            to="/question/$id"
+                            params={{ id: question.id }}
+                            className="mt-1 block pb-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#B26A00] underline underline-offset-2"
+                          >
+                            reads like a statement · open to edit
+                          </Link>
+                        ) : (
+                          <div className="pb-3" />
+                        )}
                       </li>
                     );
                   })}

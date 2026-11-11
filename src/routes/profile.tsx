@@ -45,6 +45,13 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
+function shorten(text: string, limit: number): string {
+  if (text.length <= limit) return text;
+  const cut = text.slice(0, limit);
+  const boundary = cut.lastIndexOf(" ");
+  return `${cut.slice(0, boundary > limit * 0.6 ? boundary : limit).trimEnd()}…`;
+}
+
 function ProfilePage() {
   const [profile, setProfile] = useState<ThinkingProfile | null>(null);
   const [state, setState] = useState<"loading" | "anon" | "ready" | "error">("loading");
@@ -255,7 +262,7 @@ function ProfilePage() {
                     </div>
                     <div className="px-4 py-3">
                       <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
-                        {drill.title}
+                        {shorten(drill.title, 140)}
                       </p>
                       <p className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/60">
                         {drill.reason}
