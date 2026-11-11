@@ -129,7 +129,7 @@ function WorkspacePage() {
             </Link>
           </div>
         </header>
-        <main className="mx-auto flex w-full max-w-[1100px] flex-1 items-center px-5 py-16">
+        <main className="mx-auto w-full max-w-[1100px] px-5 pb-16 pt-16">
           <div className="max-w-[30ch]">
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
               Workspace
@@ -212,18 +212,19 @@ function WorkspacePage() {
             </Link>
           </div>
         </div>
-        <nav className="flex gap-4 overflow-x-auto border-t border-[#1A1A1A]/10 px-5 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50 lg:hidden">
-          {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`shrink-0 ${item.to === "/workspace" ? "text-[#1A4BFF]" : "hover:text-[#1A4BFF]"}`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
       </header>
+
+      <nav className="flex gap-4 overflow-x-auto border-b border-[#1A1A1A]/10 bg-[#FDFBF7] px-5 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50 lg:hidden">
+        {NAV.map((item) => (
+          <Link
+            key={item.to}
+            to={item.to}
+            className={`shrink-0 ${item.to === "/workspace" ? "text-[#1A4BFF]" : "hover:text-[#1A4BFF]"}`}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
 
       <main className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-24 pt-10 md:px-8 md:pt-14">
         <section>
@@ -253,15 +254,18 @@ function WorkspacePage() {
             <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
               Start with a source
             </span>
-            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
+            <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
               link · text · the analyst takes PDFs and screenshots
+            </span>
+            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:hidden">
+              link · text · PDF · screenshot
             </span>
           </div>
           <div className="flex flex-col gap-2 p-2 sm:flex-row sm:items-center">
             <input
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
-              placeholder="Paste a link, a headline, or the first line of a source…"
+              placeholder="Paste a link or the first line…"
               className="min-w-0 flex-1 bg-transparent px-2 py-2 font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/35"
             />
             <button
