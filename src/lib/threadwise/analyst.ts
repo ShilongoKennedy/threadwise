@@ -7,7 +7,7 @@ import { serverEnv } from "./env.server";
  * political read. Never import this from a component: it reads server env.
  */
 import { XMLParser } from "fast-xml-parser";
-import { generateText } from "ai";
+import { generateObject, generateText } from "ai";
 import { z } from "zod";
 import { extractJson, getModel } from "./ai/ai-providers.server";
 import { moneySentences } from "./figures";
@@ -1935,32 +1935,30 @@ export async function redTeam(
     .map((turn) => `${turn.role === "user" ? "READER" : "ANALYST"}: ${turn.content}`)
     .join("\n\n");
 
-  const { text } = await generateText({
+  const { object } = await generateObject({
     model: getModel("deepseek"),
     system: METHOD,
+    schema: redTeamSchema,
     prompt: `THE READ UNDER DISCUSSION:
 ${JSON.stringify(report).slice(0, 7000)}
 
 ${transcript ? `THE ARGUMENT SO FAR:\n${transcript}\n\n` : ""}
 THE READER'S POSITION: ${position.slice(0, 1200)}
 
-Your job is to stress-test that position, hard but fairly. Return JSON only:
-{
-  "attack": string,      // 3-5 paragraphs. Attack the weakest joints of the position, using dated facts and mechanisms. Not tone, not opinion — structure. Say what would have to be true for them to be right, and why it probably is not.
-  "strongest": string,   // the single strongest point in their favour, stated at full strength, in one paragraph
-  "concession": string,  // where the reader is right and your read was weak — be specific, this is not politeness
-  "settle": string       // the observation or date that would end the argument
-}`,
-    temperature: 0.35,
-    maxOutputTokens: 2200,
+Stress-test that position, hard but fairly. Return one JSON object with exactly these four string keys:
+- attack: 3-5 paragraphs attacking the weakest joints of the position, using dated facts and mechanisms. Say what would have to be true for the reader to be right, and why it probably is not.
+- strongest: the single strongest point in the reader's favour, stated at full strength, in one paragraph.
+- concession: where the reader is right and the read was weak. Be specific; this is not politeness.
+- settle: the observation or date that would end the argument.
+
+No markdown, no code fences, no commentary outside the JSON.`,
+    temperature: 0.3,
+    maxOutputTokens: 1800,
     maxRetries: 1,
   });
 
-  const parsed = redTeamSchema.safeParse(extractJson<unknown>(text));
-  if (!parsed.success) throw new Error("The red team could not be assembled.");
-  return parsed.data;
+  return object;
 }
-
 
 export type FindingProposal = {
   question_id: string;

@@ -699,7 +699,6 @@ function RedTeam({ report }: { report: Report }) {
     if (claim.length < 20 || busy) return;
     setBusy(true);
     setError(null);
-    setPosition("");
     try {
       const response = await fetch("/api/analyst-redteam", {
         method: "POST",
@@ -709,6 +708,7 @@ function RedTeam({ report }: { report: Report }) {
       const body = (await response.json()) as Round & { error?: string };
       if (!response.ok) throw new Error(body.error ?? "No argument came back.");
       setRounds([...rounds, body]);
+      setPosition("");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "No argument came back.");
     } finally {
