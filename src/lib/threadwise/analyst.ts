@@ -1807,6 +1807,16 @@ export async function watchSignals(
 }
 
 
+/** A short excerpt that ends at a word, not in the middle of one. */
+function excerpt(text: string, limit: number): string {
+  const clean = text.trim();
+  if (clean.length <= limit) return clean;
+  const cut = clean.slice(0, limit);
+  const boundary = cut.lastIndexOf(" ");
+  const end = boundary > limit * 0.6 ? boundary : limit;
+  return `${cut.slice(0, end).trimEnd()}…`;
+}
+
 /** The reader's own recent reads, newest first. */
 export async function recentReads(jwt: string, limit = 8): Promise<{ token: string; input: string; at: string }[]> {
   const url = serverEnv("SUPABASE_URL");
@@ -1830,7 +1840,7 @@ export async function recentReads(jwt: string, limit = 8): Promise<{ token: stri
     const input = row.input as string;
     return {
       token: row.token as string,
-      input: input.length > 140 ? `${input.slice(0, 140).trimEnd()}…` : input,
+      input: excerpt(input, 140),
       at: row.created_at as string,
     };
   });
@@ -2128,7 +2138,7 @@ export async function caseReads(subject: string, limit = 20): Promise<CaseRead[]
     const input = row.input as string;
     return {
       token: row.token as string,
-      input: input.length > 180 ? `${input.slice(0, 180).trimEnd()}…` : input,
+      input: excerpt(input, 180),
       at: row.created_at as string,
       mode: report?.mode ?? null,
       falsifier: report?.falsifier ?? "",
