@@ -74,28 +74,43 @@ export const Route = createFileRoute("/api/extract")({
         }
 
         let text = "";
-        let source = "Reader";
+        let source = "";
+        let title = url.hostname.replace(/^www\./, "");
+        const { cleanArticleText } = await import("@/lib/threadwise/extract-text");
+
+        // Firecrawl understands main content and returns the full body; the
+        // reader is the free fallback when Firecrawl is unavailable or blocked.
         try {
-          const { fetchArticleText } = await import("@/lib/threadwise/news-agent");
-          text = await fetchArticleText(url.toString());
-          source = "Reader";
+          const { readWeb } = await import("@/lib/threadwise/ai/url.server");
+          const page = await readWeb(url.toString(), AbortSignal.timeout(20_000));
+          const clean = cleanArticleText(page.text);
+          if (clean.length >= 80) {
+            text = clean;
+            title = page.title || title;
+            source = "Firecrawl";
+          }
         } catch {
-          // Fall through to Firecrawl when the reader is blocked.
+          // Fall through to the reader.
         }
 
         if (!text) {
           try {
-            const { readWeb } = await import("@/lib/threadwise/ai/url.server");
-            const page = await readWeb(url.toString(), AbortSignal.timeout(20_000));
-            text = page.text;
-            source = "Firecrawl";
+            const { fetchArticleText } = await import("@/lib/threadwise/news-agent");
+            const clean = cleanArticleText(await fetchArticleText(url.toString()));
+            if (clean.length >= 80) {
+              text = clean;
+              source = "Reader";
+            }
           } catch (error) {
             console.error("[extract] link failed:", error);
-            return json(
-              { error: "That page could not be read. Paste the text or a screenshot instead." },
-              502,
-            );
           }
+        }
+
+        if (!text) {
+          return json(
+            { error: "That page could not be read. Paste the text or a screenshot instead." },
+            502,
+          );
         }
 
         if (text.trim().length < 80) {
@@ -110,7 +125,7 @@ export const Route = createFileRoute("/api/extract")({
             ok: true,
             text: text.slice(0, 12_000),
             url: url.toString(),
-            title: url.hostname.replace(/^www\./, ""),
+            title,
             source,
           },
           200,
