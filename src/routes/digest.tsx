@@ -191,6 +191,8 @@ function DigestPage() {
           agent could settle them.
         </p>
 
+        <AskRecord />
+
         {reads.length > 0 && (
           <section className="mt-8 border-2 border-[#1A1A1A]">
             <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
@@ -425,6 +427,157 @@ function DigestPage() {
         )}
       </main>
     </div>
+  );
+}
+
+function AskRecord() {
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState<string | null>(null);
+  const [sources, setSources] = useState<{ token: string; input: string; at: string }[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.auth.getSession();
+      if (alive) setSignedIn(Boolean(data.session));
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const citedNumbers = answer ? [...answer.matchAll(/\[(\d+)\]/g)].map((match) => Number(match[1])) : [];
+  const listedSources = citedNumbers.length
+    ? sources.filter((_, index) => citedNumbers.includes(index + 1))
+    : sources.slice(0, 6);
+
+  const ask = async () => {
+    if (busy) return;
+    const clean = question.trim();
+    if (clean.length < 5) {
+      setError("Ask a full question.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    setAnswer(null);
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.auth.getSession();
+      const jwt = data.session?.access_token;
+      if (!jwt) {
+        setSignedIn(false);
+        setError("Sign in to ask your record.");
+        return;
+      }
+      const response = await fetch("/api/ask-record", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${jwt}` },
+        body: JSON.stringify({ question: clean }),
+      });
+      const body = (await response.json()) as {
+        answer?: string;
+        sources?: { token: string; input: string; at: string }[];
+        error?: string;
+      };
+      if (!response.ok || !body.answer) throw new Error(body.error ?? "The record did not answer.");
+      setAnswer(body.answer);
+      setSources(body.sources ?? []);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The record did not answer.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1A1A1A] px-3 py-1.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#FDFBF7]">
+          Ask your record
+        </span>
+        <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A4BFF]">
+          one model call
+        </span>
+      </div>
+
+      {signedIn === false ? (
+        <p className="px-4 py-4 font-serif text-[14px] text-[#1A1A1A]/65">
+          <Link to="/login" className="text-[#1A4BFF] underline underline-offset-4">
+            Sign in
+          </Link>{" "}
+          to ask what your own reads, questions and predictions say.
+        </p>
+      ) : (
+        <div className="p-4">
+          <p className="max-w-[62ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
+            Ask what your own record says. It answers from your saved reads, questions and predictions
+            only; it does not use the web.
+          </p>
+          <textarea
+            value={question}
+            onChange={(event) => setQuestion(event.target.value)}
+            maxLength={600}
+            rows={2}
+            placeholder="What does my record say about…?"
+            className="mt-3 w-full resize-none border border-[#1A1A1A]/20 bg-[#FDFBF7] px-3 py-2 font-serif text-[14px] leading-relaxed outline-none focus:border-[#1A4BFF]"
+          />
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => void ask()}
+              disabled={busy || question.trim().length < 5}
+              className="border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] disabled:opacity-40"
+            >
+              {busy ? "Reading the record…" : "Ask"}
+            </button>
+            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+              Answers cite your reads as [1], [2]
+            </span>
+          </div>
+          {error && (
+            <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#C1121F]">
+              {error}
+            </p>
+          )}
+
+          {answer && (
+            <div className="mt-4 border-t border-[#1A1A1A]/10 pt-3">
+              <p className="whitespace-pre-line font-serif text-[14px] leading-relaxed text-[#1A1A1A]/80">
+                {answer}
+              </p>
+              {sources.length > 0 && (
+                <div className="mt-3">
+                  <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+                    From these reads
+                  </p>
+                  <ol className="mt-1 space-y-1">
+                    {listedSources.map((source) => {
+                      const index = sources.findIndex((item) => item.token === source.token);
+                      return (
+                      <li key={source.token} className="font-serif text-[12.5px] leading-snug">
+                        <Link
+                          to="/read/$token"
+                          params={{ token: source.token }}
+                          className="text-[#1A4BFF] underline underline-offset-4"
+                        >
+                          [{index + 1}] {source.input}
+                        </Link>
+                      </li>
+                      );
+                    })}
+                  </ol>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </section>
   );
 }
 

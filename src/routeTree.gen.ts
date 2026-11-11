@@ -24,6 +24,7 @@ import { Route as ApiAnalystFindingsRouteImport } from './routes/api/analyst-fin
 import { Route as ApiAnalystRecentRouteImport } from './routes/api/analyst-recent'
 import { Route as ApiAnalystRedteamRouteImport } from './routes/api/analyst-redteam'
 import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
+import { Route as ApiAskRecordRouteImport } from './routes/api/ask-record'
 import { Route as ApiCasesRouteImport } from './routes/api/cases'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
 import { Route as ApiCheckWatchesRouteImport } from './routes/api/check-watches'
@@ -117,6 +118,11 @@ const ApiAnalystRedteamRoute = ApiAnalystRedteamRouteImport.update({
 const ApiAnalystWatchRoute = ApiAnalystWatchRouteImport.update({
   id: '/api/analyst-watch',
   path: '/api/analyst-watch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAskRecordRoute = ApiAskRecordRouteImport.update({
+  id: '/api/ask-record',
+  path: '/api/ask-record',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCasesRoute = ApiCasesRouteImport.update({
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
+  '/api/ask-record': typeof ApiAskRecordRoute
   '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
+  '/api/ask-record': typeof ApiAskRecordRoute
   '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
@@ -304,6 +312,7 @@ export interface FileRoutesById {
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
+  '/api/ask-record': typeof ApiAskRecordRoute
   '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
   '/api/check-watches': typeof ApiCheckWatchesRoute
@@ -342,6 +351,7 @@ export interface FileRouteTypes {
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
+    | '/api/ask-record'
     | '/api/cases'
     | '/api/check-watch'
     | '/api/check-watches'
@@ -378,6 +388,7 @@ export interface FileRouteTypes {
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
+    | '/api/ask-record'
     | '/api/cases'
     | '/api/check-watch'
     | '/api/check-watches'
@@ -414,6 +425,7 @@ export interface FileRouteTypes {
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
+    | '/api/ask-record'
     | '/api/cases'
     | '/api/check-watch'
     | '/api/check-watches'
@@ -451,6 +463,7 @@ export interface RootRouteChildren {
   ApiAnalystRecentRoute: typeof ApiAnalystRecentRoute
   ApiAnalystRedteamRoute: typeof ApiAnalystRedteamRoute
   ApiAnalystWatchRoute: typeof ApiAnalystWatchRoute
+  ApiAskRecordRoute: typeof ApiAskRecordRoute
   ApiCasesRoute: typeof ApiCasesRoute
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
   ApiCheckWatchesRoute: typeof ApiCheckWatchesRoute
@@ -577,6 +590,13 @@ declare module '@tanstack/react-router' {
       path: '/api/analyst-watch'
       fullPath: '/api/analyst-watch'
       preLoaderRoute: typeof ApiAnalystWatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ask-record': {
+      id: '/api/ask-record'
+      path: '/api/ask-record'
+      fullPath: '/api/ask-record'
+      preLoaderRoute: typeof ApiAskRecordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/cases': {
@@ -731,6 +751,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAnalystRecentRoute: ApiAnalystRecentRoute,
   ApiAnalystRedteamRoute: ApiAnalystRedteamRoute,
   ApiAnalystWatchRoute: ApiAnalystWatchRoute,
+  ApiAskRecordRoute: ApiAskRecordRoute,
   ApiCasesRoute: ApiCasesRoute,
   ApiCheckWatchRoute: ApiCheckWatchRoute,
   ApiCheckWatchesRoute: ApiCheckWatchesRoute,
