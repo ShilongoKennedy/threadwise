@@ -29,6 +29,7 @@ import {
   syncMissingDrillHistory,
 } from "@/lib/threadwise/drill-sync";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { CONFIDENCE_FORECAST } from "@/lib/threadwise/calibration";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -307,8 +308,8 @@ function ProfilePage() {
                 </section>
 
                 <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
-                  <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1A1A1A] px-3 py-1.5">
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/12 px-4 py-2">
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em]">
                       Calibration
                     </span>
                     <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A4BFF]">
@@ -318,24 +319,59 @@ function ProfilePage() {
                         : ""}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 divide-x divide-[#1A1A1A]/10">
-                    {profile.calibration.buckets.map((bucket) => (
-                      <div key={bucket.confidence} className="px-3 py-3">
-                        <div className="font-mono text-[8px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
-                          {bucket.confidence}
-                        </div>
-                        <div className="mt-1 font-display text-[22px] leading-none">
-                          {bucket.accuracy === null ? "—" : `${Math.round(bucket.accuracy * 100)}%`}
-                        </div>
-                        <div className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-                          {bucket.correct}/{bucket.settled} right
-                        </div>
+
+                  {profile.calibration.settled === 0 ? (
+                    <div className="px-4 py-5">
+                      <p className="max-w-[56ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
+                        No prediction has settled yet. File a dated prediction from a read; when the
+                        date arrives, this becomes a score instead of a mood.
+                      </p>
+                      <Link
+                        to="/digest"
+                        className="mt-2 inline-block font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4"
+                      >
+                        See the predictions →
+                      </Link>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-4 px-4 py-4">
+                        {profile.calibration.buckets.map((bucket) => {
+                          const forecast = CONFIDENCE_FORECAST[bucket.confidence] * 100;
+                          const accuracy = bucket.accuracy === null ? 0 : bucket.accuracy * 100;
+                          return (
+                            <div key={bucket.confidence}>
+                              <div className="flex items-baseline justify-between gap-3 font-mono text-[9px] uppercase tracking-[0.12em]">
+                                <span className="text-[#1A1A1A]/70">
+                                  {bucket.confidence}
+                                  <span className="ml-2 text-[#1A1A1A]/35">stated {forecast}%</span>
+                                </span>
+                                <span className="text-[#1A4BFF]">
+                                  {bucket.accuracy === null ? "no settled" : `${Math.round(accuracy)}%`}
+                                </span>
+                              </div>
+                              <div className="relative mt-1 h-2 bg-[#1A1A1A]/10">
+                                <span
+                                  className="absolute inset-y-0 left-0 bg-[#1A4BFF]"
+                                  style={{ width: `${accuracy}%` }}
+                                />
+                                <span
+                                  className="absolute -top-1 h-4 w-px bg-[#C1121F]"
+                                  style={{ left: `${forecast}%` }}
+                                />
+                              </div>
+                              <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
+                                {bucket.correct}/{bucket.settled} right
+                              </p>
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
-                  </div>
-                  <p className="border-t border-[#1A1A1A]/10 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-                    Brier: lower is better · confidence maps to 80 / 55 / 30%
-                  </p>
+                      <p className="border-t border-[#1A1A1A]/10 px-4 py-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#1A1A1A]/45">
+                        Blue = observed accuracy. Red mark = stated confidence. Brier: lower is better.
+                      </p>
+                    </>
+                  )}
                 </section>
 
                 <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -440,18 +476,20 @@ function ProfilePage() {
                     </div>
                     <ul className="mt-3 space-y-2">
                       {practice.byKind.map((item) => (
-                        <li
-                          key={item.kind}
-                          className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#1A1A1A]/10 pb-1.5"
-                        >
-                          <span className="font-serif text-[13.5px] capitalize">
-                            {item.kind === "teach" ? "Teach-back" : item.kind}
-                          </span>
-                          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/55">
-                            {item.averagePct}% avg · {item.attempts} attempt
-                            {item.attempts === 1 ? "" : "s"}
-                            {item.deltaPct !== null ? ` · ${item.trend} (${item.deltaPct > 0 ? "+" : ""}${item.deltaPct} pts)` : ""}
-                          </span>
+                        <li key={item.kind} className="border-b border-[#1A1A1A]/10 pb-2">
+                          <div className="flex flex-wrap items-baseline justify-between gap-2">
+                            <span className="font-serif text-[13.5px] capitalize">
+                              {item.kind === "teach" ? "Teach-back" : item.kind}
+                            </span>
+                            <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/55">
+                              {item.averagePct}% avg · {item.attempts} attempt
+                              {item.attempts === 1 ? "" : "s"}
+                              {item.deltaPct !== null ? ` · ${item.trend} (${item.deltaPct > 0 ? "+" : ""}${item.deltaPct} pts)` : ""}
+                            </span>
+                          </div>
+                          <div className="mt-1 h-1 bg-[#1A1A1A]/10">
+                            <div className="h-full bg-[#1A4BFF]" style={{ width: `${item.averagePct}%` }} />
+                          </div>
                         </li>
                       ))}
                     </ul>

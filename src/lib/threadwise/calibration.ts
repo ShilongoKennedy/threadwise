@@ -29,11 +29,13 @@ export type Calibration = {
   buckets: CalibrationBucket[];
 };
 
-const FORECAST: Record<PredictionConfidence, number> = {
+export const CONFIDENCE_FORECAST: Record<PredictionConfidence, number> = {
   high: 0.8,
   medium: 0.55,
   low: 0.3,
 };
+
+const FORECAST = CONFIDENCE_FORECAST;
 
 /** The confidence a watch carries, encoded in its origin as prediction:high. */
 export function predictionConfidence(origin: string | null): PredictionConfidence | null {
