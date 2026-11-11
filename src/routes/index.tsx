@@ -206,7 +206,7 @@ function LandingPage() {
           <div className="grid items-end gap-10 md:grid-cols-[1.15fr_0.85fr] md:gap-14">
             <div>
               <h1 className="max-w-[13ch] font-display text-[clamp(46px,7.2vw,96px)] leading-[0.92] tracking-[-0.035em]">
-                See what the story <span className="italic">hides.</span>
+                See what the story hides.
               </h1>
 
               <p className="mt-6 max-w-[54ch] font-serif text-[17px] font-light leading-[1.6] text-[#1A1A1A]/70 md:text-[20px]">
