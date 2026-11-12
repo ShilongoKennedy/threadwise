@@ -177,7 +177,7 @@ function LandingPage() {
                     </span>
                   </Link>
                 ))}
-                <p className="mt-2 max-w-[310px] text-[8px] leading-relaxed tracking-[0.08em] text-[#1A1A1A]/40 md:ml-auto">
+                <p className="mt-2 h-[30px] max-w-[310px] overflow-hidden text-[8px] leading-[1.45] tracking-[0.08em] text-[#1A1A1A]/40 line-clamp-2 md:ml-auto">
                   {activePlace
                     ? PLACE_INDEX.find((place) => place.id === activePlace)?.note
                     : "Hover a place to see why it is on the map."}
@@ -604,6 +604,7 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
           fill: #1A4BFF;
         }
         .atlas-line-label-red { fill: #C1121F; }
+        .atlas-boat { fill: rgba(26, 26, 26, 0.55); }
         .atlas-marker {
           fill: #FDFBF7;
           stroke: #1A4BFF;
@@ -667,6 +668,40 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
           d={`M ${tehran[0]} ${tehran[1]} Q 648 149 ${natanz[0]} ${natanz[1]}`}
           className={`atlas-route atlas-route-denied ${permissionActive ? "atlas-route-active" : ""}`}
         />
+
+        <g className="atlas-boat" opacity="0.58" aria-hidden>
+          <path d="M -6 0 L 6 0 L 4 4 L -4 4 Z" />
+          <path d="M 0 -8 L 0 0 L -4 0 Z" />
+          <path d="M 0 -8 L 0 0 L 4 0 Z" />
+          <animateMotion
+            dur="74s"
+            repeatCount="indefinite"
+            rotate="auto"
+            path="M 350 132 C 405 112 452 145 500 130"
+          />
+        </g>
+        <g className="atlas-boat" opacity="0.5" aria-hidden>
+          <path d="M -6 0 L 6 0 L 4 4 L -4 4 Z" />
+          <path d="M 0 -8 L 0 0 L -4 0 Z" />
+          <path d="M 0 -8 L 0 0 L 4 0 Z" />
+          <animateMotion
+            dur="96s"
+            repeatCount="indefinite"
+            rotate="auto"
+            path="M 705 189 C 742 202 770 182 812 197"
+          />
+        </g>
+        <g className="atlas-boat" opacity="0.44" aria-hidden>
+          <path d="M -6 0 L 6 0 L 4 4 L -4 4 Z" />
+          <path d="M 0 -8 L 0 0 L -4 0 Z" />
+          <path d="M 0 -8 L 0 0 L 4 0 Z" />
+          <animateMotion
+            dur="110s"
+            repeatCount="indefinite"
+            rotate="auto"
+            path="M 898 210 C 930 196 954 228 982 214"
+          />
+        </g>
 
         <text
           x={(vienna[0] + tehran[0]) / 2}
