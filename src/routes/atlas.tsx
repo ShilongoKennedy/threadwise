@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
@@ -74,7 +75,14 @@ const LOOP = [
   },
 ] as const;
 
+const PLACE_INDEX = [
+  { id: "vienna", no: "01", name: "Vienna / IAEA", coords: "48.2N 16.4E", note: "The confidential report is circulated to the Board of Governors." },
+  { id: "tehran", no: "02", name: "Tehran", coords: "35.7N 51.4E", note: "The government that must let the inspectors back in." },
+  { id: "natanz", no: "03", name: "Natanz", coords: "33.7N 51.7E", note: "One of the enrichment sites the report cannot verify." },
+] as const;
+
 function LandingPage() {
+  const [activePlace, setActivePlace] = useState<string | null>(null);
   return (
     <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FDFBF7] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
       <div
@@ -93,7 +101,7 @@ function LandingPage() {
       <main id="main" className="relative z-10 flex-1">
         {/* ATLAS HERO */}
         <section className="relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28">
-          <AtlasMap />
+          <AtlasMap active={activePlace} onActive={setActivePlace} />
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#FDFBF7_0%,rgba(253,251,247,0.96)_28%,rgba(253,251,247,0.42)_48%,rgba(253,251,247,0.06)_68%,transparent_80%)] max-md:bg-[linear-gradient(180deg,#FDFBF7_0%,rgba(253,251,247,0.94)_48%,rgba(253,251,247,0.25)_100%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[26%] bg-[linear-gradient(0deg,#FDFBF7_0%,rgba(253,251,247,0.88)_55%,transparent_100%)] md:hidden" />
 
@@ -147,11 +155,32 @@ function LandingPage() {
                   Natural Earth 1:110m · illustrative route
                 </p>
               </div>
-              <div className="text-left md:text-right leading-relaxed">
-                <p className="text-[#1A1A1A]/60">The index</p>
-                <p>01 Vienna / IAEA <span className="text-[#1A1A1A]/30">48.2N 16.4E</span></p>
-                <p>02 Tehran <span className="text-[#1A1A1A]/30">35.7N 51.4E</span></p>
-                <p className="text-[#C1121F]">03 Natanz / Fordow <span className="text-[#C1121F]/50">33.7N 51.7E</span></p>
+              <div className="w-full text-left leading-relaxed md:w-[310px] md:text-right">
+                <p className="text-[#1A1A1A]/60">The places</p>
+                {PLACE_INDEX.map((place) => (
+                  <Link
+                    key={place.id}
+                    to="/read/$token"
+                    params={{ token: SAMPLE_TOKEN }}
+                    onMouseEnter={() => setActivePlace(place.id)}
+                    onMouseLeave={() => setActivePlace(null)}
+                    onFocus={() => setActivePlace(place.id)}
+                    onBlur={() => setActivePlace(null)}
+                    className={`mt-1 block border-b border-transparent pb-0.5 transition-colors hover:border-[#1A4BFF] ${
+                      activePlace === place.id ? "text-[#1A4BFF]" : place.id === "natanz" ? "text-[#C1121F]" : "text-[#1A1A1A]/70"
+                    }`}
+                  >
+                    {place.no} {place.name}{" "}
+                    <span className={activePlace === place.id ? "text-[#1A4BFF]/50" : place.id === "natanz" ? "text-[#C1121F]/50" : "text-[#1A1A1A]/30"}>
+                      {place.coords}
+                    </span>
+                  </Link>
+                ))}
+                <p className="mt-2 max-w-[310px] text-[8px] leading-relaxed tracking-[0.08em] text-[#1A1A1A]/40 md:ml-auto">
+                  {activePlace
+                    ? PLACE_INDEX.find((place) => place.id === activePlace)?.note
+                    : "Hover a place to see why it is on the map."}
+                </p>
               </div>
             </div>
           </div>
@@ -509,7 +538,7 @@ const ATLAS_PLACES = {
   washington: [((-77.0369 + 180) / 360) * 1000, ((90 - 38.9072) / 180) * 500] as const,
 };
 
-function AtlasMap() {
+function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: string | null) => void }) {
   const vienna = ATLAS_PLACES.vienna;
   const tehran = ATLAS_PLACES.tehran;
   const natanz = ATLAS_PLACES.natanz;
@@ -570,6 +599,10 @@ function AtlasMap() {
           dominant-baseline: central;
         }
         .atlas-marker-text-red { fill: #C1121F; }
+        .atlas-pin-group {
+          cursor: pointer;
+          pointer-events: auto;
+        }
         .atlas-callout {
           fill: none;
           stroke: #C1121F;
@@ -614,20 +647,32 @@ function AtlasMap() {
           className="atlas-route"
         />
 
-        <g>
-          <circle cx={vienna[0]} cy={vienna[1]} r="6" className="atlas-marker" />
+        <g
+          className="atlas-pin-group"
+          onPointerEnter={() => onActive("vienna")}
+          onPointerLeave={() => onActive(null)}
+        >
+          <circle cx={vienna[0]} cy={vienna[1]} r={active === "vienna" ? 7 : 6} className="atlas-marker" />
           <text x={vienna[0]} y={vienna[1] + 0.4} className="atlas-marker-text">01</text>
         </g>
 
-        <g>
-          <circle cx={tehran[0]} cy={tehran[1]} r="6" className="atlas-marker" />
+        <g
+          className="atlas-pin-group"
+          onPointerEnter={() => onActive("tehran")}
+          onPointerLeave={() => onActive(null)}
+        >
+          <circle cx={tehran[0]} cy={tehran[1]} r={active === "tehran" ? 7 : 6} className="atlas-marker" />
           <text x={tehran[0]} y={tehran[1] + 0.4} className="atlas-marker-text">02</text>
         </g>
 
         <circle cx={natanz[0]} cy={natanz[1]} r="1.8" className="atlas-pin atlas-pin-red" />
         <path d={`M ${natanz[0]} ${natanz[1]} L 674 173`} className="atlas-callout" />
-        <g>
-          <circle cx="681" cy="176" r="6" className="atlas-marker atlas-marker-red" />
+        <g
+          className="atlas-pin-group"
+          onPointerEnter={() => onActive("natanz")}
+          onPointerLeave={() => onActive(null)}
+        >
+          <circle cx="681" cy="176" r={active === "natanz" ? 7 : 6} className="atlas-marker atlas-marker-red" />
           <text x="681" y="176.4" className="atlas-marker-text atlas-marker-text-red">03</text>
         </g>
 
