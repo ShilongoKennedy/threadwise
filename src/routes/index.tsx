@@ -216,93 +216,107 @@ function LandingPage() {
 
         {/* THE LOOP */}
         <section id="loop" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-8 md:py-20">
-          <div className="border-b-2 border-[#1A1A1A] pb-2">
-            <h2 className="max-w-[18ch] font-display text-[30px] leading-none md:text-[42px]">
-              What happens after the read.
-            </h2>
+          <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A4BFF]">
+              The method / 01–04
+            </p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
+              After the read
+            </p>
           </div>
 
-          <ol className="mt-4 border-t border-[#1A1A1A]/15">
-            {LOOP.map((step) => (
-              <li
-                key={step.n}
-                className="grid grid-cols-[32px_1fr] gap-x-3 gap-y-1 border-b border-[#1A1A1A]/15 py-5 sm:grid-cols-[48px_190px_1fr] sm:items-baseline sm:gap-5"
-              >
-                <span className="row-span-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF] sm:row-span-1">
-                  {step.n}
-                </span>
-                <h3 className="font-display text-[20px] leading-tight">{step.title}</h3>
-                <p className="col-start-2 max-w-[58ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65 sm:col-start-3">
-                  {step.body}
-                </p>
-              </li>
-            ))}
-          </ol>
+          <div className="mt-8 grid gap-10 md:grid-cols-[0.72fr_1.28fr] md:gap-16">
+            <div>
+              <h2 className="max-w-[12ch] font-display text-[34px] leading-[0.95] md:text-[52px]">
+                What happens after the read.
+              </h2>
+              <p className="mt-4 max-w-[38ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/70">
+                A read is the beginning. The questions, predictions and corrections are what make it
+                checkable later.
+              </p>
+              <div className="mt-6 flex flex-col items-start gap-2">
+                <Link
+                  to="/questions"
+                  className="group inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+                >
+                  Open the questions
+                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
+                <Link
+                  to="/profile"
+                  className="group inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/55 underline underline-offset-4 transition-colors hover:text-[#1A4BFF]"
+                >
+                  See the thinking profile
+                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
+              </div>
+            </div>
 
-          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <Link
-              to="/questions"
-              className="inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4"
-            >
-              Open the questions <ArrowUpRight className="h-3 w-3" />
-            </Link>
-            <Link
-              to="/profile"
-              className="inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/60 underline underline-offset-4 transition-colors hover:text-[#1A4BFF]"
-            >
-              See the thinking profile <ArrowUpRight className="h-3 w-3" />
-            </Link>
+            <ol className="grid border-t border-[#1A1A1A]/20 sm:grid-cols-2">
+              {LOOP.map((step, index) => (
+                <li
+                  key={step.n}
+                  className={`border-b border-[#1A1A1A]/15 py-5 ${
+                    index % 2 === 0 ? "sm:border-r sm:pr-6" : "sm:pl-6"
+                  }`}
+                >
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-display text-[38px] leading-none text-[#1A4BFF]/80">
+                      {step.n}
+                    </span>
+                    <h3 className="font-display text-[22px] leading-tight">{step.title}</h3>
+                  </div>
+                  <p className="mt-2 max-w-[34ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/65">
+                    {step.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
         {/* THE RECORD, SHOWN */}
         <section className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
           <div className="border-y-2 border-[#1A1A1A] py-9 md:py-12">
-            <div className="grid gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-start md:gap-14">
+            <div className="grid gap-10 md:grid-cols-[0.78fr_1.22fr] md:gap-16">
               <div>
-                <h2 className="max-w-[16ch] font-display text-[32px] leading-[0.98] md:text-[48px]">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A4BFF]">
+                  The record / illustrative
+                </p>
+                <h2 className="mt-4 max-w-[14ch] font-display text-[34px] leading-[0.95] md:text-[52px]">
                   What the read leaves behind.
                 </h2>
-                <p className="mt-4 max-w-[44ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/70">
+                <p className="mt-4 max-w-[42ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/70">
                   A chat window gives you an answer and forgets it. This leaves a record: the claims,
                   the questions they bear on, the predictions that follow, and the score when the
                   date arrives.
                 </p>
-                <p className="mt-4 max-w-[40ch] font-mono text-[9px] uppercase leading-relaxed tracking-[0.12em] text-[#1A1A1A]/45">
-                  An example record, not your data.
-                </p>
               </div>
 
-              <div className="border-2 border-[#1A1A1A] bg-white">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/15 px-4 py-2">
-                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
-                    The record
-                  </span>
-                  <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/40">
-                    illustrative
-                  </span>
+              <div>
+                <div className="flex items-center justify-between border-b border-[#1A1A1A]/20 pb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+                  <span>The record / 001</span>
+                  <span>09 Nov 2026</span>
                 </div>
 
-                <div className="divide-y divide-[#1A1A1A]/12">
-                  <div className="grid gap-1 px-4 py-3 sm:grid-cols-[110px_1fr] sm:gap-4">
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-                      Calibration
-                    </p>
+                <ol>
+                  <li className="grid gap-2 border-b border-[#1A1A1A]/15 py-4 sm:grid-cols-[32px_105px_1fr] sm:gap-4">
+                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">01</span>
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Calibration</span>
                     <div>
                       <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
-                        <span className="mr-2 font-display text-[22px]">4 of 5</span>
+                        <span className="mr-2 font-display text-[30px] leading-none">4 of 5</span>
                         high-confidence predictions were right.
                       </p>
                       <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
                         Brier 0.18 · lower is better
                       </p>
                     </div>
-                  </div>
+                  </li>
 
-                  <div className="grid gap-1 px-4 py-3 sm:grid-cols-[110px_1fr] sm:gap-4">
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-                      Question
-                    </p>
+                  <li className="grid gap-2 border-b border-[#1A1A1A]/15 py-4 sm:grid-cols-[32px_105px_1fr] sm:gap-4">
+                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">02</span>
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Question</span>
                     <div>
                       <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
                         Will Iran let inspectors back in?
@@ -311,12 +325,11 @@ function LandingPage() {
                         3 for · 0 against · one-sided
                       </p>
                     </div>
-                  </div>
+                  </li>
 
-                  <div className="grid gap-1 px-4 py-3 sm:grid-cols-[110px_1fr] sm:gap-4">
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-                      Drill
-                    </p>
+                  <li className="grid gap-2 border-b border-[#1A1A1A]/15 py-4 sm:grid-cols-[32px_105px_1fr] sm:gap-4">
+                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">03</span>
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Drill</span>
                     <div>
                       <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
                         This week: steelman practice.
@@ -325,7 +338,20 @@ function LandingPage() {
                         Weakest exercise · 58% structural checks
                       </p>
                     </div>
-                  </div>
+                  </li>
+                </ol>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-4">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
+                    Illustrative record · not your data
+                  </span>
+                  <Link
+                    to="/digest"
+                    className="group inline-flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+                  >
+                    Open the record
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </Link>
                 </div>
               </div>
             </div>
