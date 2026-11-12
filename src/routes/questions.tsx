@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { QuestionGap } from "@/components/threadwise/QuestionGap";
 import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -75,7 +76,8 @@ function QuestionsPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+      <PageBackdrop />
       <AppHeader section="questions" />
 
       <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">

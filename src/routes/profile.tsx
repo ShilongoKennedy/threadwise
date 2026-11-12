@@ -29,6 +29,7 @@ import {
   syncMissingDrillHistory,
 } from "@/lib/threadwise/drill-sync";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { CONFIDENCE_FORECAST } from "@/lib/threadwise/calibration";
 
 export const Route = createFileRoute("/profile")({
@@ -173,7 +174,8 @@ function ProfilePage() {
   }, [practice, attempts, reads]);
 
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+      <PageBackdrop />
       <AppHeader section="profile" />
 
       <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-10">

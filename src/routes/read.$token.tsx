@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/read/$token")({
@@ -105,7 +106,8 @@ function SharedRead() {
     : [];
 
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+      <PageBackdrop />
       <AppHeader section="digest" />
 
       <main className="mx-auto w-full max-w-[760px] px-5 pb-24 pt-8">

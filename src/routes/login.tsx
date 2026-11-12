@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { useState, useEffect } from "react";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
@@ -54,6 +55,7 @@ function LoginPage() {
 
   return (
     <div className="relative min-h-[100dvh] overflow-hidden bg-[#FDFBF7] text-[#1A1A1A]">
+      <PageBackdrop />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { buildCaseLedger, type CaseRead } from "@/lib/threadwise/case-ledger";
 
 export const Route = createFileRoute("/case/$subject")({
@@ -31,7 +32,8 @@ function CasePage() {
     new Date(value).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+      <PageBackdrop />
       <AppHeader section="cases" />
 
       <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">

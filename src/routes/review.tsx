@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { supabase } from "@/integrations/supabase/client";
 import type { WeeklyReview } from "@/lib/threadwise/weekly-review";
@@ -55,7 +56,8 @@ function ReviewPage() {
   }, []);
 
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+      <PageBackdrop />
       <AppHeader section="digest" />
 
       <main className="mx-auto w-full max-w-[900px] px-5 pb-28 pt-10 md:px-8 md:pt-14">

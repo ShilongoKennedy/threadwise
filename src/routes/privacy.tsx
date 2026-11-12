@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/privacy")({
@@ -22,7 +23,8 @@ export const Route = createFileRoute("/privacy")({
 
 function PrivacyPage() {
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+      <PageBackdrop />
       <header className="border-b-2 border-[#1A1A1A]">
         <div className="mx-auto flex w-full max-w-[820px] items-center gap-3 px-4 py-3 md:px-6">
           <Link

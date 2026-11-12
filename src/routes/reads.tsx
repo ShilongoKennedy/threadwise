@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
@@ -36,7 +37,8 @@ function ReadsPage() {
   }, []);
 
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+      <PageBackdrop />
       <header className="sticky top-0 z-30 border-b-2 border-[#1A1A1A] bg-[#FDFBF7]">
         <div className="mx-auto flex max-w-[820px] items-center justify-between gap-4 px-5 py-3">
           <div className="flex items-center gap-3">

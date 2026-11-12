@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ClipboardEvent, type DragEvent } from "react";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { extractPdfText, extractTextFile } from "@/lib/threadwise/extract-document";
 
 export const Route = createFileRoute("/analyst")({
@@ -284,7 +285,8 @@ function AnalystPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+      <PageBackdrop />
       <AppHeader section="analyst" />
 
       <main className="mx-auto w-full max-w-[760px] px-5 pb-24 pt-10">

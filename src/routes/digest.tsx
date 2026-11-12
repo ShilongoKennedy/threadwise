@@ -4,6 +4,7 @@ import { listWatches, resolveWatch, WATCH_LABEL, type Watch } from "@/lib/thread
 import { calibrationStats, isPrediction, predictionConfidence } from "@/lib/threadwise/calibration";
 import { VerdictStamp } from "@/components/threadwise/VerdictStamp";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 
 export const Route = createFileRoute("/digest")({
   head: () => ({
@@ -151,7 +152,8 @@ function DigestPage() {
     : [];
 
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+      <PageBackdrop />
       <AppHeader section="digest" />
 
       <main id="main" className="mx-auto w-full max-w-[1100px] px-4 pb-28 pt-8 md:px-6 md:pb-12 md:pt-12">
