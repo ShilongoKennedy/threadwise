@@ -11,6 +11,7 @@ export type GlobePlace = {
 type Props = {
   focus: GlobePlace | null;
   onPick?: (lat: number, lon: number) => void;
+  embedded?: boolean;
 };
 
 function drawEarthTexture(width: number, height: number) {
@@ -104,7 +105,7 @@ function latLonToVector(
   );
 }
 
-export function LiveGlobe({ focus, onPick }: Props) {
+export function LiveGlobe({ focus, onPick, embedded = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const focusRef = useRef<GlobePlace | null>(focus);
   const flyToRef = useRef<((place: GlobePlace) => void) | null>(null);
@@ -160,6 +161,7 @@ export function LiveGlobe({ focus, onPick }: Props) {
       controls.enableDamping = true;
       controls.dampingFactor = 0.055;
       controls.enablePan = false;
+      controls.enableZoom = !embedded;
       controls.minDistance = 2.0;
       controls.maxDistance = 5.2;
       controls.rotateSpeed = 0.42;
@@ -352,6 +354,8 @@ export function LiveGlobe({ focus, onPick }: Props) {
       const raycaster = new THREE.Raycaster();
       const pointer = new THREE.Vector2();
       let downAt: { x: number; y: number } | null = null;
+
+      if (embedded) canvas.style.touchAction = "pan-y";
 
       const onPointerDown = (event: PointerEvent) => {
         downAt = { x: event.clientX, y: event.clientY };
