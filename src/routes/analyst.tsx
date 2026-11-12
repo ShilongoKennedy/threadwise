@@ -3,6 +3,7 @@ import { useEffect, useState, type ClipboardEvent, type DragEvent } from "react"
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
+import { PageMasthead } from "@/components/threadwise/PageMasthead";
 import { extractPdfText, extractTextFile } from "@/lib/threadwise/extract-document";
 
 export const Route = createFileRoute("/analyst")({
@@ -292,17 +293,11 @@ function AnalystPage() {
       <main className="mx-auto w-full max-w-[760px] px-5 pb-24 pt-10">
         {!report && (
           <>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#1A4BFF]">
-              One move, read properly
-            </p>
-            <h1 className="mt-3 font-display text-[34px] leading-[1.02] md:text-[46px]">
-              Bring me a move.
-            </h1>
-            <p className="mt-3 max-w-[52ch] font-serif text-[16px] leading-[1.65] text-[#1A1A1A]/75">
-              A post, a quote, a headline, a sentence you don&rsquo;t trust. You&rsquo;ll get the read: what it
-              actually is, why now, who it costs, what it echoes, and the one fact that would prove this
-              wrong.
-            </p>
+            <PageMasthead
+              eyebrow="The analyst"
+              title="Bring me a move."
+              deck="A post, a quote, a headline, a sentence you don’t trust. You’ll get the read: what it actually is, why now, who it costs, what it echoes, and the one fact that would prove this wrong."
+            />
 
             <div
               className="mt-6 border-2 border-[#1A1A1A] bg-white"

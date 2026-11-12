@@ -30,6 +30,7 @@ import {
 } from "@/lib/threadwise/drill-sync";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
+import { PageMasthead } from "@/components/threadwise/PageMasthead";
 import { CONFIDENCE_FORECAST } from "@/lib/threadwise/calibration";
 
 export const Route = createFileRoute("/profile")({
@@ -179,11 +180,11 @@ function ProfilePage() {
       <AppHeader section="profile" />
 
       <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-10">
-        <h1 className="font-display text-[34px] leading-none md:text-[48px]">The thinking profile.</h1>
-        <p className="mt-3 max-w-[56ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/70">
-          What the record says about how you reason. Not a score — a mirror. Every number here comes
-          from reads, questions, findings and predictions you filed.
-        </p>
+        <PageMasthead
+          eyebrow="The profile"
+          title="The thinking profile."
+          deck="What the record says about how you reason. Not a score — a mirror. Every number here comes from reads, questions, findings and predictions you filed."
+        />
 
         {state === "anon" && (
           <div className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-8 text-center">

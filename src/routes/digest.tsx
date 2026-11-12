@@ -5,6 +5,7 @@ import { calibrationStats, isPrediction, predictionConfidence } from "@/lib/thre
 import { VerdictStamp } from "@/components/threadwise/VerdictStamp";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
+import { PageMasthead } from "@/components/threadwise/PageMasthead";
 
 export const Route = createFileRoute("/digest")({
   head: () => ({
@@ -157,11 +158,11 @@ function DigestPage() {
       <AppHeader section="digest" />
 
       <main id="main" className="mx-auto w-full max-w-[1100px] px-4 pb-28 pt-8 md:px-6 md:pb-12 md:pt-12">
-        <h1 className="font-display text-[38px] leading-none md:text-[58px]">The record.</h1>
-        <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-[#1A1A1A]/65">
-          Every claim you dated, and what the reporting actually did. Judgements only count when the
-          agent could settle them.
-        </p>
+        <PageMasthead
+          eyebrow="The record"
+          title="The record."
+          deck="Every claim you dated, and what the reporting actually did. Judgements only count when the agent could settle them."
+        />
 
         <AskRecord />
 

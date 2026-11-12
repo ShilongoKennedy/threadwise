@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
+import { PageMasthead } from "@/components/threadwise/PageMasthead";
 
 export const Route = createFileRoute("/cases")({
   head: () => ({
@@ -33,11 +34,12 @@ function CasesPage() {
       <AppHeader section="cases" />
 
       <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
-        <h1 className="font-display text-[34px] leading-none md:text-[46px]">The files that keep coming back.</h1>
-        <p className="mt-3 max-w-[54ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/70">
-          Every read is filed under the situation it sits inside. A case is that subject, in order —
-          so you can see how the reading changed.
-        </p>
+        <PageMasthead
+          eyebrow="The cases"
+          title="The files that keep coming back."
+          deck="Every read is filed under the situation it sits inside. A case is that subject, in order — so you can see how the reading changed."
+          aside={`${cases.length} filed`}
+        />
 
         {cases.length === 0 && (
           <div className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-10 text-center">

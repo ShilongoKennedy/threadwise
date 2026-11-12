@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
+import { PageMasthead } from "@/components/threadwise/PageMasthead";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
@@ -52,10 +53,11 @@ function ReadsPage() {
       </header>
 
       <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
-        <h1 className="font-display text-[34px] leading-none md:text-[46px]">What was published.</h1>
-        <p className="mt-3 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/70">
-          Each of these is a move the analyst was given, and the sentence that would prove its reading wrong.
-        </p>
+        <PageMasthead
+          eyebrow="Published"
+          title="What was published."
+          deck="Each of these is a move the analyst was given, and the sentence that would prove its reading wrong."
+        />
 
         {state === "loading" && (
           <p className="py-12 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1A1A1A]/55">Opening…</p>

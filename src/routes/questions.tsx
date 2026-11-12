@@ -4,6 +4,7 @@ import { QuestionGap } from "@/components/threadwise/QuestionGap";
 import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
+import { PageMasthead } from "@/components/threadwise/PageMasthead";
 import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -81,11 +82,11 @@ function QuestionsPage() {
       <AppHeader section="questions" />
 
       <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
-        <h1 className="font-display text-[34px] leading-none md:text-[46px]">What are you trying to decide?</h1>
-        <p className="mt-3 max-w-[54ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/70">
-          Keep three or four questions open. Every read can file evidence for or against them, and the
-          balance shows you when you already know the answer.
-        </p>
+        <PageMasthead
+          eyebrow="The questions"
+          title="What are you trying to decide?"
+          deck="Keep three or four questions open. Every read can file evidence for or against them, and the balance shows you when you already know the answer."
+        />
 
         {state === "anon" && (
           <div className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-8 text-center">
