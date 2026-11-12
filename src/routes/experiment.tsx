@@ -1,14 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/experiment")({
   head: () => ({
     meta: [
-      { title: "Threadwise — A thinking instrument" },
+      { title: "Threadwise — The load-bearing claim" },
       {
         name: "description",
         content:
-          "Every story has a load-bearing claim. Threadwise finds it, tests it, and keeps the receipt.",
+          "Every argument has a claim the rest depends on. Threadwise finds it, pulls the thread, and keeps the receipt.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -16,65 +16,115 @@ export const Route = createFileRoute("/experiment")({
   component: ExperimentPage,
 });
 
-const NOTES = [
+type Node = {
+  id: string;
+  x: number;
+  y: number;
+  label: string;
+  text: string;
+  layer: "outer" | "inner" | "core";
+  tone?: "red";
+};
+
+const NODES: Node[] = [
+  { id: "reason", x: 24, y: 25, label: "Stated reason", text: "Development.", layer: "outer" },
+  { id: "mechanism", x: 17, y: 53, label: "Mechanism", text: "Budget support.", layer: "outer" },
+  { id: "claim", x: 50, y: 47, label: "The claim", text: "Aid buys influence.", layer: "core" },
+  { id: "counter", x: 78, y: 25, label: "Counter-claim", text: "A bribe.", layer: "outer" },
+  { id: "evidence", x: 84, y: 53, label: "Evidence", text: "UN vote alignment.", layer: "outer" },
+  { id: "question", x: 25, y: 79, label: "Open question", text: "Does conditionality bite?", layer: "inner" },
+  { id: "falsifier", x: 63, y: 81, label: "The falsifier", text: "Votes don't move.", layer: "core", tone: "red" },
+];
+
+const EDGES = [
+  { from: "reason", to: "claim", label: "because", outer: true },
+  { from: "mechanism", to: "claim", label: "through", outer: true },
+  { from: "counter", to: "claim", label: "or", outer: true },
+  { from: "evidence", to: "claim", label: "if", outer: true },
+  { from: "claim", to: "falsifier", label: "would break", outer: false, red: true },
+  { from: "claim", to: "question", label: "unless", outer: false, dashed: true },
+] as const;
+
+const COPY = [
   {
-    n: "01",
-    label: "The claim",
-    line: "Aid buys influence.",
-    detail:
-      "That is the sentence underneath the story. Not “the aid was generous” and not “the aid was cynical.” The claim is that the money changes behaviour.",
+    eyebrow: "Field 01 / the load-bearing claim",
+    headline: "Most of an argument is decoration.",
+    body: "The rest is load-bearing. Threadwise finds the sentence the argument cannot survive without.",
   },
   {
-    n: "02",
-    label: "The assumption",
-    line: "The money changes the vote.",
-    detail:
-      "This assumes the partner has something the donor wants, can sell it without paying a domestic price, and cannot get the same money elsewhere.",
+    eyebrow: "01 / pull the thread",
+    headline: "Not every claim carries the weight.",
+    body: "The claims around the centre are not equally important. Some hold the argument up. Most only decorate it.",
   },
   {
-    n: "03",
-    label: "The falsifier",
-    line: "Aid rises. Votes do not move.",
-    detail:
-      "Compare the partner with similar countries that received no aid. If the votes move just the same, the causal claim is in trouble — whatever the minister intended.",
+    eyebrow: "02 / what remains",
+    headline: "This is what has to be true.",
+    body: "If aid does not change behaviour, the story can still be moving. It just cannot be true in the way it claims.",
+  },
+  {
+    eyebrow: "03 / the claim",
+    headline: "Aid buys influence.",
+    body: "One sentence. One falsifier. A record that can be checked.",
   },
 ] as const;
 
-const LOOP = [
-  {
-    n: "01",
-    title: "Read the move",
-    body: "What happened, who carries the cost, and what the source wants you to feel. One link, one PDF, one screenshot.",
-    cta: "Bring a source",
-    to: "/analyst",
-  },
-  {
-    n: "02",
-    title: "Put it on trial",
-    body: "Two steelmanned theories. One crux. Commit before the verdict. The seminar does not tell you what is good; it shows what would settle it.",
-    cta: "Open the seminar",
-    to: "/seminar",
-  },
-  {
-    n: "03",
-    title: "Keep the receipt",
-    body: "Claims, questions, predictions, corrections. Score the misses, not only the hits. The record is where thinking becomes visible.",
-    cta: "See the record",
-    to: "/digest",
-  },
-] as const;
+const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+const smooth = (edge0: number, edge1: number, value: number) => {
+  const x = clamp((value - edge0) / (edge1 - edge0));
+  return x * x * (3 - 2 * x);
+};
 
 function ExperimentPage() {
-  const [activeNote, setActiveNote] = useState(0);
+  const scrollRef = useRef<HTMLElement>(null);
+  const [progress, setProgress] = useState(0);
+  const [pointer, setPointer] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    let frame = 0;
+    const measure = () => {
+      const element = scrollRef.current;
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      const total = element.offsetHeight - window.innerHeight;
+      setProgress(clamp(-rect.top / Math.max(1, total)));
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    };
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  const phase = progress < 0.28 ? 0 : progress < 0.58 ? 1 : progress < 0.82 ? 2 : 3;
+  const copy = COPY[phase]!;
+  const outerOpacity = 1 - smooth(0.18, 0.52, progress);
+  const innerOpacity = 1 - smooth(0.48, 0.78, progress);
+  const coreScale = 1 + progress * 0.16;
+  const falsifierScale = 1 + progress * 0.06;
+
+  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setPointer({
+      x: (event.clientX - bounds.left) / bounds.width - 0.5,
+      y: (event.clientY - bounds.top) / bounds.height - 0.5,
+    });
+  };
 
   return (
     <div className="lab-root min-h-[100dvh]">
       <style>{`
         .lab-root {
-          --ink: #0B0A09;
-          --bone: #E8DFCF;
-          --oxide: #9E3D2C;
-          --dim: #AFA492;
+          --ink: #070706;
+          --bone: #E9E0D0;
+          --oxide: #B6432E;
+          --dim: #8E8475;
           background: var(--ink);
           color: var(--bone);
         }
@@ -89,420 +139,274 @@ function ExperimentPage() {
         .lab-mono {
           font-family: "Courier New", Courier, monospace;
         }
-        .lab-grain {
-          position: relative;
-        }
-        .lab-grain::before {
+        .lab-stage::before {
           content: "";
           position: absolute;
           inset: 0;
           pointer-events: none;
-          opacity: 0.18;
-          background-image: radial-gradient(rgba(232, 223, 207, 0.35) 0.5px, transparent 0.5px);
-          background-size: 4px 4px;
-          mix-blend-mode: soft-light;
+          opacity: 0.15;
+          background-image: radial-gradient(rgba(233, 224, 208, 0.45) 0.5px, transparent 0.55px);
+          background-size: 5px 5px;
         }
-        .lab-bone {
-          background: var(--bone);
-          color: var(--ink);
-        }
-        .lab-oxide {
-          background: var(--oxide);
-          color: var(--bone);
-        }
-        .lab-hairline {
-          background: rgba(232, 223, 207, 0.18);
-        }
-        .lab-hairline-dark {
-          background: rgba(11, 10, 9, 0.18);
-        }
-        .lab-underline {
-          background-image: linear-gradient(var(--oxide), var(--oxide));
-          background-repeat: no-repeat;
-          background-position: 0 96%;
-          background-size: 100% 2px;
-        }
-        .lab-note {
-          transition: background-color 160ms ease, color 160ms ease, padding 160ms ease;
-        }
-        .lab-note:hover {
-          background: rgba(158, 61, 44, 0.08);
-        }
-        .lab-note[aria-expanded="true"] {
-          background: var(--ink);
-          color: var(--bone);
-        }
-        .lab-note[aria-expanded="true"] .lab-note-dim {
-          color: rgba(232, 223, 207, 0.55);
+        .lab-node {
+          transition: opacity 220ms linear, transform 280ms ease-out;
+          will-change: transform, opacity;
         }
         .lab-link {
           text-decoration-color: var(--oxide);
           text-decoration-thickness: 2px;
           text-underline-offset: 5px;
         }
-        .lab-link:hover {
-          color: var(--oxide);
-        }
-        .lab-focus:focus-visible {
-          outline: 2px solid var(--oxide);
-          outline-offset: 4px;
-        }
-        ::selection {
-          background: var(--oxide);
-          color: var(--bone);
-        }
-        @media (max-width: 768px) {
-          .lab-grain::before { opacity: 0.1; }
-        }
+        .lab-link:hover { color: var(--oxide); }
+        .lab-focus:focus-visible { outline: 2px solid var(--oxide); outline-offset: 4px; }
+        ::selection { background: var(--oxide); color: var(--bone); }
       `}</style>
 
-      <header className="sticky top-0 z-50 border-b border-[#E8DFCF]/15 bg-[#0B0A09]/90 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-5 py-4 md:px-8">
+      <header className="sticky top-0 z-50 h-[61px] border-b border-[#E9E0D0]/15 bg-[#070706]/95 backdrop-blur-sm">
+        <div className="mx-auto flex h-full w-full max-w-[1600px] items-center justify-between gap-4 px-5 md:px-8">
           <Link to="/" className="lab-sans flex items-baseline gap-3">
             <span className="text-[13px] font-semibold tracking-[0.22em]">THREADWISE</span>
-            <span className="lab-mono hidden text-[8px] uppercase tracking-[0.15em] text-[#E8DFCF]/35 sm:inline">
+            <span className="lab-mono hidden text-[8px] uppercase tracking-[0.15em] text-[#E9E0D0]/35 sm:inline">
               a thinking instrument
             </span>
           </Link>
-          <nav className="lab-mono hidden items-center gap-7 text-[9px] uppercase tracking-[0.15em] text-[#E8DFCF]/55 md:flex">
-            <Link to="/analyst" className="hover:text-[#E8DFCF]">Read</Link>
-            <Link to="/seminar" className="hover:text-[#E8DFCF]">Seminar</Link>
-            <Link to="/workspace" className="hover:text-[#E8DFCF]">Workspace</Link>
+          <nav className="lab-mono hidden items-center gap-7 text-[9px] uppercase tracking-[0.15em] text-[#E9E0D0]/55 md:flex">
+            <Link to="/analyst" className="hover:text-[#E9E0D0]">Analyst</Link>
+            <Link to="/seminar" className="hover:text-[#E9E0D0]">Seminar</Link>
+            <Link to="/digest" className="hover:text-[#E9E0D0]">Record</Link>
           </nav>
           <Link
             to="/analyst"
-            className="lab-focus lab-mono border border-[#E8DFCF]/40 px-3 py-2 text-[9px] uppercase tracking-[0.12em] text-[#E8DFCF] transition-colors hover:border-[#E8DFCF] hover:bg-[#E8DFCF] hover:text-[#0B0A09]"
+            className="lab-focus lab-mono border border-[#E9E0D0]/40 px-3 py-2 text-[9px] uppercase tracking-[0.12em] text-[#E9E0D0] transition-colors hover:border-[#E9E0D0] hover:bg-[#E9E0D0] hover:text-[#070706]"
           >
             Begin →
           </Link>
         </div>
       </header>
 
-      <main>
-        <section className="lab-grain grid min-h-[calc(100svh-61px)] border-b border-[#E8DFCF]/15 lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="relative flex flex-col justify-between px-5 py-10 md:px-10 md:py-12 lg:px-14 lg:py-12">
+      <section ref={scrollRef} className="relative h-[280vh]">
+        <div className="sticky top-[61px] grid h-[calc(100svh-61px)] grid-rows-[0.82fr_1.18fr] overflow-hidden lg:grid-cols-[360px_minmax(0,1fr)] lg:grid-rows-1">
+          <div className="relative z-20 flex flex-col justify-between border-b border-[#E9E0D0]/15 bg-[#070706] px-5 py-6 md:px-8 md:py-8 lg:border-b-0 lg:border-r lg:px-8 lg:py-8">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="lab-mono border border-[#E8DFCF]/25 px-2 py-1 text-[8px] uppercase tracking-[0.14em] text-[#E8DFCF]/60">
-                Essay 01 / the load-bearing claim
-              </span>
-              <span className="lab-mono text-[8px] uppercase tracking-[0.14em] text-[#E8DFCF]/30">
-                Politics / power / evidence
+              <span className="lab-mono border border-[#E9E0D0]/20 px-2 py-1 text-[8px] uppercase tracking-[0.14em] text-[#E9E0D0]/55">
+                {copy.eyebrow}
               </span>
             </div>
 
-            <div className="my-10 lg:my-0">
-              <h1 className="lab-serif text-[64px] leading-[0.84] sm:text-[88px] lg:text-[104px] min-[1400px]:text-[122px]">
-                Every
-                <br />
-                story has
-                <br />
-                a load-
-                <br />
-                bearing
-                <br />
-                claim.
+            <div className="mt-5 lg:mt-0">
+              <h1 className="lab-serif max-w-[12ch] text-[38px] leading-[0.92] sm:text-[48px] lg:text-[42px] min-[1400px]:text-[48px]">
+                {copy.headline}
               </h1>
-              <p className="lab-sans mt-7 max-w-[43ch] text-[16px] leading-[1.45] text-[#E8DFCF]/70 md:text-[17px]">
-                Threadwise finds the sentence a story cannot survive without — then tests it against
-                the record. Not the framing. Not the mood. The claim underneath.
+              <p className="lab-sans mt-4 max-w-[34ch] text-[13px] leading-[1.5] text-[#E9E0D0]/60 md:text-[14px]">
+                {copy.body}
               </p>
-              <div className="mt-7 flex flex-wrap items-center gap-4">
+
+              <div
+                className="mt-6 flex flex-wrap items-center gap-4 transition-opacity duration-300"
+                style={{ opacity: progress > 0.74 ? 1 : 0, pointerEvents: progress > 0.74 ? "auto" : "none" }}
+              >
                 <Link
                   to="/analyst"
-                  className="lab-focus lab-mono bg-[#E8DFCF] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.13em] text-[#0B0A09] transition-colors hover:bg-[#9E3D2C] hover:text-[#E8DFCF]"
+                  className="lab-focus lab-mono bg-[#E9E0D0] px-3 py-2.5 text-[9px] font-bold uppercase tracking-[0.12em] text-[#070706] transition-colors hover:bg-[#B6432E] hover:text-[#E9E0D0]"
                 >
                   Bring a source →
                 </Link>
                 <Link
                   to="/seminar"
-                  className="lab-focus lab-mono lab-link px-1 py-3 text-[10px] uppercase tracking-[0.13em] text-[#E8DFCF]/75"
+                  className="lab-focus lab-mono lab-link text-[9px] uppercase tracking-[0.12em] text-[#E9E0D0]/60"
                 >
-                  Put a quote on trial ↗
+                  Put a quote on trial
                 </Link>
               </div>
             </div>
 
-            <div className="flex items-end justify-between border-t border-[#E8DFCF]/15 pt-4">
-              <div className="lab-mono text-[8px] uppercase leading-relaxed tracking-[0.14em] text-[#E8DFCF]/35">
-                Read
-                <br />
-                Question
-                <br />
-                Predict
+            <div className="mt-8 border-t border-[#E9E0D0]/15 pt-3">
+              <div className="flex items-center justify-between lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E9E0D0]/35">
+                <span>Pull the thread</span>
+                <span>{Math.round(progress * 100)}%</span>
               </div>
-              <p className="lab-mono max-w-[22ch] text-right text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#E8DFCF]/35">
-                A record of what you believed before you knew
+              <div className="mt-2 h-px w-full bg-[#E9E0D0]/15">
+                <div className="h-px bg-[#B6432E] transition-[width] duration-150" style={{ width: `${progress * 100}%` }} />
+              </div>
+              <p className="lab-mono mt-3 text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#E9E0D0]/30">
+                Scroll
+                <br />
+                to strip the decoration
               </p>
             </div>
           </div>
 
-          <aside className="relative flex flex-col justify-between overflow-hidden bg-[#E8DFCF] px-5 py-10 text-[#0B0A09] md:px-10 md:py-14 lg:px-12 lg:py-16">
-            <div className="lab-serif pointer-events-none absolute -right-3 -top-10 text-[180px] leading-none text-[#9E3D2C]/10 md:text-[240px]">
-              01
-            </div>
-            <div className="relative">
-              <p className="lab-mono text-[9px] uppercase tracking-[0.16em] text-[#0B0A09]/45">
-                A claim in the wild / 2026
-              </p>
-              <blockquote className="lab-serif mt-6 max-w-[15ch] text-[34px] leading-[1.02] md:text-[44px] lg:text-[48px]">
-                “Sometimes you want to bribe a country to get your way.”
-              </blockquote>
-              <p className="lab-mono mt-5 text-[8px] uppercase tracking-[0.12em] text-[#0B0A09]/40">
-                A podcast conversation / not a confession
-              </p>
-              <div className="mt-8 border-t border-[#0B0A09]/20 pt-4">
-                <p className="lab-sans max-w-[34ch] text-[14px] leading-[1.5] text-[#0B0A09]/65">
-                  Strip the euphemism and a theory of politics appears. The useful question is not
-                  whether the sentence is rude. It is whether it is true.
-                </p>
-                <p className="lab-serif mt-10 max-w-[13ch] text-[26px] leading-[1.02] text-[#9E3D2C]">
-                  What would have to be true?
-                </p>
-              </div>
-            </div>
-            <div className="relative mt-8 border-t border-[#0B0A09]/20 pt-3">
-              <p className="lab-mono text-[8px] uppercase tracking-[0.14em] text-[#0B0A09]/35">
-                The notes
-              </p>
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-                {NOTES.map((note) => (
-                  <span key={note.n} className="lab-mono text-[8px] uppercase tracking-[0.08em] text-[#0B0A09]/55">
-                    {note.n} {note.label}
-                  </span>
-                ))}
-              </div>
-              <Link
-                to="/seminar"
-                className="lab-focus lab-mono mt-4 inline-block border-b-2 border-[#9E3D2C] pb-1 text-[9px] uppercase tracking-[0.12em] text-[#0B0A09] hover:text-[#9E3D2C]"
-              >
-                Put this on the seminar table →
-              </Link>
-            </div>
-          </aside>
-        </section>
+          <div
+            className="lab-stage relative overflow-hidden"
+            onPointerMove={onPointerMove}
+            onPointerLeave={() => setPointer({ x: 0, y: 0 })}
+          >
+            <svg
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              className="absolute inset-0 h-full w-full"
+              aria-hidden
+            >
+              {EDGES.map((edge) => {
+                const a = NODES.find((node) => node.id === edge.from)!;
+                const b = NODES.find((node) => node.id === edge.to)!;
+                const opacity = edge.red
+                  ? 0.25 + progress * 0.75
+                  : edge.outer
+                    ? outerOpacity * 0.35
+                    : innerOpacity * 0.4;
+                return (
+                  <line
+                    key={`${edge.from}-${edge.to}`}
+                    x1={a.x}
+                    y1={a.y}
+                    x2={b.x}
+                    y2={b.y}
+                    stroke={edge.red ? "#B6432E" : "#E9E0D0"}
+                    strokeWidth={edge.red ? 1.4 : 0.7}
+                    strokeDasharray={edge.dashed ? "1.5 2.5" : undefined}
+                    pathLength={edge.red ? 1 : undefined}
+                    strokeDashoffset={edge.red ? 1 - progress : undefined}
+                    vectorEffect="non-scaling-stroke"
+                    style={{ opacity }}
+                    className={edge.outer ? "hidden sm:block" : ""}
+                  />
+                );
+              })}
+            </svg>
 
-        <section className="lab-bone px-5 py-14 md:px-10 md:py-20 lg:px-14">
-          <div className="mx-auto w-full max-w-[1440px]">
-            <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-[#0B0A09]/20 pt-3">
-              <p className="lab-mono text-[9px] uppercase tracking-[0.16em] text-[#0B0A09]/55">
-                02 / A read, annotated
-              </p>
-              <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#0B0A09]/35">
-                Hypothetical / for scale
-              </p>
-            </div>
-
-            <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:gap-20">
-              <div>
-                <h2 className="lab-serif max-w-[17ch] text-[38px] leading-[1.03] md:text-[54px]">
-                  A government sends <span className="lab-underline">$1.2bn</span> in aid to a
-                  partner. The minister calls it development. Critics call it a bribe.
-                </h2>
-                <p className="lab-mono mt-6 text-[8px] uppercase tracking-[0.12em] text-[#0B0A09]/35">
-                  The claim is not the quote. The claim is what the quote asks you to believe.
-                </p>
-                <div className="mt-12 border-t border-[#0B0A09]/20 pt-4">
-                  <p className="lab-sans max-w-[52ch] text-[14px] leading-[1.6] text-[#0B0A09]/60">
-                    A read separates what happened from what it wants you to feel. It names the
-                    mechanism, the people who carry the cost, and the observation that would make
-                    the whole account fall apart.
-                  </p>
-                  <Link
-                    to="/analyst"
-                    className="lab-focus lab-mono mt-5 inline-block border-b-2 border-[#9E3D2C] pb-1 text-[9px] uppercase tracking-[0.12em] text-[#0B0A09] hover:text-[#9E3D2C]"
-                  >
-                    See a full read →
-                  </Link>
-                </div>
-              </div>
-
-              <div>
-                <p className="lab-mono text-[8px] uppercase tracking-[0.14em] text-[#0B0A09]/35">
-                  Open the claim / three notes
-                </p>
-                <div className="mt-3">
-                  {NOTES.map((note, index) => {
-                    const active = activeNote === index;
-                    return (
-                      <div key={note.n} className="border-t border-[#0B0A09]/20">
-                        <button
-                          type="button"
-                          aria-expanded={active}
-                          onClick={() => setActiveNote(index)}
-                          className={`lab-note lab-focus flex w-full items-start gap-4 px-3 py-4 text-left ${
-                            active ? "my-1" : ""
-                          }`}
-                        >
-                          <span className={`lab-mono mt-1 text-[9px] ${active ? "text-[#E8DFCF]/55" : "text-[#9E3D2C]"}`}>
-                            {note.n}
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className={`lab-mono block text-[8px] uppercase tracking-[0.14em] ${active ? "text-[#E8DFCF]/55" : "text-[#0B0A09]/40"}`}>
-                              {note.label}
-                            </span>
-                            <span className="lab-serif mt-1 block text-[24px] leading-[1.05] md:text-[28px]">
-                              {note.line}
-                            </span>
-                            {active && (
-                              <span className="lab-sans mt-3 block max-w-[42ch] text-[13px] leading-[1.55] text-[#E8DFCF]/70">
-                                {note.detail}
-                              </span>
-                            )}
-                          </span>
-                        </button>
-                      </div>
-                    );
-                  })}
-                  <div className="border-t border-[#0B0A09]/20" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="lab-grain px-5 py-14 md:px-10 md:py-20 lg:px-14">
-          <div className="mx-auto w-full max-w-[1440px]">
-            <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-[#E8DFCF]/20 pt-3">
-              <p className="lab-mono text-[9px] uppercase tracking-[0.16em] text-[#E8DFCF]/50">
-                03 / The loop
-              </p>
-              <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/30">
-                One loop / three moves
-              </p>
-            </div>
-
-            <h2 className="lab-serif mt-8 max-w-[12ch] text-[54px] leading-[0.9] md:text-[82px]">
-              Read.
-              <br />
-              Doubt.
-              <br />
-              Decide.
-            </h2>
-
-            <div className="mt-10 grid border-t border-[#E8DFCF]/20 md:grid-cols-3">
-              {LOOP.map((step, index) => (
-                <article
-                  key={step.n}
-                  className={`py-6 md:px-7 md:py-8 ${index > 0 ? "border-t border-[#E8DFCF]/15 md:border-l md:border-t-0" : "md:pl-0"}`}
+            {EDGES.map((edge) => {
+              const a = NODES.find((node) => node.id === edge.from)!;
+              const b = NODES.find((node) => node.id === edge.to)!;
+              const opacity = edge.outer ? outerOpacity : innerOpacity;
+              const midX = (a.x + b.x) / 2;
+              const midY = (a.y + b.y) / 2;
+              return (
+                <span
+                  key={`label-${edge.from}-${edge.to}`}
+                  className="lab-mono pointer-events-none absolute hidden -translate-x-1/2 -translate-y-1/2 bg-[#070706] px-1 text-[7px] uppercase tracking-[0.12em] text-[#E9E0D0]/35 md:block"
+                  style={{ left: `${midX}%`, top: `${midY}%`, opacity: opacity * 0.8 }}
                 >
-                  <p className="lab-serif text-[48px] leading-none text-[#9E3D2C]">{step.n}</p>
-                  <h3 className="lab-serif mt-4 text-[27px] leading-none">{step.title}</h3>
-                  <p className="lab-sans mt-3 max-w-[34ch] text-[13px] leading-[1.55] text-[#E8DFCF]/60">
-                    {step.body}
-                  </p>
-                  <Link
-                    to={step.to}
-                    className="lab-focus lab-mono mt-5 inline-block border-b border-[#9E3D2C] pb-1 text-[9px] uppercase tracking-[0.12em] text-[#E8DFCF] hover:text-[#E8DFCF]/60"
-                  >
-                    {step.cta} →
-                  </Link>
-                </article>
-              ))}
-            </div>
+                  {edge.label}
+                </span>
+              );
+            })}
 
-            <p className="lab-serif mt-12 max-w-[24ch] text-[28px] leading-[1.08] text-[#E8DFCF]/70 md:ml-[33%] md:text-[38px]">
-              The record is not what you remember. It is what you said would happen.
-            </p>
-          </div>
-        </section>
+            {NODES.map((node) => {
+              const isCore = node.layer === "core";
+              const isInner = node.layer === "inner";
+              const opacity = isCore ? 1 : isInner ? innerOpacity : outerOpacity;
+              const scale = isCore
+                ? node.id === "falsifier"
+                  ? falsifierScale
+                  : coreScale
+                : 1 - progress * 0.08;
+              const depth = isCore ? 7 : 13;
+              const transform = `translate(-50%, -50%) translate(${pointer.x * depth}px, ${pointer.y * depth}px) scale(${scale})`;
 
-        <section className="lab-oxide px-5 py-14 md:px-10 md:py-20 lg:px-14">
-          <div className="mx-auto grid w-full max-w-[1440px] gap-10 md:grid-cols-[0.8fr_1.2fr] md:gap-20">
-            <div>
-              <p className="lab-mono text-[9px] uppercase tracking-[0.16em] text-[#E8DFCF]/55">
-                04 / The record
-              </p>
-              <p className="lab-serif mt-4 text-[56px] leading-[0.86] md:text-[76px]">
-                The
-                <br />
-                receipt.
-              </p>
-              <p className="lab-mono mt-6 max-w-[28ch] text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#E8DFCF]/40">
-                When the argument is over, the record is the only part that can be checked.
-              </p>
-            </div>
-
-            <div>
-              <div className="flex flex-wrap items-baseline justify-between gap-2 border-t border-[#E8DFCF]/25 pt-3">
-                <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/45">
-                  One claim, dated
-                </p>
-                <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/35">
-                  Sample record
-                </p>
-              </div>
-              <p className="lab-serif mt-3 text-[34px] leading-[1.05] md:text-[44px]">
-                “Aid buys influence.”
-              </p>
-
-              <div className="mt-8 border-t border-[#E8DFCF]/25">
-                {[
-                  ["Filed", "09 November 2026"],
-                  ["Falsifier", "Aid rises. Votes do not move."],
-                  ["Status", "Open."],
-                ].map(([label, value]) => (
-                  <div key={label} className="grid grid-cols-[90px_minmax(0,1fr)] items-baseline gap-4 border-b border-[#E8DFCF]/20 py-3">
-                    <span className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/40">
-                      {label}
-                    </span>
-                    <span className="lab-sans text-[14px] leading-[1.4] text-[#E8DFCF]/85">
-                      {value}
-                    </span>
+              return (
+                <div
+                  key={node.id}
+                  className={`lab-node pointer-events-none absolute ${isCore ? "z-20" : "z-10"} ${
+                    node.layer === "outer" ? "hidden sm:block" : ""
+                  }`}
+                  style={{
+                    left: `${node.x}%`,
+                    top: `${node.y}%`,
+                    opacity,
+                    transform,
+                  }}
+                >
+                  <div className={`text-center ${isCore ? "w-[280px] sm:w-[380px]" : "w-[150px] sm:w-[180px]"}`}>
+                    <p
+                      className={`lab-mono text-[7px] uppercase tracking-[0.16em] ${
+                        node.tone === "red" ? "text-[#B6432E]" : "text-[#E9E0D0]/35"
+                      }`}
+                    >
+                      {node.label}
+                    </p>
+                    <p
+                      className={`lab-serif mt-1 leading-[1.05] ${
+                        node.id === "claim"
+                          ? "text-[30px] sm:text-[44px]"
+                          : node.id === "falsifier"
+                            ? "text-[19px] sm:text-[22px] text-[#B6432E]"
+                            : "text-[17px] sm:text-[19px] text-[#E9E0D0]/75"
+                      }`}
+                    >
+                      {node.text}
+                    </p>
                   </div>
-                ))}
-              </div>
+                </div>
+              );
+            })}
 
-              <Link
-                to="/digest"
-                className="lab-focus lab-mono mt-6 inline-block border-b-2 border-[#E8DFCF] pb-1 text-[9px] uppercase tracking-[0.12em] text-[#E8DFCF] hover:text-[#E8DFCF]/60"
-              >
-                Open the record →
-              </Link>
+            <div className="lab-mono pointer-events-none absolute bottom-4 right-4 flex items-center gap-2 text-[7px] uppercase tracking-[0.14em] text-[#E9E0D0]/25 sm:bottom-6 sm:right-6">
+              <span className="h-1 w-1 rounded-full bg-[#B6432E]" />
+              sample argument / not a news event
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="lab-bone px-5 py-16 md:px-10 md:py-24 lg:px-14">
-          <div className="mx-auto w-full max-w-[1440px]">
-            <p className="lab-mono border-t border-[#0B0A09]/20 pt-3 text-[9px] uppercase tracking-[0.16em] text-[#0B0A09]/45">
-              05 / Begin
+      <section id="instrument" className="border-t border-[#E9E0D0]/15 bg-[#E9E0D0] px-5 py-16 text-[#070706] md:px-8 md:py-24">
+        <div className="mx-auto w-full max-w-[1440px]">
+          <p className="lab-mono border-t border-[#070706]/20 pt-3 text-[9px] uppercase tracking-[0.16em] text-[#070706]/45">
+            02 / The instrument
+          </p>
+          <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
+            <h2 className="lab-serif max-w-[13ch] text-[52px] leading-[0.88] md:text-[76px]">
+              The graph is the argument.
+            </h2>
+            <p className="lab-sans max-w-[35ch] text-[14px] leading-[1.55] text-[#070706]/60">
+              Threadwise reads a source, names the claims, tests the mechanism, and keeps the
+              falsifier. The point is not another opinion. The point is a claim you can check.
             </p>
-            <div className="mt-6 grid gap-8 md:grid-cols-[minmax(0,1fr)_280px] md:items-end md:gap-16">
-              <h2 className="lab-serif text-[64px] leading-[0.82] md:text-[104px] lg:text-[124px]">
-                Bring me
-                <br />a claim.
-              </h2>
-              <div>
-                <p className="lab-sans max-w-[32ch] text-[14px] leading-[1.55] text-[#0B0A09]/65">
-                  A link, a quote, a PDF, a sentence you cannot stop turning over. Start with the
-                  thing that made you suspicious.
-                </p>
-                <Link
-                  to="/analyst"
-                  className="lab-focus lab-mono mt-6 inline-flex bg-[#0B0A09] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.13em] text-[#E8DFCF] transition-colors hover:bg-[#9E3D2C]"
-                >
-                  Bring a source →
-                </Link>
-                <Link
-                  to="/seminar"
-                  className="lab-focus lab-mono lab-link mt-3 block text-[9px] uppercase tracking-[0.12em] text-[#0B0A09]/60"
-                >
-                  Or put a quote on trial ↗
-                </Link>
-              </div>
-            </div>
           </div>
-        </section>
-      </main>
 
-      <footer className="border-t border-[#E8DFCF]/15 px-5 py-6 md:px-10 lg:px-14">
+          <div className="mt-12 grid border-t border-[#070706]/20 md:grid-cols-3">
+            {[
+              { to: "/analyst", label: "01 / Read", title: "Bring a source.", body: "A link, a quote, a PDF. Get the machinery, not the mood." },
+              { to: "/seminar", label: "02 / Doubt", title: "Put it on trial.", body: "Two steelmanned theories. One crux. Commit before the verdict." },
+              { to: "/digest", label: "03 / Record", title: "Keep the receipt.", body: "Claims, questions, predictions. Score the misses, not only the hits." },
+            ].map((item, index) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`lab-focus group py-5 md:px-6 md:py-6 ${index > 0 ? "border-t border-[#070706]/15 md:border-l md:border-t-0" : "md:pl-0"}`}
+              >
+                <p className="lab-mono text-[8px] uppercase tracking-[0.14em] text-[#070706]/40">{item.label}</p>
+                <p className="lab-serif mt-3 text-[28px] leading-none group-hover:text-[#B6432E]">{item.title}</p>
+                <p className="lab-sans mt-3 max-w-[32ch] text-[12px] leading-[1.5] text-[#070706]/55">{item.body}</p>
+                <span className="lab-mono mt-4 inline-block border-b border-[#B6432E] pb-0.5 text-[8px] uppercase tracking-[0.12em] group-hover:text-[#B6432E]">
+                  Open →
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-[#070706]/20 pt-4">
+            <p className="lab-mono max-w-[42ch] text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#070706]/35">
+              A claim you cannot falsify is not a belief. It is furniture.
+            </p>
+            <Link
+              to="/analyst"
+              className="lab-focus lab-mono bg-[#070706] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.12em] text-[#E9E0D0] transition-colors hover:bg-[#B6432E]"
+            >
+              Bring a source →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-[#E9E0D0]/15 px-5 py-6 md:px-8">
         <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-3">
-          <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/35">
+          <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E9E0D0]/35">
             Threadwise / a thinking instrument / experiment 01
           </p>
-          <div className="lab-mono flex gap-5 text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/40">
-            <Link to="/" className="hover:text-[#E8DFCF]">Current site</Link>
-            <Link to="/seminar" className="hover:text-[#E8DFCF]">Seminar</Link>
+          <div className="lab-mono flex gap-5 text-[8px] uppercase tracking-[0.12em] text-[#E9E0D0]/40">
+            <Link to="/" className="hover:text-[#E9E0D0]">Current site</Link>
+            <Link to="/seminar" className="hover:text-[#E9E0D0]">Seminar</Link>
           </div>
         </div>
       </footer>
