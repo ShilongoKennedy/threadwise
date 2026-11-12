@@ -604,7 +604,6 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
           fill: #1A4BFF;
         }
         .atlas-line-label-red { fill: #C1121F; }
-        .atlas-boat { fill: rgba(26, 26, 26, 0.55); }
         .atlas-marker {
           fill: #FDFBF7;
           stroke: #1A4BFF;
@@ -634,7 +633,7 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
         @keyframes atlasDash { to { stroke-dashoffset: -40; } }
         @media (prefers-reduced-motion: reduce) {
           .atlas-route { animation: none; }
-          .atlas-boat { display: none; }
+          .atlas-demand-pulse { display: none; }
         }
       `}</style>
       <svg
@@ -670,39 +669,13 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
           className={`atlas-route atlas-route-denied ${permissionActive ? "atlas-route-active" : ""}`}
         />
 
-        <g className="atlas-boat" opacity="0.58" aria-hidden>
-          <path d="M -6 0 L 6 0 L 4 4 L -4 4 Z" />
-          <path d="M 0 -8 L 0 0 L -4 0 Z" />
-          <path d="M 0 -8 L 0 0 L 4 0 Z" />
+        <circle r="1.5" className="atlas-demand-pulse" fill="#1A4BFF">
           <animateMotion
-            dur="74s"
+            dur="6.5s"
             repeatCount="indefinite"
-            rotate="auto"
-            path="M 350 132 C 405 112 452 145 500 130"
+            path={`M ${vienna[0]} ${vienna[1]} Q 610 112 ${tehran[0]} ${tehran[1]}`}
           />
-        </g>
-        <g className="atlas-boat" opacity="0.5" aria-hidden>
-          <path d="M -6 0 L 6 0 L 4 4 L -4 4 Z" />
-          <path d="M 0 -8 L 0 0 L -4 0 Z" />
-          <path d="M 0 -8 L 0 0 L 4 0 Z" />
-          <animateMotion
-            dur="96s"
-            repeatCount="indefinite"
-            rotate="auto"
-            path="M 705 189 C 742 202 770 182 812 197"
-          />
-        </g>
-        <g className="atlas-boat" opacity="0.44" aria-hidden>
-          <path d="M -6 0 L 6 0 L 4 4 L -4 4 Z" />
-          <path d="M 0 -8 L 0 0 L -4 0 Z" />
-          <path d="M 0 -8 L 0 0 L 4 0 Z" />
-          <animateMotion
-            dur="110s"
-            repeatCount="indefinite"
-            rotate="auto"
-            path="M 898 210 C 930 196 954 228 982 214"
-          />
-        </g>
+        </circle>
 
         <text
           x={(vienna[0] + tehran[0]) / 2}
