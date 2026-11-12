@@ -4,11 +4,11 @@ import { useState } from "react";
 export const Route = createFileRoute("/experiment")({
   head: () => ({
     meta: [
-      { title: "Threadwise — Field Test 01" },
+      { title: "Threadwise — A thinking instrument" },
       {
         name: "description",
         content:
-          "A thinking instrument for claims that arrive with a story attached. Read the move, not the mood.",
+          "Every story has a load-bearing claim. Threadwise finds it, tests it, and keeps the receipt.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -16,27 +16,42 @@ export const Route = createFileRoute("/experiment")({
   component: ExperimentPage,
 });
 
-const OPTIONS = [
-  { key: "A", text: "The donor calls the aid “unconditional” in a press release." },
+const NOTES = [
   {
-    key: "B",
-    text: "The partner’s UN votes move toward the donor, compared with similar countries that received no aid.",
+    n: "01",
+    label: "The claim",
+    line: "Aid buys influence.",
+    detail:
+      "That is the sentence underneath the story. Not “the aid was generous” and not “the aid was cynical.” The claim is that the money changes behaviour.",
   },
-  { key: "C", text: "The partner’s GDP grows by 2% the following year." },
+  {
+    n: "02",
+    label: "The assumption",
+    line: "The money changes the vote.",
+    detail:
+      "This assumes the partner has something the donor wants, can sell it without paying a domestic price, and cannot get the same money elsewhere.",
+  },
+  {
+    n: "03",
+    label: "The falsifier",
+    line: "Aid rises. Votes do not move.",
+    detail:
+      "Compare the partner with similar countries that received no aid. If the votes move just the same, the causal claim is in trouble — whatever the minister intended.",
+  },
 ] as const;
 
-const STEPS = [
+const LOOP = [
   {
     n: "01",
     title: "Read the move",
-    body: "What actually happened, who carries the cost, and what the source wants you to feel. One link, one PDF, one screenshot.",
+    body: "What happened, who carries the cost, and what the source wants you to feel. One link, one PDF, one screenshot.",
     cta: "Bring a source",
     to: "/analyst",
   },
   {
     n: "02",
-    title: "Argue both ways",
-    body: "Two steelmanned theories, one crux. Commit before the verdict. The seminar does not tell you what is good; it shows you what would settle it.",
+    title: "Put it on trial",
+    body: "Two steelmanned theories. One crux. Commit before the verdict. The seminar does not tell you what is good; it shows what would settle it.",
     cta: "Open the seminar",
     to: "/seminar",
   },
@@ -50,357 +65,444 @@ const STEPS = [
 ] as const;
 
 function ExperimentPage() {
-  const [answer, setAnswer] = useState<"A" | "B" | "C" | null>(null);
-  const correct = answer === "B";
+  const [activeNote, setActiveNote] = useState(0);
 
   return (
-    <div className="exp-paper exp-sans min-h-[100dvh] text-[#141414]">
+    <div className="lab-root min-h-[100dvh]">
       <style>{`
-        .exp-paper {
-          background-color: #F1E8D8;
-          background-image:
-            radial-gradient(rgba(20,20,20,0.09) 0.55px, transparent 0.55px),
-            linear-gradient(90deg, transparent 49.8%, rgba(20,20,20,0.035) 50%, transparent 50.2%);
-          background-size: 5px 5px, 100% 100%;
+        .lab-root {
+          --ink: #0B0A09;
+          --bone: #E8DFCF;
+          --oxide: #9E3D2C;
+          --dim: #AFA492;
+          background: var(--ink);
+          color: var(--bone);
         }
-        .exp-sans { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
-        .exp-mono { font-family: "Courier New", Courier, monospace; }
-        .exp-display {
+        .lab-serif {
+          font-family: "Bodoni 72", Didot, "Times New Roman", serif;
+          font-weight: 400;
+          letter-spacing: -0.035em;
+        }
+        .lab-sans {
           font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-          font-weight: 800;
-          letter-spacing: -0.065em;
-          line-height: 0.84;
-          text-transform: uppercase;
         }
-        .exp-stamp {
-          display: inline-block;
-          transform: rotate(-2.5deg);
-          border: 2px solid currentColor;
-          padding: 3px 7px 2px;
+        .lab-mono {
           font-family: "Courier New", Courier, monospace;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
         }
-        .exp-mark {
-          position: absolute;
-          width: 15px;
-          height: 15px;
-          border-color: rgba(20,20,20,0.45);
+        .lab-grain {
+          position: relative;
         }
-        .exp-mark::before,
-        .exp-mark::after {
+        .lab-grain::before {
           content: "";
           position: absolute;
-          background: rgba(20,20,20,0.45);
+          inset: 0;
+          pointer-events: none;
+          opacity: 0.18;
+          background-image: radial-gradient(rgba(232, 223, 207, 0.35) 0.5px, transparent 0.5px);
+          background-size: 4px 4px;
+          mix-blend-mode: soft-light;
         }
-        .exp-mark::before { width: 1px; height: 21px; left: 7px; top: -3px; }
-        .exp-mark::after { height: 1px; width: 21px; top: 7px; left: -3px; }
-        .exp-option {
-          transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+        .lab-bone {
+          background: var(--bone);
+          color: var(--ink);
         }
-        .exp-option:hover { background: #F8F2E6; }
-        .exp-option:active { transform: translateY(1px); }
-        ::selection { background: #F2D64B; color: #141414; }
+        .lab-oxide {
+          background: var(--oxide);
+          color: var(--bone);
+        }
+        .lab-hairline {
+          background: rgba(232, 223, 207, 0.18);
+        }
+        .lab-hairline-dark {
+          background: rgba(11, 10, 9, 0.18);
+        }
+        .lab-underline {
+          background-image: linear-gradient(var(--oxide), var(--oxide));
+          background-repeat: no-repeat;
+          background-position: 0 96%;
+          background-size: 100% 2px;
+        }
+        .lab-note {
+          transition: background-color 160ms ease, color 160ms ease, padding 160ms ease;
+        }
+        .lab-note:hover {
+          background: rgba(158, 61, 44, 0.08);
+        }
+        .lab-note[aria-expanded="true"] {
+          background: var(--ink);
+          color: var(--bone);
+        }
+        .lab-note[aria-expanded="true"] .lab-note-dim {
+          color: rgba(232, 223, 207, 0.55);
+        }
+        .lab-link {
+          text-decoration-color: var(--oxide);
+          text-decoration-thickness: 2px;
+          text-underline-offset: 5px;
+        }
+        .lab-link:hover {
+          color: var(--oxide);
+        }
+        .lab-focus:focus-visible {
+          outline: 2px solid var(--oxide);
+          outline-offset: 4px;
+        }
+        ::selection {
+          background: var(--oxide);
+          color: var(--bone);
+        }
+        @media (max-width: 768px) {
+          .lab-grain::before { opacity: 0.1; }
+        }
       `}</style>
 
-      <header className="sticky top-0 z-50 border-b border-white/20 bg-[#141414] text-[#F7F0E2]">
-        <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-4 px-5 py-3 md:px-8">
-          <Link to="/" className="flex items-baseline gap-2">
-            <span className="text-[14px] font-extrabold tracking-[0.14em]">THREADWISE</span>
-            <span className="exp-mono text-[8px] uppercase tracking-[0.12em] text-[#F2D64B]">
-              / field test 01
+      <header className="sticky top-0 z-50 border-b border-[#E8DFCF]/15 bg-[#0B0A09]/90 backdrop-blur-sm">
+        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-5 py-4 md:px-8">
+          <Link to="/" className="lab-sans flex items-baseline gap-3">
+            <span className="text-[13px] font-semibold tracking-[0.22em]">THREADWISE</span>
+            <span className="lab-mono hidden text-[8px] uppercase tracking-[0.15em] text-[#E8DFCF]/35 sm:inline">
+              a thinking instrument
             </span>
           </Link>
-          <nav className="hidden items-center gap-6 exp-mono text-[9px] uppercase tracking-[0.14em] text-[#F7F0E2]/55 md:flex">
-            <Link to="/analyst" className="hover:text-[#F2D64B]">The analyst</Link>
-            <Link to="/seminar" className="hover:text-[#F2D64B]">The seminar</Link>
-            <Link to="/workspace" className="hover:text-[#F2D64B]">Workspace</Link>
+          <nav className="lab-mono hidden items-center gap-7 text-[9px] uppercase tracking-[0.15em] text-[#E8DFCF]/55 md:flex">
+            <Link to="/analyst" className="hover:text-[#E8DFCF]">Read</Link>
+            <Link to="/seminar" className="hover:text-[#E8DFCF]">Seminar</Link>
+            <Link to="/workspace" className="hover:text-[#E8DFCF]">Workspace</Link>
           </nav>
           <Link
             to="/analyst"
-            className="bg-[#F0442E] px-3 py-2 exp-mono text-[9px] font-bold uppercase tracking-[0.12em] text-white hover:bg-[#F2D64B] hover:text-[#141414]"
+            className="lab-focus lab-mono border border-[#E8DFCF]/40 px-3 py-2 text-[9px] uppercase tracking-[0.12em] text-[#E8DFCF] transition-colors hover:border-[#E8DFCF] hover:bg-[#E8DFCF] hover:text-[#0B0A09]"
           >
-            Start a read →
+            Begin →
           </Link>
         </div>
       </header>
 
       <main>
-        <section className="relative mx-auto w-full max-w-[1280px] px-5 pb-12 pt-12 md:px-8 md:pb-16 md:pt-20">
-          <span className="exp-mark left-5 top-10 hidden md:block md:left-8" />
-          <span className="exp-mark right-5 top-10 hidden md:block md:right-8" />
+        <section className="lab-grain grid min-h-[calc(100svh-61px)] border-b border-[#E8DFCF]/15 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="relative flex flex-col justify-between px-5 py-10 md:px-10 md:py-12 lg:px-14 lg:py-12">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="lab-mono border border-[#E8DFCF]/25 px-2 py-1 text-[8px] uppercase tracking-[0.14em] text-[#E8DFCF]/60">
+                Essay 01 / the load-bearing claim
+              </span>
+              <span className="lab-mono text-[8px] uppercase tracking-[0.14em] text-[#E8DFCF]/30">
+                Politics / power / evidence
+              </span>
+            </div>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 exp-mono text-[9px] uppercase tracking-[0.14em]">
-            <span className="border border-[#141414] bg-[#F2D64B] px-2 py-1">A design experiment</span>
-            <span className="text-[#141414]/45">Not the product you know</span>
-          </div>
-
-          <div className="mt-7 grid gap-10 md:grid-cols-[minmax(0,1fr)_220px] md:gap-16">
-            <div>
-              <h1 className="exp-display text-[64px] sm:text-[92px] lg:text-[128px]">
-                Read the
+            <div className="my-10 lg:my-0">
+              <h1 className="lab-serif text-[64px] leading-[0.84] sm:text-[88px] lg:text-[104px] min-[1400px]:text-[122px]">
+                Every
                 <br />
-                move.
+                story has
                 <br />
-                Not the
+                a load-
                 <br />
-                <span className="bg-[#F2D64B] px-2">mood.</span>
+                bearing
+                <br />
+                claim.
               </h1>
-              <p className="mt-7 max-w-[48ch] text-[17px] leading-[1.4] text-[#141414]/75 md:text-[19px]">
-                A thinking instrument for claims that arrive with a story attached. Bring a link, a
-                quote or a question. Leave with the machinery, the questions, and the one fact that
-                would prove it wrong.
+              <p className="lab-sans mt-7 max-w-[43ch] text-[16px] leading-[1.45] text-[#E8DFCF]/70 md:text-[17px]">
+                Threadwise finds the sentence a story cannot survive without — then tests it against
+                the record. Not the framing. Not the mood. The claim underneath.
               </p>
-              <div className="mt-7 flex flex-wrap items-center gap-3">
+              <div className="mt-7 flex flex-wrap items-center gap-4">
                 <Link
                   to="/analyst"
-                  className="inline-flex items-center border-2 border-[#141414] bg-[#141414] px-4 py-3 exp-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#F7F0E2] hover:border-[#F0442E] hover:bg-[#F0442E]"
+                  className="lab-focus lab-mono bg-[#E8DFCF] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.13em] text-[#0B0A09] transition-colors hover:bg-[#9E3D2C] hover:text-[#E8DFCF]"
                 >
                   Bring a source →
                 </Link>
                 <Link
                   to="/seminar"
-                  className="inline-flex items-center px-1 py-3 exp-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#141414] underline decoration-[#F0442E] decoration-2 underline-offset-4 hover:text-[#F0442E]"
+                  className="lab-focus lab-mono lab-link px-1 py-3 text-[10px] uppercase tracking-[0.13em] text-[#E8DFCF]/75"
                 >
-                  Open the seminar ↗
+                  Put a quote on trial ↗
                 </Link>
               </div>
             </div>
 
-            <aside className="relative border-t border-[#141414]/25 pt-4 md:border-l md:border-t-0 md:pl-4 md:pt-0">
-              <p className="exp-mono text-[8px] uppercase tracking-[0.12em] text-[#141414]/45">
-                Field note / 01
-              </p>
-              <p className="mt-3 text-[13px] leading-[1.45] text-[#141414]/65">
-                The web is full of people telling you what happened. Very few tell you what would
-                have made them wrong.
-              </p>
-              <div className="mt-5 border-t border-[#141414]/15 pt-3 exp-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#141414]/35">
-                Politics / power / evidence
+            <div className="flex items-end justify-between border-t border-[#E8DFCF]/15 pt-4">
+              <div className="lab-mono text-[8px] uppercase leading-relaxed tracking-[0.14em] text-[#E8DFCF]/35">
+                Read
                 <br />
-                Est. 2026
+                Question
+                <br />
+                Predict
               </div>
-              <p className="mt-8 inline-block w-fit -rotate-2 border-2 border-[#F0442E] px-2 py-1 exp-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#F0442E]">
-                Verify before you act
+              <p className="lab-mono max-w-[22ch] text-right text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#E8DFCF]/35">
+                A record of what you believed before you knew
               </p>
-            </aside>
+            </div>
           </div>
+
+          <aside className="relative flex flex-col justify-between overflow-hidden bg-[#E8DFCF] px-5 py-10 text-[#0B0A09] md:px-10 md:py-14 lg:px-12 lg:py-16">
+            <div className="lab-serif pointer-events-none absolute -right-3 -top-10 text-[180px] leading-none text-[#9E3D2C]/10 md:text-[240px]">
+              01
+            </div>
+            <div className="relative">
+              <p className="lab-mono text-[9px] uppercase tracking-[0.16em] text-[#0B0A09]/45">
+                A claim in the wild / 2026
+              </p>
+              <blockquote className="lab-serif mt-6 max-w-[15ch] text-[34px] leading-[1.02] md:text-[44px] lg:text-[48px]">
+                “Sometimes you want to bribe a country to get your way.”
+              </blockquote>
+              <p className="lab-mono mt-5 text-[8px] uppercase tracking-[0.12em] text-[#0B0A09]/40">
+                A podcast conversation / not a confession
+              </p>
+              <div className="mt-8 border-t border-[#0B0A09]/20 pt-4">
+                <p className="lab-sans max-w-[34ch] text-[14px] leading-[1.5] text-[#0B0A09]/65">
+                  Strip the euphemism and a theory of politics appears. The useful question is not
+                  whether the sentence is rude. It is whether it is true.
+                </p>
+                <p className="lab-serif mt-10 max-w-[13ch] text-[26px] leading-[1.02] text-[#9E3D2C]">
+                  What would have to be true?
+                </p>
+              </div>
+            </div>
+            <div className="relative mt-8 border-t border-[#0B0A09]/20 pt-3">
+              <p className="lab-mono text-[8px] uppercase tracking-[0.14em] text-[#0B0A09]/35">
+                The notes
+              </p>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                {NOTES.map((note) => (
+                  <span key={note.n} className="lab-mono text-[8px] uppercase tracking-[0.08em] text-[#0B0A09]/55">
+                    {note.n} {note.label}
+                  </span>
+                ))}
+              </div>
+              <Link
+                to="/seminar"
+                className="lab-focus lab-mono mt-4 inline-block border-b-2 border-[#9E3D2C] pb-1 text-[9px] uppercase tracking-[0.12em] text-[#0B0A09] hover:text-[#9E3D2C]"
+              >
+                Put this on the seminar table →
+              </Link>
+            </div>
+          </aside>
         </section>
 
-        <section className="mx-auto w-full max-w-[1280px] px-5 md:px-8">
-          <div className="flex flex-wrap items-baseline justify-between gap-2 border-t-2 border-[#141414] pt-3">
-            <p className="exp-mono text-[9px] font-bold uppercase tracking-[0.16em]">
-              02 / The field test
-            </p>
-            <p className="exp-mono text-[8px] uppercase tracking-[0.12em] text-[#141414]/40">
-              Sample · not a news event
-            </p>
-          </div>
-
-          <div className="mt-4 grid border-2 border-[#141414] bg-[#F8F2E6] md:grid-cols-[minmax(0,1fr)_280px]">
-            <div className="p-5 md:p-8">
-              <p className="exp-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#F0442E]">
-                The move
+        <section className="lab-bone px-5 py-14 md:px-10 md:py-20 lg:px-14">
+          <div className="mx-auto w-full max-w-[1440px]">
+            <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-[#0B0A09]/20 pt-3">
+              <p className="lab-mono text-[9px] uppercase tracking-[0.16em] text-[#0B0A09]/55">
+                02 / A read, annotated
               </p>
-              <p className="mt-3 max-w-[30ch] text-[25px] font-semibold leading-[1.12] tracking-[-0.02em] md:text-[32px]">
-                A government sends $1.2bn in aid to a partner. The minister calls it development.
-                Critics call it a bribe.
+              <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#0B0A09]/35">
+                Hypothetical / for scale
               </p>
-              <p className="mt-5 border-t border-[#141414]/20 pt-3 text-[14px] leading-relaxed text-[#141414]/75">
-                Which observation would most directly test whether the aid bought influence?
-              </p>
-
-              <div className="mt-4 grid gap-2">
-                {OPTIONS.map((option) => {
-                  const picked = answer === option.key;
-                  const isRight = option.key === "B";
-                  const revealed = answer !== null;
-                  return (
-                    <button
-                      key={option.key}
-                      type="button"
-                      aria-pressed={picked}
-                      onClick={() => setAnswer(option.key)}
-                      className={`exp-option flex w-full items-start gap-3 border px-3 py-3 text-left ${
-                        picked && isRight
-                          ? "border-[#141414] bg-[#F2D64B]"
-                          : picked
-                            ? "border-[#F0442E] bg-[#F0442E]/8"
-                            : revealed && isRight
-                              ? "border-[#141414]/40 bg-[#F2D64B]/30"
-                              : "border-[#141414]/25 bg-transparent"
-                      }`}
-                    >
-                      <span className="exp-mono mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border border-current text-[9px] font-bold">
-                        {option.key}
-                      </span>
-                      <span className="text-[13px] leading-[1.4]">{option.text}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {answer && (
-                <div className="mt-5 border-t border-[#141414]/20 pt-4">
-                  <span className={`exp-stamp ${correct ? "text-[#141414]" : "text-[#F0442E]"}`}>
-                    {correct ? "Correct" : "Read again"}
-                  </span>
-                  <p className="mt-3 max-w-[58ch] text-[13px] leading-relaxed text-[#141414]/70">
-                    {correct
-                      ? "B is the only one that compares the partner with a credible counterfactual. It can show whether the votes moved because of the aid, not just whether the aid arrived."
-                      : "The other two can tell you what the donor said or what happened next, but neither gives you a comparison. Without a counterfactual, you cannot separate the aid from everything else."}
-                  </p>
-                </div>
-              )}
             </div>
 
-            <aside className="border-t-2 border-[#141414] bg-[#141414] p-5 text-[#F7F0E2] md:border-l-2 md:border-t-0 md:p-6">
-              <p className="exp-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#F2D64B]">
-                Why this matters
-              </p>
-              <p className="mt-3 text-[14px] leading-[1.5] text-[#F7F0E2]/75">
-                A claim can be plausible and still not be evidence. The test is not whether the story
-                sounds right. It is whether a different observation would have produced a different
-                answer.
-              </p>
-              <div className="mt-6 border-t border-white/20 pt-4">
-                <p className="exp-mono text-[8px] uppercase tracking-[0.12em] text-[#F7F0E2]/40">
-                  The Threadwise rule
-                </p>
-                <p className="mt-2 text-[17px] leading-[1.25]">
-                  Name the observation that would change your mind before you decide.
-                </p>
-              </div>
-              <p className="mt-8 -rotate-2 border border-[#F2D64B] px-2 py-1 exp-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#F2D64B]">
-                Your turn
-              </p>
-            </aside>
-          </div>
-        </section>
-
-        <section className="mx-auto mt-16 w-full max-w-[1280px] px-5 md:mt-20 md:px-8">
-          <div className="flex items-baseline justify-between border-t-2 border-[#141414] pt-3">
-            <p className="exp-mono text-[9px] font-bold uppercase tracking-[0.16em]">
-              03 / What the machine does
-            </p>
-            <p className="hidden exp-mono text-[8px] uppercase tracking-[0.12em] text-[#141414]/40 sm:block">
-              One loop, three moves
-            </p>
-          </div>
-          <div className="grid border-b-2 border-[#141414] md:grid-cols-3">
-            {STEPS.map((step, index) => (
-              <article
-                key={step.n}
-                className={`py-6 md:px-6 md:py-8 ${index > 0 ? "border-t border-[#141414]/20 md:border-l md:border-t-0" : ""} ${index === 0 ? "md:pl-0" : ""}`}
-              >
-                <p className="exp-mono flex h-7 w-7 items-center justify-center rounded-full border border-[#F0442E] text-[10px] font-bold text-[#F0442E]">
-                  {step.n}
-                </p>
-                <h2 className="mt-4 text-[25px] font-semibold leading-[1.05] tracking-[-0.03em]">
-                  {step.title}
+            <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:gap-20">
+              <div>
+                <h2 className="lab-serif max-w-[17ch] text-[38px] leading-[1.03] md:text-[54px]">
+                  A government sends <span className="lab-underline">$1.2bn</span> in aid to a
+                  partner. The minister calls it development. Critics call it a bribe.
                 </h2>
-                <p className="mt-2 max-w-[36ch] text-[13px] leading-[1.5] text-[#141414]/65">
-                  {step.body}
+                <p className="lab-mono mt-6 text-[8px] uppercase tracking-[0.12em] text-[#0B0A09]/35">
+                  The claim is not the quote. The claim is what the quote asks you to believe.
                 </p>
-                <Link
-                  to={step.to}
-                  className="mt-4 inline-block exp-mono text-[9px] font-bold uppercase tracking-[0.1em] text-[#141414] underline decoration-[#F0442E] decoration-2 underline-offset-4 hover:text-[#F0442E]"
-                >
-                  {step.cta} →
-                </Link>
-              </article>
-            ))}
+                <div className="mt-12 border-t border-[#0B0A09]/20 pt-4">
+                  <p className="lab-sans max-w-[52ch] text-[14px] leading-[1.6] text-[#0B0A09]/60">
+                    A read separates what happened from what it wants you to feel. It names the
+                    mechanism, the people who carry the cost, and the observation that would make
+                    the whole account fall apart.
+                  </p>
+                  <Link
+                    to="/analyst"
+                    className="lab-focus lab-mono mt-5 inline-block border-b-2 border-[#9E3D2C] pb-1 text-[9px] uppercase tracking-[0.12em] text-[#0B0A09] hover:text-[#9E3D2C]"
+                  >
+                    See a full read →
+                  </Link>
+                </div>
+              </div>
+
+              <div>
+                <p className="lab-mono text-[8px] uppercase tracking-[0.14em] text-[#0B0A09]/35">
+                  Open the claim / three notes
+                </p>
+                <div className="mt-3">
+                  {NOTES.map((note, index) => {
+                    const active = activeNote === index;
+                    return (
+                      <div key={note.n} className="border-t border-[#0B0A09]/20">
+                        <button
+                          type="button"
+                          aria-expanded={active}
+                          onClick={() => setActiveNote(index)}
+                          className={`lab-note lab-focus flex w-full items-start gap-4 px-3 py-4 text-left ${
+                            active ? "my-1" : ""
+                          }`}
+                        >
+                          <span className={`lab-mono mt-1 text-[9px] ${active ? "text-[#E8DFCF]/55" : "text-[#9E3D2C]"}`}>
+                            {note.n}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className={`lab-mono block text-[8px] uppercase tracking-[0.14em] ${active ? "text-[#E8DFCF]/55" : "text-[#0B0A09]/40"}`}>
+                              {note.label}
+                            </span>
+                            <span className="lab-serif mt-1 block text-[24px] leading-[1.05] md:text-[28px]">
+                              {note.line}
+                            </span>
+                            {active && (
+                              <span className="lab-sans mt-3 block max-w-[42ch] text-[13px] leading-[1.55] text-[#E8DFCF]/70">
+                                {note.detail}
+                              </span>
+                            )}
+                          </span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                  <div className="border-t border-[#0B0A09]/20" />
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="mt-16 bg-[#141414] text-[#F7F0E2] md:mt-20">
-          <div className="mx-auto grid w-full max-w-[1280px] gap-8 px-5 py-12 md:grid-cols-[300px_minmax(0,1fr)] md:px-8 md:py-16">
+        <section className="lab-grain px-5 py-14 md:px-10 md:py-20 lg:px-14">
+          <div className="mx-auto w-full max-w-[1440px]">
+            <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-[#E8DFCF]/20 pt-3">
+              <p className="lab-mono text-[9px] uppercase tracking-[0.16em] text-[#E8DFCF]/50">
+                03 / The loop
+              </p>
+              <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/30">
+                One loop / three moves
+              </p>
+            </div>
+
+            <h2 className="lab-serif mt-8 max-w-[12ch] text-[54px] leading-[0.9] md:text-[82px]">
+              Read.
+              <br />
+              Doubt.
+              <br />
+              Decide.
+            </h2>
+
+            <div className="mt-10 grid border-t border-[#E8DFCF]/20 md:grid-cols-3">
+              {LOOP.map((step, index) => (
+                <article
+                  key={step.n}
+                  className={`py-6 md:px-7 md:py-8 ${index > 0 ? "border-t border-[#E8DFCF]/15 md:border-l md:border-t-0" : "md:pl-0"}`}
+                >
+                  <p className="lab-serif text-[48px] leading-none text-[#9E3D2C]">{step.n}</p>
+                  <h3 className="lab-serif mt-4 text-[27px] leading-none">{step.title}</h3>
+                  <p className="lab-sans mt-3 max-w-[34ch] text-[13px] leading-[1.55] text-[#E8DFCF]/60">
+                    {step.body}
+                  </p>
+                  <Link
+                    to={step.to}
+                    className="lab-focus lab-mono mt-5 inline-block border-b border-[#9E3D2C] pb-1 text-[9px] uppercase tracking-[0.12em] text-[#E8DFCF] hover:text-[#E8DFCF]/60"
+                  >
+                    {step.cta} →
+                  </Link>
+                </article>
+              ))}
+            </div>
+
+            <p className="lab-serif mt-12 max-w-[24ch] text-[28px] leading-[1.08] text-[#E8DFCF]/70 md:ml-[33%] md:text-[38px]">
+              The record is not what you remember. It is what you said would happen.
+            </p>
+          </div>
+        </section>
+
+        <section className="lab-oxide px-5 py-14 md:px-10 md:py-20 lg:px-14">
+          <div className="mx-auto grid w-full max-w-[1440px] gap-10 md:grid-cols-[0.8fr_1.2fr] md:gap-20">
             <div>
-              <p className="exp-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#F2D64B]">
+              <p className="lab-mono text-[9px] uppercase tracking-[0.16em] text-[#E8DFCF]/55">
                 04 / The record
               </p>
-              <p className="exp-display mt-3 text-[56px] text-[#F7F0E2]/90 md:pr-6 md:text-[64px]">
+              <p className="lab-serif mt-4 text-[56px] leading-[0.86] md:text-[76px]">
                 The
                 <br />
                 receipt.
               </p>
+              <p className="lab-mono mt-6 max-w-[28ch] text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#E8DFCF]/40">
+                When the argument is over, the record is the only part that can be checked.
+              </p>
             </div>
+
             <div>
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <p className="exp-mono text-[8px] uppercase tracking-[0.12em] text-[#F7F0E2]/40">
+              <div className="flex flex-wrap items-baseline justify-between gap-2 border-t border-[#E8DFCF]/25 pt-3">
+                <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/45">
                   One claim, dated
                 </p>
-                <p className="exp-mono text-[8px] uppercase tracking-[0.12em] text-[#F2D64B]/60">
+                <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/35">
                   Sample record
                 </p>
               </div>
-              <p className="mt-2 max-w-[34ch] text-[28px] font-medium leading-[1.1] tracking-[-0.02em] md:text-[38px]">
+              <p className="lab-serif mt-3 text-[34px] leading-[1.05] md:text-[44px]">
                 “Aid buys influence.”
               </p>
-              <div className="mt-7 grid gap-6 border-t border-white/20 pt-4 sm:grid-cols-2">
-                <div>
-                  <p className="exp-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#F2D64B]">
-                    What it predicts
-                  </p>
-                  <p className="mt-2 text-[13px] leading-[1.5] text-[#F7F0E2]/65">
-                    Aid flows toward partners whose votes and access matter, and those partners move
-                    when the aid is conditional.
-                  </p>
-                </div>
-                <div>
-                  <p className="exp-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#F0442E]">
-                    What would break it
-                  </p>
-                  <p className="mt-2 text-[13px] leading-[1.5] text-[#F7F0E2]/65">
-                    Aid surges followed by no policy change when need and domestic politics are
-                    controlled, or votes that move without the money.
-                  </p>
-                </div>
+
+              <div className="mt-8 border-t border-[#E8DFCF]/25">
+                {[
+                  ["Filed", "09 November 2026"],
+                  ["Falsifier", "Aid rises. Votes do not move."],
+                  ["Status", "Open."],
+                ].map(([label, value]) => (
+                  <div key={label} className="grid grid-cols-[90px_minmax(0,1fr)] items-baseline gap-4 border-b border-[#E8DFCF]/20 py-3">
+                    <span className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/40">
+                      {label}
+                    </span>
+                    <span className="lab-sans text-[14px] leading-[1.4] text-[#E8DFCF]/85">
+                      {value}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/20 pt-3 exp-mono text-[8px] uppercase tracking-[0.1em] text-[#F7F0E2]/35">
-                <span>Filed 09 Nov 2026</span>
-                <span>Confidence / medium</span>
-                <span className="text-[#F2D64B]">Question / open</span>
-              </div>
+
+              <Link
+                to="/digest"
+                className="lab-focus lab-mono mt-6 inline-block border-b-2 border-[#E8DFCF] pb-1 text-[9px] uppercase tracking-[0.12em] text-[#E8DFCF] hover:text-[#E8DFCF]/60"
+              >
+                Open the record →
+              </Link>
             </div>
           </div>
         </section>
 
-        <section className="bg-[#F2D64B]">
-          <div className="mx-auto grid w-full max-w-[1280px] gap-8 px-5 py-12 md:grid-cols-[minmax(0,1fr)_260px] md:items-end md:px-8 md:py-16">
-            <h2 className="exp-display text-[54px] sm:text-[76px] lg:text-[100px]">
-              What would
-              <br />
-              change your
-              <br />
-              mind?
-            </h2>
-            <div>
-              <p className="max-w-[32ch] text-[14px] leading-relaxed text-[#141414]/70">
-                Start with one source. Threadwise gives you the read, the counter-case and the
-                receipt — not another feed to agree with.
-              </p>
-              <Link
-                to="/analyst"
-                className="mt-4 inline-flex items-center border-2 border-[#141414] bg-[#141414] px-4 py-3 exp-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#F7F0E2] hover:bg-[#F0442E]"
-              >
-                Bring a source →
-              </Link>
+        <section className="lab-bone px-5 py-16 md:px-10 md:py-24 lg:px-14">
+          <div className="mx-auto w-full max-w-[1440px]">
+            <p className="lab-mono border-t border-[#0B0A09]/20 pt-3 text-[9px] uppercase tracking-[0.16em] text-[#0B0A09]/45">
+              05 / Begin
+            </p>
+            <div className="mt-6 grid gap-8 md:grid-cols-[minmax(0,1fr)_280px] md:items-end md:gap-16">
+              <h2 className="lab-serif text-[64px] leading-[0.82] md:text-[104px] lg:text-[124px]">
+                Bring me
+                <br />a claim.
+              </h2>
+              <div>
+                <p className="lab-sans max-w-[32ch] text-[14px] leading-[1.55] text-[#0B0A09]/65">
+                  A link, a quote, a PDF, a sentence you cannot stop turning over. Start with the
+                  thing that made you suspicious.
+                </p>
+                <Link
+                  to="/analyst"
+                  className="lab-focus lab-mono mt-6 inline-flex bg-[#0B0A09] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.13em] text-[#E8DFCF] transition-colors hover:bg-[#9E3D2C]"
+                >
+                  Bring a source →
+                </Link>
+                <Link
+                  to="/seminar"
+                  className="lab-focus lab-mono lab-link mt-3 block text-[9px] uppercase tracking-[0.12em] text-[#0B0A09]/60"
+                >
+                  Or put a quote on trial ↗
+                </Link>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-[#141414]/20">
-        <div className="mx-auto flex w-full max-w-[1280px] flex-wrap items-center justify-between gap-3 px-5 py-5 md:px-8">
-          <p className="exp-mono text-[8px] uppercase tracking-[0.12em] text-[#141414]/40">
-            Threadwise / field test 01 / a design experiment
+      <footer className="border-t border-[#E8DFCF]/15 px-5 py-6 md:px-10 lg:px-14">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-3">
+          <p className="lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/35">
+            Threadwise / a thinking instrument / experiment 01
           </p>
-          <div className="flex gap-4 exp-mono text-[8px] uppercase tracking-[0.12em] text-[#141414]/45">
-            <Link to="/" className="hover:text-[#F0442E]">The current site</Link>
-            <Link to="/seminar" className="hover:text-[#F0442E]">The seminar</Link>
+          <div className="lab-mono flex gap-5 text-[8px] uppercase tracking-[0.12em] text-[#E8DFCF]/40">
+            <Link to="/" className="hover:text-[#E8DFCF]">Current site</Link>
+            <Link to="/seminar" className="hover:text-[#E8DFCF]">Seminar</Link>
           </div>
         </div>
       </footer>
