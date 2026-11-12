@@ -119,13 +119,14 @@ function LandingPage() {
                 <span className="h-3 w-px bg-[#1A4BFF]/25" />
                 <span className="text-[#1A1A1A]/40">09 Nov 2026</span>
               </div>
-              <h1 className="mt-3 max-w-[12ch] font-display text-[clamp(46px,7vw,88px)] leading-[0.92] tracking-[-0.035em]">
+              <h1 className="mt-3 max-w-[12ch] font-display text-[clamp(50px,7.4vw,104px)] leading-[0.92] tracking-[-0.035em]">
                 See what the story hides.
               </h1>
-              <p className="mt-5 max-w-[52ch] font-serif text-[16px] leading-[1.6] text-[#1A1A1A]/70 md:text-[18px]">
-                Every claim has a geography. This is the IAEA read, plotted: Vienna, Tehran,
-                Natanz. Vienna issues the demand. Tehran controls the permission. Natanz stays
-                unverified.
+              <p className="mt-5 max-w-[46ch] font-serif text-[17px] leading-[1.55] text-[#1A1A1A]/70 md:text-[19px]">
+                Every claim has a geography. This is the IAEA read, plotted.
+              </p>
+              <p className="mt-3 max-w-[52ch] font-mono text-[9px] uppercase leading-[1.7] tracking-[0.14em] text-[#1A1A1A]/50 md:text-[10px]">
+                Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <Link
@@ -167,7 +168,7 @@ function LandingPage() {
                     onMouseLeave={() => setActivePlace(null)}
                     onFocus={() => setActivePlace(place.id)}
                     onBlur={() => setActivePlace(null)}
-                    className={`mt-1 block border-b border-transparent pb-0.5 transition-colors hover:border-[#1A4BFF] ${
+                    className={`mt-1 block border-b border-transparent pb-0.5 text-[10px] transition-colors hover:border-[#1A4BFF] ${
                       activePlace === place.id ? "text-[#1A4BFF]" : place.id === "natanz" ? "text-[#C1121F]" : "text-[#1A1A1A]/70"
                     }`}
                   >
@@ -556,10 +557,17 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
           ? { x: 681, y: 176, color: "#C1121F" }
           : null;
   return (
-    <div className="atlas-plate pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[38%] overflow-hidden border-t border-[#1A1A1A]/10 md:inset-0 md:h-full md:border-t-0" aria-hidden>
+    <div className="atlas-map-reveal atlas-plate pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[38%] overflow-hidden border-t border-[#1A1A1A]/10 md:inset-0 md:h-full md:border-t-0" aria-hidden>
       <style>{`
         .atlas-plate {
           background: #FDFBF7;
+        }
+        .atlas-map-reveal {
+          animation: atlasReveal 1.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes atlasReveal {
+          from { clip-path: inset(0 100% 0 0); }
+          to { clip-path: inset(0); }
         }
         .atlas-plate-image {
           opacity: 0.45;
@@ -644,6 +652,7 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
         @media (prefers-reduced-motion: reduce) {
           .atlas-route { animation: none; }
           .atlas-demand-pulse { display: none; }
+          .atlas-map-reveal { animation: none; }
         }
       `}</style>
       <svg
