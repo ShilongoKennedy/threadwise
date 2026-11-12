@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
+import { EmptyState } from "@/components/threadwise/EmptyState";
 
 export const Route = createFileRoute("/cases")({
   head: () => ({
@@ -42,15 +43,16 @@ function CasesPage() {
         />
 
         {cases.length === 0 && (
-          <div className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-10 text-center">
-            <p className="font-display text-2xl">No cases yet.</p>
-            <p className="mx-auto mt-2 max-w-[42ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
-              Each read is filed automatically. Make two reads on the same subject and the case appears.
-            </p>
-            <Link to="/analyst" className="mt-4 inline-block border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]">
-              Make a read
-            </Link>
-          </div>
+          <EmptyState
+            title="No cases yet."
+            action={
+              <Link to="/analyst" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
+                Make a read →
+              </Link>
+            }
+          >
+            Each read is filed automatically. Make two reads on the same subject and the case appears.
+          </EmptyState>
         )}
 
         {cases.length > 0 && (

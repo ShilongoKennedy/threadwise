@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
+import { EmptyState } from "@/components/threadwise/EmptyState";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
@@ -64,15 +65,16 @@ function ReadsPage() {
         )}
 
         {state === "empty" && (
-          <div className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-10 text-center">
-            <p className="font-display text-2xl">Nothing published yet.</p>
-            <p className="mx-auto mt-2 max-w-[40ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
-              Reads are private by default. Publish one from its own page and it appears here.
-            </p>
-            <Link to="/analyst" className="mt-4 inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]">
-              Write one <ArrowUpRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
+          <EmptyState
+            title="Nothing published yet."
+            action={
+              <Link to="/analyst" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
+                Write one →
+              </Link>
+            }
+          >
+            Reads are private by default. Publish one from its own page and it appears here.
+          </EmptyState>
         )}
 
         {state === "ready" && (

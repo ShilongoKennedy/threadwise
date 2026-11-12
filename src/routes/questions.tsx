@@ -5,6 +5,7 @@ import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
+import { EmptyState } from "@/components/threadwise/EmptyState";
 import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -89,12 +90,16 @@ function QuestionsPage() {
         />
 
         {state === "anon" && (
-          <div className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-8 text-center">
-            <p className="font-display text-xl">Questions belong to you, so they need an account.</p>
-            <Link to="/analyst" className="mt-3 inline-flex border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]">
-              Sign in
-            </Link>
-          </div>
+          <EmptyState
+            title="Questions belong to you, so they need an account."
+            action={
+              <Link to="/login" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
+                Sign in →
+              </Link>
+            }
+          >
+            Keep three or four questions open, then file the evidence each read gives you for or against them.
+          </EmptyState>
         )}
 
         {state === "ready" && (

@@ -31,6 +31,7 @@ import {
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
+import { EmptyState } from "@/components/threadwise/EmptyState";
 import { CONFIDENCE_FORECAST } from "@/lib/threadwise/calibration";
 
 export const Route = createFileRoute("/profile")({
@@ -187,15 +188,16 @@ function ProfilePage() {
         />
 
         {state === "anon" && (
-          <div className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-8 text-center">
-            <p className="font-display text-xl">The profile belongs to you, so it needs an account.</p>
-            <Link
-              to="/login"
-              className="mt-3 inline-flex border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]"
-            >
-              Sign in
-            </Link>
-          </div>
+          <EmptyState
+            title="The profile belongs to you, so it needs an account."
+            action={
+              <Link to="/login" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
+                Sign in →
+              </Link>
+            }
+          >
+            The profile is built from reads, questions, findings and predictions you filed — not from activity elsewhere.
+          </EmptyState>
         )}
 
         {state === "loading" && (
@@ -205,7 +207,7 @@ function ProfilePage() {
         )}
 
         {state === "error" && (
-          <p className="mt-8 border-2 border-[#C1121F] bg-[#C1121F]/5 px-4 py-3 font-serif text-[14px] text-[#C1121F]">
+          <p className="mt-8 border-l-2 border-[#C1121F] pl-3 font-serif text-[14px] text-[#C1121F]">
             The profile could not be read just now. Try again.
           </p>
         )}
@@ -213,19 +215,16 @@ function ProfilePage() {
         {state === "ready" && profile && (
           <>
             {profile.reads === 0 ? (
-              <section className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-8 text-center">
-                <p className="font-display text-xl">No reads yet.</p>
-                <p className="mx-auto mt-2 max-w-[42ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
-                  The profile starts once you have read one move, filed one question or scored one
-                  prediction.
-                </p>
-                <Link
-                  to="/analyst"
-                  className="mt-4 inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]"
-                >
-                  Bring a move <ArrowUpRight className="h-3.5 w-3.5" />
-                </Link>
-              </section>
+              <EmptyState
+                title="No reads yet."
+                action={
+                  <Link to="/analyst" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
+                    Bring a move →
+                  </Link>
+                }
+              >
+                The profile starts once you have read one move, filed one question or scored one prediction.
+              </EmptyState>
             ) : (
               <>
                 <section className="mt-8 grid grid-cols-2 border-y-2 border-[#1A1A1A] md:grid-cols-5">

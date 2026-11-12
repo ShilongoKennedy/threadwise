@@ -167,9 +167,9 @@ function DigestPage() {
         <AskRecord />
 
         {reads.length > 0 && (
-          <section className="mt-8 border-2 border-[#1A1A1A]">
-            <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
-              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+          <section className="mt-8 border-y border-[#1A1A1A]/15">
+            <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2">
+              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]/55">
                 Reads you kept
               </span>
               <Link to="/analyst" className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">
@@ -468,9 +468,9 @@ function AskRecord() {
   };
 
   return (
-    <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1A1A1A] px-3 py-1.5">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#FDFBF7]">
+    <section className="mt-8 border-y border-[#1A1A1A]/15">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/15 py-2">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1A1A1A]/55">
           Ask your record
         </span>
         <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A4BFF]">
@@ -479,14 +479,14 @@ function AskRecord() {
       </div>
 
       {signedIn === false ? (
-        <p className="px-4 py-4 font-serif text-[14px] text-[#1A1A1A]/65">
+        <p className="py-4 font-serif text-[14px] text-[#1A1A1A]/65">
           <Link to="/login" className="text-[#1A4BFF] underline underline-offset-4">
             Sign in
           </Link>{" "}
           to ask what your own reads, questions and predictions say.
         </p>
       ) : (
-        <div className="p-4">
+        <div className="py-4">
           <p className="max-w-[62ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
             Ask what your own record says. It answers from your saved reads, questions and predictions
             only; it does not use the web.
@@ -592,9 +592,9 @@ function CalibrationSection({
 
   if (!predictions.length) {
     return (
-      <section className="mt-4 border-2 border-dashed border-[#1A1A1A]/25 px-4 py-3">
+      <section className="mt-4 border-y border-[#1A1A1A]/15 py-3">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em]">
+          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/55">
             Calibration
           </span>
           <Link to="/reads" className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
+import { PageMasthead } from "@/components/threadwise/PageMasthead";
+import { EmptyState } from "@/components/threadwise/EmptyState";
 import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { supabase } from "@/integrations/supabase/client";
 import type { WeeklyReview } from "@/lib/threadwise/weekly-review";
@@ -61,33 +63,22 @@ function ReviewPage() {
       <AppHeader section="digest" />
 
       <main className="mx-auto w-full max-w-[900px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#1A4BFF]">
-            Weekly review
-          </p>
-          {review && (
-            <>
-              <span className="h-3 w-px bg-[#1A1A1A]/20" />
-              <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/40">
-                {new Date(review.from).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })} —{" "}
-                {new Date(review.to).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
-              </p>
-            </>
-          )}
-        </div>
-        <h1 className="mt-2 font-display text-[38px] leading-none md:text-[56px]">The week.</h1>
-        <p className="mt-3 max-w-[54ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/65">
-          What changed in the record, what is still open, and the one thing worth doing next.
-        </p>
+        <PageMasthead
+          eyebrow="Weekly review"
+          title="The week."
+          deck="What changed in the record, what is still open, and the one thing worth doing next."
+          aside={
+            review
+              ? `${new Date(review.from).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })} — ${new Date(review.to).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}`
+              : undefined
+          }
+        />
 
         {state === "anon" && (
-          <div className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-8 text-center">
-            <p className="font-display text-xl">The week belongs to your account.</p>
-            <Link
-              to="/login"
-              className="mt-3 inline-flex border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]"
-            >
-              Sign in
+          <div className="mt-8 border-y border-[#1A1A1A]/15 py-7">
+            <p className="max-w-[26ch] font-display text-[28px] leading-[1.05]">The week belongs to your account.</p>
+            <Link to="/login" className="mt-4 inline-flex border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
+              Sign in →
             </Link>
           </div>
         )}
@@ -99,7 +90,7 @@ function ReviewPage() {
         )}
 
         {state === "error" && (
-          <p className="mt-8 border-2 border-[#C1121F] bg-[#C1121F]/5 px-4 py-3 font-serif text-[14px] text-[#C1121F]">
+          <p className="mt-8 border-l-2 border-[#C1121F] pl-3 font-serif text-[14px] text-[#C1121F]">
             The week could not be read just now. Try again.
           </p>
         )}
@@ -108,18 +99,16 @@ function ReviewPage() {
           <>
             {Object.values(review.counts).every((value) => value === 0) &&
             review.openQuestions.length === 0 ? (
-              <section className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-8 text-center">
-                <p className="font-display text-xl">A quiet week.</p>
-                <p className="mx-auto mt-2 max-w-[44ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
-                  Nothing was read, filed or settled in the last seven days. The next move is a source.
-                </p>
-                <Link
-                  to="/analyst"
-                  className="mt-4 inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]"
-                >
-                  Read a source <ArrowUpRight className="h-3.5 w-3.5" />
-                </Link>
-              </section>
+              <EmptyState
+                title="A quiet week."
+                action={
+                  <Link to="/analyst" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
+                    Read a source →
+                  </Link>
+                }
+              >
+                Nothing was read, filed or settled in the last seven days. The next move is a source.
+              </EmptyState>
             ) : (
               <>
                 <section className="mt-8 grid grid-cols-2 border-y-2 border-[#1A1A1A] sm:grid-cols-5">
