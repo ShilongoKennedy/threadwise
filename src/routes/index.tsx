@@ -110,8 +110,7 @@ function LandingPage() {
         {/* ATLAS HERO */}
         <section className={`atlas-hero relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28 ${entering ? "is-entering" : ""}`}>
           <AtlasMap active={activePlace} onActive={setActivePlace} />
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#FDFBF7_0%,rgba(253,251,247,0.96)_28%,rgba(253,251,247,0.42)_48%,rgba(253,251,247,0.06)_68%,transparent_80%)] max-md:bg-[linear-gradient(180deg,#FDFBF7_0%,rgba(253,251,247,0.94)_48%,rgba(253,251,247,0.25)_100%)]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[26%] bg-[linear-gradient(0deg,#FDFBF7_0%,rgba(253,251,247,0.88)_55%,transparent_100%)] md:hidden" />
+          <div className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(90deg,#FDFBF7_0%,rgba(253,251,247,0.96)_28%,rgba(253,251,247,0.42)_48%,rgba(253,251,247,0.06)_68%,transparent_80%)] md:block" />
 
           <div className="relative z-10 mx-auto flex min-h-[620px] w-full max-w-[1200px] flex-col justify-between px-5 pb-10 pt-10 md:min-h-[680px] md:px-8 md:pb-12 md:pt-14">
             <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em]">
@@ -157,7 +156,15 @@ function LandingPage() {
               </div>
             </div>
 
-            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 bg-[#FDFBF7] pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 max-md:pt-4">
+            <div className="mt-8 md:hidden">
+              <AtlasMap active={activePlace} onActive={setActivePlace} mobile />
+              <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
+                <span>The IAEA read / in places</span>
+                <span>09 Nov 2026</span>
+              </div>
+            </div>
+
+            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
               <div>
                 <div className="flex flex-wrap gap-x-5 gap-y-2">
                   <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
@@ -479,7 +486,7 @@ const ATLAS_PLACES = {
   washington: [((-77.0369 + 180) / 360) * 1000, ((90 - 38.9072) / 180) * 500] as const,
 };
 
-function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: string | null) => void }) {
+function AtlasMap({ active, onActive, mobile = false }: { active: string | null; onActive: (id: string | null) => void; mobile?: boolean }) {
   const vienna = ATLAS_PLACES.vienna;
   const tehran = ATLAS_PLACES.tehran;
   const natanz = ATLAS_PLACES.natanz;
@@ -495,7 +502,11 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
           ? { x: 681, y: 176, color: "#C1121F" }
           : null;
   return (
-    <div className="atlas-map-reveal atlas-plate pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[38%] overflow-hidden border-t border-[#1A1A1A]/10 md:inset-0 md:h-full md:border-t-0" aria-hidden>
+    <div className={`atlas-map-reveal atlas-plate pointer-events-none overflow-hidden ${
+      mobile
+        ? "relative h-[280px] w-full border-y border-[#1A1A1A]/15"
+        : "absolute inset-0 z-0 hidden md:block"
+    }`} aria-hidden>
       <style>{`
         .atlas-plate {
           background: #FDFBF7;
