@@ -110,7 +110,7 @@ function SharedRead() {
       <PageBackdrop />
       <AppHeader section="digest" />
 
-      <main className="mx-auto w-full max-w-[760px] px-5 pb-24 pt-8">
+      <main className="mx-auto w-full max-w-[1100px] px-5 pb-24 pt-8 md:px-8 md:pt-12">
         {status === "missing" && (
           <div className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-4 py-3">
             <p className="font-serif text-[15px]">
@@ -129,15 +129,15 @@ function SharedRead() {
           </div>
         )}
         {status === "ready" && report && (
-          <article className="space-y-5">
-            <header className="border-b-2 border-[#1A1A1A] pb-3">
+          <article>
+            <header className="border-b border-[#1A1A1A]/20 pb-5 md:pb-7">
               <p className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1A4BFF]">
                 The read · {report.confidence}
                 {report.basis ? (
                   <span className="hidden text-[#1A1A1A]/45 sm:inline"> · {report.basis}</span>
                 ) : null}
               </p>
-              <h1 className="mt-1.5 max-w-[24ch] font-display text-[30px] leading-[1.02] md:text-[40px]">
+              <h1 className="mt-2 max-w-[20ch] font-display text-[36px] leading-[0.98] tracking-[-0.025em] md:text-[58px]">
                 {report.subject?.trim() || title}
               </h1>
               {at && (
@@ -227,6 +227,13 @@ function SharedRead() {
               </div>
             </header>
 
+            <div className="mt-8 grid gap-10 md:grid-cols-[220px_minmax(0,1fr)] md:gap-14">
+              <aside className="md:sticky md:top-24 md:self-start">
+                <Contents items={contents} />
+              </aside>
+
+              <div className="min-w-0 space-y-8">
+
             {input && (
               <details className="group border-y border-[#1A1A1A]/15 py-2">
                 <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/55 [&::-webkit-details-marker]:hidden">
@@ -274,8 +281,6 @@ function SharedRead() {
             )}
 
             {report.intent ? <InquiryBar intent={report.intent} /> : null}
-
-            <Contents items={contents} />
 
             {blocks.map((block, index) => (
               <Block
@@ -332,6 +337,8 @@ function SharedRead() {
             <p className="border-t border-[#1A1A1A]/15 pt-3 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
               Produced by The Analyst · verify before you act
             </p>
+              </div>
+            </div>
           </article>
         )}
       </main>
@@ -362,18 +369,18 @@ function InquiryBar({ intent }: { intent: NonNullable<Report["intent"]> }) {
 /** The load-bearing claims, separated from the prose that argues them. */
 function ClaimTable({ claims }: { claims: NonNullable<Report["claims"]> }) {
   return (
-    <section className="border-2 border-[#1A1A1A] bg-white">
-      <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#FDFBF7]">
+    <section className="border-y border-[#1A1A1A]/15">
+      <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1A4BFF]">
           Claims
         </span>
-        <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A4BFF]">
+        <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
           {claims.length} load-bearing
         </span>
       </div>
-      <ul className="divide-y divide-[#1A1A1A]/10">
+      <ul>
         {claims.map((claim, index) => (
-          <li key={`${claim.text.slice(0, 20)}-${index}`} className="px-3 py-2.5">
+          <li key={`${claim.text.slice(0, 20)}-${index}`} className="border-b border-[#1A1A1A]/10 py-3 last:border-b-0">
             <div className="flex flex-wrap items-center gap-2">
               <span
                 className={`font-mono text-[8px] font-bold uppercase tracking-[0.14em] ${
@@ -422,15 +429,15 @@ function DeskReview({
 }) {
   const corrected = (revision?.patched ?? 0) > 0;
   const tone = corrected
-    ? "border-[#1A4BFF] bg-[#1A4BFF]/5"
+    ? "border-[#1A4BFF]"
     : review.verdict === "grounded"
-      ? "border-[#1A4BFF] bg-[#1A4BFF]/5"
+      ? "border-[#1A4BFF]"
       : review.verdict === "mixed"
-        ? "border-[#B26A00] bg-[#B26A00]/5"
-        : "border-[#C1121F] bg-[#C1121F]/5";
+        ? "border-[#B26A00]"
+        : "border-[#C1121F]";
 
   return (
-    <section className={`border-l-2 px-3 py-2 ${tone}`}>
+    <section className={`border-l-2 py-1 pl-4 ${tone}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em]">
           Desk review · {review.verdict}
@@ -508,41 +515,63 @@ function Block({ n, title, children }: { n: string; title: string; children: Rea
   return (
     <section
       id={`s-${n}`}
-      className="scroll-mt-24 border-t border-[#1A1A1A]/15 pt-4 first:border-t-0 first:pt-0"
+      className="scroll-mt-24 border-t border-[#1A1A1A]/15 pt-5 first:border-t-0 first:pt-0"
     >
-      <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
-        {n} · {title}
-      </p>
-      <div className="font-serif text-[16px] leading-[1.7] text-[#1A1A1A]/85">{children}</div>
+      <div className="grid gap-2 md:grid-cols-[54px_minmax(0,1fr)] md:gap-5">
+        <p className="font-display text-[28px] leading-none text-[#1A4BFF]/75">{n}</p>
+        <div>
+          <h2 className="max-w-[24ch] font-display text-[24px] leading-[1.05] md:text-[30px]">
+            {title}
+          </h2>
+          <div className="mt-3 font-serif text-[16px] leading-[1.75] text-[#1A1A1A]/85 md:text-[17px]">
+            {children}
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
 
 /** The document's contents: collapsible on a phone, fixed beside it on a desk. */
 function Contents({ items }: { items: { n: string; title: string }[] }) {
+  const list = (
+    <ol className="mt-3 space-y-2">
+      {items.map((item) => (
+        <li key={item.n}>
+          <a
+            href={`#s-${item.n}`}
+            className="group flex gap-2.5 font-mono text-[9px] uppercase leading-snug tracking-[0.08em] text-[#1A1A1A]/50 transition-colors hover:text-[#1A4BFF]"
+          >
+            <span className="shrink-0 text-[#1A4BFF]">{item.n}</span>
+            <span className="border-b border-transparent pb-0.5 group-hover:border-[#1A4BFF]/30">
+              {item.title}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  );
+
   return (
-    <details className="group border-y-2 border-[#1A1A1A]/80 py-2">
-      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF] [&::-webkit-details-marker]:hidden">
-        <span className="flex items-center gap-2">
+    <>
+      <nav aria-label="Contents" className="hidden border-t border-[#1A1A1A]/15 pt-3 md:block">
+        <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/40">
           Contents
-          <span className="text-[11px] text-[#1A1A1A]/40 transition-transform group-open:rotate-90">›</span>
-        </span>
-        <span className="text-[#1A1A1A]/40">{items.length} sections</span>
-      </summary>
-      <ol className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-2">
-        {items.map((item) => (
-          <li key={item.n}>
-            <a
-              href={`#s-${item.n}`}
-              className="flex gap-2 py-0.5 font-mono text-[9px] uppercase leading-snug tracking-[0.08em] text-[#1A1A1A]/55 transition-colors hover:text-[#1A4BFF]"
-            >
-              <span className="shrink-0 text-[#1A4BFF]">{item.n}</span>
-              <span>{item.title}</span>
-            </a>
-          </li>
-        ))}
-      </ol>
-    </details>
+        </p>
+        {list}
+      </nav>
+
+      <details className="group border-y border-[#1A1A1A]/15 py-2 md:hidden">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF] [&::-webkit-details-marker]:hidden">
+          <span className="flex items-center gap-2">
+            Contents
+            <span className="text-[11px] text-[#1A1A1A]/40 transition-transform group-open:rotate-90">›</span>
+          </span>
+          <span className="text-[#1A1A1A]/40">{items.length} sections</span>
+        </summary>
+        {list}
+      </details>
+    </>
   );
 }
 
@@ -631,7 +660,7 @@ function buildBlocks(report: Report) {
     key: "falsifier",
     title: "What would prove this wrong",
     body: (
-      <p className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 text-[15px] leading-relaxed">
+      <p className="border-l-2 border-[#C1121F] pl-4 text-[15px] leading-relaxed">
         {report.falsifier}
       </p>
     ),
@@ -719,9 +748,9 @@ function RedTeam({ report }: { report: Report }) {
   };
 
   return (
-    <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
-      <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">Red team</span>
+    <section className="mt-10 border-y border-[#1A1A1A]/15">
+      <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]/55">Red team</span>
         <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">argue with the read</span>
       </div>
 
@@ -825,9 +854,9 @@ function FileFinding({ token, note }: { token: string; note: string }) {
   };
 
   return (
-    <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
-      <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">File a finding</span>
+    <section className="mt-10 border-y border-[#1A1A1A]/15">
+      <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]/55">File a finding</span>
         <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">
           questions →
         </Link>
@@ -854,7 +883,7 @@ function FileFinding({ token, note }: { token: string; note: string }) {
           <button
             type="button"
             onClick={() => void file("for")}
-            className="border-2 border-[#1A4BFF] bg-[#1A4BFF] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white"
+            className="border-2 border-[#1A4BFF] bg-[#1A4BFF] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]"
           >
             This supports it
           </button>
@@ -918,9 +947,9 @@ function Predictions({
   };
 
   return (
-    <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
-      <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+    <section className="mt-10 border-y border-[#1A1A1A]/15">
+      <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]/55">
           Predictions to score
         </span>
         <Link to="/digest" className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">
@@ -954,7 +983,7 @@ function Predictions({
                   signedIn === false || state[index] === "saving" || state[index] === "saved"
                 }
                 onClick={() => void file(index)}
-                className="border border-[#1A1A1A] px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7] disabled:opacity-40"
+                className="border border-[#1A1A1A] px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A] transition-colors hover:bg-[#1A1A1A] hover:text-[#1A1A1A]/55 disabled:opacity-40"
               >
                 {state[index] === "saved"
                   ? "Filed"
@@ -1015,9 +1044,9 @@ function OpenQuestions({ questions }: { questions: string[] }) {
   };
 
   return (
-    <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
-      <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-1.5">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+    <section className="mt-10 border-y border-[#1A1A1A]/15">
+      <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]/55">
           Questions this read opens
         </span>
         <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">
@@ -1133,12 +1162,12 @@ function Proposals({ report, token }: { report: Report; token: string }) {
   };
 
   return (
-    <section className="mt-8 border-2 border-[#1A4BFF] bg-white">
-      <div className="flex items-center justify-between bg-[#1A4BFF] px-3 py-1.5">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-white">
+    <section className="mt-10 border-y border-[#1A4BFF]/50">
+      <div className="flex items-center justify-between border-b border-[#1A4BFF]/30 py-2">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A4BFF]">
           This read bears on {items.length} of your questions
         </span>
-        <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.16em] text-white/80">
+        <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]/70">
           questions →
         </Link>
       </div>
