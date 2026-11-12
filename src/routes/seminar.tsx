@@ -1,0 +1,456 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { ArrowRight, ArrowUpRight, RotateCcw } from "lucide-react";
+import { AppHeader } from "@/components/threadwise/AppHeader";
+import type { Seminar, SeminarTheory } from "@/lib/threadwise/seminar";
+
+export const Route = createFileRoute("/seminar")({
+  head: () => ({
+    meta: [
+      { title: "The Seminar — Threadwise" },
+      {
+        name: "description",
+        content:
+          "Put a quote or question on the table. Two steelmanned theories, one crux, and a provisional verdict only if you ask for it.",
+      },
+    ],
+  }),
+  component: SeminarPage,
+});
+
+const SAMPLE = `"I am actually in favour of foreign aid as a tool for statecraft, because sometimes foreign aid is easier than bombing people. Sometimes you want to bribe a country to get your way."`;
+
+function SeminarPage() {
+  const [text, setText] = useState("");
+  const [context, setContext] = useState("");
+  const [seminar, setSeminar] = useState<Seminar | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [stand, setStand] = useState<"A" | "B" | "undecided" | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [verdictOpen, setVerdictOpen] = useState(false);
+
+  const convene = async () => {
+    if (text.trim().length < 20 || busy) return;
+    setBusy(true);
+    setError(null);
+    setSeminar(null);
+    setStand(null);
+    setRevealed(false);
+    setVerdictOpen(false);
+    try {
+      const response = await fetch("/api/seminar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, context }),
+      });
+      const body = (await response.json()) as { seminar?: Seminar; error?: string };
+      if (!response.ok || !body.seminar) throw new Error(body.error ?? "The seminar could not be convened.");
+      setSeminar(body.seminar);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The seminar could not be convened.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const choose = (next: "A" | "B" | "undecided") => {
+    setStand(next);
+    setRevealed(true);
+  };
+
+  const reset = () => {
+    setText("");
+    setContext("");
+    setSeminar(null);
+    setError(null);
+    setStand(null);
+    setRevealed(false);
+    setVerdictOpen(false);
+  };
+
+  return (
+    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+      <AppHeader section="seminar" />
+
+      <section className="bg-[#1A1A1A] text-[#FDFBF7]">
+        <div className="mx-auto w-full max-w-[1100px] px-5 pb-12 pt-12 md:px-8 md:pb-16 md:pt-16">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#7F9BFF]">
+              The seminar
+            </p>
+            <span className="h-3 w-px bg-white/20" />
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/40">
+              Two theories · one crux
+            </p>
+          </div>
+
+          <h1 className="mt-3 max-w-[12ch] font-display text-[48px] leading-[0.92] tracking-[-0.03em] md:text-[76px]">
+            Put it on the table.
+          </h1>
+          <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-white/60">
+            Bring a quote or a question you cannot settle. The seminar builds the strongest
+            version of two rival explanations, then shows the exact point where they part.
+          </p>
+
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void convene();
+            }}
+            className="mt-8 border-2 border-white/20 bg-[#FDFBF7] p-4 text-[#1A1A1A] md:p-6"
+          >
+            <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/55">
+              The quote or question
+            </label>
+            <textarea
+              id="seminar-text"
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              rows={5}
+              maxLength={3000}
+              placeholder="Paste the sentence you cannot stop thinking about…"
+              className="mt-2 w-full resize-none bg-transparent font-display text-[20px] leading-[1.25] outline-none placeholder:text-[#1A1A1A]/25 md:text-[28px]"
+            />
+
+            <div className="mt-4 grid gap-3 border-t border-[#1A1A1A]/12 pt-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+              <div>
+                <label htmlFor="seminar-context" className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
+                  Context, if it matters
+                </label>
+                <input
+                  id="seminar-context"
+                  value={context}
+                  onChange={(event) => setContext(event.target.value)}
+                  maxLength={1000}
+                  placeholder="Who said it, where, and what was being argued"
+                  className="mt-1 w-full border-b border-[#1A1A1A]/20 bg-transparent pb-2 font-serif text-[13px] outline-none placeholder:text-[#1A1A1A]/30 focus:border-[#1A4BFF]"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={busy || text.trim().length < 20}
+                className="inline-flex min-h-12 items-center justify-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:cursor-not-allowed disabled:border-[#1A1A1A]/20 disabled:bg-transparent disabled:text-[#1A1A1A]/30"
+              >
+                {busy ? "Setting the room…" : "Convene the seminar"}
+                {!busy && <ArrowRight className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setText(SAMPLE);
+                  setContext("A podcast conversation about foreign aid and statecraft.");
+                }}
+                className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4"
+              >
+                Use the foreign-aid quote
+              </button>
+              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">
+                {text.length}/3000 · no verdict unless asked
+              </span>
+            </div>
+          </form>
+
+          {error && (
+            <p className="mt-4 border-l-2 border-[#C1121F] pl-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#FF9D9D]">
+              {error}
+            </p>
+          )}
+        </div>
+      </section>
+
+      {seminar && (
+        <main className="mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
+          <section className="grid gap-6 border-l-4 border-[#1A4BFF] pl-5 md:grid-cols-[minmax(0,1fr)_240px] md:gap-10">
+            <div>
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+                The question underneath
+              </p>
+              <p className="mt-2 max-w-[62ch] font-display text-[24px] leading-[1.18] md:text-[30px]">
+                {seminar.question}
+              </p>
+              <p className="mt-3 max-w-[62ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
+                {seminar.restatement}
+              </p>
+            </div>
+            <div className="border-t border-[#1A1A1A]/15 pt-3 md:border-l md:border-t-0 md:pl-5 md:pt-0">
+              <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/40">
+                You brought
+              </p>
+              <p className="mt-1 line-clamp-4 font-serif text-[12px] italic leading-relaxed text-[#1A1A1A]/55">
+                “{text}”
+              </p>
+            </div>
+          </section>
+
+          <section className="mt-8">
+            <div className="flex items-end justify-between gap-4 border-b-2 border-[#1A1A1A] pb-2">
+              <h2 className="font-display text-[30px] leading-none">Two readings of the same thing.</h2>
+              <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
+                steelmanned
+              </span>
+            </div>
+            <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+              Arguments to test, not sourced findings.
+            </p>
+
+            <div className="grid border-b-2 border-[#1A1A1A] md:grid-cols-2 md:divide-x md:divide-[#1A1A1A]">
+              {seminar.theories.map((theory, index) => (
+                <TheoryColumn key={index} theory={theory} index={index} />
+              ))}
+            </div>
+          </section>
+
+          {!revealed ? (
+            <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/12 px-4 py-2">
+                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em]">Before the crux</p>
+                <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+                  choose before reading on
+                </p>
+              </div>
+              <div className="px-4 py-5">
+                <h2 className="font-display text-[26px] leading-tight">Which reading survives the evidence?</h2>
+                <p className="mt-2 max-w-[56ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
+                  This is not a vote on what is good. It is a bet on which causal account explains more
+                  of what happened.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => choose("A")}
+                    className="border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] hover:text-white"
+                  >
+                    Theory A
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => choose("B")}
+                    className="border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] hover:text-white"
+                  >
+                    Theory B
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => choose("undecided")}
+                    className="border-2 border-[#1A1A1A]/25 px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/55 transition-colors hover:border-[#1A1A1A]"
+                  >
+                    Neither yet
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStand(null);
+                    setRevealed(true);
+                  }}
+                  className="mt-4 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 underline underline-offset-4"
+                >
+                  Reveal the crux without choosing
+                </button>
+              </div>
+            </section>
+          ) : (
+            <>
+              <section className="mt-8 bg-[#1A1A1A] text-[#FDFBF7]">
+                <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
+                  <div className="border-b border-white/15 px-5 py-4 md:border-b-0 md:border-r md:border-white/15 md:px-6 md:py-8">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#7F9BFF]">
+                      The crux
+                    </p>
+                    <p className="mt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-white/40">
+                      {DISAGREEMENT[seminar.disagreement]}
+                    </p>
+                    {stand && (
+                      <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.12em] text-white/70">
+                        You stood with{" "}
+                        <span className="text-[#7F9BFF]">
+                          {stand === "undecided" ? "neither yet" : `theory ${stand}`}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                  <div className="px-5 py-5 md:px-8 md:py-8">
+                    <p className="max-w-[38ch] font-display text-[26px] leading-[1.12] md:text-[34px]">
+                      {seminar.crux}
+                    </p>
+                    <div className="mt-6 border-t border-white/15 pt-4">
+                      <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">
+                        What would settle it
+                      </p>
+                      <p className="mt-1 max-w-[62ch] font-serif text-[14px] leading-relaxed text-white/75">
+                        {seminar.settle}
+                      </p>
+                    </div>
+                    {seminar.sources_needed.length > 0 && (
+                      <div className="mt-4">
+                        <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">
+                          Look for
+                        </p>
+                        <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                          {seminar.sources_needed.map((source) => (
+                            <li key={source} className="font-mono text-[9px] uppercase tracking-[0.08em] text-white/55">
+                              → {source}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </section>
+
+              <section className="mt-6">
+                {!verdictOpen ? (
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-y border-[#1A1A1A]/15 py-4">
+                    <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
+                      The tension is the point. If you want the evidence weighed, ask for a
+                      provisional — not moral — verdict.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setVerdictOpen(true)}
+                      className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
+                    >
+                      Show a provisional verdict
+                      <ArrowUpRight className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="border-2 border-[#1A1A1A] bg-white">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/12 px-4 py-2">
+                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em]">
+                        Provisional verdict
+                      </p>
+                      <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+                        empirical only · {seminar.verdict.confidence} confidence
+                      </p>
+                    </div>
+                    <div className="px-4 py-5">
+                      <p className="max-w-[52ch] font-display text-[27px] leading-tight">
+                        {seminar.verdict.lean === "undecided"
+                          ? "The evidence does not separate them yet."
+                          : `The evidence currently leans toward theory ${seminar.verdict.lean}.`}
+                      </p>
+                      <p className="mt-3 max-w-[64ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
+                        {seminar.verdict.why}
+                      </p>
+                      <p className="mt-3 border-l-2 border-[#1A4BFF] pl-3 font-serif text-[13px] leading-relaxed text-[#1A1A1A]/60">
+                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF]">
+                          What would change it ·{" "}
+                        </span>
+                        {seminar.verdict.change}
+                      </p>
+                      <p className="mt-4 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">
+                        This is a judgement about explanation, not about what is right.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </section>
+
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={reset}
+                  className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/50 underline underline-offset-4 hover:text-[#1A4BFF]"
+                >
+                  <RotateCcw className="h-3 w-3" /> New seminar
+                </button>
+                <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">
+                  Hold the tension · verify before you act
+                </p>
+              </div>
+            </>
+          )}
+        </main>
+      )}
+    </div>
+  );
+}
+
+const DISAGREEMENT: Record<Seminar["disagreement"], string> = {
+  empirical: "an empirical disagreement",
+  definitional: "a definitional disagreement",
+  scope: "a disagreement about scope",
+  mixed: "empirical and conceptual",
+};
+
+function TheoryColumn({ theory, index }: { theory: SeminarTheory; index: number }) {
+  const letter = theory.key === "A" || theory.key === "B" ? theory.key : index === 0 ? "A" : "B";
+  const tint = letter === "A" ? "bg-[#F4EFE6]" : "bg-white";
+  return (
+    <article className={`${tint} px-5 py-5 md:px-7 md:py-7`}>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/40">
+            Theory {letter}
+          </p>
+          <h3 className="mt-1 font-display text-[25px] leading-[1.05]">{theory.name}</h3>
+        </div>
+        <span
+          className={`font-display text-[64px] leading-[0.7] ${letter === "A" ? "text-[#1A4BFF]" : "text-[#1A1A1A]"}`}
+          aria-hidden
+        >
+          {letter}
+        </span>
+      </div>
+
+      <p className="mt-4 border-t border-[#1A1A1A]/15 pt-3 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/75">
+        {theory.claim}
+      </p>
+
+      <div className="mt-4">
+        <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+          The mechanism
+        </p>
+        <p className="mt-1 font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/70">
+          {theory.mechanism}
+        </p>
+      </div>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div>
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+            It predicts
+          </p>
+          <ul className="mt-1 space-y-1">
+            {theory.predictions.map((prediction) => (
+              <li key={prediction} className="font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65">
+                → {prediction}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+            Evidence to check
+          </p>
+          <ul className="mt-1 space-y-1">
+            {theory.evidence.map((item) => (
+              <li key={item} className="font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="mt-4 border-l-2 border-[#1A1A1A]/30 pl-3">
+        <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+          It would be wrong if
+        </p>
+        <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-[#1A1A1A]/65">
+          {theory.falsifier}
+        </p>
+      </div>
+
+      <p className="mt-4 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#1A1A1A]/35">
+        Assumes · {theory.assumes}
+      </p>
+    </article>
+  );
+}

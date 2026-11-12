@@ -19,6 +19,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as ReadsRouteImport } from './routes/reads'
 import { Route as ReviewRouteImport } from './routes/review'
+import { Route as SeminarRouteImport } from './routes/seminar'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
@@ -38,6 +39,7 @@ import { Route as ApiPracticeRouteImport } from './routes/api/practice'
 import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
 import { Route as ApiQuestionGapRouteImport } from './routes/api/question-gap'
 import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
+import { Route as ApiSeminarRouteImport } from './routes/api/seminar'
 import { Route as ApiThinkingProfileRouteImport } from './routes/api/thinking-profile'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as ApiWeeklyReviewRouteImport } from './routes/api/weekly-review'
@@ -97,6 +99,11 @@ const ReadsRoute = ReadsRouteImport.update({
 const ReviewRoute = ReviewRouteImport.update({
   id: '/review',
   path: '/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeminarRoute = SeminarRouteImport.update({
+  id: '/seminar',
+  path: '/seminar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -194,6 +201,11 @@ const ApiReadsPublicRoute = ApiReadsPublicRouteImport.update({
   path: '/api/reads-public',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSeminarRoute = ApiSeminarRouteImport.update({
+  id: '/api/seminar',
+  path: '/api/seminar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiThinkingProfileRoute = ApiThinkingProfileRouteImport.update({
   id: '/api/thinking-profile',
   path: '/api/thinking-profile',
@@ -256,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/review': typeof ReviewRoute
+  '/seminar': typeof SeminarRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -275,6 +288,7 @@ export interface FileRoutesByFullPath {
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
+  '/api/seminar': typeof ApiSeminarRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
@@ -297,6 +311,7 @@ export interface FileRoutesByTo {
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/review': typeof ReviewRoute
+  '/seminar': typeof SeminarRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -316,6 +331,7 @@ export interface FileRoutesByTo {
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
+  '/api/seminar': typeof ApiSeminarRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
@@ -339,6 +355,7 @@ export interface FileRoutesById {
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
   '/review': typeof ReviewRoute
+  '/seminar': typeof SeminarRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -358,6 +375,7 @@ export interface FileRoutesById {
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
+  '/api/seminar': typeof ApiSeminarRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
@@ -382,6 +400,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/reads'
     | '/review'
+    | '/seminar'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -401,6 +420,7 @@ export interface FileRouteTypes {
     | '/api/publish-read'
     | '/api/question-gap'
     | '/api/reads-public'
+    | '/api/seminar'
     | '/api/thinking-profile'
     | '/api/threadwise'
     | '/api/weekly-review'
@@ -423,6 +443,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/reads'
     | '/review'
+    | '/seminar'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -442,6 +463,7 @@ export interface FileRouteTypes {
     | '/api/publish-read'
     | '/api/question-gap'
     | '/api/reads-public'
+    | '/api/seminar'
     | '/api/thinking-profile'
     | '/api/threadwise'
     | '/api/weekly-review'
@@ -464,6 +486,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/reads'
     | '/review'
+    | '/seminar'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -483,6 +506,7 @@ export interface FileRouteTypes {
     | '/api/publish-read'
     | '/api/question-gap'
     | '/api/reads-public'
+    | '/api/seminar'
     | '/api/thinking-profile'
     | '/api/threadwise'
     | '/api/weekly-review'
@@ -506,6 +530,7 @@ export interface RootRouteChildren {
   QuestionsRoute: typeof QuestionsRoute
   ReadsRoute: typeof ReadsRoute
   ReviewRoute: typeof ReviewRoute
+  SeminarRoute: typeof SeminarRoute
   TermsRoute: typeof TermsRoute
   WorkspaceRoute: typeof WorkspaceRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
@@ -525,6 +550,7 @@ export interface RootRouteChildren {
   ApiPublishReadRoute: typeof ApiPublishReadRoute
   ApiQuestionGapRoute: typeof ApiQuestionGapRoute
   ApiReadsPublicRoute: typeof ApiReadsPublicRoute
+  ApiSeminarRoute: typeof ApiSeminarRoute
   ApiThinkingProfileRoute: typeof ApiThinkingProfileRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   ApiWeeklyReviewRoute: typeof ApiWeeklyReviewRoute
@@ -607,6 +633,13 @@ declare module '@tanstack/react-router' {
       path: '/review'
       fullPath: '/review'
       preLoaderRoute: typeof ReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seminar': {
+      id: '/seminar'
+      path: '/seminar'
+      fullPath: '/seminar'
+      preLoaderRoute: typeof SeminarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -742,6 +775,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiReadsPublicRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/seminar': {
+      id: '/api/seminar'
+      path: '/api/seminar'
+      fullPath: '/api/seminar'
+      preLoaderRoute: typeof ApiSeminarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/thinking-profile': {
       id: '/api/thinking-profile'
       path: '/api/thinking-profile'
@@ -826,6 +866,7 @@ const rootRouteChildren: RootRouteChildren = {
   QuestionsRoute: QuestionsRoute,
   ReadsRoute: ReadsRoute,
   ReviewRoute: ReviewRoute,
+  SeminarRoute: SeminarRoute,
   TermsRoute: TermsRoute,
   WorkspaceRoute: WorkspaceRoute,
   ApiAnalystRoute: ApiAnalystRoute,
@@ -845,6 +886,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublishReadRoute: ApiPublishReadRoute,
   ApiQuestionGapRoute: ApiQuestionGapRoute,
   ApiReadsPublicRoute: ApiReadsPublicRoute,
+  ApiSeminarRoute: ApiSeminarRoute,
   ApiThinkingProfileRoute: ApiThinkingProfileRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   ApiWeeklyReviewRoute: ApiWeeklyReviewRoute,

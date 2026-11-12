@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 const NAV = [
   { key: "workspace", to: "/workspace", label: "Workspace" },
   { key: "analyst", to: "/analyst", label: "The analyst" },
+  { key: "seminar", to: "/seminar", label: "Seminar" },
   { key: "questions", to: "/questions", label: "Questions" },
   { key: "digest", to: "/digest", label: "Record" },
   { key: "cases", to: "/cases", label: "Cases" },
@@ -17,8 +18,8 @@ const TABS = [
   { key: "workspace", to: "/workspace", label: "Workspace" },
   { key: "questions", to: "/questions", label: "Questions" },
   { key: "analyst", to: "/analyst", label: "Read" },
+  { key: "seminar", to: "/seminar", label: "Seminar" },
   { key: "digest", to: "/digest", label: "Record" },
-  { key: "profile", to: "/profile", label: "Profile" },
 ] as const;
 
 /** One header for the landing and every signed-in surface. */

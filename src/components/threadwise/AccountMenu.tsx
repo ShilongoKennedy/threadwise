@@ -75,6 +75,13 @@ export function AccountMenu({ email }: { email?: string }) {
               Thinking profile
             </Link>
             <Link
+              to="/seminar"
+              onClick={() => setOpen(false)}
+              className="block px-2 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/70 hover:bg-[#FDFBF7] hover:text-[#1A4BFF]"
+            >
+              The seminar
+            </Link>
+            <Link
               to="/digest"
               onClick={() => setOpen(false)}
               className="block px-2 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/70 hover:bg-[#FDFBF7] hover:text-[#1A4BFF]"
