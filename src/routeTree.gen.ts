@@ -11,9 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
+import { Route as AtlasRouteImport } from './routes/atlas'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DigestRouteImport } from './routes/digest'
-import { Route as ExperimentRouteImport } from './routes/experiment'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -62,6 +62,11 @@ const AnalystRoute = AnalystRouteImport.update({
   path: '/analyst',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AtlasRoute = AtlasRouteImport.update({
+  id: '/atlas',
+  path: '/atlas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CasesRoute = CasesRouteImport.update({
   id: '/cases',
   path: '/cases',
@@ -70,11 +75,6 @@ const CasesRoute = CasesRouteImport.update({
 const DigestRoute = DigestRouteImport.update({
   id: '/digest',
   path: '/digest',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExperimentRoute = ExperimentRouteImport.update({
-  id: '/experiment',
-  path: '/experiment',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -266,9 +266,9 @@ const ApiReadTokenRoute = ApiReadTokenRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
+  '/atlas': typeof AtlasRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
-  '/experiment': typeof ExperimentRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
@@ -310,9 +310,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
+  '/atlas': typeof AtlasRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
-  '/experiment': typeof ExperimentRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
@@ -355,9 +355,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
+  '/atlas': typeof AtlasRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
-  '/experiment': typeof ExperimentRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
@@ -401,9 +401,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/analyst'
+    | '/atlas'
     | '/cases'
     | '/digest'
-    | '/experiment'
     | '/login'
     | '/privacy'
     | '/profile'
@@ -445,9 +445,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/analyst'
+    | '/atlas'
     | '/cases'
     | '/digest'
-    | '/experiment'
     | '/login'
     | '/privacy'
     | '/profile'
@@ -489,9 +489,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/analyst'
+    | '/atlas'
     | '/cases'
     | '/digest'
-    | '/experiment'
     | '/login'
     | '/privacy'
     | '/profile'
@@ -534,9 +534,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalystRoute: typeof AnalystRoute
+  AtlasRoute: typeof AtlasRoute
   CasesRoute: typeof CasesRoute
   DigestRoute: typeof DigestRoute
-  ExperimentRoute: typeof ExperimentRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
@@ -592,6 +592,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalystRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/atlas': {
+      id: '/atlas'
+      path: '/atlas'
+      fullPath: '/atlas'
+      preLoaderRoute: typeof AtlasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cases': {
       id: '/cases'
       path: '/cases'
@@ -604,13 +611,6 @@ declare module '@tanstack/react-router' {
       path: '/digest'
       fullPath: '/digest'
       preLoaderRoute: typeof DigestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/experiment': {
-      id: '/experiment'
-      path: '/experiment'
-      fullPath: '/experiment'
-      preLoaderRoute: typeof ExperimentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -878,9 +878,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalystRoute: AnalystRoute,
+  AtlasRoute: AtlasRoute,
   CasesRoute: CasesRoute,
   DigestRoute: DigestRoute,
-  ExperimentRoute: ExperimentRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
