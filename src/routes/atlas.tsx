@@ -634,6 +634,7 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
         @keyframes atlasDash { to { stroke-dashoffset: -40; } }
         @media (prefers-reduced-motion: reduce) {
           .atlas-route { animation: none; }
+          .atlas-boat { display: none; }
         }
       `}</style>
       <svg
