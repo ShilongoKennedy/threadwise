@@ -152,8 +152,21 @@ function SeminarPage() {
     <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <AppHeader section="seminar" />
 
-      <section className="bg-[#1A1A1A] text-[#FDFBF7]">
-        <div className="mx-auto w-full max-w-[1100px] px-5 pb-12 pt-12 md:px-8 md:pb-16 md:pt-16">
+      <section className="relative overflow-hidden bg-[#1A1A1A] text-[#FDFBF7]">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-80"
+          style={{
+            backgroundImage: "url('/world-land-dark.svg')",
+            backgroundSize: "min(1600px, 130vw) auto",
+            backgroundPosition: "78% 46%",
+            backgroundRepeat: "no-repeat",
+            maskImage: "linear-gradient(to bottom, transparent 0%, black 14%, black 82%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 14%, black 82%, transparent 100%)",
+          }}
+        />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#1A1A1A_0%,rgba(26,26,26,0.94)_30%,rgba(26,26,26,0.55)_56%,rgba(26,26,26,0.08)_82%,transparent_100%)]" />
+
+        <div className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-12 pt-12 md:px-8 md:pb-16 md:pt-16">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#7F9BFF]">
               The seminar
