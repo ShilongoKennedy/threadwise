@@ -102,7 +102,7 @@ function LandingPage() {
         {/* ATLAS HERO */}
         <section className="relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28">
           <AtlasMap active={activePlace} onActive={setActivePlace} />
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#FDFBF7_0%,rgba(253,251,247,0.96)_28%,rgba(253,251,247,0.42)_48%,rgba(253,251,247,0.06)_68%,transparent_80%)] max-md:bg-[linear-gradient(180deg,#FDFBF7_0%,rgba(253,251,247,0.94)_48%,rgba(253,251,247,0.25)_100%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#FDFBF7_0%,rgba(253,251,247,0.96)_30%,rgba(253,251,247,0.2)_54%,transparent_70%)] max-md:bg-[linear-gradient(180deg,#FDFBF7_0%,rgba(253,251,247,0.94)_48%,rgba(253,251,247,0.25)_100%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[26%] bg-[linear-gradient(0deg,#FDFBF7_0%,rgba(253,251,247,0.88)_55%,transparent_100%)] md:hidden" />
 
           <div className="relative z-10 mx-auto flex min-h-[620px] w-full max-w-[1200px] flex-col justify-between px-5 pb-10 pt-10 md:min-h-[680px] md:px-8 md:pb-12 md:pt-14">
@@ -114,7 +114,7 @@ function LandingPage() {
             </div>
 
             <div className="max-w-[650px] pb-8 md:pb-14">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
+              <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF] md:mt-0">
                 <span>The read / IAEA–Iran</span>
                 <span className="h-3 w-px bg-[#1A4BFF]/25" />
                 <span className="text-[#1A1A1A]/40">09 Nov 2026</span>
@@ -544,7 +544,7 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
   const natanz = ATLAS_PLACES.natanz;
   const washington = ATLAS_PLACES.washington;
   return (
-    <div className="atlas-plate pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[38%] overflow-hidden border-t border-[#1A1A1A]/10 md:inset-0 md:h-full md:border-t-0" aria-hidden>
+    <div className="atlas-plate pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[38%] overflow-hidden border-t border-[#1A1A1A]/10 md:inset-x-auto md:bottom-auto md:right-0 md:top-1/2 md:h-auto md:w-[64%] md:-translate-y-1/2 md:border-t-0" aria-hidden>
       <style>{`
         .atlas-plate {
           background: #FDFBF7;
@@ -616,7 +616,7 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
       `}</style>
       <svg
         viewBox="0 0 1000 500"
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio="xMidYMid meet"
         className="h-full w-full"
       >
         <rect width="1000" height="500" fill="#FDFBF7" />
