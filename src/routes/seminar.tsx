@@ -256,7 +256,7 @@ function SeminarPage() {
 
       {saved.length > 0 && (
         <section className="mx-auto w-full max-w-[1100px] px-5 pt-8 md:px-8">
-          <div className="flex items-end justify-between gap-4 border-b-2 border-[#1A1A1A] pb-2">
+          <div className="flex items-end justify-between gap-4 border-b border-[#1A1A1A]/15 pb-3">
             <h2 className="font-display text-[26px] leading-none">The archive.</h2>
             <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
               {saved.length} saved
@@ -297,15 +297,15 @@ function SeminarPage() {
 
       {seminar && (
         <main className="mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
-          <section className="grid gap-6 border-l-4 border-[#1A4BFF] pl-5 md:grid-cols-[minmax(0,1fr)_240px] md:gap-10">
+          <section className="grid gap-6 border-y border-[#1A1A1A]/15 py-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12 md:py-8">
             <div>
               <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
                 The question underneath
               </p>
-              <p className="mt-2 max-w-[62ch] font-display text-[24px] leading-[1.18] md:text-[30px]">
+              <p className="mt-2 max-w-[62ch] font-display text-[28px] leading-[1.1] md:text-[38px]">
                 {seminar.question}
               </p>
-              <p className="mt-3 max-w-[62ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
+              <p className="mt-3 max-w-[62ch] font-serif text-[16px] leading-relaxed text-[#1A1A1A]/65">
                 {seminar.restatement}
               </p>
             </div>
@@ -320,8 +320,8 @@ function SeminarPage() {
           </section>
 
           <section className="mt-8">
-            <div className="flex items-end justify-between gap-4 border-b-2 border-[#1A1A1A] pb-2">
-              <h2 className="font-display text-[30px] leading-none">Two readings of the same thing.</h2>
+            <div className="flex items-end justify-between gap-4 border-b border-[#1A1A1A]/15 pb-3">
+              <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the same thing.</h2>
               <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
                 steelmanned
               </span>
@@ -330,7 +330,7 @@ function SeminarPage() {
               Arguments to test, not sourced findings.
             </p>
 
-            <div className="grid border-b-2 border-[#1A1A1A] md:grid-cols-2 md:divide-x md:divide-[#1A1A1A]">
+            <div className="grid border-y border-[#1A1A1A]/15 md:grid-cols-2 md:divide-x md:divide-[#1A1A1A]/15">
               {seminar.theories.map((theory, index) => (
                 <TheoryColumn key={index} theory={theory} index={index} />
               ))}
@@ -338,15 +338,15 @@ function SeminarPage() {
           </section>
 
           {!revealed ? (
-            <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/12 px-4 py-2">
+            <section className="mt-10 border-y border-[#1A1A1A]/15 py-5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em]">Before the crux</p>
                 <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
                   choose before reading on
                 </p>
               </div>
-              <div className="px-4 py-5">
-                <h2 className="font-display text-[26px] leading-tight">Which reading survives the evidence?</h2>
+              <div className="pt-3">
+                <h2 className="max-w-[20ch] font-display text-[30px] leading-[1.02] md:text-[36px]">Which reading survives the evidence?</h2>
                 <p className="mt-2 max-w-[56ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
                   This is not a vote on what is good. It is a bet on which causal account explains more
                   of what happened.
@@ -388,7 +388,7 @@ function SeminarPage() {
             </section>
           ) : (
             <>
-              <section className="mt-8 bg-[#1A1A1A] text-[#FDFBF7]">
+              <section className="mt-10 bg-[#1A1A1A] text-[#FDFBF7]">
                 <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
                   <div className="border-b border-white/15 px-5 py-4 md:border-b-0 md:border-r md:border-white/15 md:px-6 md:py-8">
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#7F9BFF]">
@@ -438,7 +438,7 @@ function SeminarPage() {
 
               <section className="mt-6">
                 {!verdictOpen ? (
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-y border-[#1A1A1A]/15 py-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-y border-[#1A1A1A]/15 py-5">
                     <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
                       The tension is the point. If you want the evidence weighed, ask for a
                       provisional — not moral — verdict.
@@ -453,17 +453,17 @@ function SeminarPage() {
                     </button>
                   </div>
                 ) : (
-                  <div className="border-2 border-[#1A1A1A] bg-white">
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/12 px-4 py-2">
-                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em]">
+                  <div className="border-y border-[#1A1A1A]/15 py-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
                         Provisional verdict
                       </p>
                       <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
                         empirical only · {seminar.verdict.confidence} confidence
                       </p>
                     </div>
-                    <div className="px-4 py-5">
-                      <p className="max-w-[52ch] font-display text-[27px] leading-tight">
+                    <div className="pt-3">
+                      <p className="max-w-[52ch] font-display text-[30px] leading-[1.05] md:text-[36px]">
                         {seminar.verdict.lean === "undecided"
                           ? "The evidence does not separate them yet."
                           : `The evidence currently leans toward theory ${seminar.verdict.lean}.`}
@@ -485,7 +485,7 @@ function SeminarPage() {
                 )}
               </section>
 
-              <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t-2 border-[#1A1A1A] pt-4">
+              <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
                 <div>
                   <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/45">
                     Put this on the record
@@ -545,15 +545,15 @@ const DISAGREEMENT: Record<Seminar["disagreement"], string> = {
 
 function TheoryColumn({ theory, index }: { theory: SeminarTheory; index: number }) {
   const letter = theory.key === "A" || theory.key === "B" ? theory.key : index === 0 ? "A" : "B";
-  const tint = letter === "A" ? "bg-[#F4EFE6]" : "bg-white";
+  const tint = letter === "A" ? "bg-[#F4EFE6]/65" : "bg-transparent";
   return (
-    <article className={`${tint} px-5 py-5 md:px-7 md:py-7`}>
+    <article className={`${tint} px-5 py-6 md:px-7 md:py-8`}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/40">
             Theory {letter}
           </p>
-          <h3 className="mt-1 font-display text-[25px] leading-[1.05]">{theory.name}</h3>
+          <h3 className="mt-1 max-w-[16ch] font-display text-[28px] leading-[1.02]">{theory.name}</h3>
         </div>
         <span
           className={`font-display text-[64px] leading-[0.7] ${letter === "A" ? "text-[#1A4BFF]" : "text-[#1A1A1A]"}`}
@@ -563,7 +563,7 @@ function TheoryColumn({ theory, index }: { theory: SeminarTheory; index: number 
         </span>
       </div>
 
-      <p className="mt-4 border-t border-[#1A1A1A]/15 pt-3 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/75">
+      <p className="mt-5 border-t border-[#1A1A1A]/15 pt-4 font-serif text-[15.5px] leading-relaxed text-[#1A1A1A]/80">
         {theory.claim}
       </p>
 
