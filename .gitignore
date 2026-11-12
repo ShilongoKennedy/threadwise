@@ -39,3 +39,6 @@ supabase/.temp/
 .env
 .env.local
 .env.txt
+
+# Local image study (not deployed)
+public/WorldLeaders.png
