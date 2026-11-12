@@ -130,14 +130,14 @@ function QuestionsPage() {
               </p>
             )}
 
-            <ul className="mt-8 space-y-8">
+            <ul className="mt-8">
               {questions.map((question) => {
                 const mine = findings.filter((finding) => finding.question_id === question.id);
                 const forCount = mine.filter((finding) => finding.stance === "for").length;
                 const againstCount = mine.length - forCount;
                 return (
-                  <li key={question.id} className="border-2 border-[#1A1A1A] bg-white">
-                    <div className="border-b-2 border-[#1A1A1A] px-4 py-3">
+                  <li key={question.id} className="border-t-2 border-[#1A1A1A] py-5 first:pt-4">
+                    <div className="border-b border-[#1A1A1A]/15 pb-2">
                       <div className="flex items-start justify-between gap-3">
                         <h2 className="font-display text-[20px] leading-snug">
                           <Link
@@ -182,7 +182,7 @@ function QuestionsPage() {
                     </div>
                     <div className="grid grid-cols-1 divide-y divide-[#1A1A1A]/10 md:grid-cols-2 md:divide-x md:divide-y-0">
                       {(["for", "against"] as const).map((side) => (
-                        <div key={side} className="px-4 py-3">
+                        <div key={side} className="py-3 md:pl-4 md:first:pl-0">
                           <p className={`font-mono text-[9px] font-bold uppercase tracking-[0.18em] ${side === "for" ? "text-[#1A4BFF]" : "text-[#C1121F]"}`}>
                             {side}
                           </p>
@@ -195,7 +195,7 @@ function QuestionsPage() {
                                   </p>
                                 )}
                                 <p>{finding.note}</p>
-                                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
+                                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
                                   {finding.source && <span>{finding.source}</span>}
                                   {finding.confidence && <span>{finding.confidence}</span>}
                                   {finding.read_token && (

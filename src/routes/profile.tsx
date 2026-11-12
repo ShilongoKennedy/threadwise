@@ -225,7 +225,7 @@ function ProfilePage() {
               </section>
             ) : (
               <>
-                <section className="mt-8 grid grid-cols-2 border-2 border-[#1A1A1A] md:grid-cols-5">
+                <section className="mt-8 grid grid-cols-2 border-y-2 border-[#1A1A1A] md:grid-cols-5">
                   {[
                     { label: "reads", value: profile.reads },
                     { label: "reviewed", value: profile.reviewed },
@@ -256,7 +256,7 @@ function ProfilePage() {
                         {drill.completedAt ? "This week's drill · done" : "This week's drill"}{" "}
                         · {drill.kind === "teach" ? "teach-back" : drill.kind}
                       </span>
-                      <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-white/70">
+                      <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/70">
                         {drill.week}
                       </span>
                     </div>
@@ -277,7 +277,7 @@ function ProfilePage() {
                           {drill.completedAt ? "Practice again →" : "Start drill →"}
                         </Link>
                         {drillHistory.length > 0 && (
-                          <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
                             {drillHistory.length} drill{drillHistory.length === 1 ? "" : "s"} completed
                           </span>
                         )}
@@ -351,7 +351,7 @@ function ProfilePage() {
                               <div className="flex items-baseline justify-between gap-3 font-mono text-[9px] uppercase tracking-[0.12em]">
                                 <span className="text-[#1A1A1A]/70">
                                   {bucket.confidence}
-                                  <span className="ml-2 text-[#1A1A1A]/35">stated {forecast}%</span>
+                                  <span className="ml-2 text-[#1A1A1A]/45">stated {forecast}%</span>
                                 </span>
                                 <span className="text-[#1A4BFF]">
                                   {bucket.accuracy === null ? "no settled" : `${Math.round(accuracy)}%`}
@@ -367,22 +367,22 @@ function ProfilePage() {
                                   style={{ left: `${forecast}%` }}
                                 />
                               </div>
-                              <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
+                              <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
                                 {bucket.correct}/{bucket.settled} right
                               </p>
                             </div>
                           );
                         })}
                       </div>
-                      <p className="border-t border-[#1A1A1A]/10 px-4 py-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#1A1A1A]/45">
+                      <p className="border-t border-[#1A1A1A]/10 px-4 py-2 font-mono text-[9px] uppercase leading-relaxed tracking-[0.1em] text-[#1A1A1A]/45">
                         Blue = observed accuracy. Red mark = stated confidence. Brier: lower is better.
                       </p>
                     </>
                   )}
                 </section>
 
-                <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <section className="border-2 border-[#1A1A1A] bg-white p-4">
+                <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2">
+                  <section className="border-t-2 border-[#1A1A1A] pt-4">
                     <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]">
                       Questions
                     </h2>
@@ -416,7 +416,7 @@ function ProfilePage() {
                     </Link>
                   </section>
 
-                  <section className="border-2 border-[#1A1A1A] bg-white p-4">
+                  <section className="border-t-2 border-[#1A1A1A] pt-4">
                     <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]">
                       Sources
                     </h2>
@@ -436,14 +436,14 @@ function ProfilePage() {
                       ))}
                     </ul>
                     {profile.sources.unreferencedReads > 0 && (
-                      <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#C1121F]">
+                      <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#C1121F]">
                         {profile.sources.unreferencedReads} reads with no sources
                       </p>
                     )}
                   </section>
                 </div>
 
-                <section className="mt-6 border-2 border-[#1A1A1A] bg-white p-4">
+                <section className="mt-8 border-t-2 border-[#1A1A1A] pt-4">
                   <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]">
                     What the reads are made of
                   </h2>
@@ -451,7 +451,7 @@ function ProfilePage() {
                     {profile.claimKinds.map((claim) => (
                       <span
                         key={claim.kind}
-                        className="border border-[#1A1A1A]/20 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/65"
+                        className="border border-[#1A1A1A]/20 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/65"
                       >
                         {claim.kind} · {claim.count}
                       </span>
@@ -459,25 +459,25 @@ function ProfilePage() {
                     {profile.modes.map((mode) => (
                       <span
                         key={mode.mode}
-                        className="border border-[#1A4BFF]/30 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF]"
+                        className="border border-[#1A4BFF]/30 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]"
                       >
                         {mode.mode} · {mode.count}
                       </span>
                     ))}
                   </div>
-                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                  <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
                     {profile.reviewVerdicts.grounded} grounded · {profile.reviewVerdicts.mixed} mixed ·{" "}
                     {profile.reviewVerdicts.unsupported} unsupported
                   </p>
                 </section>
 
                 {practice && practice.total > 0 && (
-                  <section className="mt-6 border-2 border-[#1A1A1A] bg-white p-4">
+                  <section className="mt-8 border-t-2 border-[#1A1A1A] pt-4">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]">
                         Practice
                       </h2>
-                      <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
                         {practice.total} attempt{practice.total === 1 ? "" : "s"} · local record
                       </span>
                     </div>
@@ -500,7 +500,7 @@ function ProfilePage() {
                         </li>
                       ))}
                     </ul>
-                    <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+                    <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
                       Structural checks only · local record; sync is best-effort
                     </p>
                   </section>

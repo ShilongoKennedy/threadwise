@@ -49,7 +49,7 @@ export function QuestionGap({
 
   if (!gap) {
     return (
-      <div className="border-t border-[#1A1A1A]/10 px-4 py-3">
+      <div className="border-t border-[#1A1A1A]/10 py-3">
         <button
           type="button"
           onClick={() => void find()}
@@ -68,7 +68,7 @@ export function QuestionGap({
   }
 
   return (
-    <div className="space-y-2 border-t border-[#1A1A1A]/10 px-4 py-3">
+    <div className="space-y-2 border-t border-[#1A1A1A]/10 py-3">
       <div>
         <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
           Counter-question
