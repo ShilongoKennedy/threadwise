@@ -546,6 +546,15 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
   const washington = ATLAS_PLACES.washington;
   const demandActive = active === "vienna" || active === "tehran";
   const permissionActive = active === "tehran" || active === "natanz";
+  const demandPath = `M ${vienna[0]} ${vienna[1]} Q 610 112 ${tehran[0]} ${tehran[1]}`;
+  const holdPulse =
+    active === "vienna"
+      ? { x: vienna[0], y: vienna[1], color: "#1A4BFF" }
+      : active === "tehran"
+        ? { x: tehran[0], y: tehran[1], color: "#1A4BFF" }
+        : active === "natanz"
+          ? { x: 681, y: 176, color: "#C1121F" }
+          : null;
   return (
     <div className="atlas-plate pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[38%] overflow-hidden border-t border-[#1A1A1A]/10 md:inset-0 md:h-full md:border-t-0" aria-hidden>
       <style>{`
@@ -604,6 +613,7 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
           fill: #1A4BFF;
         }
         .atlas-line-label-red { fill: #C1121F; }
+        .atlas-hold-pulse { opacity: 0.95; }
         .atlas-marker {
           fill: #FDFBF7;
           stroke: #1A4BFF;
@@ -661,7 +671,7 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
           className="atlas-plate-image"
         />
         <path
-          d={`M ${vienna[0]} ${vienna[1]} Q 610 112 ${tehran[0]} ${tehran[1]}`}
+          d={demandPath}
           className={`atlas-route-solid ${demandActive ? "atlas-route-active" : ""}`}
         />
         <path
@@ -669,13 +679,33 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
           className={`atlas-route atlas-route-denied ${permissionActive ? "atlas-route-active" : ""}`}
         />
 
-        <circle r="1.5" className="atlas-demand-pulse" fill="#1A4BFF">
-          <animateMotion
-            dur="6.5s"
-            repeatCount="indefinite"
-            path={`M ${vienna[0]} ${vienna[1]} Q 610 112 ${tehran[0]} ${tehran[1]}`}
+        {holdPulse ? (
+          <circle
+            cx={holdPulse.x}
+            cy={holdPulse.y}
+            r="2.2"
+            fill={holdPulse.color}
+            className="atlas-hold-pulse"
           />
-        </circle>
+        ) : (
+          <circle r="1.5" className="atlas-demand-pulse" fill="#1A4BFF">
+            <animateMotion
+              dur="9s"
+              repeatCount="indefinite"
+              path={demandPath}
+              keyPoints="0;1;1"
+              keyTimes="0;0.58;1"
+              calcMode="linear"
+            />
+            <animate
+              attributeName="opacity"
+              dur="9s"
+              repeatCount="indefinite"
+              values="0;1;1;0;0"
+              keyTimes="0;0.06;0.56;0.64;1"
+            />
+          </circle>
+        )}
 
         <text
           x={(vienna[0] + tehran[0]) / 2}
