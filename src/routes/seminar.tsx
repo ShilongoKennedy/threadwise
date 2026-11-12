@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowRight, ArrowUpRight, RotateCcw } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import type { Seminar, SeminarTheory } from "@/lib/threadwise/seminar";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/seminar")({
   head: () => ({
@@ -20,6 +21,17 @@ export const Route = createFileRoute("/seminar")({
 
 const SAMPLE = `"I am actually in favour of foreign aid as a tool for statecraft, because sometimes foreign aid is easier than bombing people. Sometimes you want to bribe a country to get your way."`;
 
+type SavedSeminar = {
+  id: string;
+  quote_text: string;
+  context: string | null;
+  question: string;
+  seminar: Seminar;
+  stand: "A" | "B" | "undecided" | null;
+  verdict_shown: boolean;
+  created_at: string;
+};
+
 function SeminarPage() {
   const [text, setText] = useState("");
   const [context, setContext] = useState("");
@@ -29,6 +41,69 @@ function SeminarPage() {
   const [stand, setStand] = useState<"A" | "B" | "undecided" | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [verdictOpen, setVerdictOpen] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [saved, setSaved] = useState<SavedSeminar[]>([]);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { data } = await supabase.auth.getSession();
+      const user = data.session?.user.id ?? null;
+      if (!alive) return;
+      setUserId(user);
+      if (!user) return;
+      const { data: rows, error: readError } = await supabase
+        .from("analyst_seminars")
+        .select("id, quote_text, context, question, seminar, stand, verdict_shown, created_at")
+        .order("created_at", { ascending: false })
+        .limit(20);
+      if (!alive || readError) return;
+      setSaved((rows ?? []) as SavedSeminar[]);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const save = async () => {
+    if (!seminar || !userId || saveState === "saving" || savedId) return;
+    setSaveState("saving");
+    const { data, error: saveError } = await supabase
+      .from("analyst_seminars")
+      .insert({
+        quote_text: text,
+        context: context.trim() || null,
+        question: seminar.question,
+        seminar,
+        stand,
+        verdict_shown: verdictOpen,
+      })
+      .select("id, quote_text, context, question, seminar, stand, verdict_shown, created_at")
+      .single();
+    if (saveError || !data) {
+      setSaveState("error");
+      return;
+    }
+    const row = data as SavedSeminar;
+    setSaved((previous) => [row, ...previous.filter((item) => item.id !== row.id)]);
+    setSavedId(row.id);
+    setSaveState("saved");
+  };
+
+  const openSaved = (item: SavedSeminar) => {
+    setText(item.quote_text);
+    setContext(item.context ?? "");
+    setSeminar(item.seminar);
+    setStand(item.stand);
+    setRevealed(true);
+    setVerdictOpen(item.verdict_shown);
+    setSavedId(item.id);
+    setSaveState("saved");
+    setError(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const convene = async () => {
     if (text.trim().length < 20 || busy) return;
@@ -38,6 +113,8 @@ function SeminarPage() {
     setStand(null);
     setRevealed(false);
     setVerdictOpen(false);
+    setSavedId(null);
+    setSaveState("idle");
     try {
       const response = await fetch("/api/seminar", {
         method: "POST",
@@ -67,6 +144,8 @@ function SeminarPage() {
     setStand(null);
     setRevealed(false);
     setVerdictOpen(false);
+    setSavedId(null);
+    setSaveState("idle");
   };
 
   return (
@@ -161,6 +240,47 @@ function SeminarPage() {
           )}
         </div>
       </section>
+
+      {saved.length > 0 && (
+        <section className="mx-auto w-full max-w-[1100px] px-5 pt-8 md:px-8">
+          <div className="flex items-end justify-between gap-4 border-b-2 border-[#1A1A1A] pb-2">
+            <h2 className="font-display text-[26px] leading-none">The archive.</h2>
+            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
+              {saved.length} saved
+            </span>
+          </div>
+          <ul>
+            {saved.map((item, index) => (
+              <li key={item.id} className="border-b border-[#1A1A1A]/12">
+                <button
+                  type="button"
+                  onClick={() => openSaved(item)}
+                  className="group grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-baseline gap-3 py-3 text-left"
+                >
+                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate font-serif text-[14px] leading-snug text-[#1A1A1A]/80 group-hover:text-[#1A4BFF]">
+                      {item.question}
+                    </span>
+                    <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+                      {item.stand ? `stood with ${item.stand}` : "held the tension"} ·{" "}
+                      {new Date(item.created_at).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                      })}
+                    </span>
+                  </span>
+                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A4BFF]">
+                    reopen →
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {seminar && (
         <main className="mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
@@ -352,7 +472,38 @@ function SeminarPage() {
                 )}
               </section>
 
-              <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t-2 border-[#1A1A1A] pt-4">
+                <div>
+                  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/45">
+                    Put this on the record
+                  </p>
+                  {userId ? (
+                    <button
+                      type="button"
+                      onClick={save}
+                      disabled={saveState === "saving" || saveState === "saved"}
+                      className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4 disabled:text-[#1A1A1A]/35 disabled:no-underline"
+                    >
+                      {saveState === "saved"
+                        ? "Saved to the record"
+                        : saveState === "saving"
+                          ? "Saving…"
+                          : "Save this seminar →"}
+                    </button>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="mt-1 inline-block font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4"
+                    >
+                      Sign in to save this seminar
+                    </Link>
+                  )}
+                  {saveState === "error" && (
+                    <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]">
+                      Could not save. Try again.
+                    </p>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={reset}
