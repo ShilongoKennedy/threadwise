@@ -14,6 +14,7 @@ import { Route as AnalystRouteImport } from './routes/analyst'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as MarginRouteImport } from './routes/margin'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as QuestionsRouteImport } from './routes/questions'
@@ -76,6 +77,11 @@ const DigestRoute = DigestRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarginRoute = MarginRouteImport.update({
+  id: '/margin',
+  path: '/margin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
+  '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
@@ -320,6 +327,7 @@ export interface FileRoutesByTo {
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
+  '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
@@ -366,6 +374,7 @@ export interface FileRoutesById {
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
+  '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
@@ -413,6 +422,7 @@ export interface FileRouteTypes {
     | '/cases'
     | '/digest'
     | '/login'
+    | '/margin'
     | '/privacy'
     | '/profile'
     | '/questions'
@@ -458,6 +468,7 @@ export interface FileRouteTypes {
     | '/cases'
     | '/digest'
     | '/login'
+    | '/margin'
     | '/privacy'
     | '/profile'
     | '/questions'
@@ -503,6 +514,7 @@ export interface FileRouteTypes {
     | '/cases'
     | '/digest'
     | '/login'
+    | '/margin'
     | '/privacy'
     | '/profile'
     | '/questions'
@@ -549,6 +561,7 @@ export interface RootRouteChildren {
   CasesRoute: typeof CasesRoute
   DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
+  MarginRoute: typeof MarginRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   QuestionsRoute: typeof QuestionsRoute
@@ -624,6 +637,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/margin': {
+      id: '/margin'
+      path: '/margin'
+      fullPath: '/margin'
+      preLoaderRoute: typeof MarginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -901,6 +921,7 @@ const rootRouteChildren: RootRouteChildren = {
   CasesRoute: CasesRoute,
   DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
+  MarginRoute: MarginRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   QuestionsRoute: QuestionsRoute,
