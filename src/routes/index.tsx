@@ -113,15 +113,8 @@ function LandingPage() {
           <div className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(90deg,#FDFBF7_0%,rgba(253,251,247,0.96)_28%,rgba(253,251,247,0.42)_48%,rgba(253,251,247,0.06)_68%,transparent_80%)] md:block" />
 
           <div className="relative z-10 mx-auto flex min-h-[620px] w-full max-w-[1200px] flex-col justify-between px-5 pb-10 pt-10 md:min-h-[680px] md:px-8 md:pb-12 md:pt-14">
-            <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em]">
-              <span className="border border-[#1A1A1A] px-2 py-1 text-[#1A1A1A]/60">
-                The atlas / field 01
-              </span>
-              <span className="text-[#1A1A1A]/40">A read in places</span>
-            </div>
-
             <div className="atlas-copy max-w-[650px] pb-8 md:pb-14">
-              <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF] md:mt-0">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
                 <span>The read / IAEA–Iran</span>
                 <span className="h-3 w-px bg-[#1A4BFF]/25" />
                 <span className="text-[#1A1A1A]/40">09 Nov 2026</span>
@@ -225,10 +218,7 @@ function LandingPage() {
         <section id="loop" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-8 md:py-20">
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#1A4BFF]/30 pb-2">
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A4BFF]">
-              The method / 01–04
-            </p>
-            <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
-              After the read
+              The method
             </p>
           </div>
 
@@ -284,78 +274,74 @@ function LandingPage() {
 
         {/* THE RECORD, SHOWN */}
         <section className="relative w-full border-y border-[#1A1A1A]/15 bg-[#FDFBF7] text-[#1A1A1A]">
-          <div className="border-y border-[#1A1A1A]/15">
-            <div className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
-              <div className="flex flex-wrap items-baseline justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.14em]">
-                <p className="text-[#1A4BFF]">The record / illustrative</p>
-                <p className="text-[#1A1A1A]/35">09 Nov 2026 · 001</p>
-              </div>
+          <div className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.14em]">
+              <p className="text-[#1A4BFF]">The record / from the IAEA read</p>
+              <p className="text-[#1A1A1A]/35">09 Nov 2026 · 001</p>
+            </div>
 
-              <div className="mt-5 grid gap-6 md:grid-cols-[0.8fr_1.2fr] md:items-end md:gap-14">
-                <h2 className="max-w-[13ch] font-display text-[38px] leading-[0.94] md:text-[52px]">
-                  What the read leaves behind.
-                </h2>
-                <p className="max-w-[50ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/60">
-                  A chat window gives you an answer and forgets it. This leaves a record: the claims,
-                  the questions they bear on, the predictions that follow, and the score when the
-                  date arrives.
+            <div className="mt-5 grid gap-6 md:grid-cols-[0.8fr_1.2fr] md:items-end md:gap-14">
+              <h2 className="max-w-[13ch] font-display text-[38px] leading-[0.94] md:text-[52px]">
+                What the read leaves behind.
+              </h2>
+              <p className="max-w-[50ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/60">
+                A chat window gives you an answer and forgets it. This leaves a record: the question
+                the read opened, the correction it needed, and what to watch next.
+              </p>
+            </div>
+
+            <ol className="mt-10 grid border-t border-[#1A1A1A]/15 md:grid-cols-3">
+              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:pr-7">
+                <div className="flex items-baseline gap-3">
+                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">01</span>
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Question</span>
+                </div>
+                <p className="mt-4 max-w-[26ch] font-display text-[25px] leading-[1.05]">
+                  Does a confidential report to governments count as a finding against Iran at all?
                 </p>
-              </div>
+                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A4BFF]/65">
+                  Filed · open
+                </p>
+              </li>
 
-              <ol className="mt-10 grid border-t border-[#1A1A1A]/20 md:grid-cols-3">
-                <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:pr-7">
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">01</span>
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Calibration</span>
-                  </div>
-                  <p className="mt-4 font-display text-[46px] leading-none">4 of 5</p>
-                  <p className="mt-2 max-w-[26ch] font-serif text-[14px] leading-snug text-[#1A1A1A]/70">
-                    high-confidence predictions were right.
-                  </p>
-                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
-                    Brier 0.18 · lower is better
-                  </p>
-                </li>
+              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:px-7">
+                <div className="flex items-baseline gap-3">
+                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">02</span>
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Correction</span>
+                </div>
+                <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
+                  Removed an unsupported reporting date added beyond the move.
+                </p>
+                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]">
+                  Patched · 01
+                </p>
+              </li>
 
-                <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:px-7">
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">02</span>
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Question</span>
-                  </div>
-                  <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
-                    Will Iran let inspectors back in?
-                  </p>
-                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]">
-                    3 for · 0 against · one-sided
-                  </p>
-                </li>
+              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:pl-7">
+                <div className="flex items-baseline gap-3">
+                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">03</span>
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Watch</span>
+                </div>
+                <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
+                  Whether the Board puts Iran on the formal agenda at its next meeting.
+                </p>
+                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+                  Vienna · pending
+                </p>
+              </li>
+            </ol>
 
-                <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:pl-7">
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">03</span>
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Drill</span>
-                  </div>
-                  <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
-                    This week: steelman practice.
-                  </p>
-                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
-                    Weakest exercise · 58% structural checks
-                  </p>
-                </li>
-              </ol>
-
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
-                <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/30">
-                  Illustrative record · not your data
-                </span>
-                <Link
-                  to="/digest"
-                  className="group inline-flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#91A8FF]/30 underline-offset-4 transition-colors hover:decoration-[#91A8FF]"
-                >
-                  Open the record
-                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </Link>
-              </div>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
+              <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/30">
+                From the IAEA read · not a live record
+              </span>
+              <Link
+                to="/digest"
+                className="group inline-flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+              >
+                Open the record
+                <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </Link>
             </div>
           </div>
         </section>
@@ -366,7 +352,7 @@ function LandingPage() {
             <div className="grid gap-10 md:grid-cols-[minmax(0,1.08fr)_minmax(300px,0.92fr)] md:gap-20">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
-                  The last page / Begin
+                  The last page
                 </p>
                 <h2 className="mt-4 max-w-[12ch] font-display text-[clamp(44px,5.4vw,76px)] leading-[0.88] tracking-[-0.035em]">
                   Read one article properly.
@@ -415,12 +401,7 @@ function LandingPage() {
         <div className="mx-auto max-w-[1200px] px-5 md:px-8">
           <div className="grid gap-10 md:grid-cols-[1.1fr_1.9fr] md:gap-16">
             <div>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                <BrandLockup size="md" asLink />
-                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">
-                  Colophon / 001
-                </p>
-              </div>
+              <BrandLockup size="md" asLink />
               <p className="mt-5 max-w-[15ch] font-display text-[32px] leading-[0.98] tracking-[-0.025em] md:text-[42px]">
                 A reading desk for sources you do not trust yet.
               </p>
@@ -476,12 +457,6 @@ function LandingPage() {
                 </Link>
               </div>
             </div>
-          </div>
-
-          <div className="mt-12 grid gap-4 border-t border-[#1A1A1A]/15 pt-4 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 md:grid-cols-[1fr_1fr_auto]">
-            <p>Set in Newsreader / Public Sans / IBM Plex Mono</p>
-            <p>Geography / Natural Earth 1:110m</p>
-            <p>09 Nov 2026</p>
           </div>
 
           <div className="mt-6 flex flex-wrap justify-between gap-3 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
