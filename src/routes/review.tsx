@@ -131,17 +131,17 @@ function ReviewPage() {
                   ))}
                 </section>
 
-                <section className="mt-6 border-2 border-[#1A4BFF] bg-white">
-                  <div className="flex items-center justify-between bg-[#1A4BFF] px-3 py-1.5">
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-white">
+                <section className="mt-8 border-y border-[#1A1A1A]/15 py-4">
+                  <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 pb-2">
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
                       Next move
                     </span>
-                    <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-white/70">
+                    <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
                       one thing
                     </span>
                   </div>
-                  <div className="px-4 py-4">
-                    <p className="font-display text-[22px] leading-tight">{review.next.title}</p>
+                  <div className="pt-3">
+                    <p className="max-w-[28ch] font-display text-[26px] leading-[1.05] md:text-[30px]">{review.next.title}</p>
                     <p className="mt-2 max-w-[60ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
                       {review.next.detail}
                     </p>
