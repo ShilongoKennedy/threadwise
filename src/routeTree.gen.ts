@@ -13,13 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DigestRouteImport } from './routes/digest'
-import { Route as GlobeRouteImport } from './routes/globe'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as ReadsRouteImport } from './routes/reads'
-import { Route as ReliefRouteImport } from './routes/relief'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SeminarRouteImport } from './routes/seminar'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -73,11 +71,6 @@ const DigestRoute = DigestRouteImport.update({
   path: '/digest',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GlobeRoute = GlobeRouteImport.update({
-  id: '/globe',
-  path: '/globe',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -101,11 +94,6 @@ const QuestionsRoute = QuestionsRouteImport.update({
 const ReadsRoute = ReadsRouteImport.update({
   id: '/reads',
   path: '/reads',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReliefRoute = ReliefRouteImport.update({
-  id: '/relief',
-  path: '/relief',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewRoute = ReviewRouteImport.update({
@@ -274,13 +262,11 @@ export interface FileRoutesByFullPath {
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
-  '/globe': typeof GlobeRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
-  '/relief': typeof ReliefRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
   '/terms': typeof TermsRoute
@@ -319,13 +305,11 @@ export interface FileRoutesByTo {
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
-  '/globe': typeof GlobeRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
-  '/relief': typeof ReliefRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
   '/terms': typeof TermsRoute
@@ -365,13 +349,11 @@ export interface FileRoutesById {
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
-  '/globe': typeof GlobeRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
-  '/relief': typeof ReliefRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
   '/terms': typeof TermsRoute
@@ -412,13 +394,11 @@ export interface FileRouteTypes {
     | '/analyst'
     | '/cases'
     | '/digest'
-    | '/globe'
     | '/login'
     | '/privacy'
     | '/profile'
     | '/questions'
     | '/reads'
-    | '/relief'
     | '/review'
     | '/seminar'
     | '/terms'
@@ -457,13 +437,11 @@ export interface FileRouteTypes {
     | '/analyst'
     | '/cases'
     | '/digest'
-    | '/globe'
     | '/login'
     | '/privacy'
     | '/profile'
     | '/questions'
     | '/reads'
-    | '/relief'
     | '/review'
     | '/seminar'
     | '/terms'
@@ -502,13 +480,11 @@ export interface FileRouteTypes {
     | '/analyst'
     | '/cases'
     | '/digest'
-    | '/globe'
     | '/login'
     | '/privacy'
     | '/profile'
     | '/questions'
     | '/reads'
-    | '/relief'
     | '/review'
     | '/seminar'
     | '/terms'
@@ -548,13 +524,11 @@ export interface RootRouteChildren {
   AnalystRoute: typeof AnalystRoute
   CasesRoute: typeof CasesRoute
   DigestRoute: typeof DigestRoute
-  GlobeRoute: typeof GlobeRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   QuestionsRoute: typeof QuestionsRoute
   ReadsRoute: typeof ReadsRoute
-  ReliefRoute: typeof ReliefRoute
   ReviewRoute: typeof ReviewRoute
   SeminarRoute: typeof SeminarRoute
   TermsRoute: typeof TermsRoute
@@ -619,13 +593,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DigestRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/globe': {
-      id: '/globe'
-      path: '/globe'
-      fullPath: '/globe'
-      preLoaderRoute: typeof GlobeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -659,13 +626,6 @@ declare module '@tanstack/react-router' {
       path: '/reads'
       fullPath: '/reads'
       preLoaderRoute: typeof ReadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/relief': {
-      id: '/relief'
-      path: '/relief'
-      fullPath: '/relief'
-      preLoaderRoute: typeof ReliefRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/review': {
@@ -900,13 +860,11 @@ const rootRouteChildren: RootRouteChildren = {
   AnalystRoute: AnalystRoute,
   CasesRoute: CasesRoute,
   DigestRoute: DigestRoute,
-  GlobeRoute: GlobeRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   QuestionsRoute: QuestionsRoute,
   ReadsRoute: ReadsRoute,
-  ReliefRoute: ReliefRoute,
   ReviewRoute: ReviewRoute,
   SeminarRoute: SeminarRoute,
   TermsRoute: TermsRoute,
