@@ -19,6 +19,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as ReadsRouteImport } from './routes/reads'
+import { Route as ReliefRouteImport } from './routes/relief'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SeminarRouteImport } from './routes/seminar'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -100,6 +101,11 @@ const QuestionsRoute = QuestionsRouteImport.update({
 const ReadsRoute = ReadsRouteImport.update({
   id: '/reads',
   path: '/reads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReliefRoute = ReliefRouteImport.update({
+  id: '/relief',
+  path: '/relief',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewRoute = ReviewRouteImport.update({
@@ -274,6 +280,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
+  '/relief': typeof ReliefRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
   '/terms': typeof TermsRoute
@@ -318,6 +325,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
+  '/relief': typeof ReliefRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
   '/terms': typeof TermsRoute
@@ -363,6 +371,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
   '/reads': typeof ReadsRoute
+  '/relief': typeof ReliefRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
   '/terms': typeof TermsRoute
@@ -409,6 +418,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/questions'
     | '/reads'
+    | '/relief'
     | '/review'
     | '/seminar'
     | '/terms'
@@ -453,6 +463,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/questions'
     | '/reads'
+    | '/relief'
     | '/review'
     | '/seminar'
     | '/terms'
@@ -497,6 +508,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/questions'
     | '/reads'
+    | '/relief'
     | '/review'
     | '/seminar'
     | '/terms'
@@ -542,6 +554,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   QuestionsRoute: typeof QuestionsRoute
   ReadsRoute: typeof ReadsRoute
+  ReliefRoute: typeof ReliefRoute
   ReviewRoute: typeof ReviewRoute
   SeminarRoute: typeof SeminarRoute
   TermsRoute: typeof TermsRoute
@@ -646,6 +659,13 @@ declare module '@tanstack/react-router' {
       path: '/reads'
       fullPath: '/reads'
       preLoaderRoute: typeof ReadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relief': {
+      id: '/relief'
+      path: '/relief'
+      fullPath: '/relief'
+      preLoaderRoute: typeof ReliefRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/review': {
@@ -886,6 +906,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   QuestionsRoute: QuestionsRoute,
   ReadsRoute: ReadsRoute,
+  ReliefRoute: ReliefRoute,
   ReviewRoute: ReviewRoute,
   SeminarRoute: SeminarRoute,
   TermsRoute: TermsRoute,
