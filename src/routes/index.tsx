@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
@@ -74,7 +75,35 @@ const LOOP = [
   },
 ] as const;
 
+const PLACE_INDEX = [
+  { id: "vienna", no: "01", name: "Vienna / IAEA", coords: "48.2N 16.4E", note: "The confidential report is circulated to the Board of Governors." },
+  { id: "tehran", no: "02", name: "Tehran", coords: "35.7N 51.4E", note: "The government that must let the inspectors back in." },
+  { id: "natanz", no: "03", name: "Natanz", coords: "33.7N 51.7E", note: "One of the enrichment sites the report cannot verify." },
+] as const;
+
 function LandingPage() {
+  const [activePlace, setActivePlace] = useState<string | null>(null);
+  const [entering, setEntering] = useState(false);
+  const navigate = useNavigate();
+  const timerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const openRead = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (entering) return;
+    setEntering(true);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const delay = reduced ? 0 : window.innerWidth < 768 ? 620 : 1100;
+    timerRef.current = window.setTimeout(() => {
+      void navigate({ to: "/read/$token", params: { token: SAMPLE_TOKEN } });
+    }, delay);
+  };
   return (
     <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FDFBF7] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
       <div
@@ -91,43 +120,110 @@ function LandingPage() {
       <AppHeader marketing />
 
       <main id="main" className="relative z-10 flex-1">
-        {/* HERO */}
-        <section className="mx-auto w-full max-w-[1200px] px-5 pb-16 pt-32 md:px-8 md:pb-24 md:pt-40">
-          <div className="grid items-end gap-10 md:grid-cols-[1.15fr_0.85fr] md:gap-14">
-            <div>
-              <h1 className="max-w-[13ch] font-display text-[clamp(46px,7.2vw,96px)] leading-[0.92] tracking-[-0.035em]">
+        {/* ATLAS HERO */}
+        <section className={`atlas-hero relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28 ${entering ? "is-entering" : ""}`}>
+          <AtlasMap active={activePlace} onActive={setActivePlace} />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#FDFBF7_0%,rgba(253,251,247,0.96)_28%,rgba(253,251,247,0.42)_48%,rgba(253,251,247,0.06)_68%,transparent_80%)] max-md:bg-[linear-gradient(180deg,#FDFBF7_0%,rgba(253,251,247,0.94)_48%,rgba(253,251,247,0.25)_100%)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[26%] bg-[linear-gradient(0deg,#FDFBF7_0%,rgba(253,251,247,0.88)_55%,transparent_100%)] md:hidden" />
+
+          <div className="relative z-10 mx-auto flex min-h-[620px] w-full max-w-[1200px] flex-col justify-between px-5 pb-10 pt-10 md:min-h-[680px] md:px-8 md:pb-12 md:pt-14">
+            <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em]">
+              <span className="border border-[#1A1A1A] px-2 py-1 text-[#1A1A1A]/60">
+                The atlas / field 01
+              </span>
+              <span className="text-[#1A1A1A]/40">A read in places</span>
+            </div>
+
+            <div className="atlas-copy max-w-[650px] pb-8 md:pb-14">
+              <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF] md:mt-0">
+                <span>The read / IAEA–Iran</span>
+                <span className="h-3 w-px bg-[#1A4BFF]/25" />
+                <span className="text-[#1A1A1A]/40">09 Nov 2026</span>
+              </div>
+              <h1 className="mt-3 max-w-[12ch] font-display text-[clamp(50px,7.4vw,104px)] leading-[0.92] tracking-[-0.035em]">
                 See what the story hides.
               </h1>
-
-              <p className="mt-6 max-w-[54ch] font-serif text-[17px] font-light leading-[1.6] text-[#1A1A1A]/70 md:text-[20px]">
-                Paste a link, a PDF or a screenshot. Threadwise shows you the framing, the claims it
-                cannot support, and the one fact that would prove it wrong.
+              <p className="mt-5 max-w-[46ch] font-serif text-[17px] leading-[1.55] text-[#1A1A1A]/70 md:text-[19px]">
+                Every claim has a geography. This is the IAEA read, plotted.
               </p>
-
-              <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
-                <Link
-                  to="/analyst"
-                  className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
-                >
-                  Read a source
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+              <p className="mt-3 max-w-[52ch] font-mono text-[9px] uppercase leading-[1.7] tracking-[0.14em] text-[#1A1A1A]/50 md:text-[10px]">
+                Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <Link
                   to="/read/$token"
                   params={{ token: SAMPLE_TOKEN }}
-                  className="group inline-flex items-center gap-2 border-b-2 border-[#1A4BFF]/30 pb-1 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] transition-colors hover:border-[#1A4BFF]"
+                  onClick={openRead}
+                  aria-busy={entering}
+                  className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
                 >
-                  Open the IAEA example
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                  Open the IAEA read
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+                <Link
+                  to="/analyst"
+                  className="inline-flex items-center gap-2 border-b-2 border-[#1A4BFF]/30 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] transition-colors hover:border-[#1A4BFF]"
+                >
+                  Bring your own source
+                  <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
-
-              <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/50">
-                Free while in beta. Sign in with Google.
-              </p>
             </div>
 
-            <HeroRead />
+            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+              <div>
+                <div className="flex flex-wrap gap-x-5 gap-y-2">
+                  <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
+                  <span className="flex items-center gap-2"><span className="h-px w-5 border-t border-dashed border-[#C1121F]" /> permission denied</span>
+                </div>
+                <p className="mt-2 text-[8px] tracking-[0.08em] text-[#1A1A1A]/30">
+                  Natural Earth 1:110m · illustrative route
+                </p>
+              </div>
+              <div className="w-full text-left leading-relaxed md:w-[310px] md:text-right">
+                <p className="text-[#1A1A1A]/60">The places</p>
+                {PLACE_INDEX.map((place) => (
+                  <Link
+                    key={place.id}
+                    to="/read/$token"
+                    params={{ token: SAMPLE_TOKEN }}
+                    onMouseEnter={() => setActivePlace(place.id)}
+                    onMouseLeave={() => setActivePlace(null)}
+                    onFocus={() => setActivePlace(place.id)}
+                    onBlur={() => setActivePlace(null)}
+                    className={`mt-1 block border-b border-transparent pb-0.5 text-[10px] transition-colors hover:border-[#1A4BFF] ${
+                      activePlace === place.id ? "text-[#1A4BFF]" : place.id === "natanz" ? "text-[#C1121F]" : "text-[#1A1A1A]/70"
+                    }`}
+                  >
+                    {place.no} {place.name}{" "}
+                    <span className={activePlace === place.id ? "text-[#1A4BFF]/50" : place.id === "natanz" ? "text-[#C1121F]/50" : "text-[#1A1A1A]/30"}>
+                      {place.coords}
+                    </span>
+                  </Link>
+                ))}
+                <p className="mt-2 h-[30px] max-w-[310px] overflow-hidden text-[8px] leading-[1.45] tracking-[0.08em] text-[#1A1A1A]/40 line-clamp-2 md:ml-auto">
+                  {activePlace
+                    ? PLACE_INDEX.find((place) => place.id === activePlace)?.note
+                    : "Hover a place to see why it is on the map."}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="atlas-enter-curtain" aria-hidden={!entering}>
+            <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col justify-between px-5 py-10 md:px-8 md:py-14">
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
+                Threadwise / the read
+              </p>
+              <div className="pb-6">
+                <p className="font-display text-[clamp(52px,9vw,112px)] leading-[0.9] tracking-[-0.035em]">
+                  IAEA–Iran.
+                </p>
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
+                  Opening the record…
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -402,50 +498,6 @@ function LandingPage() {
   );
 }
 
-function HeroRead() {
-  return (
-    <aside className="border-2 border-[#1A1A1A] bg-white p-5 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-[#1A1A1A]/15 pb-2">
-        <span className="whitespace-nowrap font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">
-          From the record
-        </span>
-        <span className="whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-          IAEA / Iran · 9 Nov 2026
-        </span>
-      </div>
-      <p className="mt-4 font-serif text-[16px] leading-relaxed text-[#1A1A1A]/85">
-        “The report’s contents have not been published; what is known publicly is that the Agency’s
-        inspectors have not been allowed back to the enrichment sites bombed in June 2025.”
-      </p>
-      <dl className="mt-4 space-y-3 border-t border-[#1A1A1A]/10 pt-3">
-        <div>
-          <dt className="font-mono text-[9px] font-bold tracking-[0.12em] text-[#1A1A1A]/50">
-            What it did
-          </dt>
-          <dd className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/70">
-            A confidential report to member states, not a public finding against Iran.
-          </dd>
-        </div>
-        <div>
-          <dt className="font-mono text-[9px] font-bold tracking-[0.12em] text-[#C1121F]">
-            What would prove it wrong
-          </dt>
-          <dd className="mt-1 font-serif text-[13px] leading-snug text-[#C1121F]/90">
-            A specific, verified finding: a stockpile number, a named site, or enrichment above 60%.
-          </dd>
-        </div>
-      </dl>
-      <Link
-        to="/read/$token"
-        params={{ token: SAMPLE_TOKEN }}
-        className="mt-4 inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4"
-      >
-        Open the IAEA read <ArrowUpRight className="h-3 w-3" />
-      </Link>
-    </aside>
-  );
-}
-
 function ReadCard({
   label,
   body,
@@ -471,6 +523,271 @@ function ReadCard({
       <p className="mt-2 font-serif text-[15px] leading-relaxed text-[#1A1A1A]/80 md:text-[16px]">
         {body}
       </p>
+    </div>
+  );
+}
+
+
+const ATLAS_PLACES = {
+  vienna: [((16.3738 + 180) / 360) * 1000, ((90 - 48.2082) / 180) * 500] as const,
+  tehran: [((51.389 + 180) / 360) * 1000, ((90 - 35.6892) / 180) * 500] as const,
+  natanz: [((51.726 + 180) / 360) * 1000, ((90 - 33.724) / 180) * 500] as const,
+  washington: [((-77.0369 + 180) / 360) * 1000, ((90 - 38.9072) / 180) * 500] as const,
+};
+
+function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: string | null) => void }) {
+  const vienna = ATLAS_PLACES.vienna;
+  const tehran = ATLAS_PLACES.tehran;
+  const natanz = ATLAS_PLACES.natanz;
+  const washington = ATLAS_PLACES.washington;
+  const demandActive = active === "vienna" || active === "tehran";
+  const permissionActive = active === "tehran" || active === "natanz";
+  const demandPath = `M ${vienna[0]} ${vienna[1]} Q 610 112 ${tehran[0]} ${tehran[1]}`;
+  const holdPulse =
+    active === "vienna"
+      ? { x: vienna[0], y: vienna[1], color: "#1A4BFF" }
+      : active === "tehran"
+        ? { x: tehran[0], y: tehran[1], color: "#1A4BFF" }
+        : active === "natanz"
+          ? { x: 681, y: 176, color: "#C1121F" }
+          : null;
+  return (
+    <div className="atlas-map-reveal atlas-plate pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[38%] overflow-hidden border-t border-[#1A1A1A]/10 md:inset-0 md:h-full md:border-t-0" aria-hidden>
+      <style>{`
+        .atlas-plate {
+          background: #FDFBF7;
+        }
+        .atlas-map-reveal {
+          animation: atlasReveal 1.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .atlas-plate {
+          transform-origin: 64% 31%;
+          transition: transform 1.15s cubic-bezier(0.7, 0, 0.2, 1), filter 0.8s ease;
+        }
+        .atlas-copy {
+          transition: opacity 0.4s ease, transform 0.7s cubic-bezier(0.7, 0, 0.2, 1);
+        }
+        .atlas-meta {
+          transition: opacity 0.35s ease;
+        }
+        .atlas-hero.is-entering .atlas-plate {
+          transform: scale(2.15);
+          filter: contrast(1.02);
+        }
+        .atlas-hero.is-entering .atlas-copy {
+          opacity: 0;
+          transform: translateX(-22px);
+        }
+        .atlas-hero.is-entering .atlas-meta {
+          opacity: 0;
+        }
+        .atlas-enter-curtain {
+          position: absolute;
+          inset: 0;
+          z-index: 30;
+          background: #FDFBF7;
+          clip-path: inset(100% 0 0 0);
+          transition: clip-path 0.95s cubic-bezier(0.7, 0, 0.2, 1);
+          pointer-events: none;
+        }
+        .atlas-hero.is-entering .atlas-enter-curtain {
+          clip-path: inset(0 0 0 0);
+          pointer-events: auto;
+        }
+        @keyframes atlasReveal {
+          from { clip-path: inset(0 100% 0 0); }
+          to { clip-path: inset(0); }
+        }
+        .atlas-plate-image {
+          opacity: 0.45;
+        }
+        .atlas-route {
+          fill: none;
+          stroke: #1A4BFF;
+          stroke-width: 1.15;
+          vector-effect: non-scaling-stroke;
+          stroke-dasharray: 4 4;
+          animation: atlasDash 22s linear infinite;
+        }
+        .atlas-route-solid {
+          fill: none;
+          stroke: #1A4BFF;
+          stroke-width: 1.5;
+          vector-effect: non-scaling-stroke;
+        }
+        .atlas-route-denied {
+          stroke: #C1121F;
+          stroke-width: 1.35;
+        }
+        .atlas-route-active {
+          stroke-width: 2.4;
+        }
+        .atlas-route-denied.atlas-route-active {
+          stroke-width: 2.1;
+        }
+        .atlas-pin {
+          fill: #1A4BFF;
+          stroke: #FDFBF7;
+          stroke-width: 1;
+        }
+        .atlas-pin-red {
+          fill: #C1121F;
+        }
+        .atlas-pin-ring {
+          fill: none;
+          stroke: #1A4BFF;
+          stroke-width: 0.65;
+          opacity: 0.5;
+        }
+        .atlas-pin-ring-red {
+          stroke: #C1121F;
+        }
+        .atlas-line-label {
+          font-family: "IBM Plex Mono", "Courier New", monospace;
+          font-size: 6px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          fill: #1A4BFF;
+        }
+        .atlas-line-label-red { fill: #C1121F; }
+        .atlas-hold-pulse { opacity: 0.95; }
+        .atlas-marker {
+          fill: #FDFBF7;
+          stroke: #1A4BFF;
+          stroke-width: 1;
+        }
+        .atlas-marker-red { stroke: #C1121F; }
+        .atlas-marker-text {
+          font-family: "IBM Plex Mono", "Courier New", monospace;
+          font-size: 5.5px;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          fill: #1A4BFF;
+          text-anchor: middle;
+          dominant-baseline: central;
+        }
+        .atlas-marker-text-red { fill: #C1121F; }
+        .atlas-pin-group {
+          cursor: pointer;
+          pointer-events: auto;
+        }
+        .atlas-callout {
+          fill: none;
+          stroke: #C1121F;
+          stroke-width: 1.1;
+          vector-effect: non-scaling-stroke;
+        }
+        @keyframes atlasDash { to { stroke-dashoffset: -40; } }
+        @media (prefers-reduced-motion: reduce) {
+          .atlas-route { animation: none; }
+          .atlas-demand-pulse { display: none; }
+          .atlas-map-reveal { animation: none; }
+          .atlas-plate, .atlas-copy, .atlas-meta, .atlas-enter-curtain { transition: none; }
+          .atlas-hero.is-entering .atlas-plate { transform: none; }
+        }
+      `}</style>
+      <svg
+        viewBox="0 0 1000 500"
+        preserveAspectRatio="xMidYMid slice"
+        className="h-full w-full"
+      >
+        <rect width="1000" height="500" fill="#FDFBF7" />
+        <g stroke="#1A1A1A" strokeWidth="0.18" opacity="0.08" vectorEffect="non-scaling-stroke">
+          {[-150, -120, -90, -60, -30, 0, 30, 60, 90, 120, 150].map((lon) => {
+            const x = ((lon + 180) / 360) * 1000;
+            return <line key={`lon-${lon}`} x1={x} y1="0" x2={x} y2="500" />;
+          })}
+          {[-60, -30, 0, 30, 60].map((lat) => {
+            const y = ((90 - lat) / 180) * 500;
+            return <line key={`lat-${lat}`} x1="0" y1={y} x2="1000" y2={y} />;
+          })}
+        </g>
+        <image
+          href="/world-dots-ink.svg"
+          x="0"
+          y="0"
+          width="1000"
+          height="500"
+          className="atlas-plate-image"
+        />
+        <path
+          d={demandPath}
+          className={`atlas-route-solid ${demandActive ? "atlas-route-active" : ""}`}
+        />
+        <path
+          d={`M ${tehran[0]} ${tehran[1]} Q 648 149 ${natanz[0]} ${natanz[1]}`}
+          className={`atlas-route atlas-route-denied ${permissionActive ? "atlas-route-active" : ""}`}
+        />
+
+        {holdPulse ? (
+          <circle
+            cx={holdPulse.x}
+            cy={holdPulse.y}
+            r="2.2"
+            fill={holdPulse.color}
+            className="atlas-hold-pulse"
+          />
+        ) : (
+          <circle r="1.5" className="atlas-demand-pulse" fill="#1A4BFF">
+            <animateMotion
+              dur="9s"
+              repeatCount="indefinite"
+              path={demandPath}
+              keyPoints="0;1;1"
+              keyTimes="0;0.58;1"
+              calcMode="linear"
+            />
+            <animate
+              attributeName="opacity"
+              dur="9s"
+              repeatCount="indefinite"
+              values="0;1;1;0;0"
+              keyTimes="0;0.06;0.56;0.64;1"
+            />
+          </circle>
+        )}
+
+        <text
+          x={(vienna[0] + tehran[0]) / 2}
+          y={(vienna[1] + tehran[1]) / 2 - 11}
+          textAnchor="middle"
+          className="atlas-line-label"
+          stroke="#FDFBF7"
+          strokeWidth="2"
+          paintOrder="stroke"
+        >
+          the demand
+        </text>
+        <g
+          className="atlas-pin-group"
+          onPointerEnter={() => onActive("vienna")}
+          onPointerLeave={() => onActive(null)}
+        >
+          <circle cx={vienna[0]} cy={vienna[1]} r={active === "vienna" ? 7 : 6} className="atlas-marker" />
+          <text x={vienna[0]} y={vienna[1] + 0.4} className="atlas-marker-text">01</text>
+        </g>
+
+        <g
+          className="atlas-pin-group"
+          onPointerEnter={() => onActive("tehran")}
+          onPointerLeave={() => onActive(null)}
+        >
+          <circle cx={tehran[0]} cy={tehran[1]} r={active === "tehran" ? 7 : 6} className="atlas-marker" />
+          <text x={tehran[0]} y={tehran[1] + 0.4} className="atlas-marker-text">02</text>
+        </g>
+
+        <circle cx={natanz[0]} cy={natanz[1]} r="1.8" className="atlas-pin atlas-pin-red" />
+        <path d={`M ${natanz[0]} ${natanz[1]} L 674 173`} className="atlas-callout" />
+        <g
+          className="atlas-pin-group"
+          onPointerEnter={() => onActive("natanz")}
+          onPointerLeave={() => onActive(null)}
+        >
+          <circle cx="681" cy="176" r={active === "natanz" ? 7 : 6} className="atlas-marker atlas-marker-red" />
+          <text x="681" y="176.4" className="atlas-marker-text atlas-marker-text-red">03</text>
+        </g>
+
+      </svg>
     </div>
   );
 }

@@ -11,8 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
-import { Route as AtlasRouteImport } from './routes/atlas'
-import { Route as AtlasImageRouteImport } from './routes/atlas-image'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
@@ -61,16 +59,6 @@ const IndexRoute = IndexRouteImport.update({
 const AnalystRoute = AnalystRouteImport.update({
   id: '/analyst',
   path: '/analyst',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AtlasRoute = AtlasRouteImport.update({
-  id: '/atlas',
-  path: '/atlas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AtlasImageRoute = AtlasImageRouteImport.update({
-  id: '/atlas-image',
-  path: '/atlas-image',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CasesRoute = CasesRouteImport.update({
@@ -272,8 +260,6 @@ const ApiReadTokenRoute = ApiReadTokenRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
-  '/atlas': typeof AtlasRoute
-  '/atlas-image': typeof AtlasImageRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
@@ -317,8 +303,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
-  '/atlas': typeof AtlasRoute
-  '/atlas-image': typeof AtlasImageRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
@@ -363,8 +347,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
-  '/atlas': typeof AtlasRoute
-  '/atlas-image': typeof AtlasImageRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
@@ -410,8 +392,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/analyst'
-    | '/atlas'
-    | '/atlas-image'
     | '/cases'
     | '/digest'
     | '/login'
@@ -455,8 +435,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/analyst'
-    | '/atlas'
-    | '/atlas-image'
     | '/cases'
     | '/digest'
     | '/login'
@@ -500,8 +478,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/analyst'
-    | '/atlas'
-    | '/atlas-image'
     | '/cases'
     | '/digest'
     | '/login'
@@ -546,8 +522,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalystRoute: typeof AnalystRoute
-  AtlasRoute: typeof AtlasRoute
-  AtlasImageRoute: typeof AtlasImageRoute
   CasesRoute: typeof CasesRoute
   DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
@@ -603,20 +577,6 @@ declare module '@tanstack/react-router' {
       path: '/analyst'
       fullPath: '/analyst'
       preLoaderRoute: typeof AnalystRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/atlas': {
-      id: '/atlas'
-      path: '/atlas'
-      fullPath: '/atlas'
-      preLoaderRoute: typeof AtlasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/atlas-image': {
-      id: '/atlas-image'
-      path: '/atlas-image'
-      fullPath: '/atlas-image'
-      preLoaderRoute: typeof AtlasImageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cases': {
@@ -898,8 +858,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalystRoute: AnalystRoute,
-  AtlasRoute: AtlasRoute,
-  AtlasImageRoute: AtlasImageRoute,
   CasesRoute: CasesRoute,
   DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
