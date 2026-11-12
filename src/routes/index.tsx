@@ -411,67 +411,82 @@ function LandingPage() {
 
       </main>
 
-      <footer className="relative z-30 border-t border-[#1A1A1A]/15 bg-[#FDFBF7] pb-8 pt-14">
+      <footer className="relative z-30 border-t border-[#1A1A1A]/15 bg-[#FDFBF7] pb-10 pt-12 md:pt-16">
         <div className="mx-auto max-w-[1200px] px-5 md:px-8">
-          <div className="flex flex-col justify-between gap-10 md:flex-row">
-            <div className="max-w-xs">
-              <BrandLockup size="lg" asLink className="mb-4" />
-              <p className="text-sm leading-relaxed text-[#1A1A1A]/60">
+          <div className="grid gap-10 md:grid-cols-[1.1fr_1.9fr] md:gap-16">
+            <div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <BrandLockup size="md" asLink />
+                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">
+                  Colophon / 001
+                </p>
+              </div>
+              <p className="mt-5 max-w-[15ch] font-display text-[32px] leading-[0.98] tracking-[-0.025em] md:text-[42px]">
                 A reading desk for sources you do not trust yet.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-10 font-mono text-[11px] uppercase tracking-[0.14em] text-[#1A1A1A]/65 sm:grid-cols-3 md:gap-16">
-              <div className="flex flex-col gap-3">
-                <span className="mb-1 font-bold text-[#1A1A1A]">Product</span>
-                <Link to="/analyst" className="transition-colors hover:text-[#1A4BFF]">
-                  The analyst
-                </Link>
-                <Link to="/questions" className="transition-colors hover:text-[#1A4BFF]">
-                  Questions
-                </Link>
-                <Link to="/digest" className="transition-colors hover:text-[#1A4BFF]">
-                  Record
-                </Link>
-                <Link to="/profile" className="transition-colors hover:text-[#1A4BFF]">
-                  Profile
-                </Link>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-9 font-mono text-[9px] uppercase tracking-[0.12em] sm:grid-cols-3">
+              <div>
+                <p className="mb-3 text-[#1A1A1A]/40">The desk</p>
+                {[
+                  { to: "/analyst", label: "The analyst", n: "01" },
+                  { to: "/questions", label: "Questions", n: "02" },
+                  { to: "/digest", label: "Record", n: "03" },
+                  { to: "/profile", label: "Profile", n: "04" },
+                ].map((item) => (
+                  <Link key={item.to} to={item.to} className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
+                    <span className="text-[8px] text-[#1A1A1A]/25">{item.n}</span>
+                    <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">
+                      {item.label}
+                    </span>
+                  </Link>
+                ))}
               </div>
-              <div className="flex flex-col gap-3">
-                <span className="mb-1 font-bold text-[#1A1A1A]">Read</span>
-                <Link to="/cases" className="transition-colors hover:text-[#1A4BFF]">
-                  Cases
+
+              <div>
+                <p className="mb-3 text-[#1A1A1A]/40">The record</p>
+                <Link to="/cases" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
+                  <span className="text-[8px] text-[#1A1A1A]/25">05</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Cases</span>
                 </Link>
                 <Link
                   to="/read/$token"
                   params={{ token: SAMPLE_TOKEN }}
-                  className="transition-colors hover:text-[#1A4BFF]"
+                  className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70"
                 >
-                  The IAEA read
+                  <span className="text-[8px] text-[#1A1A1A]/25">06</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">The IAEA read</span>
                 </Link>
-                <a href="#loop" className="transition-colors hover:text-[#1A4BFF]">
-                  How it works
+                <a href="#loop" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
+                  <span className="text-[8px] text-[#1A1A1A]/25">07</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">How it works</span>
                 </a>
               </div>
-              <div className="flex flex-col gap-3">
-                <span className="mb-1 font-bold text-[#1A1A1A]">Legal</span>
-                <Link to="/terms" className="transition-colors hover:text-[#1A4BFF]">
-                  Terms
+
+              <div>
+                <p className="mb-3 text-[#1A1A1A]/40">Elsewhere</p>
+                <Link to="/terms" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
+                  <span className="text-[8px] text-[#1A1A1A]/25">08</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Terms</span>
                 </Link>
-                <Link to="/privacy" className="transition-colors hover:text-[#1A4BFF]">
-                  Privacy
+                <Link to="/privacy" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
+                  <span className="text-[8px] text-[#1A1A1A]/25">09</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Privacy</span>
                 </Link>
               </div>
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col justify-between gap-4 border-t border-[#1A1A1A]/10 pt-6 md:flex-row md:items-center">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
-              © 2026 Threadwise. All rights reserved.
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/50">
-              Built for people who check.
-            </span>
+          <div className="mt-12 grid gap-4 border-t border-[#1A1A1A]/15 pt-4 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 md:grid-cols-[1fr_1fr_auto]">
+            <p>Set in Newsreader / Public Sans / IBM Plex Mono</p>
+            <p>Geography / Natural Earth 1:110m</p>
+            <p>09 Nov 2026</p>
+          </div>
+
+          <div className="mt-6 flex flex-wrap justify-between gap-3 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
+            <span>© 2026 Threadwise. All rights reserved.</span>
+            <span>Built for people who check.</span>
           </div>
         </div>
       </footer>
