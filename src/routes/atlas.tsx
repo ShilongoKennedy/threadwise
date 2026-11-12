@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
@@ -83,6 +83,27 @@ const PLACE_INDEX = [
 
 function LandingPage() {
   const [activePlace, setActivePlace] = useState<string | null>(null);
+  const [entering, setEntering] = useState(false);
+  const navigate = useNavigate();
+  const timerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const openRead = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (entering) return;
+    setEntering(true);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const delay = reduced ? 0 : window.innerWidth < 768 ? 620 : 1100;
+    timerRef.current = window.setTimeout(() => {
+      void navigate({ to: "/read/$token", params: { token: SAMPLE_TOKEN } });
+    }, delay);
+  };
   return (
     <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FDFBF7] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
       <div
@@ -100,7 +121,7 @@ function LandingPage() {
 
       <main id="main" className="relative z-10 flex-1">
         {/* ATLAS HERO */}
-        <section className="relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28">
+        <section className={`atlas-hero relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28 ${entering ? "is-entering" : ""}`}>
           <AtlasMap active={activePlace} onActive={setActivePlace} />
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#FDFBF7_0%,rgba(253,251,247,0.96)_28%,rgba(253,251,247,0.42)_48%,rgba(253,251,247,0.06)_68%,transparent_80%)] max-md:bg-[linear-gradient(180deg,#FDFBF7_0%,rgba(253,251,247,0.94)_48%,rgba(253,251,247,0.25)_100%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[26%] bg-[linear-gradient(0deg,#FDFBF7_0%,rgba(253,251,247,0.88)_55%,transparent_100%)] md:hidden" />
@@ -113,7 +134,7 @@ function LandingPage() {
               <span className="text-[#1A1A1A]/40">A read in places</span>
             </div>
 
-            <div className="max-w-[650px] pb-8 md:pb-14">
+            <div className="atlas-copy max-w-[650px] pb-8 md:pb-14">
               <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF] md:mt-0">
                 <span>The read / IAEA–Iran</span>
                 <span className="h-3 w-px bg-[#1A4BFF]/25" />
@@ -132,6 +153,8 @@ function LandingPage() {
                 <Link
                   to="/read/$token"
                   params={{ token: SAMPLE_TOKEN }}
+                  onClick={openRead}
+                  aria-busy={entering}
                   className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
                 >
                   Open the IAEA read
@@ -147,7 +170,7 @@ function LandingPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
               <div>
                 <div className="flex flex-wrap gap-x-5 gap-y-2">
                   <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
@@ -182,6 +205,22 @@ function LandingPage() {
                   {activePlace
                     ? PLACE_INDEX.find((place) => place.id === activePlace)?.note
                     : "Hover a place to see why it is on the map."}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="atlas-enter-curtain" aria-hidden={!entering}>
+            <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col justify-between px-5 py-10 md:px-8 md:py-14">
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
+                Threadwise / the read
+              </p>
+              <div className="pb-6">
+                <p className="font-display text-[clamp(52px,9vw,112px)] leading-[0.9] tracking-[-0.035em]">
+                  IAEA–Iran.
+                </p>
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
+                  Opening the record…
                 </p>
               </div>
             </div>
@@ -565,6 +604,40 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
         .atlas-map-reveal {
           animation: atlasReveal 1.3s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
+        .atlas-plate {
+          transform-origin: 64% 31%;
+          transition: transform 1.15s cubic-bezier(0.7, 0, 0.2, 1), filter 0.8s ease;
+        }
+        .atlas-copy {
+          transition: opacity 0.4s ease, transform 0.7s cubic-bezier(0.7, 0, 0.2, 1);
+        }
+        .atlas-meta {
+          transition: opacity 0.35s ease;
+        }
+        .atlas-hero.is-entering .atlas-plate {
+          transform: scale(2.15);
+          filter: contrast(1.02);
+        }
+        .atlas-hero.is-entering .atlas-copy {
+          opacity: 0;
+          transform: translateX(-22px);
+        }
+        .atlas-hero.is-entering .atlas-meta {
+          opacity: 0;
+        }
+        .atlas-enter-curtain {
+          position: absolute;
+          inset: 0;
+          z-index: 30;
+          background: #FDFBF7;
+          clip-path: inset(100% 0 0 0);
+          transition: clip-path 0.95s cubic-bezier(0.7, 0, 0.2, 1);
+          pointer-events: none;
+        }
+        .atlas-hero.is-entering .atlas-enter-curtain {
+          clip-path: inset(0 0 0 0);
+          pointer-events: auto;
+        }
         @keyframes atlasReveal {
           from { clip-path: inset(0 100% 0 0); }
           to { clip-path: inset(0); }
@@ -653,6 +726,8 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
           .atlas-route { animation: none; }
           .atlas-demand-pulse { display: none; }
           .atlas-map-reveal { animation: none; }
+          .atlas-plate, .atlas-copy, .atlas-meta, .atlas-enter-curtain { transition: none; }
+          .atlas-hero.is-entering .atlas-plate { transform: none; }
         }
       `}</style>
       <svg
