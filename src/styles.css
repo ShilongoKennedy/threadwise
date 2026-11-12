@@ -962,6 +962,7 @@ body::after {
 
 /* Hand-signed hero line. */
 .signature-headline {
+  position: relative;
   font-family: 'Dancing Script', 'Newsreader', cursive;
   font-weight: 600;
   letter-spacing: 0.005em;
@@ -971,8 +972,39 @@ body::after {
   display: inline-block;
   opacity: 0;
   clip-path: inset(0 100% 0 0);
-  animation: signature-write 220ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-  animation-delay: var(--signature-delay, 0ms);
+  transform: translateY(var(--signature-drift, 0)) rotate(var(--signature-tilt, 0));
+}
+.signature-letter.is-writing {
+  animation: signature-write 240ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+.signature-pen {
+  position: absolute;
+  z-index: 2;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #1A4BFF;
+  box-shadow: 0 0 0 3px rgba(26, 75, 255, 0.11);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: left 70ms linear, top 70ms linear, opacity 140ms ease;
+}
+.signature-flourish {
+  position: absolute;
+  left: 0;
+  bottom: -0.12em;
+  width: 100%;
+  height: 0.28em;
+  overflow: visible;
+  color: #1A4BFF;
+  opacity: 0.72;
+  pointer-events: none;
+  stroke-dasharray: 720;
+  stroke-dashoffset: 720;
+}
+.signature-headline.is-signed .signature-flourish {
+  animation: signature-flourish 900ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 @keyframes signature-write {
   from {
@@ -987,10 +1019,22 @@ body::after {
     clip-path: inset(0 0 0 0);
   }
 }
+@keyframes signature-flourish {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .signature-letter {
     opacity: 1;
     clip-path: none;
     animation: none;
+  }
+  .signature-flourish {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .signature-pen {
+    display: none;
   }
 }
