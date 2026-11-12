@@ -95,6 +95,7 @@ function LandingPage() {
         <section className="relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28">
           <AtlasMap />
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#FDFBF7_0%,rgba(253,251,247,0.96)_28%,rgba(253,251,247,0.42)_48%,rgba(253,251,247,0.06)_68%,transparent_80%)] max-md:bg-[linear-gradient(180deg,#FDFBF7_0%,rgba(253,251,247,0.94)_48%,rgba(253,251,247,0.25)_100%)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[26%] bg-[linear-gradient(0deg,#FDFBF7_0%,rgba(253,251,247,0.88)_55%,transparent_100%)] md:hidden" />
 
           <div className="relative z-10 mx-auto flex min-h-[620px] w-full max-w-[1200px] flex-col justify-between px-5 pb-10 pt-10 md:min-h-[680px] md:px-8 md:pb-12 md:pt-14">
             <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em]">
@@ -115,7 +116,7 @@ function LandingPage() {
               </h1>
               <p className="mt-5 max-w-[52ch] font-serif text-[16px] leading-[1.6] text-[#1A1A1A]/70 md:text-[18px]">
                 Every claim has a geography. This is the IAEA read, plotted: Vienna, Tehran,
-                Natanz, Washington. The places are the evidence.
+                Natanz. The places are the evidence.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <Link
@@ -137,12 +138,21 @@ function LandingPage() {
             </div>
 
             <div className="flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-              <div className="flex flex-wrap gap-x-5 gap-y-2">
-                <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#1A4BFF]" /> the report</span>
-                <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#C1121F]" /> access denied</span>
-                <span className="flex items-center gap-2"><span className="h-px w-5 border-t border-dashed border-[#1A4BFF]" /> the pressure</span>
+              <div>
+                <div className="flex flex-wrap gap-x-5 gap-y-2">
+                  <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#1A4BFF]" /> the report</span>
+                  <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#C1121F]" /> access denied</span>
+                </div>
+                <p className="mt-2 text-[8px] tracking-[0.08em] text-[#1A1A1A]/30">
+                  Natural Earth 1:110m · illustrative route
+                </p>
               </div>
-              <p className="text-[#1A1A1A]/35">Geography: Natural Earth 1:110m · illustrative route</p>
+              <div className="text-left md:text-right leading-relaxed">
+                <p className="text-[#1A1A1A]/60">The index</p>
+                <p>01 Vienna / IAEA <span className="text-[#1A1A1A]/30">48.2N 16.4E</span></p>
+                <p>02 Tehran <span className="text-[#1A1A1A]/30">35.7N 51.4E</span></p>
+                <p className="text-[#C1121F]">03 Natanz / Fordow <span className="text-[#C1121F]/50">33.7N 51.7E</span></p>
+              </div>
             </div>
           </div>
         </section>
@@ -544,30 +554,29 @@ function AtlasMap() {
         .atlas-pin-ring-red {
           stroke: #C1121F;
         }
-        .atlas-map-label {
+        .atlas-marker {
+          fill: #FDFBF7;
+          stroke: #1A4BFF;
+          stroke-width: 1;
+        }
+        .atlas-marker-red { stroke: #C1121F; }
+        .atlas-marker-text {
           font-family: "IBM Plex Mono", "Courier New", monospace;
-          font-size: 9px;
-          letter-spacing: 0.09em;
-          text-transform: uppercase;
-          fill: rgba(26, 26, 26, 0.95);
-        }
-        .atlas-map-label-strong {
-          fill: #1A1A1A;
-        }
-        .atlas-map-label-red {
-          fill: #C1121F;
-        }
-        .atlas-route-label {
-          font-family: "IBM Plex Mono", "Courier New", monospace;
-          font-size: 7px;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
+          font-size: 5.5px;
+          font-weight: 700;
+          letter-spacing: 0.06em;
           fill: #1A4BFF;
+          text-anchor: middle;
+          dominant-baseline: central;
+        }
+        .atlas-marker-text-red { fill: #C1121F; }
+        .atlas-callout {
+          fill: none;
+          stroke: #C1121F;
+          stroke-width: 1.1;
+          vector-effect: non-scaling-stroke;
         }
         @keyframes atlasDash { to { stroke-dashoffset: -40; } }
-        @media (max-width: 767px) {
-          .atlas-map-label, .atlas-route-label { display: none; }
-        }
         @media (prefers-reduced-motion: reduce) {
           .atlas-route { animation: none; }
         }
@@ -597,49 +606,31 @@ function AtlasMap() {
           className="atlas-plate-image"
         />
         <path
-          d={`M ${washington[0]} ${washington[1]} Q 380 72 ${vienna[0]} ${vienna[1]}`}
-          className="atlas-route"
-        />
-        <path
           d={`M ${vienna[0]} ${vienna[1]} Q 610 112 ${tehran[0]} ${tehran[1]}`}
           className="atlas-route-solid"
         />
         <path
-          d={`M ${tehran[0]} ${tehran[1]} Q 651 149 ${natanz[0]} ${natanz[1]}`}
+          d={`M ${tehran[0]} ${tehran[1]} Q 648 149 ${natanz[0]} ${natanz[1]}`}
           className="atlas-route"
         />
-        <text
-          x={(vienna[0] + tehran[0]) / 2}
-          y={(vienna[1] + tehran[1]) / 2 - 12}
-          textAnchor="middle"
-          className="atlas-route-label"
-          stroke="#FDFBF7"
-          strokeWidth="2"
-          paintOrder="stroke"
-        >
-          the report
-        </text>
-        {[
-          { key: "vienna", label: "Vienna / IAEA", x: vienna[0], y: vienna[1], anchor: "end", dy: -9, red: false },
-          { key: "tehran", label: "Tehran", x: tehran[0], y: tehran[1], anchor: "start", dy: 2, red: false },
-          { key: "natanz", label: "Natanz / Fordow", x: natanz[0], y: natanz[1], anchor: "start", dy: 12, red: true },
-        ].map((pin) => (
-          <g key={pin.key}>
-            <circle cx={pin.x} cy={pin.y} r="5" className={`atlas-pin-ring ${pin.red ? "atlas-pin-ring-red" : ""}`} />
-            <circle cx={pin.x} cy={pin.y} r="1.9" className={`atlas-pin ${pin.red ? "atlas-pin-red" : ""}`} />
-            <text
-              x={pin.x + (pin.anchor === "start" ? 9 : pin.anchor === "end" ? -9 : 0)}
-              y={pin.y + pin.dy}
-              textAnchor={pin.anchor as "start" | "middle" | "end"}
-              className={`atlas-map-label ${pin.key === "tehran" || pin.key === "natanz" ? "atlas-map-label-strong" : ""} ${pin.red ? "atlas-map-label-red" : ""}`}
-              stroke="#FDFBF7"
-              strokeWidth="2"
-              paintOrder="stroke"
-            >
-              {pin.label}
-            </text>
-          </g>
-        ))}
+
+        <g>
+          <circle cx={vienna[0]} cy={vienna[1]} r="6" className="atlas-marker" />
+          <text x={vienna[0]} y={vienna[1] + 0.4} className="atlas-marker-text">01</text>
+        </g>
+
+        <g>
+          <circle cx={tehran[0]} cy={tehran[1]} r="6" className="atlas-marker" />
+          <text x={tehran[0]} y={tehran[1] + 0.4} className="atlas-marker-text">02</text>
+        </g>
+
+        <circle cx={natanz[0]} cy={natanz[1]} r="1.8" className="atlas-pin atlas-pin-red" />
+        <path d={`M ${natanz[0]} ${natanz[1]} L 674 173`} className="atlas-callout" />
+        <g>
+          <circle cx="681" cy="176" r="6" className="atlas-marker atlas-marker-red" />
+          <text x="681" y="176.4" className="atlas-marker-text atlas-marker-text-red">03</text>
+        </g>
+
       </svg>
     </div>
   );
