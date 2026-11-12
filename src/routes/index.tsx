@@ -216,7 +216,7 @@ function LandingPage() {
 
         {/* THE LOOP */}
         <section id="loop" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-8 md:py-20">
-          <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#1A4BFF]/30 pb-2">
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A4BFF]">
               The method / 01–04
             </p>
@@ -252,11 +252,11 @@ function LandingPage() {
               </div>
             </div>
 
-            <ol className="grid border-t border-[#1A1A1A]/20 sm:grid-cols-2">
+            <ol className="grid border-t border-[#1A1A1A]/12 sm:grid-cols-2">
               {LOOP.map((step, index) => (
                 <li
                   key={step.n}
-                  className={`border-b border-[#1A1A1A]/15 py-5 ${
+                  className={`border-b border-[#1A1A1A]/10 py-5 ${
                     index % 2 === 0 ? "sm:border-r sm:pr-6" : "sm:pl-6"
                   }`}
                 >
@@ -276,83 +276,78 @@ function LandingPage() {
         </section>
 
         {/* THE RECORD, SHOWN */}
-        <section className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
-          <div className="border-y-2 border-[#1A1A1A] py-9 md:py-12">
-            <div className="grid gap-10 md:grid-cols-[0.78fr_1.22fr] md:gap-16">
-              <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A4BFF]">
-                  The record / illustrative
-                </p>
-                <h2 className="mt-4 max-w-[14ch] font-display text-[34px] leading-[0.95] md:text-[52px]">
+        <section className="relative w-full bg-[#141210] text-[#F0E7D7]">
+          <div className="border-y border-[#F0E7D7]/15">
+            <div className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
+              <div className="flex flex-wrap items-baseline justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.14em]">
+                <p className="text-[#91A8FF]">The record / illustrative</p>
+                <p className="text-[#F0E7D7]/35">09 Nov 2026 · 001</p>
+              </div>
+
+              <div className="mt-5 grid gap-6 md:grid-cols-[0.8fr_1.2fr] md:items-end md:gap-14">
+                <h2 className="max-w-[13ch] font-display text-[38px] leading-[0.94] md:text-[56px]">
                   What the read leaves behind.
                 </h2>
-                <p className="mt-4 max-w-[42ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/70">
+                <p className="max-w-[50ch] font-serif text-[15px] leading-[1.7] text-[#F0E7D7]/60">
                   A chat window gives you an answer and forgets it. This leaves a record: the claims,
                   the questions they bear on, the predictions that follow, and the score when the
                   date arrives.
                 </p>
               </div>
 
-              <div>
-                <div className="flex items-center justify-between border-b border-[#1A1A1A]/20 pb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
-                  <span>The record / 001</span>
-                  <span>09 Nov 2026</span>
-                </div>
+              <ol className="mt-10 grid border-t border-[#F0E7D7]/20 md:grid-cols-3">
+                <li className="border-b border-[#F0E7D7]/15 py-5 md:border-b-0 md:border-r md:pr-7">
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#91A8FF]">01</span>
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#F0E7D7]/45">Calibration</span>
+                  </div>
+                  <p className="mt-4 font-display text-[46px] leading-none">4 of 5</p>
+                  <p className="mt-2 max-w-[26ch] font-serif text-[14px] leading-snug text-[#F0E7D7]/70">
+                    high-confidence predictions were right.
+                  </p>
+                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#F0E7D7]/35">
+                    Brier 0.18 · lower is better
+                  </p>
+                </li>
 
-                <ol>
-                  <li className="grid gap-2 border-b border-[#1A1A1A]/15 py-4 sm:grid-cols-[32px_105px_1fr] sm:gap-4">
-                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">01</span>
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Calibration</span>
-                    <div>
-                      <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
-                        <span className="mr-2 font-display text-[30px] leading-none">4 of 5</span>
-                        high-confidence predictions were right.
-                      </p>
-                      <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
-                        Brier 0.18 · lower is better
-                      </p>
-                    </div>
-                  </li>
+                <li className="border-b border-[#F0E7D7]/15 py-5 md:border-b-0 md:border-r md:px-7">
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#91A8FF]">02</span>
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#F0E7D7]/45">Question</span>
+                  </div>
+                  <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
+                    Will Iran let inspectors back in?
+                  </p>
+                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#E46A5A]">
+                    3 for · 0 against · one-sided
+                  </p>
+                </li>
 
-                  <li className="grid gap-2 border-b border-[#1A1A1A]/15 py-4 sm:grid-cols-[32px_105px_1fr] sm:gap-4">
-                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">02</span>
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Question</span>
-                    <div>
-                      <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
-                        Will Iran let inspectors back in?
-                      </p>
-                      <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]">
-                        3 for · 0 against · one-sided
-                      </p>
-                    </div>
-                  </li>
+                <li className="border-b border-[#F0E7D7]/15 py-5 md:border-b-0 md:pl-7">
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#91A8FF]">03</span>
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#F0E7D7]/45">Drill</span>
+                  </div>
+                  <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
+                    This week: steelman practice.
+                  </p>
+                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#F0E7D7]/35">
+                    Weakest exercise · 58% structural checks
+                  </p>
+                </li>
+              </ol>
 
-                  <li className="grid gap-2 border-b border-[#1A1A1A]/15 py-4 sm:grid-cols-[32px_105px_1fr] sm:gap-4">
-                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">03</span>
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Drill</span>
-                    <div>
-                      <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
-                        This week: steelman practice.
-                      </p>
-                      <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/40">
-                        Weakest exercise · 58% structural checks
-                      </p>
-                    </div>
-                  </li>
-                </ol>
-
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-4">
-                  <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
-                    Illustrative record · not your data
-                  </span>
-                  <Link
-                    to="/digest"
-                    className="group inline-flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
-                  >
-                    Open the record
-                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  </Link>
-                </div>
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#F0E7D7]/15 pt-4">
+                <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#F0E7D7]/30">
+                  Illustrative record · not your data
+                </span>
+                <Link
+                  to="/digest"
+                  className="group inline-flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#91A8FF] underline decoration-[#91A8FF]/30 underline-offset-4 transition-colors hover:decoration-[#91A8FF]"
+                >
+                  Open the record
+                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
               </div>
             </div>
           </div>
@@ -360,7 +355,7 @@ function LandingPage() {
 
         {/* CLOSING */}
         <section className="mx-auto w-full max-w-[1200px] px-5 pb-24 pt-8 md:px-8 md:pb-32">
-          <div className="border-y-2 border-[#1A1A1A] py-10 md:py-16">
+          <div className="border-y border-[#1A1A1A]/15 py-10 md:py-16">
             <div className="grid gap-10 md:grid-cols-[minmax(0,1.08fr)_minmax(300px,0.92fr)] md:gap-20">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
@@ -409,7 +404,7 @@ function LandingPage() {
 
       </main>
 
-      <footer className="relative z-30 border-t-2 border-[#1A1A1A] bg-[#FDFBF7] pb-8 pt-14">
+      <footer className="relative z-30 border-t border-[#1A1A1A]/15 bg-[#FDFBF7] pb-8 pt-14">
         <div className="mx-auto max-w-[1200px] px-5 md:px-8">
           <div className="flex flex-col justify-between gap-10 md:flex-row">
             <div className="max-w-xs">
