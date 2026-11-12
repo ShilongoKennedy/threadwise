@@ -252,17 +252,17 @@ function ProfilePage() {
                 </section>
 
                 {drill && (
-                  <section className="mt-6 border-2 border-[#1A4BFF] bg-white">
-                    <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1A4BFF] px-3 py-1.5">
-                      <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-white">
+                  <section className="mt-8 border-y border-[#1A1A1A]/15 py-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/15 pb-2">
+                      <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
                         {drill.completedAt ? "This week's drill · done" : "This week's drill"}{" "}
                         · {drill.kind === "teach" ? "teach-back" : drill.kind}
                       </span>
-                      <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/70">
+                      <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/35">
                         {drill.week}
                       </span>
                     </div>
-                    <div className="px-4 py-3">
+                    <div className="pt-3">
                       <p className="font-serif text-[15px] leading-snug text-[#1A1A1A]/85">
                         {shorten(drill.title, 140)}
                       </p>
