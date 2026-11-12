@@ -76,7 +76,7 @@ const smooth = (edge0: number, edge1: number, value: number) => {
 };
 
 function ExperimentPage() {
-  const scrollRef = useRef<HTMLElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState<string | null>(null);
@@ -86,9 +86,10 @@ function ExperimentPage() {
     const measure = () => {
       const element = scrollRef.current;
       if (!element) return;
-      const rect = element.getBoundingClientRect();
-      const total = element.offsetHeight - window.innerHeight;
-      setProgress(clamp(-rect.top / Math.max(1, total)));
+      const top = element.getBoundingClientRect().top + window.scrollY;
+      const spacer = element.querySelector<HTMLElement>("[data-scroll-spacer]");
+      const total = spacer?.offsetHeight ?? 1;
+      setProgress(clamp((window.scrollY - top) / Math.max(1, total)));
     };
     const onScroll = () => {
       cancelAnimationFrame(frame);
@@ -204,7 +205,7 @@ function ExperimentPage() {
         </div>
       </header>
 
-      <section ref={scrollRef} className="relative h-[240vh]">
+      <div ref={scrollRef} className="relative">
         <div className="lab-stage sticky top-[61px] grid h-[calc(100svh-61px)] grid-rows-[0.82fr_1.18fr] overflow-hidden lg:block">
           <div className="relative z-20 order-1 flex flex-col justify-between border-b border-[#E9E0D0]/15 bg-[#070706] px-5 py-6 md:px-8 md:py-8 lg:absolute lg:bottom-0 lg:left-0 lg:w-[400px] lg:border-b-0 lg:bg-gradient-to-tr lg:from-[#070706] lg:via-[#070706]/92 lg:to-transparent lg:px-8 lg:pb-8 lg:pt-24">
             <div className="flex flex-wrap items-center gap-3">
@@ -420,9 +421,9 @@ function ExperimentPage() {
             </div>
           </div>
         </div>
-      </section>
+        <div data-scroll-spacer className="h-[240vh]" aria-hidden />
 
-      <section id="instrument" className="border-t border-[#E9E0D0]/15 bg-[#E9E0D0] px-5 py-16 text-[#070706] md:px-8 md:py-24">
+        <section id="instrument" className="relative z-30 min-h-[100svh] border-t border-[#E9E0D0]/15 bg-[#E9E0D0] px-5 py-16 text-[#070706] md:px-8 md:py-24">
         <div className="mx-auto w-full max-w-[1440px]">
           <p className="lab-mono border-t border-[#070706]/20 pt-3 text-[9px] uppercase tracking-[0.16em] text-[#070706]/45">
             02 / The instrument
@@ -470,7 +471,8 @@ function ExperimentPage() {
             </Link>
           </div>
         </div>
-      </section>
+        </section>
+      </div>
 
       <footer className="border-t border-[#E9E0D0]/15 px-5 py-6 md:px-8">
         <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-3">
