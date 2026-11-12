@@ -108,93 +108,93 @@ function LandingPage() {
 
       <main id="main" className="relative z-10 flex-1">
         {/* ATLAS HERO */}
-        <section className={`atlas-hero relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-16 md:pt-20 ${entering ? "is-entering" : ""}`}>
-          <div className="relative z-10">
-            <div className="w-full border-y border-[#1A1A1A]/15">
-              <div className="hidden md:block">
-                <AtlasMap active={activePlace} onActive={setActivePlace} band />
+        <section className={`atlas-hero relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28 ${entering ? "is-entering" : ""}`}>
+          <div className="hidden md:block">
+            <AtlasMap active={activePlace} onActive={setActivePlace} overlay />
+          </div>
+          <div className="pointer-events-none absolute inset-0 z-[1] hidden bg-[linear-gradient(90deg,#FDFBF7_0%,#FDFBF7_30%,rgba(253,251,247,0.94)_42%,rgba(253,251,247,0.55)_54%,rgba(253,251,247,0.12)_64%,transparent_72%)] md:block" />
+
+          <div className="relative z-10 mx-auto flex min-h-[680px] w-full max-w-[1200px] flex-col justify-between px-5 pb-10 pt-10 md:px-8 md:pb-12 md:pt-14">
+            <div className="atlas-copy max-w-[650px] pb-8 md:pb-10">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
+                <span>The read / IAEA–Iran</span>
+                <span className="h-3 w-px bg-[#1A4BFF]/25" />
+                <span className="text-[#1A1A1A]/40">09 Nov 2026</span>
               </div>
-              <div className="md:hidden">
-                <AtlasMap active={activePlace} onActive={setActivePlace} mobile />
+              <h1 className="mt-3 max-w-[12ch] font-display text-[clamp(48px,6.2vw,88px)] leading-[0.92] tracking-[-0.035em]">
+                See what the story hides.
+              </h1>
+              <p className="mt-5 max-w-[46ch] font-serif text-[17px] leading-[1.55] text-[#1A1A1A]/70 md:text-[19px]">
+                Every claim has a geography. This is the IAEA read, plotted.
+              </p>
+              <p className="mt-3 max-w-[52ch] font-mono text-[9px] uppercase leading-[1.7] tracking-[0.14em] text-[#1A1A1A]/50 md:text-[10px]">
+                Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <Link
+                  to="/read/$token"
+                  params={{ token: SAMPLE_TOKEN }}
+                  onClick={openRead}
+                  aria-busy={entering}
+                  className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+                >
+                  Open the IAEA read
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+                <Link
+                  to="/analyst"
+                  className="inline-flex items-center gap-2 border-b-2 border-[#1A4BFF]/30 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] transition-colors hover:border-[#1A4BFF]"
+                >
+                  Bring your own source
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
               </div>
             </div>
 
-            <div className="mx-auto w-full max-w-[1200px] px-5 pb-10 pt-6 md:px-8 md:pb-12 md:pt-8">
-              <div className="flex flex-col gap-8 md:grid md:grid-cols-[1.1fr_0.9fr] md:items-end md:gap-12">
-                <div className="atlas-copy order-1">
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
-                    <span>The read / IAEA–Iran</span>
-                    <span className="h-3 w-px bg-[#1A4BFF]/25" />
-                    <span className="text-[#1A1A1A]/40">09 Nov 2026</span>
-                  </div>
-                  <h1 className="mt-3 max-w-[12ch] font-display text-[clamp(48px,6.2vw,88px)] leading-[0.92] tracking-[-0.035em]">
-                    See what the story hides.
-                  </h1>
-                  <p className="mt-5 max-w-[46ch] font-serif text-[17px] leading-[1.55] text-[#1A1A1A]/70 md:text-[19px]">
-                    Every claim has a geography. This is the IAEA read, plotted.
-                  </p>
-                  <p className="mt-3 max-w-[52ch] font-mono text-[9px] uppercase leading-[1.7] tracking-[0.14em] text-[#1A1A1A]/50 md:text-[10px]">
-                    Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
-                  </p>
-                  <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-                    <Link
-                      to="/read/$token"
-                      params={{ token: SAMPLE_TOKEN }}
-                      onClick={openRead}
-                      aria-busy={entering}
-                      className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
-                    >
-                      Open the IAEA read
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-                    <Link
-                      to="/analyst"
-                      className="inline-flex items-center gap-2 border-b-2 border-[#1A4BFF]/30 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] transition-colors hover:border-[#1A4BFF]"
-                    >
-                      Bring your own source
-                      <ArrowRight className="h-3 w-3" />
-                    </Link>
-                  </div>
-                </div>
+            <div className="mt-8 md:hidden">
+              <AtlasMap active={activePlace} onActive={setActivePlace} mobile />
+              <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
+                <span>The IAEA read / in places</span>
+                <span>09 Nov 2026</span>
+              </div>
+            </div>
 
-                <div className="atlas-meta order-2 flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 md:flex-col md:items-start md:gap-4 md:border-t-0 md:pt-0">
-                  <div>
-                    <div className="flex flex-wrap gap-x-5 gap-y-2">
-                      <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
-                      <span className="flex items-center gap-2"><span className="h-px w-5 border-t border-dashed border-[#C1121F]" /> permission denied</span>
-                    </div>
-                    <p className="mt-2 text-[8px] tracking-[0.08em] text-[#1A1A1A]/30">
-                      Natural Earth 1:110m · illustrative route
-                    </p>
-                  </div>
-                  <div className="w-full text-left leading-relaxed">
-                    <p className="text-[#1A1A1A]/60">The places</p>
-                    {PLACE_INDEX.map((place) => (
-                      <Link
-                        key={place.id}
-                        to="/read/$token"
-                        params={{ token: SAMPLE_TOKEN }}
-                        onMouseEnter={() => setActivePlace(place.id)}
-                        onMouseLeave={() => setActivePlace(null)}
-                        onFocus={() => setActivePlace(place.id)}
-                        onBlur={() => setActivePlace(null)}
-                        className={`mt-1 block border-b border-transparent pb-0.5 text-[10px] transition-colors hover:border-[#1A4BFF] ${
-                          activePlace === place.id ? "text-[#1A4BFF]" : place.id === "natanz" ? "text-[#C1121F]" : "text-[#1A1A1A]/70"
-                        }`}
-                      >
-                        {place.no} {place.name}{" "}
-                        <span className={activePlace === place.id ? "text-[#1A4BFF]/50" : place.id === "natanz" ? "text-[#C1121F]/50" : "text-[#1A1A1A]/30"}>
-                          {place.coords}
-                        </span>
-                      </Link>
-                    ))}
-                    <p className="mt-2 h-[30px] max-w-[310px] overflow-hidden text-[8px] leading-[1.45] tracking-[0.08em] text-[#1A1A1A]/40 line-clamp-2">
-                      {activePlace
-                        ? PLACE_INDEX.find((place) => place.id === activePlace)?.note
-                        : "Hover a place to see why it is on the map."}
-                    </p>
-                  </div>
+            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 bg-[#FDFBF7] pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+              <div>
+                <div className="flex flex-wrap gap-x-5 gap-y-2">
+                  <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
+                  <span className="flex items-center gap-2"><span className="h-px w-5 border-t border-dashed border-[#C1121F]" /> permission denied</span>
                 </div>
+                <p className="mt-2 text-[8px] tracking-[0.08em] text-[#1A1A1A]/30">
+                  Natural Earth 1:110m · illustrative route
+                </p>
+              </div>
+              <div className="w-full text-left leading-relaxed md:w-[310px] md:text-right">
+                <p className="text-[#1A1A1A]/60">The places</p>
+                {PLACE_INDEX.map((place) => (
+                  <Link
+                    key={place.id}
+                    to="/read/$token"
+                    params={{ token: SAMPLE_TOKEN }}
+                    onMouseEnter={() => setActivePlace(place.id)}
+                    onMouseLeave={() => setActivePlace(null)}
+                    onFocus={() => setActivePlace(place.id)}
+                    onBlur={() => setActivePlace(null)}
+                    className={`mt-1 block border-b border-transparent pb-0.5 text-[10px] transition-colors hover:border-[#1A4BFF] ${
+                      activePlace === place.id ? "text-[#1A4BFF]" : place.id === "natanz" ? "text-[#C1121F]" : "text-[#1A1A1A]/70"
+                    }`}
+                  >
+                    {place.no} {place.name}{" "}
+                    <span className={activePlace === place.id ? "text-[#1A4BFF]/50" : place.id === "natanz" ? "text-[#C1121F]/50" : "text-[#1A1A1A]/30"}>
+                      {place.coords}
+                    </span>
+                  </Link>
+                ))}
+                <p className="mt-2 h-[30px] max-w-[310px] overflow-hidden text-[8px] leading-[1.45] tracking-[0.08em] text-[#1A1A1A]/40 line-clamp-2 md:ml-auto">
+                  {activePlace
+                    ? PLACE_INDEX.find((place) => place.id === activePlace)?.note
+                    : "Hover a place to see why it is on the map."}
+                </p>
               </div>
             </div>
           </div>
@@ -477,7 +477,7 @@ const ATLAS_PLACES = {
   natanz: [((51.726 + 180) / 360) * 2000, ((90 - 33.724) / 180) * 1000] as const,
 };
 
-function AtlasMap({ active, onActive, mobile = false, band = false }: { active: string | null; onActive: (id: string | null) => void; mobile?: boolean; band?: boolean }) {
+function AtlasMap({ active, onActive, mobile = false, band = false, overlay = false }: { active: string | null; onActive: (id: string | null) => void; mobile?: boolean; band?: boolean; overlay?: boolean }) {
   const vienna = ATLAS_PLACES.vienna;
   const tehran = ATLAS_PLACES.tehran;
   const natanz = ATLAS_PLACES.natanz;
@@ -496,9 +496,11 @@ function AtlasMap({ active, onActive, mobile = false, band = false }: { active: 
     <div className={`atlas-map-reveal atlas-plate pointer-events-none overflow-hidden ${
       mobile
         ? "relative h-[280px] w-full"
-        : band
-          ? "relative h-[260px] w-full md:h-[400px]"
-          : "relative h-[400px] w-full"
+        : overlay
+          ? "absolute inset-0 z-0 hidden md:block"
+          : band
+            ? "relative h-[260px] w-full md:h-[400px]"
+            : "relative h-[400px] w-full"
     }`} aria-hidden>
       <style>{`
         .atlas-plate {
@@ -631,7 +633,7 @@ function AtlasMap({ active, onActive, mobile = false, band = false }: { active: 
         }
       `}</style>
       <svg
-        viewBox={mobile ? "900 0 600 430" : "0 0 2000 900"}
+        viewBox={mobile ? "900 0 600 430" : "0 0 2000 850"}
         preserveAspectRatio="xMidYMid slice"
         className="h-full w-full"
       >
