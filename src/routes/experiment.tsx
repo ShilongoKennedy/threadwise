@@ -24,16 +24,17 @@ type Node = {
   text: string;
   layer: "outer" | "inner" | "core";
   tone?: "red";
+  role: string;
 };
 
 const NODES: Node[] = [
-  { id: "reason", x: 24, y: 25, label: "Stated reason", text: "Development.", layer: "outer" },
-  { id: "mechanism", x: 17, y: 53, label: "Mechanism", text: "Budget support.", layer: "outer" },
-  { id: "claim", x: 50, y: 47, label: "The claim", text: "Aid buys influence.", layer: "core" },
-  { id: "counter", x: 78, y: 25, label: "Counter-claim", text: "A bribe.", layer: "outer" },
-  { id: "evidence", x: 84, y: 53, label: "Evidence", text: "UN vote alignment.", layer: "outer" },
-  { id: "question", x: 25, y: 79, label: "Open question", text: "Does conditionality bite?", layer: "inner" },
-  { id: "falsifier", x: 63, y: 81, label: "The falsifier", text: "Votes don't move.", layer: "core", tone: "red" },
+  { id: "reason", x: 38, y: 24, label: "Stated reason", text: "Development.", layer: "outer", role: "What the donor says the money is for." },
+  { id: "mechanism", x: 38, y: 54, label: "Mechanism", text: "Budget support.", layer: "outer", role: "The route through which money could change behaviour." },
+  { id: "claim", x: 58, y: 46, label: "The claim", text: "Aid buys influence.", layer: "core", role: "The sentence the rest of the story depends on." },
+  { id: "counter", x: 80, y: 23, label: "Counter-claim", text: "A bribe.", layer: "outer", role: "The opposite description of the same transaction." },
+  { id: "evidence", x: 86, y: 53, label: "Evidence", text: "UN vote alignment.", layer: "outer", role: "The observation that would make the claim plausible." },
+  { id: "question", x: 48, y: 82, label: "Open question", text: "Does conditionality bite?", layer: "inner", role: "The unresolved condition the claim still needs." },
+  { id: "falsifier", x: 70, y: 82, label: "The falsifier", text: "Votes don't move.", layer: "core", tone: "red", role: "The observation that would make the claim fail." },
 ];
 
 const EDGES = [
@@ -78,6 +79,7 @@ function ExperimentPage() {
   const scrollRef = useRef<HTMLElement>(null);
   const [progress, setProgress] = useState(0);
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
+  const [hovered, setHovered] = useState<string | null>(null);
 
   useEffect(() => {
     let frame = 0;
@@ -108,6 +110,8 @@ function ExperimentPage() {
   const innerOpacity = 1 - smooth(0.48, 0.78, progress);
   const coreScale = 1 + progress * 0.16;
   const falsifierScale = 1 + progress * 0.06;
+  const hoveredNode = NODES.find((node) => node.id === hovered) ?? null;
+  const chapter = phase === 0 ? 0 : phase === 3 ? 2 : 1;
 
   const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -152,6 +156,22 @@ function ExperimentPage() {
           transition: opacity 220ms linear, transform 280ms ease-out;
           will-change: transform, opacity;
         }
+        .lab-float {
+          animation: labFloat 8s ease-in-out infinite;
+        }
+        .lab-orbit {
+          animation: labOrbit 80s linear infinite;
+        }
+        @keyframes labFloat {
+          0%, 100% { transform: translate3d(0, 0, 0); }
+          50% { transform: translate3d(0, -7px, 0); }
+        }
+        @keyframes labOrbit {
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .lab-float, .lab-orbit { animation: none; }
+        }
         .lab-link {
           text-decoration-color: var(--oxide);
           text-decoration-thickness: 2px;
@@ -184,9 +204,9 @@ function ExperimentPage() {
         </div>
       </header>
 
-      <section ref={scrollRef} className="relative h-[280vh]">
-        <div className="sticky top-[61px] grid h-[calc(100svh-61px)] grid-rows-[0.82fr_1.18fr] overflow-hidden lg:grid-cols-[360px_minmax(0,1fr)] lg:grid-rows-1">
-          <div className="relative z-20 flex flex-col justify-between border-b border-[#E9E0D0]/15 bg-[#070706] px-5 py-6 md:px-8 md:py-8 lg:border-b-0 lg:border-r lg:px-8 lg:py-8">
+      <section ref={scrollRef} className="relative h-[240vh]">
+        <div className="lab-stage sticky top-[61px] grid h-[calc(100svh-61px)] grid-rows-[0.82fr_1.18fr] overflow-hidden lg:block">
+          <div className="relative z-20 order-1 flex flex-col justify-between border-b border-[#E9E0D0]/15 bg-[#070706] px-5 py-6 md:px-8 md:py-8 lg:absolute lg:bottom-0 lg:left-0 lg:w-[400px] lg:border-b-0 lg:bg-gradient-to-tr lg:from-[#070706] lg:via-[#070706]/92 lg:to-transparent lg:px-8 lg:pb-8 lg:pt-24">
             <div className="flex flex-wrap items-center gap-3">
               <span className="lab-mono border border-[#E9E0D0]/20 px-2 py-1 text-[8px] uppercase tracking-[0.14em] text-[#E9E0D0]/55">
                 {copy.eyebrow}
@@ -194,7 +214,7 @@ function ExperimentPage() {
             </div>
 
             <div className="mt-5 lg:mt-0">
-              <h1 className="lab-serif max-w-[12ch] text-[38px] leading-[0.92] sm:text-[48px] lg:text-[42px] min-[1400px]:text-[48px]">
+              <h1 className="lab-serif max-w-[12ch] text-[38px] leading-[0.92] sm:text-[48px] lg:text-[46px] min-[1400px]:text-[52px]">
                 {copy.headline}
               </h1>
               <p className="lab-sans mt-4 max-w-[34ch] text-[13px] leading-[1.5] text-[#E9E0D0]/60 md:text-[14px]">
@@ -221,6 +241,18 @@ function ExperimentPage() {
             </div>
 
             <div className="mt-8 border-t border-[#E9E0D0]/15 pt-3">
+              <div className="mb-3 flex items-center gap-4">
+                {["Surface", "Structure", "Claim"].map((label, index) => (
+                  <span
+                    key={label}
+                    className={`lab-mono text-[8px] uppercase tracking-[0.12em] transition-colors ${
+                      index === chapter ? "text-[#B6432E]" : "text-[#E9E0D0]/25"
+                    }`}
+                  >
+                    {String(index + 1).padStart(2, "0")} {label}
+                  </span>
+                ))}
+              </div>
               <div className="flex items-center justify-between lab-mono text-[8px] uppercase tracking-[0.12em] text-[#E9E0D0]/35">
                 <span>Pull the thread</span>
                 <span>{Math.round(progress * 100)}%</span>
@@ -237,10 +269,18 @@ function ExperimentPage() {
           </div>
 
           <div
-            className="lab-stage relative overflow-hidden"
+            className="relative order-2 overflow-hidden lg:absolute lg:inset-0"
             onPointerMove={onPointerMove}
             onPointerLeave={() => setPointer({ x: 0, y: 0 })}
           >
+            <div
+              aria-hidden
+              className="lab-orbit pointer-events-none absolute left-[58%] top-[46%] h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#E9E0D0]/10 sm:h-[460px] sm:w-[460px] lg:h-[540px] lg:w-[540px]"
+            >
+              <span className="absolute inset-4 rounded-full border border-dashed border-[#E9E0D0]/8" />
+              <span className="absolute left-1/2 top-0 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#B6432E]/70" />
+            </div>
+
             <svg
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
@@ -250,6 +290,7 @@ function ExperimentPage() {
               {EDGES.map((edge) => {
                 const a = NODES.find((node) => node.id === edge.from)!;
                 const b = NODES.find((node) => node.id === edge.to)!;
+                const connected = hovered === edge.from || hovered === edge.to;
                 const opacity = edge.red
                   ? 0.25 + progress * 0.75
                   : edge.outer
@@ -268,16 +309,20 @@ function ExperimentPage() {
                     pathLength={edge.red ? 1 : undefined}
                     strokeDashoffset={edge.red ? 1 - progress : undefined}
                     vectorEffect="non-scaling-stroke"
-                    style={{ opacity }}
-                    className={edge.outer ? "hidden sm:block" : ""}
+                    style={{ opacity: Math.min(1, opacity * (connected ? 1.9 : 1)) }}
+                    className={edge.outer || edge.from === "question" || edge.to === "question" ? "hidden sm:block" : ""}
                   />
                 );
               })}
+              <circle r="0.55" fill="#B6432E" opacity={0.35 + progress * 0.65}>
+                <animateMotion dur="4.5s" repeatCount="indefinite" path="M 58 46 L 70 82" />
+              </circle>
             </svg>
 
             {EDGES.map((edge) => {
               const a = NODES.find((node) => node.id === edge.from)!;
               const b = NODES.find((node) => node.id === edge.to)!;
+              const connected = hovered === edge.from || hovered === edge.to;
               const opacity = edge.outer ? outerOpacity : innerOpacity;
               const midX = (a.x + b.x) / 2;
               const midY = (a.y + b.y) / 2;
@@ -285,22 +330,23 @@ function ExperimentPage() {
                 <span
                   key={`label-${edge.from}-${edge.to}`}
                   className="lab-mono pointer-events-none absolute hidden -translate-x-1/2 -translate-y-1/2 bg-[#070706] px-1 text-[7px] uppercase tracking-[0.12em] text-[#E9E0D0]/35 md:block"
-                  style={{ left: `${midX}%`, top: `${midY}%`, opacity: opacity * 0.8 }}
+                  style={{ left: `${midX}%`, top: `${midY}%`, opacity: Math.min(1, opacity * (connected ? 1.6 : 0.8)) }}
                 >
                   {edge.label}
                 </span>
               );
             })}
 
-            {NODES.map((node) => {
+            {NODES.map((node, index) => {
               const isCore = node.layer === "core";
               const isInner = node.layer === "inner";
+              const isHovered = hovered === node.id;
               const opacity = isCore ? 1 : isInner ? innerOpacity : outerOpacity;
-              const scale = isCore
+              const scale = (isCore
                 ? node.id === "falsifier"
                   ? falsifierScale
                   : coreScale
-                : 1 - progress * 0.08;
+                : 1 - progress * 0.08) * (isHovered ? 1.04 : 1);
               const depth = isCore ? 7 : 13;
               const transform = `translate(-50%, -50%) translate(${pointer.x * depth}px, ${pointer.y * depth}px) scale(${scale})`;
 
@@ -308,7 +354,7 @@ function ExperimentPage() {
                 <div
                   key={node.id}
                   className={`lab-node pointer-events-none absolute ${isCore ? "z-20" : "z-10"} ${
-                    node.layer === "outer" ? "hidden sm:block" : ""
+                    node.layer === "outer" || node.id === "question" ? "hidden sm:block" : ""
                   }`}
                   style={{
                     left: `${node.x}%`,
@@ -317,29 +363,56 @@ function ExperimentPage() {
                     transform,
                   }}
                 >
-                  <div className={`text-center ${isCore ? "w-[280px] sm:w-[380px]" : "w-[150px] sm:w-[180px]"}`}>
-                    <p
-                      className={`lab-mono text-[7px] uppercase tracking-[0.16em] ${
-                        node.tone === "red" ? "text-[#B6432E]" : "text-[#E9E0D0]/35"
+                  <div className="lab-float" style={{ animationDelay: `-${index * 1.3}s` }}>
+                    <button
+                      type="button"
+                      aria-pressed={isHovered}
+                      aria-label={`${node.label}: ${node.text}. ${node.role}`}
+                      onPointerEnter={() => setHovered(node.id)}
+                      onPointerLeave={() => setHovered(null)}
+                      onFocus={() => setHovered(node.id)}
+                      onBlur={() => setHovered(null)}
+                      onClick={() => setHovered(node.id)}
+                      className={`lab-focus pointer-events-auto block cursor-default text-center ${
+                        isCore ? "w-[260px] sm:w-[380px]" : "w-[150px] sm:w-[180px]"
                       }`}
                     >
-                      {node.label}
-                    </p>
-                    <p
-                      className={`lab-serif mt-1 leading-[1.05] ${
-                        node.id === "claim"
-                          ? "text-[30px] sm:text-[44px]"
-                          : node.id === "falsifier"
-                            ? "text-[19px] sm:text-[22px] text-[#B6432E]"
-                            : "text-[17px] sm:text-[19px] text-[#E9E0D0]/75"
-                      }`}
-                    >
-                      {node.text}
-                    </p>
+                      <span
+                        className={`lab-mono block text-[8px] uppercase tracking-[0.16em] transition-colors ${
+                          isHovered
+                            ? "text-[#E9E0D0]"
+                            : node.tone === "red"
+                              ? "text-[#B6432E]"
+                              : "text-[#E9E0D0]/35"
+                        }`}
+                      >
+                        {node.label}
+                      </span>
+                      <span
+                        className={`lab-serif mt-1 block leading-[1.05] transition-colors ${
+                          node.id === "claim"
+                            ? "text-[30px] sm:text-[44px]"
+                            : node.id === "falsifier"
+                              ? "text-[19px] sm:text-[22px] text-[#B6432E]"
+                              : "text-[17px] sm:text-[19px] text-[#E9E0D0]/75"
+                        } ${isHovered && node.id !== "falsifier" ? "text-[#E9E0D0]" : ""}`}
+                      >
+                        {node.text}
+                      </span>
+                    </button>
                   </div>
                 </div>
               );
             })}
+
+            <div className="pointer-events-none absolute right-4 top-4 z-20 hidden max-w-[280px] border-t border-[#E9E0D0]/15 pt-2 sm:right-6 sm:top-6 md:block">
+              <p className={`lab-mono text-[8px] uppercase tracking-[0.14em] ${hoveredNode ? "text-[#B6432E]" : "text-[#E9E0D0]/30"}`}>
+                {hoveredNode ? hoveredNode.label : "The load-bearing graph"}
+              </p>
+              <p className="lab-sans mt-1 text-[11px] leading-[1.4] text-[#E9E0D0]/55">
+                {hoveredNode ? hoveredNode.role : "Hover a node. Pull the thread to strip the argument."}
+              </p>
+            </div>
 
             <div className="lab-mono pointer-events-none absolute bottom-4 right-4 flex items-center gap-2 text-[7px] uppercase tracking-[0.14em] text-[#E9E0D0]/25 sm:bottom-6 sm:right-6">
               <span className="h-1 w-1 rounded-full bg-[#B6432E]" />
