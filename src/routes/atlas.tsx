@@ -124,7 +124,8 @@ function LandingPage() {
               </h1>
               <p className="mt-5 max-w-[52ch] font-serif text-[16px] leading-[1.6] text-[#1A1A1A]/70 md:text-[18px]">
                 Every claim has a geography. This is the IAEA read, plotted: Vienna, Tehran,
-                Natanz. The places are the evidence.
+                Natanz. Vienna issues the demand. Tehran controls the permission. Natanz stays
+                unverified.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <Link
@@ -148,8 +149,8 @@ function LandingPage() {
             <div className="flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
               <div>
                 <div className="flex flex-wrap gap-x-5 gap-y-2">
-                  <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#1A4BFF]" /> the report</span>
-                  <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#C1121F]" /> access denied</span>
+                  <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
+                  <span className="flex items-center gap-2"><span className="h-px w-5 border-t border-dashed border-[#C1121F]" /> permission denied</span>
                 </div>
                 <p className="mt-2 text-[8px] tracking-[0.08em] text-[#1A1A1A]/30">
                   Natural Earth 1:110m · illustrative route
@@ -543,6 +544,8 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
   const tehran = ATLAS_PLACES.tehran;
   const natanz = ATLAS_PLACES.natanz;
   const washington = ATLAS_PLACES.washington;
+  const demandActive = active === "vienna" || active === "tehran";
+  const permissionActive = active === "tehran" || active === "natanz";
   return (
     <div className="atlas-plate pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[38%] overflow-hidden border-t border-[#1A1A1A]/10 md:inset-0 md:h-full md:border-t-0" aria-hidden>
       <style>{`
@@ -563,8 +566,18 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
         .atlas-route-solid {
           fill: none;
           stroke: #1A4BFF;
-          stroke-width: 1.35;
+          stroke-width: 1.5;
           vector-effect: non-scaling-stroke;
+        }
+        .atlas-route-denied {
+          stroke: #C1121F;
+          stroke-width: 1.35;
+        }
+        .atlas-route-active {
+          stroke-width: 2.4;
+        }
+        .atlas-route-denied.atlas-route-active {
+          stroke-width: 2.1;
         }
         .atlas-pin {
           fill: #1A4BFF;
@@ -583,6 +596,14 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
         .atlas-pin-ring-red {
           stroke: #C1121F;
         }
+        .atlas-line-label {
+          font-family: "IBM Plex Mono", "Courier New", monospace;
+          font-size: 6px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          fill: #1A4BFF;
+        }
+        .atlas-line-label-red { fill: #C1121F; }
         .atlas-marker {
           fill: #FDFBF7;
           stroke: #1A4BFF;
@@ -640,13 +661,24 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
         />
         <path
           d={`M ${vienna[0]} ${vienna[1]} Q 610 112 ${tehran[0]} ${tehran[1]}`}
-          className="atlas-route-solid"
+          className={`atlas-route-solid ${demandActive ? "atlas-route-active" : ""}`}
         />
         <path
           d={`M ${tehran[0]} ${tehran[1]} Q 648 149 ${natanz[0]} ${natanz[1]}`}
-          className="atlas-route"
+          className={`atlas-route atlas-route-denied ${permissionActive ? "atlas-route-active" : ""}`}
         />
 
+        <text
+          x={(vienna[0] + tehran[0]) / 2}
+          y={(vienna[1] + tehran[1]) / 2 - 11}
+          textAnchor="middle"
+          className="atlas-line-label"
+          stroke="#FDFBF7"
+          strokeWidth="2"
+          paintOrder="stroke"
+        >
+          the demand
+        </text>
         <g
           className="atlas-pin-group"
           onPointerEnter={() => onActive("vienna")}
