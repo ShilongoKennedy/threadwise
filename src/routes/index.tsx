@@ -39,19 +39,6 @@ export const Route = createFileRoute("/")({
 
 const SAMPLE_TOKEN = "mn4qvf4bhu";
 
-const REAL_READ = {
-  whatItDid:
-    "The IAEA sent a confidential report to member states saying it has concerns about Iran’s enrichment programme. The contents are unpublished; the public record is that inspectors have not been allowed back to the sites bombed in June 2025, and Iran has not said how much of its 60%-enriched uranium survived.",
-  wordWorth:
-    "A confidential report is a signal to governments, not an enforceable finding. Its authority is the safeguards mandate, not a power to compel access; what it changes depends on whether the Board acts and whether Iran lets inspectors back in.",
-  counter:
-    "This may be routine. The IAEA has sent confidential reports on Iran to the Board for years; a report saying it cannot verify a stockpile after a bombing campaign may be the expected result, not a rupture.",
-  falsifier:
-    "If the confidential report contains a specific, verified finding — a measured stockpile figure, a named undeclared site, or evidence of enrichment above 60% — then this is not a report about missing access, and the reading is wrong.",
-  watch:
-    "Whether the Board puts Iran on the formal agenda at its next meeting, and whether Iran lets inspectors back into Natanz, Fordow or the Isfahan tunnel site.",
-};
-
 const LOOP = [
   {
     n: "01",
@@ -170,7 +157,7 @@ function LandingPage() {
               </div>
             </div>
 
-            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 bg-[#FDFBF7] pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 max-md:pt-4">
               <div>
                 <div className="flex flex-wrap gap-x-5 gap-y-2">
                   <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
@@ -225,57 +212,6 @@ function LandingPage() {
               </div>
             </div>
           </div>
-        </section>
-
-        {/* ONE REAL READ */}
-        <section id="read" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-8 md:py-20">
-          <div className="border-b-2 border-[#1A1A1A] pb-2">
-            <h2 className="font-display text-[30px] leading-none md:text-[42px]">
-              The IAEA report, read.
-            </h2>
-          </div>
-
-          <div className="mt-5 grid gap-7 md:grid-cols-[1.05fr_0.95fr] md:gap-12">
-            <div className="border-l-2 border-[#1A1A1A] pl-4 md:pl-5">
-              <p className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">
-                The source
-              </p>
-              <p className="mt-2 font-serif text-[17px] leading-[1.65] text-[#1A1A1A]/82 md:text-[18px]">
-                {REAL_READ.whatItDid}
-              </p>
-              <p className="mt-5 font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A1A1A]/50">
-                What it can and cannot settle
-              </p>
-              <p className="mt-2 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/68">
-                {REAL_READ.wordWorth}
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <ReadCard label="The counter-reading" body={REAL_READ.counter} />
-              <ReadCard label="What would prove it wrong" body={REAL_READ.falsifier} tone="red" />
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-4 border-t border-[#1A1A1A]/15 pt-3 md:grid-cols-[1fr_auto] md:items-center">
-            <p className="max-w-[74ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/65">
-              <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A1A1A]/50">
-                What to watch ·{" "}
-              </span>
-              {REAL_READ.watch}
-            </p>
-            <Link
-              to="/read/$token"
-              params={{ token: SAMPLE_TOKEN }}
-              className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
-            >
-              Open the IAEA read
-              <ArrowUpRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <p className="mt-3 font-mono text-[10px] tracking-[0.12em] text-[#1A1A1A]/45">
-            Source: IAEA report to member states, seen by Reuters. Read filed 9 Nov 2026.
-          </p>
         </section>
 
         {/* THE LOOP */}
@@ -465,9 +401,13 @@ function LandingPage() {
                 <Link to="/cases" className="transition-colors hover:text-[#1A4BFF]">
                   Cases
                 </Link>
-                <a href="#read" className="transition-colors hover:text-[#1A4BFF]">
+                <Link
+                  to="/read/$token"
+                  params={{ token: SAMPLE_TOKEN }}
+                  className="transition-colors hover:text-[#1A4BFF]"
+                >
                   The IAEA read
-                </a>
+                </Link>
                 <a href="#loop" className="transition-colors hover:text-[#1A4BFF]">
                   How it works
                 </a>
@@ -498,36 +438,6 @@ function LandingPage() {
   );
 }
 
-function ReadCard({
-  label,
-  body,
-  tone = "ink",
-}: {
-  label: string;
-  body: string;
-  tone?: "ink" | "red";
-}) {
-  return (
-    <div
-      className={`border-l-2 py-1 pl-4 ${
-        tone === "red" ? "border-[#C1121F]" : "border-[#1A1A1A]"
-      }`}
-    >
-      <p
-        className={`font-mono text-[10px] font-bold tracking-[0.12em] ${
-          tone === "red" ? "text-[#C1121F]" : "text-[#1A4BFF]"
-        }`}
-      >
-        {label}
-      </p>
-      <p className="mt-2 font-serif text-[15px] leading-relaxed text-[#1A1A1A]/80 md:text-[16px]">
-        {body}
-      </p>
-    </div>
-  );
-}
-
-
 const ATLAS_PLACES = {
   vienna: [((16.3738 + 180) / 360) * 1000, ((90 - 48.2082) / 180) * 500] as const,
   tehran: [((51.389 + 180) / 360) * 1000, ((90 - 35.6892) / 180) * 500] as const,
@@ -539,7 +449,6 @@ function AtlasMap({ active, onActive }: { active: string | null; onActive: (id: 
   const vienna = ATLAS_PLACES.vienna;
   const tehran = ATLAS_PLACES.tehran;
   const natanz = ATLAS_PLACES.natanz;
-  const washington = ATLAS_PLACES.washington;
   const demandActive = active === "vienna" || active === "tehran";
   const permissionActive = active === "tehran" || active === "natanz";
   const demandPath = `M ${vienna[0]} ${vienna[1]} Q 610 112 ${tehran[0]} ${tehran[1]}`;
