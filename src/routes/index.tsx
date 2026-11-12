@@ -276,74 +276,74 @@ function LandingPage() {
         </section>
 
         {/* THE RECORD, SHOWN */}
-        <section className="relative w-full bg-[#141210] text-[#F0E7D7]">
-          <div className="border-y border-[#F0E7D7]/15">
+        <section className="relative w-full border-y border-[#1A1A1A]/15 bg-[#FDFBF7] text-[#1A1A1A]">
+          <div className="border-y border-[#1A1A1A]/15">
             <div className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
               <div className="flex flex-wrap items-baseline justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.14em]">
-                <p className="text-[#91A8FF]">The record / illustrative</p>
-                <p className="text-[#F0E7D7]/35">09 Nov 2026 · 001</p>
+                <p className="text-[#1A4BFF]">The record / illustrative</p>
+                <p className="text-[#1A1A1A]/35">09 Nov 2026 · 001</p>
               </div>
 
               <div className="mt-5 grid gap-6 md:grid-cols-[0.8fr_1.2fr] md:items-end md:gap-14">
-                <h2 className="max-w-[13ch] font-display text-[38px] leading-[0.94] md:text-[56px]">
+                <h2 className="max-w-[13ch] font-display text-[38px] leading-[0.94] md:text-[52px]">
                   What the read leaves behind.
                 </h2>
-                <p className="max-w-[50ch] font-serif text-[15px] leading-[1.7] text-[#F0E7D7]/60">
+                <p className="max-w-[50ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/60">
                   A chat window gives you an answer and forgets it. This leaves a record: the claims,
                   the questions they bear on, the predictions that follow, and the score when the
                   date arrives.
                 </p>
               </div>
 
-              <ol className="mt-10 grid border-t border-[#F0E7D7]/20 md:grid-cols-3">
-                <li className="border-b border-[#F0E7D7]/15 py-5 md:border-b-0 md:border-r md:pr-7">
+              <ol className="mt-10 grid border-t border-[#1A1A1A]/20 md:grid-cols-3">
+                <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:pr-7">
                   <div className="flex items-baseline gap-3">
-                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#91A8FF]">01</span>
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#F0E7D7]/45">Calibration</span>
+                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">01</span>
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Calibration</span>
                   </div>
                   <p className="mt-4 font-display text-[46px] leading-none">4 of 5</p>
-                  <p className="mt-2 max-w-[26ch] font-serif text-[14px] leading-snug text-[#F0E7D7]/70">
+                  <p className="mt-2 max-w-[26ch] font-serif text-[14px] leading-snug text-[#1A1A1A]/70">
                     high-confidence predictions were right.
                   </p>
-                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#F0E7D7]/35">
+                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
                     Brier 0.18 · lower is better
                   </p>
                 </li>
 
-                <li className="border-b border-[#F0E7D7]/15 py-5 md:border-b-0 md:border-r md:px-7">
+                <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:px-7">
                   <div className="flex items-baseline gap-3">
-                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#91A8FF]">02</span>
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#F0E7D7]/45">Question</span>
+                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">02</span>
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Question</span>
                   </div>
                   <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
                     Will Iran let inspectors back in?
                   </p>
-                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#E46A5A]">
+                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]">
                     3 for · 0 against · one-sided
                   </p>
                 </li>
 
-                <li className="border-b border-[#F0E7D7]/15 py-5 md:border-b-0 md:pl-7">
+                <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:pl-7">
                   <div className="flex items-baseline gap-3">
-                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#91A8FF]">03</span>
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#F0E7D7]/45">Drill</span>
+                    <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">03</span>
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Drill</span>
                   </div>
                   <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
                     This week: steelman practice.
                   </p>
-                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#F0E7D7]/35">
+                  <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
                     Weakest exercise · 58% structural checks
                   </p>
                 </li>
               </ol>
 
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#F0E7D7]/15 pt-4">
-                <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#F0E7D7]/30">
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
+                <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/30">
                   Illustrative record · not your data
                 </span>
                 <Link
                   to="/digest"
-                  className="group inline-flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#91A8FF] underline decoration-[#91A8FF]/30 underline-offset-4 transition-colors hover:decoration-[#91A8FF]"
+                  className="group inline-flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#91A8FF]/30 underline-offset-4 transition-colors hover:decoration-[#91A8FF]"
                 >
                   Open the record
                   <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -361,7 +361,7 @@ function LandingPage() {
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
                   The last page / Begin
                 </p>
-                <h2 className="mt-4 max-w-[12ch] font-display text-[clamp(46px,6vw,88px)] leading-[0.88] tracking-[-0.035em]">
+                <h2 className="mt-4 max-w-[12ch] font-display text-[clamp(44px,5.4vw,76px)] leading-[0.88] tracking-[-0.035em]">
                   Read one article properly.
                 </h2>
                 <div className="mt-6 max-w-[50ch] space-y-3 font-serif text-[16px] leading-[1.65] text-[#1A1A1A]/68">
