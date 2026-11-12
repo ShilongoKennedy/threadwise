@@ -333,38 +333,51 @@ function LandingPage() {
         </section>
 
         {/* CLOSING */}
-        <section className="mx-auto w-full max-w-[1200px] px-5 pb-20 pt-6 md:px-8 md:pb-28">
-          <div className="border-2 border-[#1A1A1A] bg-white px-6 py-11 md:px-10 md:py-14">
-            <h2 className="max-w-[16ch] font-display text-[38px] leading-[0.95] tracking-tight md:text-[60px]">
-              Read one article properly.
-            </h2>
-            <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/68">
-              Ten minutes with a source you already distrust will teach you more than a month of
-              summaries. Start with the one you have open in another tab.
-            </p>
-            <p className="mt-3 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/68">
-              It will not tell you what to conclude. It will show you where the evidence stops.
-            </p>
-            <div className="mt-7 flex flex-wrap items-center gap-4">
-              <Link
-                to="/analyst"
-                className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
-              >
-                Read a source
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/read/$token"
-                params={{ token: SAMPLE_TOKEN }}
-                className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
-              >
-                Open the IAEA example
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-              </Link>
+        <section className="mx-auto w-full max-w-[1200px] px-5 pb-24 pt-8 md:px-8 md:pb-32">
+          <div className="border-y-2 border-[#1A1A1A] py-10 md:py-16">
+            <div className="grid gap-10 md:grid-cols-[minmax(0,1.08fr)_minmax(300px,0.92fr)] md:gap-20">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
+                  The last page / Begin
+                </p>
+                <h2 className="mt-4 max-w-[12ch] font-display text-[clamp(46px,6vw,88px)] leading-[0.88] tracking-[-0.035em]">
+                  Read one article properly.
+                </h2>
+                <div className="mt-6 max-w-[50ch] space-y-3 font-serif text-[16px] leading-[1.65] text-[#1A1A1A]/68">
+                  <p>
+                    Ten minutes with a source you already distrust will teach you more than a month
+                    of summaries. Start with the one you have open in another tab.
+                  </p>
+                  <p>It will not tell you what to conclude. It will show you where the evidence stops.</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-end md:pl-8">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/45">
+                  Start here
+                </p>
+                <Link
+                  to="/analyst"
+                  className="group mt-4 flex items-center justify-between bg-[#1A1A1A] px-4 py-4 text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF]"
+                >
+                  <span className="font-display text-[24px] leading-none">Read a source</span>
+                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  to="/read/$token"
+                  params={{ token: SAMPLE_TOKEN }}
+                  className="group flex items-center justify-between border-b border-[#1A1A1A]/15 py-4 font-serif text-[18px] text-[#1A1A1A]/80 transition-colors hover:text-[#1A4BFF]"
+                >
+                  Open the IAEA read
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                </Link>
+                <p className="mt-5 font-mono text-[9px] uppercase leading-relaxed tracking-[0.12em] text-[#1A1A1A]/40">
+                  Free while in beta
+                  <br />
+                  Sign in with Google
+                </p>
+              </div>
             </div>
-            <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
-              Free while in beta. Sign in with Google.
-            </p>
           </div>
         </section>
 
