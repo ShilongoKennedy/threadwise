@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Dancing Script';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/dancing-script-600.ttf') format('truetype');
+}
+
 /* Self-hosted faces: no third-party request on the critical path. */
 @font-face {
   font-family: 'Newsreader';
@@ -950,3 +958,39 @@ body::after {
   transition: opacity 0.4s ease;
 }
 .tw-redacted-hint.is-gone { animation: none; opacity: 0; }
+
+
+/* Hand-signed hero line. */
+.signature-headline {
+  font-family: 'Dancing Script', 'Newsreader', cursive;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  font-feature-settings: "liga" 1, "kern" 1;
+}
+.signature-letter {
+  display: inline-block;
+  opacity: 0;
+  clip-path: inset(0 100% 0 0);
+  animation: signature-write 220ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  animation-delay: var(--signature-delay, 0ms);
+}
+@keyframes signature-write {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  25% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signature-letter {
+    opacity: 1;
+    clip-path: none;
+    animation: none;
+  }
+}

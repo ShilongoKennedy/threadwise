@@ -127,6 +127,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "/fonts/fraunces-italic-300-600-latin.woff2",
         crossOrigin: "anonymous",
       },
+      {
+        rel: "preload",
+        as: "font",
+        type: "font/ttf",
+        href: "/fonts/dancing-script-600.ttf",
+        crossOrigin: "anonymous",
+      },
       { rel: "icon", href: "/brand/favicon.svg", type: "image/svg+xml" },
       { rel: "icon", href: "/favicon.ico", sizes: "any" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },

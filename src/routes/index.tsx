@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 
 export const Route = createFileRoute("/")({
@@ -121,9 +122,10 @@ function LandingPage() {
                 <span className="h-3 w-px bg-[#1A4BFF]/25" />
                 <span className="text-[#1A1A1A]/40">09 Nov 2026</span>
               </div>
-              <h1 className="mt-3 max-w-[12ch] font-display text-[clamp(48px,6.2vw,88px)] leading-[0.92] tracking-[-0.035em]">
-                See what the story hides.
-              </h1>
+              <SignatureHeadline
+                text="See what the story hides."
+                className="mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(58px,7.6vw,112px)] leading-[0.82]"
+              />
               <p className="mt-5 max-w-[46ch] font-serif text-[17px] leading-[1.55] text-[#1A1A1A]/70 md:text-[19px]">
                 Every claim has a geography. This is the IAEA read, plotted.
               </p>
