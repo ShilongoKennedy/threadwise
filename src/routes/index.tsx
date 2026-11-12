@@ -110,16 +110,15 @@ function LandingPage() {
         {/* ATLAS HERO */}
         <section className={`atlas-hero relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28 ${entering ? "is-entering" : ""}`}>
           <AtlasMap active={activePlace} onActive={setActivePlace} />
-          <div className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(90deg,#FDFBF7_0%,rgba(253,251,247,0.96)_28%,rgba(253,251,247,0.42)_48%,rgba(253,251,247,0.06)_68%,transparent_80%)] md:block" />
 
           <div className="relative z-10 mx-auto flex min-h-[620px] w-full max-w-[1200px] flex-col justify-between px-5 pb-10 pt-10 md:min-h-[680px] md:px-8 md:pb-12 md:pt-14">
-            <div className="atlas-copy max-w-[650px] pb-8 md:pb-14">
+            <div className="atlas-copy max-w-[650px] pb-8 md:max-w-[48%] md:pb-10">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
                 <span>The read / IAEA–Iran</span>
                 <span className="h-3 w-px bg-[#1A4BFF]/25" />
                 <span className="text-[#1A1A1A]/40">09 Nov 2026</span>
               </div>
-              <h1 className="mt-3 max-w-[12ch] font-display text-[clamp(50px,7.4vw,104px)] leading-[0.92] tracking-[-0.035em]">
+              <h1 className="mt-3 max-w-[12ch] font-display text-[clamp(48px,6.2vw,88px)] leading-[0.92] tracking-[-0.035em]">
                 See what the story hides.
               </h1>
               <p className="mt-5 max-w-[46ch] font-serif text-[17px] leading-[1.55] text-[#1A1A1A]/70 md:text-[19px]">
@@ -157,7 +156,7 @@ function LandingPage() {
               </div>
             </div>
 
-            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 md:max-w-[48%] md:flex-col md:items-start md:gap-4">
               <div>
                 <div className="flex flex-wrap gap-x-5 gap-y-2">
                   <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
@@ -167,7 +166,7 @@ function LandingPage() {
                   Natural Earth 1:110m · illustrative route
                 </p>
               </div>
-              <div className="w-full text-left leading-relaxed md:w-[310px] md:text-right">
+              <div className="w-full text-left leading-relaxed">
                 <p className="text-[#1A1A1A]/60">The places</p>
                 {PLACE_INDEX.map((place) => (
                   <Link
@@ -188,7 +187,7 @@ function LandingPage() {
                     </span>
                   </Link>
                 ))}
-                <p className="mt-2 h-[30px] max-w-[310px] overflow-hidden text-[8px] leading-[1.45] tracking-[0.08em] text-[#1A1A1A]/40 line-clamp-2 md:ml-auto">
+                <p className="mt-2 h-[30px] max-w-[310px] overflow-hidden text-[8px] leading-[1.45] tracking-[0.08em] text-[#1A1A1A]/40 line-clamp-2">
                   {activePlace
                     ? PLACE_INDEX.find((place) => place.id === activePlace)?.note
                     : "Hover a place to see why it is on the map."}
@@ -495,7 +494,7 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
     <div className={`atlas-map-reveal atlas-plate pointer-events-none overflow-hidden ${
       mobile
         ? "relative h-[280px] w-full border-y border-[#1A1A1A]/15"
-        : "absolute inset-0 z-0 hidden md:block"
+        : "absolute inset-y-0 right-0 z-0 hidden w-[54%] border-l border-[#1A1A1A]/15 md:block"
     }`} aria-hidden>
       <style>{`
         .atlas-plate {
@@ -631,7 +630,7 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
         }
       `}</style>
       <svg
-        viewBox="0 0 1000 500"
+        viewBox={mobile ? "0 0 1000 500" : "420 10 300 345"}
         preserveAspectRatio="xMidYMid slice"
         className="h-full w-full"
       >
