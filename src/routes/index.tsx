@@ -469,10 +469,9 @@ function LandingPage() {
 }
 
 const ATLAS_PLACES = {
-  vienna: [((16.3738 + 180) / 360) * 1000, ((90 - 48.2082) / 180) * 500] as const,
-  tehran: [((51.389 + 180) / 360) * 1000, ((90 - 35.6892) / 180) * 500] as const,
-  natanz: [((51.726 + 180) / 360) * 1000, ((90 - 33.724) / 180) * 500] as const,
-  washington: [((-77.0369 + 180) / 360) * 1000, ((90 - 38.9072) / 180) * 500] as const,
+  vienna: [((16.3738 + 180) / 360) * 2000, ((90 - 48.2082) / 180) * 1000] as const,
+  tehran: [((51.389 + 180) / 360) * 2000, ((90 - 35.6892) / 180) * 1000] as const,
+  natanz: [((51.726 + 180) / 360) * 2000, ((90 - 33.724) / 180) * 1000] as const,
 };
 
 function AtlasMap({ active, onActive, mobile = false }: { active: string | null; onActive: (id: string | null) => void; mobile?: boolean }) {
@@ -481,14 +480,14 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
   const natanz = ATLAS_PLACES.natanz;
   const demandActive = active === "vienna" || active === "tehran";
   const permissionActive = active === "tehran" || active === "natanz";
-  const demandPath = `M ${vienna[0]} ${vienna[1]} Q 610 112 ${tehran[0]} ${tehran[1]}`;
+  const demandPath = `M ${vienna[0]} ${vienna[1]} Q 1220 224 ${tehran[0]} ${tehran[1]}`;
   const holdPulse =
     active === "vienna"
       ? { x: vienna[0], y: vienna[1], color: "#1A4BFF" }
       : active === "tehran"
         ? { x: tehran[0], y: tehran[1], color: "#1A4BFF" }
         : active === "natanz"
-          ? { x: 681, y: 176, color: "#C1121F" }
+          ? { x: 1362, y: 352, color: "#C1121F" }
           : null;
   return (
     <div className={`atlas-map-reveal atlas-plate pointer-events-none overflow-hidden ${
@@ -541,9 +540,6 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
           from { clip-path: inset(0 100% 0 0); }
           to { clip-path: inset(0); }
         }
-        .atlas-plate-image {
-          opacity: 0.45;
-        }
         .atlas-route {
           fill: none;
           stroke: #1A4BFF;
@@ -587,7 +583,7 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
         }
         .atlas-line-label {
           font-family: "IBM Plex Mono", "Courier New", monospace;
-          font-size: 6px;
+          font-size: 9px;
           letter-spacing: 0.1em;
           text-transform: uppercase;
           fill: #1A4BFF;
@@ -602,7 +598,7 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
         .atlas-marker-red { stroke: #C1121F; }
         .atlas-marker-text {
           font-family: "IBM Plex Mono", "Courier New", monospace;
-          font-size: 5.5px;
+          font-size: 8px;
           font-weight: 700;
           letter-spacing: 0.06em;
           fill: #1A4BFF;
@@ -630,35 +626,28 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
         }
       `}</style>
       <svg
-        viewBox={mobile ? "0 0 1000 500" : "420 10 300 345"}
+        viewBox={mobile ? "900 0 600 430" : "960 40 540 620"}
         preserveAspectRatio="xMidYMid slice"
         className="h-full w-full"
       >
-        <rect width="1000" height="500" fill="#FDFBF7" />
+        <rect width="2000" height="1000" fill="#FDFBF7" />
         <g stroke="#1A1A1A" strokeWidth="0.18" opacity="0.08" vectorEffect="non-scaling-stroke">
           {[-150, -120, -90, -60, -30, 0, 30, 60, 90, 120, 150].map((lon) => {
-            const x = ((lon + 180) / 360) * 1000;
-            return <line key={`lon-${lon}`} x1={x} y1="0" x2={x} y2="500" />;
+            const x = ((lon + 180) / 360) * 2000;
+            return <line key={`lon-${lon}`} x1={x} y1="0" x2={x} y2="1000" />;
           })}
           {[-60, -30, 0, 30, 60].map((lat) => {
-            const y = ((90 - lat) / 180) * 500;
-            return <line key={`lat-${lat}`} x1="0" y1={y} x2="1000" y2={y} />;
+            const y = ((90 - lat) / 180) * 1000;
+            return <line key={`lat-${lat}`} x1="0" y1={y} x2="2000" y2={y} />;
           })}
         </g>
-        <image
-          href="/world-dots-ink.svg"
-          x="0"
-          y="0"
-          width="1000"
-          height="500"
-          className="atlas-plate-image"
-        />
+        <image href="/world-land.svg" x="0" y="0" width="2000" height="1000" />
         <path
           d={demandPath}
           className={`atlas-route-solid ${demandActive ? "atlas-route-active" : ""}`}
         />
         <path
-          d={`M ${tehran[0]} ${tehran[1]} Q 648 149 ${natanz[0]} ${natanz[1]}`}
+          d={`M ${tehran[0]} ${tehran[1]} Q 1296 298 ${natanz[0]} ${natanz[1]}`}
           className={`atlas-route atlas-route-denied ${permissionActive ? "atlas-route-active" : ""}`}
         />
 
@@ -666,12 +655,12 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
           <circle
             cx={holdPulse.x}
             cy={holdPulse.y}
-            r="2.2"
+            r="3"
             fill={holdPulse.color}
             className="atlas-hold-pulse"
           />
         ) : (
-          <circle r="1.5" className="atlas-demand-pulse" fill="#1A4BFF">
+          <circle r="3" className="atlas-demand-pulse" fill="#1A4BFF">
             <animateMotion
               dur="9s"
               repeatCount="indefinite"
@@ -692,11 +681,11 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
 
         <text
           x={(vienna[0] + tehran[0]) / 2}
-          y={(vienna[1] + tehran[1]) / 2 - 11}
+          y={(vienna[1] + tehran[1]) / 2 - 22}
           textAnchor="middle"
           className="atlas-line-label"
           stroke="#FDFBF7"
-          strokeWidth="2"
+          strokeWidth="3"
           paintOrder="stroke"
         >
           the demand
@@ -706,7 +695,7 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
           onPointerEnter={() => onActive("vienna")}
           onPointerLeave={() => onActive(null)}
         >
-          <circle cx={vienna[0]} cy={vienna[1]} r={active === "vienna" ? 7 : 6} className="atlas-marker" />
+          <circle cx={vienna[0]} cy={vienna[1]} r={active === "vienna" ? 12 : 10} className="atlas-marker" />
           <text x={vienna[0]} y={vienna[1] + 0.4} className="atlas-marker-text">01</text>
         </g>
 
@@ -715,19 +704,19 @@ function AtlasMap({ active, onActive, mobile = false }: { active: string | null;
           onPointerEnter={() => onActive("tehran")}
           onPointerLeave={() => onActive(null)}
         >
-          <circle cx={tehran[0]} cy={tehran[1]} r={active === "tehran" ? 7 : 6} className="atlas-marker" />
+          <circle cx={tehran[0]} cy={tehran[1]} r={active === "tehran" ? 12 : 10} className="atlas-marker" />
           <text x={tehran[0]} y={tehran[1] + 0.4} className="atlas-marker-text">02</text>
         </g>
 
-        <circle cx={natanz[0]} cy={natanz[1]} r="1.8" className="atlas-pin atlas-pin-red" />
-        <path d={`M ${natanz[0]} ${natanz[1]} L 674 173`} className="atlas-callout" />
+        <circle cx={natanz[0]} cy={natanz[1]} r="3" className="atlas-pin atlas-pin-red" />
+        <path d={`M ${natanz[0]} ${natanz[1]} L 1348 346`} className="atlas-callout" />
         <g
           className="atlas-pin-group"
           onPointerEnter={() => onActive("natanz")}
           onPointerLeave={() => onActive(null)}
         >
-          <circle cx="681" cy="176" r={active === "natanz" ? 7 : 6} className="atlas-marker atlas-marker-red" />
-          <text x="681" y="176.4" className="atlas-marker-text atlas-marker-text-red">03</text>
+          <circle cx="1362" cy="352" r={active === "natanz" ? 12 : 10} className="atlas-marker atlas-marker-red" />
+          <text x="1362" y="352.4" className="atlas-marker-text atlas-marker-text-red">03</text>
         </g>
 
       </svg>
