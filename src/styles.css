@@ -1038,3 +1038,70 @@ body::after {
     display: none;
   }
 }
+
+
+/* A sheet that can be read only through the lens. */
+.redaction-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: #11110f;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  -webkit-mask-image: radial-gradient(circle 138px at var(--lens-x) var(--lens-y), transparent 0 97%, #000 100%);
+  mask-image: radial-gradient(circle 138px at var(--lens-x) var(--lens-y), transparent 0 97%, #000 100%);
+}
+.redaction-veil.is-lifted {
+  opacity: 0;
+}
+.redaction-lens {
+  position: absolute;
+  z-index: 15;
+  left: var(--lens-x);
+  top: var(--lens-y);
+  width: 276px;
+  height: 276px;
+  border: 1px solid rgba(253, 251, 247, 0.75);
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  transition: opacity 250ms ease;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(17, 17, 15, 0.45), 0 18px 40px rgba(0, 0, 0, 0.22);
+}
+.redaction-lens::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: #1A4BFF;
+  transform: translate(-50%, -50%);
+}
+.redaction-lens > span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: 24px;
+  background: rgba(26, 75, 255, 0.55);
+  transform: translate(-50%, -50%);
+}
+.redaction-lens.is-lifted {
+  opacity: 0;
+}
+@media (max-width: 767px) {
+  .redaction-veil {
+    -webkit-mask-image: radial-gradient(circle 92px at var(--lens-x) var(--lens-y), transparent 0 97%, #000 100%);
+    mask-image: radial-gradient(circle 92px at var(--lens-x) var(--lens-y), transparent 0 97%, #000 100%);
+  }
+  .redaction-lens {
+    width: 184px;
+    height: 184px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .redaction-veil, .redaction-lens { transition: none; }
+}
