@@ -21,6 +21,7 @@ import { Route as ReadsRouteImport } from './routes/reads'
 import { Route as RedactedRouteImport } from './routes/redacted'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SeminarRouteImport } from './routes/seminar'
+import { Route as TearRouteImport } from './routes/tear'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
@@ -110,6 +111,11 @@ const ReviewRoute = ReviewRouteImport.update({
 const SeminarRoute = SeminarRouteImport.update({
   id: '/seminar',
   path: '/seminar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TearRoute = TearRouteImport.update({
+  id: '/tear',
+  path: '/tear',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
+  '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -320,6 +327,7 @@ export interface FileRoutesByTo {
   '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
+  '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -365,6 +373,7 @@ export interface FileRoutesById {
   '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
+  '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -411,6 +420,7 @@ export interface FileRouteTypes {
     | '/redacted'
     | '/review'
     | '/seminar'
+    | '/tear'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -455,6 +465,7 @@ export interface FileRouteTypes {
     | '/redacted'
     | '/review'
     | '/seminar'
+    | '/tear'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -499,6 +510,7 @@ export interface FileRouteTypes {
     | '/redacted'
     | '/review'
     | '/seminar'
+    | '/tear'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -544,6 +556,7 @@ export interface RootRouteChildren {
   RedactedRoute: typeof RedactedRoute
   ReviewRoute: typeof ReviewRoute
   SeminarRoute: typeof SeminarRoute
+  TearRoute: typeof TearRoute
   TermsRoute: typeof TermsRoute
   WorkspaceRoute: typeof WorkspaceRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
@@ -660,6 +673,13 @@ declare module '@tanstack/react-router' {
       path: '/seminar'
       fullPath: '/seminar'
       preLoaderRoute: typeof SeminarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tear': {
+      id: '/tear'
+      path: '/tear'
+      fullPath: '/tear'
+      preLoaderRoute: typeof TearRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -888,6 +908,7 @@ const rootRouteChildren: RootRouteChildren = {
   RedactedRoute: RedactedRoute,
   ReviewRoute: ReviewRoute,
   SeminarRoute: SeminarRoute,
+  TearRoute: TearRoute,
   TermsRoute: TermsRoute,
   WorkspaceRoute: WorkspaceRoute,
   ApiAnalystRoute: ApiAnalystRoute,
