@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
+import { Route as AngleRouteImport } from './routes/angle'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
@@ -63,6 +64,11 @@ const IndexRoute = IndexRouteImport.update({
 const AnalystRoute = AnalystRouteImport.update({
   id: '/analyst',
   path: '/analyst',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AngleRoute = AngleRouteImport.update({
+  id: '/angle',
+  path: '/angle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CasesRoute = CasesRouteImport.update({
@@ -284,6 +290,7 @@ const ApiReadTokenRoute = ApiReadTokenRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
+  '/angle': typeof AngleRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
@@ -331,6 +338,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
+  '/angle': typeof AngleRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
@@ -379,6 +387,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
+  '/angle': typeof AngleRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
@@ -428,6 +437,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/analyst'
+    | '/angle'
     | '/cases'
     | '/digest'
     | '/login'
@@ -475,6 +485,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/analyst'
+    | '/angle'
     | '/cases'
     | '/digest'
     | '/login'
@@ -522,6 +533,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/analyst'
+    | '/angle'
     | '/cases'
     | '/digest'
     | '/login'
@@ -570,6 +582,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalystRoute: typeof AnalystRoute
+  AngleRoute: typeof AngleRoute
   CasesRoute: typeof CasesRoute
   DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
@@ -629,6 +642,13 @@ declare module '@tanstack/react-router' {
       path: '/analyst'
       fullPath: '/analyst'
       preLoaderRoute: typeof AnalystRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/angle': {
+      id: '/angle'
+      path: '/angle'
+      fullPath: '/angle'
+      preLoaderRoute: typeof AngleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cases': {
@@ -938,6 +958,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalystRoute: AnalystRoute,
+  AngleRoute: AngleRoute,
   CasesRoute: CasesRoute,
   DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
