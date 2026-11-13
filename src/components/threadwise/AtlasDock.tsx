@@ -12,7 +12,7 @@ const ITEMS = [
 
 export function AtlasDock({ onExplore }: { onExplore: () => void }) {
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-3 md:bottom-5">
+    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-50 md:bottom-[88px] flex justify-center px-3 md:bottom-5">
       <nav
         aria-label="Atlas destinations"
         className="pointer-events-auto flex items-stretch gap-0.5 rounded-[18px] border border-[#C9A77D]/20 bg-[#100C09]/80 p-1.5 shadow-[0_18px_50px_rgba(0,0,0,0.38)] backdrop-blur-[20px]"
@@ -26,9 +26,9 @@ export function AtlasDock({ onExplore }: { onExplore: () => void }) {
               <span className="font-mono text-[7px] uppercase tracking-[0.1em]">{item.label}</span>
             </>
           );
-          const className = `relative flex min-w-[58px] flex-col items-center justify-center gap-1 rounded-[13px] px-2 py-2 transition-colors md:min-w-[76px] md:gap-1.5 md:py-2.5 ${
+          const className = `relative flex min-w-[58px] flex-col items-center justify-center gap-1 rounded-[13px] px-2 py-2 transition-colors md:min-w-[112px] md:gap-1.5 md:py-3 ${
             active
-              ? "bg-[#F4EBDD]/10 text-[#AFC0FF]"
+              ? "bg-[#F4EBDD]/10 text-[#AFC0FF] shadow-[inset_0_0_24px_rgba(133,162,255,0.08)]"
               : "text-[#F4EBDD]/45 hover:bg-[#F4EBDD]/5 hover:text-[#F4EBDD]/80"
           }`;
 

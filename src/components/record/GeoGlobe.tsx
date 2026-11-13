@@ -74,7 +74,7 @@ function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasE
     ((90 - lat) / 180) * height,
   ];
 
-  ctx.fillStyle = "#F1E6D5";
+  ctx.fillStyle = "#F2E4CE";
   ctx.fillRect(0, 0, width, height);
 
   // Fine graticule.
@@ -124,12 +124,12 @@ function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasE
         });
       });
       ctx.closePath();
-      ctx.fillStyle = "#C3A47C";
+      ctx.fillStyle = "#C5A176";
       ctx.fill("evenodd");
       ctx.strokeStyle = "rgba(86, 66, 47, 0.1)";
       ctx.lineWidth = 7;
       ctx.stroke();
-      ctx.strokeStyle = "rgba(68, 53, 40, 0.78)";
+      ctx.strokeStyle = "rgba(73, 52, 34, 0.84)";
       ctx.lineWidth = 1.3;
       ctx.stroke();
     }
@@ -291,9 +291,9 @@ export function GeoGlobe({
     const atmosphere = new THREE.Mesh(
       new THREE.SphereGeometry(1.018, 64, 48),
       new THREE.MeshBasicMaterial({
-        color: 0xfff0d9,
+        color: 0xffd6a0,
         transparent: true,
-        opacity: 0.08,
+        opacity: 0.11,
         side: THREE.BackSide,
       }),
     );
@@ -352,23 +352,23 @@ export function GeoGlobe({
       );
     }
 
-    scene.add(new THREE.AmbientLight(0xfff5e8, 0.62));
-    const key = new THREE.DirectionalLight(0xffefd7, 1.9);
+    scene.add(new THREE.AmbientLight(0xffead0, 0.68));
+    const key = new THREE.DirectionalLight(0xffdfb4, 2.35);
     key.position.set(-3.2, 4.2, 4.5);
     scene.add(key);
     const fill = new THREE.DirectionalLight(0xaabcff, 0.42);
     fill.position.set(4.5, -1, 2.2);
     scene.add(fill);
-    const rim = new THREE.DirectionalLight(0xffe8ce, 0.8);
+    const rim = new THREE.DirectionalLight(0xffd39b, 1.2);
     rim.position.set(-4, -2.4, -3.8);
     scene.add(rim);
 
     const applyLayout = () => {
       const aspect = mount.clientWidth / Math.max(mount.clientHeight, 1);
       if (aspect > 1.08) {
-        group.position.x = 0;
-        group.position.y = 0.02;
-        group.scale.setScalar(0.82);
+        group.position.x = 0.1;
+        group.position.y = 0.34;
+        group.scale.setScalar(1.2);
       } else {
         group.position.x = 0;
         group.position.y = -0.48;
@@ -477,7 +477,7 @@ export function GeoGlobe({
         previousSelected = null;
       }
       const layoutMobile = camera.aspect < 1.08;
-      const targetGroupY = layoutMobile ? (focus ? 0.34 : -0.48) : 0.02;
+      const targetGroupY = layoutMobile ? (focus ? 0.34 : -0.48) : 0.3;
       group.position.y += (targetGroupY - group.position.y) * 0.055;
       group.rotation.y += (targetRotationY - group.rotation.y) * 0.035;
       group.rotation.x += (targetRotationX - group.rotation.x) * 0.035;
@@ -575,12 +575,12 @@ export function GeoGlobe({
                 {item.number}
               </span>
               <span
-                className={`absolute left-8 top-1/2 hidden -translate-y-1/2 whitespace-nowrap border border-[#C9A77D]/25 bg-[#100C09]/90 px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#F4EBDD]/80 shadow-[0_4px_14px_rgba(0,0,0,0.3)] backdrop-blur-md transition-all duration-200 md:block ${
-                  isActive ? "opacity-100" : "pointer-events-none opacity-0"
+                className={`absolute left-8 top-1/2 hidden -translate-y-1/2 whitespace-nowrap border border-[#2A2118]/20 bg-[#F2E7D5] px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1410]/75 shadow-[0_4px_14px_rgba(0,0,0,0.24)] transition-colors md:block ${
+                  isActive ? "border-[#1A4BFF]/35 text-[#1A4BFF]" : ""
                 }`}
               >
                 {item.name}
-                <span className={`${isActive ? "block" : "hidden"} pt-1 text-[6.5px] leading-[1.5] tracking-[0.1em] text-[#11110F]/40`}>
+                <span className="hidden">
                   {item.country} · {item.note}
                 </span>
               </span>
