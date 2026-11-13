@@ -551,14 +551,14 @@ export function GeoGlobe() {
         group.position.x = 0.78;
         group.scale.setScalar(1);
         tree.visible = true;
-        tree.position.set(-2.2, -2.95, -0.25);
-        tree.scale.setScalar(0.45);
+        tree.position.set(-1.55, -2.9, -0.25);
+        tree.scale.setScalar(0.34);
       } else {
         group.position.x = 0.3;
         group.scale.setScalar(0.65);
         tree.visible = true;
-        tree.position.set(-0.95, -2.8, -0.25);
-        tree.scale.setScalar(0.24);
+        tree.position.set(-0.85, -2.75, -0.25);
+        tree.scale.setScalar(0.2);
       }
     };
     applyLayout();

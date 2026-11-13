@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
+import { GlassHeader } from "@/components/threadwise/GlassHeader";
 
 
 export const Route = createFileRoute("/landing")({
@@ -118,19 +119,8 @@ function LandingExperiment() {
           <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-32 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
 
-          <header className="relative z-40 mx-auto flex w-full max-w-[1400px] items-center justify-between px-5 py-4 md:px-8 md:py-5">
-            <div className="brand-emboss">
-              <BrandLockup size="md" asLink />
-            </div>
-            <div className="hidden items-center gap-5 font-mono text-[8px] uppercase tracking-[0.16em] text-[#11110F]/35 sm:flex">
-              <span>The read / experiment 11</span>
-              <span className="h-3 w-px bg-[#11110F]/15" />
-              <span>09 Nov 2026</span>
-            </div>
-            <Link to="/" className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#11110F]/50 border-b border-[#11110F]/20 pb-0.5 hover:text-[#11110F]">
-              Back to site
-            </Link>
-          </header>
+          <GlassHeader />
+
 
           <div className="pointer-events-none relative z-20 mx-auto flex min-h-[calc(100dvh-62px)] w-full max-w-[1400px] flex-col justify-between px-5 pb-6 pt-8 md:px-8 md:pb-8 md:pt-10">
             <div className="flex flex-1 items-center">
