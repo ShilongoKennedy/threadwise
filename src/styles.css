@@ -1146,7 +1146,7 @@ body::after {
 }
 .iris-spin {
   transform-origin: 500px 280px;
-  animation: iris-spin 64s linear infinite;
+  animation: iris-spin 24s linear infinite;
 }
 @keyframes iris-spin {
   to { transform: rotate(360deg); }
@@ -1223,6 +1223,3 @@ html:has(.record-page) { scroll-behavior: smooth; }
   .cosmic-drift, .cosmic-drift-slow { animation: none; }
 }
 
-
-/* The eye is the page; it watches without blinking the interface away. */
-.eye-page .blink-auto { display: none; }

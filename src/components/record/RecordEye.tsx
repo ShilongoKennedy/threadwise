@@ -94,6 +94,10 @@ export function RecordEye() {
                   })}
                 </g>
                 <circle cx="500" cy="280" r="66" fill="none" stroke="#B9C6FF" strokeWidth="0.9" strokeDasharray="2 5" opacity="0.45" />
+                <circle cx="500" cy="280" r="112" fill="none" stroke="#F1E9D8" strokeWidth="0.7" strokeDasharray="1 11" opacity="0.3" />
+                <path d="M 500 280 L 500 132 A 148 148 0 0 1 640 280 Z" fill="#F1E9D8" opacity="0.035" />
+                <circle cx="388" cy="280" r="3.4" fill="#F1E9D8" opacity="0.7" />
+                <circle cx="500" cy="168" r="2.2" fill="#F1E9D8" opacity="0.4" />
                 <circle cx="500" cy="280" r="139" fill="none" stroke="#0B1D3A" strokeWidth="8" opacity="0.6" />
                 <circle cx="500" cy="280" r="150" fill="none" stroke="#E5B8A9" strokeWidth="1.2" opacity="0.8" />
               </g>
