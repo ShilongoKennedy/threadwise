@@ -1135,3 +1135,31 @@ body::after {
   color: #D7FF57;
   border-bottom-color: #D7FF57;
 }
+
+
+/* The cut-up strips. */
+.cut-strip {
+  top: calc(var(--slot) * 20%);
+  height: 17.5%;
+  transition: top 680ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 680ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.cutter-drop {
+  animation: cutter-drop 470ms cubic-bezier(0.7, 0, 0.2, 1);
+}
+@keyframes cutter-drop {
+  0% { transform: translateY(0) scaleY(1); }
+  45% { transform: translateY(430px) scaleY(1); }
+  55% { transform: translateY(430px) scaleY(1); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+@media (min-width: 768px) {
+  .cutter-drop {
+    animation-name: cutter-drop-desktop;
+  }
+  @keyframes cutter-drop-desktop {
+    0% { transform: translateY(0) scaleY(1); }
+    45% { transform: translateY(460px) scaleY(1); }
+    55% { transform: translateY(460px) scaleY(1); }
+    100% { transform: translateY(0) scaleY(1); }
+  }
+}

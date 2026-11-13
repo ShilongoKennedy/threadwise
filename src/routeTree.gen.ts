@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
 import { Route as CasesRouteImport } from './routes/cases'
+import { Route as CutRouteImport } from './routes/cut'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MarginRouteImport } from './routes/margin'
@@ -24,7 +25,6 @@ import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SeminarRouteImport } from './routes/seminar'
 import { Route as TearRouteImport } from './routes/tear'
 import { Route as TermsRouteImport } from './routes/terms'
-import { Route as WeighRouteImport } from './routes/weigh'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
 import { Route as ApiAnalystFindingsRouteImport } from './routes/api/analyst-findings'
@@ -68,6 +68,11 @@ const AnalystRoute = AnalystRouteImport.update({
 const CasesRoute = CasesRouteImport.update({
   id: '/cases',
   path: '/cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CutRoute = CutRouteImport.update({
+  id: '/cut',
+  path: '/cut',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DigestRoute = DigestRouteImport.update({
@@ -128,11 +133,6 @@ const TearRoute = TearRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WeighRoute = WeighRouteImport.update({
-  id: '/weigh',
-  path: '/weigh',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WorkspaceRoute = WorkspaceRouteImport.update({
@@ -285,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
+  '/cut': typeof CutRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/margin': typeof MarginRoute
@@ -297,7 +298,6 @@ export interface FileRoutesByFullPath {
   '/seminar': typeof SeminarRoute
   '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
-  '/weigh': typeof WeighRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-findings': typeof ApiAnalystFindingsRoute
@@ -332,6 +332,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
+  '/cut': typeof CutRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/margin': typeof MarginRoute
@@ -344,7 +345,6 @@ export interface FileRoutesByTo {
   '/seminar': typeof SeminarRoute
   '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
-  '/weigh': typeof WeighRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-findings': typeof ApiAnalystFindingsRoute
@@ -380,6 +380,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
+  '/cut': typeof CutRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/margin': typeof MarginRoute
@@ -392,7 +393,6 @@ export interface FileRoutesById {
   '/seminar': typeof SeminarRoute
   '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
-  '/weigh': typeof WeighRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-findings': typeof ApiAnalystFindingsRoute
@@ -429,6 +429,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analyst'
     | '/cases'
+    | '/cut'
     | '/digest'
     | '/login'
     | '/margin'
@@ -441,7 +442,6 @@ export interface FileRouteTypes {
     | '/seminar'
     | '/tear'
     | '/terms'
-    | '/weigh'
     | '/workspace'
     | '/api/analyst'
     | '/api/analyst-findings'
@@ -476,6 +476,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analyst'
     | '/cases'
+    | '/cut'
     | '/digest'
     | '/login'
     | '/margin'
@@ -488,7 +489,6 @@ export interface FileRouteTypes {
     | '/seminar'
     | '/tear'
     | '/terms'
-    | '/weigh'
     | '/workspace'
     | '/api/analyst'
     | '/api/analyst-findings'
@@ -523,6 +523,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analyst'
     | '/cases'
+    | '/cut'
     | '/digest'
     | '/login'
     | '/margin'
@@ -535,7 +536,6 @@ export interface FileRouteTypes {
     | '/seminar'
     | '/tear'
     | '/terms'
-    | '/weigh'
     | '/workspace'
     | '/api/analyst'
     | '/api/analyst-findings'
@@ -571,6 +571,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalystRoute: typeof AnalystRoute
   CasesRoute: typeof CasesRoute
+  CutRoute: typeof CutRoute
   DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
   MarginRoute: typeof MarginRoute
@@ -583,7 +584,6 @@ export interface RootRouteChildren {
   SeminarRoute: typeof SeminarRoute
   TearRoute: typeof TearRoute
   TermsRoute: typeof TermsRoute
-  WeighRoute: typeof WeighRoute
   WorkspaceRoute: typeof WorkspaceRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
   ApiAnalystFindingsRoute: typeof ApiAnalystFindingsRoute
@@ -636,6 +636,13 @@ declare module '@tanstack/react-router' {
       path: '/cases'
       fullPath: '/cases'
       preLoaderRoute: typeof CasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cut': {
+      id: '/cut'
+      path: '/cut'
+      fullPath: '/cut'
+      preLoaderRoute: typeof CutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/digest': {
@@ -720,13 +727,6 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/weigh': {
-      id: '/weigh'
-      path: '/weigh'
-      fullPath: '/weigh'
-      preLoaderRoute: typeof WeighRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/workspace': {
@@ -939,6 +939,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalystRoute: AnalystRoute,
   CasesRoute: CasesRoute,
+  CutRoute: CutRoute,
   DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
   MarginRoute: MarginRoute,
@@ -951,7 +952,6 @@ const rootRouteChildren: RootRouteChildren = {
   SeminarRoute: SeminarRoute,
   TearRoute: TearRoute,
   TermsRoute: TermsRoute,
-  WeighRoute: WeighRoute,
   WorkspaceRoute: WorkspaceRoute,
   ApiAnalystRoute: ApiAnalystRoute,
   ApiAnalystFindingsRoute: ApiAnalystFindingsRoute,
