@@ -300,7 +300,7 @@ function AnalystPage() {
             />
 
             <div
-              className="mt-6 border-2 border-[#1A1A1A] bg-white"
+              className="tw-glass-panel mt-6 overflow-hidden"
               onDrop={handleDrop}
               onDragOver={(event) => event.preventDefault()}
             >
@@ -324,7 +324,7 @@ function AnalystPage() {
                       type="button"
                       aria-pressed={intentMode === intent.value}
                       onClick={() => setIntentMode(intent.value)}
-                      className={`border px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] transition-colors ${
+                      className={`rounded-full border px-2.5 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] transition-colors ${
                         intentMode === intent.value
                           ? "border-[#1A4BFF] bg-[#1A4BFF] text-white"
                           : "border-[#1A1A1A]/20 text-[#1A1A1A]/60 hover:border-[#1A1A1A]"
@@ -362,7 +362,7 @@ function AnalystPage() {
                     type="button"
                     onClick={() => void readLink(linkUrl)}
                     disabled={Boolean(attachmentBusy) || readingBusy || !linkUrl.trim()}
-                    className="border-2 border-[#1A4BFF] bg-[#1A4BFF] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white disabled:opacity-40"
+                    className="rounded-full border border-[#1A4BFF] bg-[#1A4BFF] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white disabled:opacity-40"
                   >
                     {attachmentBusy === "link" ? "Reading link…" : "Read link"}
                   </button>
@@ -377,7 +377,7 @@ function AnalystPage() {
 
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 px-4 py-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <label className="cursor-pointer border-2 border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]">
+                  <label className="cursor-pointer rounded-full border border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]">
                     {readingBusy ? "Reading image…" : "Screenshot"}
                     <input
                       type="file"
@@ -391,7 +391,7 @@ function AnalystPage() {
                       }}
                     />
                   </label>
-                  <label className="cursor-pointer border-2 border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]">
+                  <label className="cursor-pointer rounded-full border border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]">
                     {attachmentBusy === "pdf" ? "Reading PDF…" : "PDF"}
                     <input
                       type="file"
@@ -409,7 +409,7 @@ function AnalystPage() {
                     type="button"
                     onClick={() => setLinkOpen((open) => !open)}
                     disabled={Boolean(attachmentBusy) || readingBusy}
-                    className="border-2 border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7] disabled:opacity-40"
+                    className="rounded-full border border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7] disabled:opacity-40"
                   >
                     {attachmentBusy === "link" ? "Reading link…" : "Link"}
                   </button>
@@ -421,7 +421,7 @@ function AnalystPage() {
                   type="button"
                   onClick={() => void run(input)}
                   disabled={busy || input.trim().length < 20}
-                  className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inline-flex items-center gap-2 rounded-full border border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {busy ? "Reading…" : "Read this move"}
                   <ArrowRight className="h-3.5 w-3.5" />

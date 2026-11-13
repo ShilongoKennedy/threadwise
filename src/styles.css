@@ -1354,3 +1354,57 @@ html:has(.record-page) { scroll-behavior: smooth; }
   background: #C49A67;
   box-shadow: 0 0 0 3px rgba(196, 154, 103, 0.12);
 }
+
+/* ---------- Atlas-aligned surfaces ---------- */
+.tw-glass-panel {
+  border: 1px solid color-mix(in oklab, var(--brass) 26%, transparent);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 246, 0.92), rgba(250, 242, 229, 0.74));
+  box-shadow:
+    0 22px 54px -32px rgba(61, 43, 27, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(22px) saturate(1.08);
+}
+
+.tw-glass-strip {
+  border: 1px solid color-mix(in oklab, var(--brass) 20%, transparent);
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--card) 62%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+/* The older screens used 2px black rules. Keep the structure, soften the ink. */
+main .border-2 {
+  border-width: 1px;
+  border-color: color-mix(in oklab, var(--brass) 32%, transparent);
+}
+
+main .border-2:not(button):not(a):not(label):not(input):not(textarea) {
+  border-radius: 18px;
+}
+
+main textarea,
+main input:not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
+  border-radius: 12px;
+}
+
+main .bg-white {
+  background-color: color-mix(in oklab, var(--card) 72%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tw-glass-panel,
+  .tw-glass-strip,
+  main .bg-white {
+    backdrop-filter: none;
+  }
+}
+
+
+/* Keep page content crisp above the atmospheric map wash. */
+main {
+  position: relative;
+  z-index: 10;
+}

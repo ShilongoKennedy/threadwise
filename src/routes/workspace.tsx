@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
+import { PageMasthead } from "@/components/threadwise/PageMasthead";
 import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
@@ -104,33 +106,16 @@ function WorkspacePage() {
 
   if (state === "anon") {
     return (
-      <div className="flex min-h-[100dvh] flex-col bg-[#FDFBF7] text-[#1A1A1A]">
-        <header className="border-b-2 border-[#1A1A1A] px-5 py-3.5 md:px-8">
-          <div className="mx-auto flex max-w-[1100px] items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Link
-                to="/"
-                className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em]"
-              >
-                <ArrowLeft className="h-3 w-3" /> Home
-              </Link>
-              <BrandLockup size="md" asLink />
-            </div>
-            <Link to="/login" className="border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7]">
-              Sign in
-            </Link>
-          </div>
-        </header>
-        <main className="mx-auto w-full max-w-[1100px] px-5 pb-16 pt-16">
-          <div className="max-w-[30ch]">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
-              Workspace
-            </p>
-            <h1 className="mt-3 font-display text-[42px] leading-none">The desk is behind an account.</h1>
-            <p className="mt-4 font-serif text-[15px] leading-relaxed text-[#1A1A1A]/65">
-              Sign in to keep reads, questions, predictions and practice in one place.
-            </p>
-          </div>
+      <div className="relative flex min-h-[100dvh] flex-col bg-[#FDFBF7] text-[#1A1A1A]">
+        <PageBackdrop />
+        <AppHeader marketing />
+
+        <main className="mx-auto w-full max-w-[1100px] px-5 pb-16 pt-12 md:px-8">
+          <PageMasthead
+            eyebrow="Workspace"
+            title="The desk is behind an account."
+            deck="Sign in to keep reads, questions, predictions and practice in one place."
+          />
         </main>
       </div>
     );

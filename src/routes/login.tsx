@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
+import { MinimalHeader } from "@/components/threadwise/MinimalHeader";
 import { useState, useEffect } from "react";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
@@ -68,15 +69,8 @@ function LoginPage() {
       <div className="pointer-events-none absolute right-6 top-24 h-4 w-4 border-r border-t border-[#1A1A1A]/20" />
 
       <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[1100px] flex-col px-5 py-5 md:px-8">
-        <header className="flex items-center justify-between gap-4">
-          <Link
-            to="/"
-            className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em]"
-          >
-            <ArrowLeft className="h-3 w-3" /> Home
-          </Link>
-          <BrandLockup size="md" asLink />
-        </header>
+        <MinimalHeader label="Sign in" />
+
 
         <main className="grid flex-1 items-center gap-12 py-12 md:grid-cols-[1.05fr_0.95fr] md:gap-20">
           <div>
@@ -95,7 +89,7 @@ function LoginPage() {
             </p>
           </div>
 
-          <div className="border-2 border-[#1A1A1A] bg-white">
+          <div className="tw-glass-panel overflow-hidden">
             <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-2">
               <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#FDFBF7]">
                 Sign in
@@ -121,7 +115,7 @@ function LoginPage() {
                 type="button"
                 onClick={() => void handleGoogleLogin()}
                 disabled={isLoading}
-                className="mt-5 inline-flex w-full items-center justify-center gap-3 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:opacity-50"
+                className="mt-5 inline-flex w-full items-center justify-center gap-3 rounded-full border border-[#1A1A1A] bg-[#1A1A1A] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:opacity-50"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

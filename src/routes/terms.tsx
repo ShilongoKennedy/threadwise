@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
-import { ArrowLeft } from "lucide-react";
+import { MinimalHeader } from "@/components/threadwise/MinimalHeader";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
@@ -25,19 +25,8 @@ function TermsPage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
-      <header className="border-b-2 border-[#1A1A1A]">
-        <div className="mx-auto flex w-full max-w-[820px] items-center gap-3 px-4 py-3 md:px-6">
-          <Link
-            to="/"
-            className="flex items-center gap-1.5 border-2 border-[#1A1A1A] px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
-          >
-            <ArrowLeft className="h-3 w-3" /> Home
-          </Link>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">
-            Threadwise <span className="text-[#1A4BFF]">//</span> Terms
-          </span>
-        </div>
-      </header>
+      <MinimalHeader label="Threadwise // Terms" />
+
 
       <main id="main" className="mx-auto w-full max-w-[820px] px-4 py-10 md:px-6 md:py-14">
         <h1 className="font-display text-[38px] leading-none md:text-[52px]">The agreement.</h1>

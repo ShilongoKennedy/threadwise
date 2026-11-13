@@ -190,7 +190,7 @@ function SeminarPage() {
               event.preventDefault();
               void convene();
             }}
-            className="mt-8 border-2 border-white/20 bg-[#FDFBF7] p-4 text-[#1A1A1A] md:p-6"
+            className="tw-glass-panel mt-8 p-4 text-[#1A1A1A] md:p-6"
           >
             <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/55">
               The quote or question

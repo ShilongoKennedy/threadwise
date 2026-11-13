@@ -94,7 +94,7 @@ function LandingPage() {
     }, delay);
   };
   return (
-    <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FDFBF7] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
+    <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FCF7ED] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
       <main id="main" className="relative z-10 flex-1">
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
           <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[linear-gradient(180deg,#FAF2E5_0%,#F2E7D4_48%,#E3C6A3_100%)]">
@@ -216,7 +216,7 @@ function LandingPage() {
         </section>
 
         {/* THE RECORD, SHOWN */}
-        <section className="relative w-full border-y border-[#1A1A1A]/15 bg-[#FDFBF7] text-[#1A1A1A]">
+        <section className="relative w-full border-y border-[#1A1A1A]/12 bg-[#FCF7ED] text-[#1A1A1A]">
           <div className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
             <div className="flex flex-wrap items-baseline justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.14em]">
               <p className="text-[#1A4BFF]">The record / from the IAEA read</p>
@@ -340,7 +340,7 @@ function LandingPage() {
 
       </main>
 
-      <footer className="relative z-30 border-t border-[#1A1A1A]/15 bg-[#FDFBF7] pb-10 pt-12 md:pt-16">
+      <footer className="relative z-30 border-t border-[#1A1A1A]/12 bg-[#FCF7ED] pb-10 pt-12 md:pt-16">
         <div className="mx-auto max-w-[1200px] px-5 md:px-8">
           <div className="grid gap-10 md:grid-cols-[1.1fr_1.9fr] md:gap-16">
             <div>
