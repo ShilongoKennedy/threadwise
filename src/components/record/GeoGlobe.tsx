@@ -74,7 +74,7 @@ function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasE
     ((90 - lat) / 180) * height,
   ];
 
-  ctx.fillStyle = "#F2E4CE";
+  ctx.fillStyle = "#E3CCA9";
   ctx.fillRect(0, 0, width, height);
 
   // Fine graticule.
@@ -124,7 +124,7 @@ function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasE
         });
       });
       ctx.closePath();
-      ctx.fillStyle = "#C5A176";
+      ctx.fillStyle = "#B88655";
       ctx.fill("evenodd");
       ctx.strokeStyle = "rgba(86, 66, 47, 0.1)";
       ctx.lineWidth = 7;
@@ -218,9 +218,13 @@ function GlobeFallback() {
 export function GeoGlobe({
   selectedId = null,
   onSelect,
+  theme = "dark",
+  mobileScale = 0.42,
 }: {
   selectedId?: string | null;
   onSelect?: (id: string | null) => void;
+  theme?: "dark" | "light";
+  mobileScale?: number;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -364,15 +368,15 @@ export function GeoGlobe({
     scene.add(rim);
 
     const applyLayout = () => {
-      const aspect = mount.clientWidth / Math.max(mount.clientHeight, 1);
-      if (aspect > 1.08) {
+      const desktop = window.innerWidth >= 768;
+      if (desktop) {
         group.position.x = 0.1;
         group.position.y = 0.34;
         group.scale.setScalar(1.2);
       } else {
         group.position.x = 0;
         group.position.y = -0.48;
-        group.scale.setScalar(0.42);
+        group.scale.setScalar(mobileScale);
       }
     };
     applyLayout();
@@ -575,9 +579,11 @@ export function GeoGlobe({
                 {item.number}
               </span>
               <span
-                className={`absolute left-8 top-1/2 hidden -translate-y-1/2 whitespace-nowrap border border-[#2A2118]/20 bg-[#F2E7D5] px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1410]/75 shadow-[0_4px_14px_rgba(0,0,0,0.24)] transition-colors md:block ${
-                  isActive ? "border-[#1A4BFF]/35 text-[#1A4BFF]" : ""
-                }`}
+                className={`absolute left-8 top-1/2 hidden -translate-y-1/2 whitespace-nowrap border px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] shadow-[0_4px_14px_rgba(0,0,0,0.14)] transition-colors md:block ${
+                  theme === "light"
+                    ? "border-[#1A1A1A]/15 bg-[#FDFBF7] text-[#1A1A1A]/65"
+                    : "border-[#2A2118]/20 bg-[#F2E7D5] text-[#1A1410]/75"
+                } ${isActive ? "border-[#1A4BFF]/35 !text-[#1A4BFF]" : ""}`}
               >
                 {item.name}
                 <span className="hidden">

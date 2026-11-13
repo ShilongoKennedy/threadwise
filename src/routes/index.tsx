@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { GeoGlobe } from "@/components/record/GeoGlobe";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -110,12 +111,9 @@ function LandingPage() {
       <main id="main" className="relative z-10 flex-1">
         {/* ATLAS HERO */}
         <section className={`atlas-hero relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28 ${entering ? "is-entering" : ""}`}>
-          <div className="hidden md:block">
-            <AtlasMap active={activePlace} onActive={setActivePlace} overlay />
-          </div>
           <div className="pointer-events-none absolute inset-0 z-[1] hidden bg-[linear-gradient(90deg,#FDFBF7_0%,#FDFBF7_30%,rgba(253,251,247,0.94)_42%,rgba(253,251,247,0.55)_54%,rgba(253,251,247,0.12)_64%,transparent_72%)] md:block" />
 
-          <div className="relative z-10 mx-auto flex min-h-[680px] w-full max-w-[1200px] flex-col justify-between px-5 pb-10 pt-10 md:px-8 md:pb-12 md:pt-14">
+          <div className="relative z-10 mx-auto flex min-h-[680px] w-full max-w-[1200px] flex-col justify-start px-5 pb-10 pt-10 md:justify-between md:px-8 md:pb-12 md:pt-14">
             <div className="atlas-copy max-w-[650px] pb-8 md:pb-10">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
                 <span>The read / IAEA–Iran</span>
@@ -153,15 +151,15 @@ function LandingPage() {
               </div>
             </div>
 
-            <div className="mt-8 md:hidden">
-              <AtlasMap active={activePlace} onActive={setActivePlace} mobile />
-              <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
-                <span>The IAEA read / in places</span>
-                <span>09 Nov 2026</span>
-              </div>
-            </div>
 
-            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 bg-[#FDFBF7] pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+          <div className="relative z-0 mt-6 h-[360px] w-full md:absolute md:inset-y-0 md:right-0 md:mt-0 md:h-full md:w-[60%]">
+            <div className="pointer-events-none absolute inset-[8%] rounded-full bg-[radial-gradient(circle_at_48%_50%,rgba(84,55,28,0.24),rgba(84,55,28,0.08)_48%,transparent_72%)] blur-2xl" />
+            <div className="pointer-events-auto relative h-full w-full [filter:drop-shadow(0_30px_50px_rgba(84,55,28,0.14))]">
+              <GeoGlobe theme="light" mobileScale={0.72} />
+            </div>
+          </div>
+
+            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 bg-transparent pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
               <div>
                 <div className="flex flex-wrap gap-x-5 gap-y-2">
                   <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
@@ -171,35 +169,9 @@ function LandingPage() {
                   Natural Earth 1:110m · illustrative route
                 </p>
               </div>
-              <div className="w-full text-left leading-relaxed md:w-[310px] md:text-right">
-                <p className="text-[#1A1A1A]/60">The places</p>
-                {PLACE_INDEX.map((place) => (
-                  <Link
-                    key={place.id}
-                    to="/read/$token"
-                    params={{ token: SAMPLE_TOKEN }}
-                    onMouseEnter={() => setActivePlace(place.id)}
-                    onMouseLeave={() => setActivePlace(null)}
-                    onFocus={() => setActivePlace(place.id)}
-                    onBlur={() => setActivePlace(null)}
-                    className={`mt-1 block border-b border-transparent pb-0.5 text-[10px] transition-colors hover:border-[#1A4BFF] ${
-                      activePlace === place.id ? "text-[#1A4BFF]" : place.id === "natanz" ? "text-[#C1121F]" : "text-[#1A1A1A]/70"
-                    }`}
-                  >
-                    {place.no} {place.name}{" "}
-                    <span className={activePlace === place.id ? "text-[#1A4BFF]/50" : place.id === "natanz" ? "text-[#C1121F]/50" : "text-[#1A1A1A]/30"}>
-                      {place.coords}
-                    </span>
-                  </Link>
-                ))}
-                <p className="mt-2 h-[30px] max-w-[310px] overflow-hidden text-[8px] leading-[1.45] tracking-[0.08em] text-[#1A1A1A]/40 line-clamp-2 md:ml-auto">
-                  {activePlace
-                    ? PLACE_INDEX.find((place) => place.id === activePlace)?.note
-                    : "Hover a place to see why it is on the map."}
-                </p>
-              </div>
             </div>
           </div>
+
 
           <div className="atlas-enter-curtain" aria-hidden={!entering}>
             <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col justify-between px-5 py-10 md:px-8 md:py-14">
