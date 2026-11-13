@@ -1223,3 +1223,21 @@ html:has(.record-page) { scroll-behavior: smooth; }
   .cosmic-drift, .cosmic-drift-slow { animation: none; }
 }
 
+
+
+/* A real eye, softly held by the page. */
+.eye-photo {
+  -webkit-mask-image: radial-gradient(ellipse 58% 62% at 55% 52%, #000 44%, transparent 82%);
+  mask-image: radial-gradient(ellipse 58% 62% at 55% 52%, #000 44%, transparent 82%);
+  filter: contrast(1.04) brightness(.96) saturate(.92);
+  animation: eye-breathe 30s ease-in-out infinite alternate;
+  transform-origin: 55% 52%;
+  will-change: transform;
+}
+@keyframes eye-breathe {
+  from { transform: scale(1.015) translate3d(-0.4%, 0.3%, 0); }
+  to { transform: scale(1.065) translate3d(0.4%, -0.3%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .eye-photo { animation: none; }
+}

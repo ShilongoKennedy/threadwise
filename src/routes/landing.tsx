@@ -3,7 +3,6 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
-import { RecordEye } from "@/components/record/RecordEye";
 
 
 export const Route = createFileRoute("/landing")({
@@ -109,10 +108,13 @@ function LandingExperiment() {
       <main id="main" className="relative z-10 flex-1">
         {/* THE EYE IS THE PAGE */}
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
-          <div className="pointer-events-auto absolute left-[84%] top-[62%] drop-shadow-[0_30px_70px_rgba(17,17,15,0.12)] z-0 w-[140vw] -translate-x-1/2 -translate-y-1/2 md:left-[78%] md:top-[51%] md:w-[120vw]">
-            <div className="[filter:drop-shadow(5px_0_0_rgba(26,75,255,0.08))_drop-shadow(-3px_0_0_rgba(193,18,31,0.06))]">
-              <RecordEye />
-            </div>
+          <div className="pointer-events-none absolute left-[84%] top-[62%] z-0 w-[150vw] -translate-x-1/2 -translate-y-1/2 md:left-[78%] md:top-[51%] md:w-[92vw]">
+            <img
+              src="/eye/eye-macro.jpg"
+              alt=""
+              className="eye-photo w-full max-w-none select-none"
+              draggable={false}
+            />
           </div>
           <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_32%,rgba(242,231,212,0.94)_43%,rgba(242,231,212,0.58)_55%,rgba(242,231,212,0.12)_68%,transparent_78%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
@@ -169,7 +171,7 @@ function LandingExperiment() {
                 <span>02 Tehran / 35.7N 51.4E</span>
                 <span className="text-[#C1121F]/70">03 Natanz / 33.7N 51.7E</span>
               </div>
-              <span>Ocular record / 09 Nov 2026</span>
+              <span>Ocular record / 09 Nov 2026 · Photo Lye Clicks</span>
             </div>
           </div>
         </section>
