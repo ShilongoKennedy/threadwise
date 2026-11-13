@@ -1222,3 +1222,7 @@ html:has(.record-page) { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   .cosmic-drift, .cosmic-drift-slow { animation: none; }
 }
+
+
+/* The eye is the page; it watches without blinking the interface away. */
+.eye-page .blink-auto { display: none; }

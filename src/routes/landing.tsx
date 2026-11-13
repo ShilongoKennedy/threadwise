@@ -107,77 +107,70 @@ function LandingExperiment() {
       <div className="pointer-events-none absolute right-6 top-24 z-0 h-4 w-4 border-r border-t border-[#1A1A1A]/20" />
 
       <main id="main" className="relative z-10 flex-1">
-        {/* SPECIMEN HERO */}
-        <section className="relative min-h-[100dvh] w-full overflow-hidden bg-[#07130F] text-[#F3EADF]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_68%_45%,#17261F_0%,#0A1712_48%,#050C09_100%)]" />
-          <div className="pointer-events-none absolute left-5 top-24 h-3 w-3 border-l border-t border-[#F3EADF]/20 md:left-8" />
-          <div className="pointer-events-none absolute right-5 top-24 h-3 w-3 border-r border-t border-[#F3EADF]/20 md:right-8" />
+        {/* THE EYE IS THE PAGE */}
+        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
+          <div className="pointer-events-auto absolute left-[88%] top-[63%] z-0 w-[95vw] -translate-x-1/2 -translate-y-1/2 md:left-[72%] md:top-[52%] md:w-[160vw]">
+            <div className="[filter:drop-shadow(5px_0_0_rgba(26,75,255,0.08))_drop-shadow(-3px_0_0_rgba(193,18,31,0.06))]">
+              <RecordEye />
+            </div>
+          </div>
+          <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_32%,rgba(242,231,212,0.94)_43%,rgba(242,231,212,0.58)_55%,rgba(242,231,212,0.12)_68%,transparent_78%)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
+          <div className="pointer-events-none absolute inset-0 z-30 opacity-[0.055] [background-image:radial-gradient(#11110F_0.6px,transparent_0.8px)] [background-size:3px_3px] mix-blend-multiply" />
 
           <header className="relative z-40 mx-auto flex w-full max-w-[1400px] items-center justify-between px-5 py-4 md:px-8 md:py-5">
-            <div className="[filter:brightness(0)_invert(1)]">
-              <BrandLockup size="md" asLink />
-            </div>
-            <div className="hidden items-center gap-5 font-mono text-[8px] uppercase tracking-[0.16em] text-[#F3EADF]/40 sm:flex">
-              <span>The record / experiment 11</span>
-              <span className="h-3 w-px bg-[#F3EADF]/20" />
+            <BrandLockup size="md" asLink />
+            <div className="hidden items-center gap-5 font-mono text-[8px] uppercase tracking-[0.16em] text-[#11110F]/35 sm:flex">
+              <span>The read / experiment 11</span>
+              <span className="h-3 w-px bg-[#11110F]/15" />
               <span>09 Nov 2026</span>
             </div>
-            <Link to="/" className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#F3EADF]/55 border-b border-[#F3EADF]/25 pb-0.5 hover:text-[#F3EADF]">
+            <Link to="/" className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#11110F]/50 border-b border-[#11110F]/20 pb-0.5 hover:text-[#11110F]">
               Back to site
             </Link>
           </header>
 
-          <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-62px)] w-full max-w-[1400px] flex-col justify-between px-5 pb-6 pt-8 md:px-8 md:pb-8 md:pt-10">
-            <div className="grid flex-1 items-center gap-10 md:grid-cols-[0.9fr_1.1fr]">
-              <div className="relative z-20 max-w-[610px]">
-                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#89A5FF]">The read / IAEA–Iran</p>
+          <div className="relative z-20 mx-auto flex min-h-[calc(100dvh-62px)] w-full max-w-[1400px] flex-col justify-between px-5 pb-6 pt-8 md:px-8 md:pb-8 md:pt-10">
+            <div className="flex flex-1 items-center">
+              <div className="relative z-20 max-w-[62vw] md:max-w-[600px]">
+                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">The read / IAEA–Iran</p>
                 <SignatureHeadline
                   text="See what the story hides."
-                  className="mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(52px,7.3vw,108px)] leading-[0.82] text-[#F3EADF]"
+                  className="mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,7.3vw,108px)] leading-[0.82] text-[#11110F]"
                 />
-                <p className="mt-5 max-w-[40ch] font-serif text-[17px] leading-[1.6] text-[#F3EADF]/65 md:text-[19px]">
-                  Every claim has a geography. This is the IAEA read, pulled as a print.
+                <p className="mt-5 max-w-[38ch] font-serif text-[17px] leading-[1.6] text-[#11110F]/65 md:text-[19px]">
+                  Every claim has a geography. This is the IAEA read, pulled into focus.
                 </p>
-                <p className="mt-3 max-w-[46ch] font-mono text-[9px] uppercase leading-[1.8] tracking-[0.14em] text-[#F3EADF]/35">
+                <p className="mt-3 max-w-[46ch] font-mono text-[9px] uppercase leading-[1.8] tracking-[0.14em] text-[#11110F]/40">
                   Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
                 </p>
                 <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <Link
                     to="/read/$token"
                     params={{ token: SAMPLE_TOKEN }}
-                    className="inline-flex items-center gap-2 border border-[#F3EADF]/30 bg-[#F3EADF] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#0A0A0A] transition-colors hover:bg-[#FF5B3D]"
+                    className="inline-flex items-center gap-2 border border-[#11110F] bg-[#11110F] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#F3EADF] transition-colors hover:bg-[#1A4BFF]"
                   >
                     Open the IAEA read
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                   <Link
                     to="/analyst"
-                    className="inline-flex items-center gap-2 border-b border-[#89A5FF]/30 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#89A5FF] transition-colors hover:border-[#89A5FF]"
+                    className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/30 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] transition-colors hover:border-[#1A4BFF]"
                   >
                     Bring your own source
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </div>
               </div>
-
-              <div className="relative hidden h-[680px] md:block">
-                <SpecimenSheet />
-              </div>
             </div>
 
-            <div className="mt-8 md:hidden">
-              <div className="relative h-[470px]">
-                <SpecimenSheet mobile />
-              </div>
-            </div>
-
-            <div className="mt-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-t border-[#F3EADF]/12 pt-3 font-mono text-[8px] uppercase tracking-[0.14em] text-[#F3EADF]/30">
+            <div className="mt-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-t border-[#11110F]/15 pt-3 font-mono text-[8px] uppercase tracking-[0.14em] text-[#11110F]/35">
               <div className="flex flex-wrap gap-x-5 gap-y-1">
                 <span>01 Vienna / 48.2N 16.4E</span>
                 <span>02 Tehran / 35.7N 51.4E</span>
-                <span className="text-[#FF5B3D]/70">03 Natanz / 33.7N 51.7E</span>
+                <span className="text-[#C1121F]/70">03 Natanz / 33.7N 51.7E</span>
               </div>
-              <span>Specimen 011 / observed 09 Nov 2026</span>
+              <span>Ocular record / 09 Nov 2026</span>
             </div>
           </div>
         </section>
@@ -433,41 +426,6 @@ function LandingExperiment() {
           </div>
         </div>
       </footer>
-    </div>
-  );
-}
-
-function SpecimenSheet({ mobile = false }: { mobile?: boolean }) {
-  return (
-    <div className={`absolute ${mobile ? "inset-x-0 bottom-0 top-0 mx-auto h-full w-[92%]" : "right-[-2%] top-[-2%] h-full w-[96%]"} rotate-[-1.2deg] bg-[#F2E7D4] text-[#11110F] shadow-[18px_24px_0_rgba(0,0,0,0.18),32px_46px_80px_rgba(0,0,0,0.42)]`}>
-      <div className="pointer-events-none absolute inset-0 opacity-[0.12] [background-image:radial-gradient(#11110F_0.55px,transparent_0.7px)] [background-size:3px_3px] mix-blend-multiply" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(17,17,15,0.08),transparent)]" />
-      <div className="relative flex h-full flex-col p-5 md:p-7">
-        <div className="flex items-start justify-between gap-4 border-b border-[#11110F]/20 pb-2 font-mono text-[7px] uppercase tracking-[0.15em] text-[#11110F]/45">
-          <span>Plate 011 / ocular</span>
-          <span>Threadwise / IAEA–Iran</span>
-        </div>
-
-        <div className="relative flex flex-1 items-center justify-center py-4">
-          <div className="pointer-events-none absolute inset-x-[8%] top-1/2 h-px bg-[#11110F]/15" />
-          <div className="pointer-events-none absolute inset-y-[10%] left-1/2 w-px bg-[#11110F]/12" />
-          <div className="relative w-[90%] max-w-[610px] [filter:drop-shadow(3px_0_0_rgba(26,75,255,0.14))_drop-shadow(-2px_0_0_rgba(193,18,31,0.12))]">
-            <RecordEye />
-          </div>
-          <span className="absolute right-[5%] top-[18%] rotate-[7deg] border border-[#C1121F] px-2 py-1 font-mono text-[7px] uppercase tracking-[0.15em] text-[#C1121F]">
-            Specimen / open
-          </span>
-          <span className="absolute bottom-[8%] left-[5%] font-mono text-[7px] uppercase tracking-[0.13em] text-[#11110F]/35">
-            Iris / cobalt · 09.11.2026
-          </span>
-        </div>
-
-        <div className="flex items-end justify-between gap-4 border-t border-[#11110F]/20 pt-2 font-mono text-[7px] uppercase tracking-[0.14em] text-[#11110F]/40">
-          <span>48.2N 16.4E · 35.7N 51.4E · 33.7N 51.7E</span>
-          <span>Plate 001 / 001</span>
-        </div>
-      </div>
-      <div className="pointer-events-none absolute inset-0 z-30 opacity-[0.07] [background-image:radial-gradient(#11110F_0.55px,transparent_0.75px)] [background-size:3px_3px] mix-blend-multiply" />
     </div>
   );
 }
