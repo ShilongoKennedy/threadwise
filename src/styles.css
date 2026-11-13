@@ -1173,3 +1173,30 @@ body::after {
 /* The record landing. */
 html:has(.record-page) { scroll-behavior: smooth; }
 .record-page { overflow-x: clip; }
+
+
+/* The record: one torn band through one sheet. */
+.record-grid {
+  display: flex;
+  flex-direction: column;
+}
+.record-band {
+  order: 2;
+  height: 46vh;
+  min-height: 340px;
+}
+.record-left { order: 1; }
+.record-right { order: 3; }
+@media (min-width: 640px) {
+  .record-grid {
+    display: grid;
+    grid-template-columns: 1fr var(--band) 1fr;
+    min-height: 0;
+  }
+  .record-band {
+    order: initial;
+    height: auto;
+    min-height: 0;
+  }
+  .record-left, .record-right { order: initial; }
+}
