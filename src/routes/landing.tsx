@@ -4,7 +4,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { RecordEye } from "@/components/record/RecordEye";
-import { SpaceBackdrop } from "@/components/record/SpaceBackdrop";
+import { CosmicPlate } from "@/components/record/CosmicPlate";
 
 export const Route = createFileRoute("/landing")({
   head: () => ({
@@ -109,7 +109,7 @@ function LandingExperiment() {
       <main id="main" className="relative z-10 flex-1">
         {/* COSMIC HERO */}
         <section className="relative min-h-[100dvh] w-full overflow-hidden bg-[#05070C] text-[#F3EADF]">
-          <SpaceBackdrop />
+          <CosmicPlate />
           <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,#05070C_0%,rgba(5,7,12,0.94)_28%,rgba(5,7,12,0.52)_48%,rgba(5,7,12,0.08)_70%,transparent_84%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-56 bg-[linear-gradient(0deg,#05070C_0%,transparent_100%)]" />
 
@@ -177,7 +177,7 @@ function LandingExperiment() {
                 <span>02 Tehran / 35.7N 51.4E</span>
                 <span className="text-[#FF5B3D]/70">03 Natanz / 33.7N 51.7E</span>
               </div>
-              <span>Signal / observed 09 Nov 2026</span>
+              <span>Signal / 09 Nov 2026 · Plate NASA/JPL-Caltech</span>
             </div>
           </div>
         </section>
