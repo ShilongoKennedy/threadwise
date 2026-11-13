@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
-import { ArtEye } from "@/components/record/ArtEye";
+import { GeoGlobe } from "@/components/record/GeoGlobe";
 
 
 export const Route = createFileRoute("/landing")({
@@ -109,8 +109,9 @@ function LandingExperiment() {
       <main id="main" className="relative z-10 flex-1">
         {/* THE EYE IS THE PAGE */}
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
-          <div className="art-eye-wrap pointer-events-auto absolute left-[82%] top-[66%] z-0 w-[125vw] -translate-x-1/2 -translate-y-1/2 md:left-[66%] md:top-[50%] md:w-[76vw]">
-            <ArtEye />
+          <div className="globe-stage absolute right-[-14%] top-[5%] z-0 h-[86%] w-[112%] md:right-[-13%] md:top-[4%] md:h-[90%] md:w-[61%]">
+            <div className="pointer-events-none absolute inset-[8%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(63,46,32,0.18)_0%,rgba(63,46,32,0.06)_48%,transparent_72%)] blur-3xl" />
+            <GeoGlobe />
           </div>
           <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_32%,rgba(242,231,212,0.94)_43%,rgba(242,231,212,0.58)_55%,rgba(242,231,212,0.12)_68%,transparent_78%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
@@ -127,9 +128,9 @@ function LandingExperiment() {
             </Link>
           </header>
 
-          <div className="relative z-20 mx-auto flex min-h-[calc(100dvh-62px)] w-full max-w-[1400px] flex-col justify-between px-5 pb-6 pt-8 md:px-8 md:pb-8 md:pt-10">
+          <div className="pointer-events-none relative z-20 mx-auto flex min-h-[calc(100dvh-62px)] w-full max-w-[1400px] flex-col justify-between px-5 pb-6 pt-8 md:px-8 md:pb-8 md:pt-10">
             <div className="flex flex-1 items-center">
-              <div className="relative z-20 max-w-[62vw] md:max-w-[600px]">
+              <div className="pointer-events-auto relative z-20 max-w-[62vw] md:max-w-[600px]">
                 <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">The read / IAEA–Iran</p>
                 <SignatureHeadline
                   text="See what the story hides."
