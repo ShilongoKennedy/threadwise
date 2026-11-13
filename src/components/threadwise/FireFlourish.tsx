@@ -106,6 +106,36 @@ export function FireFlourish() {
       ctx.restore();
     };
 
+    const drawFlames = (time: number) => {
+      const count = Math.max(12, Math.floor(width / 36));
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      for (let index = 0; index < count; index += 1) {
+        const x = ((index + 0.5) / count) * width + Math.sin(time * 0.0011 + index * 1.7) * 3;
+        const base = baseline(x);
+        const pulse = 0.62 + 0.38 * Math.sin(time * 0.0023 + index * 2.1);
+        const flameHeight = (7 + (index % 5) * 2.2 + 5 * pulse) * (height > 30 ? 1 : 0.7);
+        const half = 2.4 + (index % 3) * 0.8;
+        const lean = Math.sin(time * 0.0018 + index * 1.4) * 3.2;
+        const gradient = ctx.createLinearGradient(0, base, 0, base - flameHeight);
+        gradient.addColorStop(0, "rgba(201,62,18,0.08)");
+        gradient.addColorStop(0.24, "rgba(240,106,24,0.7)");
+        gradient.addColorStop(0.58, "rgba(255,184,78,0.86)");
+        gradient.addColorStop(0.86, "rgba(255,226,168,0.52)");
+        gradient.addColorStop(1, "rgba(255,226,168,0)");
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = "rgba(240,106,24,0.5)";
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.moveTo(x - half, base);
+        ctx.quadraticCurveTo(x - half * 0.6, base - flameHeight * 0.55, x + lean, base - flameHeight);
+        ctx.quadraticCurveTo(x + half * 0.8, base - flameHeight * 0.45, x + half, base);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    };
+
     const drawParticles = () => {
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
@@ -140,6 +170,7 @@ export function FireFlourish() {
       last = now;
       ctx.clearRect(0, 0, width, height);
       drawLine(now);
+      drawFlames(now);
       if (!reduceMotion) {
         for (const particle of particles) {
           particle.life -= delta;
