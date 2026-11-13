@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { RecordBand } from "@/components/record/RecordBand";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -276,79 +277,40 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* THE RECORD, SHOWN */}
-        <section className="relative w-full border-y border-[#1A1A1A]/15 bg-[#FDFBF7] text-[#1A1A1A]">
-          <div className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
-            <div className="flex flex-wrap items-baseline justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.14em]">
-              <p className="text-[#1A4BFF]">The record / from the IAEA read</p>
-              <p className="text-[#1A1A1A]/35">09 Nov 2026 · 001</p>
-            </div>
-
-            <div className="mt-5 grid gap-6 md:grid-cols-[0.8fr_1.2fr] md:items-end md:gap-14">
-              <h2 className="max-w-[13ch] font-display text-[38px] leading-[0.94] md:text-[52px]">
-                What the read leaves behind.
-              </h2>
-              <p className="max-w-[50ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/60">
-                A chat window gives you an answer and forgets it. This leaves a record: the question
-                the read opened, the correction it needed, and what to watch next.
-              </p>
-            </div>
-
-            <ol className="mt-10 grid border-t border-[#1A1A1A]/15 md:grid-cols-3">
-              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:pr-7">
-                <div className="flex items-baseline gap-3">
-                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">01</span>
-                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Question</span>
-                </div>
-                <p className="mt-4 max-w-[26ch] font-display text-[25px] leading-[1.05]">
-                  Does a confidential report to governments count as a finding against Iran at all?
-                </p>
-                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A4BFF]/65">
-                  Filed · open
-                </p>
-              </li>
-
-              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:px-7">
-                <div className="flex items-baseline gap-3">
-                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">02</span>
-                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Correction</span>
-                </div>
-                <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
-                  Removed an unsupported reporting date added beyond the move.
-                </p>
-                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]">
-                  Patched · 01
-                </p>
-              </li>
-
-              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:pl-7">
-                <div className="flex items-baseline gap-3">
-                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">03</span>
-                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Watch</span>
-                </div>
-                <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
-                  Whether the Board puts Iran on the formal agenda at its next meeting.
-                </p>
-                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
-                  Vienna · pending
-                </p>
-              </li>
-            </ol>
-
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
-              <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/30">
-                From the IAEA read · not a live record
-              </span>
-              <Link
-                to="/digest"
-                className="group inline-flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
-              >
-                Open the record
-                <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </Link>
-            </div>
-          </div>
-        </section>
+        <RecordBand
+          minHeight="70vh"
+          paper="#FDFBF7"
+          ink="#1A1A1A"
+          leftField="#1A1A1A"
+          rightField="#C1121F"
+          thread="#1A4BFF"
+          note={{
+            tag: "The open question",
+            title: "Does a confidential report count as a finding at all?",
+            body: "The report is a signal to governments. It is not an enforceable finding until the Board acts.",
+            source: "Filed / open",
+          }}
+          ledger={[
+            {
+              no: "01",
+              label: "Question",
+              status: "open",
+              body: "Does a confidential report to governments count as a finding against Iran at all?",
+            },
+            {
+              no: "02",
+              label: "Correction",
+              status: "patched",
+              body: "Removed an unsupported reporting date added beyond the move.",
+            },
+            {
+              no: "03",
+              label: "Watch",
+              status: "pending",
+              body: "Whether the Board puts Iran on the formal agenda at its next meeting.",
+            },
+          ]}
+        />
 
         {/* CLOSING */}
         <section className="mx-auto w-full max-w-[1200px] px-5 pb-24 pt-8 md:px-8 md:pb-32">

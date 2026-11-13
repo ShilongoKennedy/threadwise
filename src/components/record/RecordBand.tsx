@@ -206,7 +206,7 @@ export function RecordBand({
               <div className="flex items-baseline gap-2">
                 <span className="font-mono text-[9px] font-bold tracking-[0.1em]" style={{ color: thread }}>{item.no}</span>
                 <span className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#1A1A1A]/45">{item.label}</span>
-                <span className="font-mono text-[7px] uppercase tracking-[0.1em]" style={{ color: item.status === "open" ? rightField : item.status === "patched" ? rightField : "#1A1A1A/35" }}>{item.status}</span>
+                <span className="font-mono text-[7px] uppercase tracking-[0.1em]" style={{ color: item.status === "open" ? rightField : item.status === "patched" ? rightField : "rgba(26,26,26,0.35)" }}>{item.status}</span>
               </div>
               <p className="mt-2 max-w-[32ch] font-display text-[18px] leading-[1.08]">{item.body}</p>
             </li>
