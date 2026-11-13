@@ -19,7 +19,7 @@ export function GlassHeader({ section = "record", tone = "light" }: { section?: 
 
   return (
     <div className="pointer-events-none fixed inset-x-0 top-4 z-50 px-4 md:top-5 md:px-6">
-      <header className={`pointer-events-auto relative mx-auto w-full max-w-[1240px] rounded-[22px] border backdrop-blur-[22px] ${dark ? "border-[#8A745C]/20 bg-[#120D09]/70 shadow-[0_16px_50px_rgba(0,0,0,0.34),0_2px_8px_rgba(0,0,0,0.18)]" : "border-[#8A745C]/20 bg-[#FDFBF7]/72 shadow-[0_14px_46px_rgba(43,33,23,0.10),0_2px_8px_rgba(43,33,23,0.05)]"}`}>
+      <header className={`pointer-events-auto relative mx-auto w-full max-w-[1240px] rounded-[22px] border backdrop-blur-[22px] ${dark ? "border-[#8A745C]/20 bg-[#120D09]/70 shadow-[0_16px_50px_rgba(0,0,0,0.34),0_2px_8px_rgba(0,0,0,0.18)]" : "border-[#8A745C]/22 bg-[linear-gradient(180deg,rgba(255,250,242,0.62),rgba(250,242,229,0.24))] shadow-[0_18px_50px_rgba(43,33,23,0.09),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-[34px] backdrop-saturate-[1.25]"}`}>
         <div className="flex h-[58px] items-center justify-between gap-4 px-4 md:h-[62px] md:px-5">
           <div className={`brand-emboss shrink-0 ${dark ? "[filter:brightness(0)_invert(1)] opacity-90" : ""}`}>
             <BrandLockup size="md" asLink />

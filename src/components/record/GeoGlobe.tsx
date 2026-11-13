@@ -74,7 +74,7 @@ function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasE
     ((90 - lat) / 180) * height,
   ];
 
-  ctx.fillStyle = "#E3CCA9";
+  ctx.fillStyle = "#EAD8BC";
   ctx.fillRect(0, 0, width, height);
 
   // Fine graticule.
@@ -124,12 +124,12 @@ function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasE
         });
       });
       ctx.closePath();
-      ctx.fillStyle = "#B88655";
+      ctx.fillStyle = "#C7A077";
       ctx.fill("evenodd");
       ctx.strokeStyle = "rgba(86, 66, 47, 0.1)";
       ctx.lineWidth = 7;
       ctx.stroke();
-      ctx.strokeStyle = "rgba(73, 52, 34, 0.84)";
+      ctx.strokeStyle = "rgba(80, 59, 40, 0.78)";
       ctx.lineWidth = 1.3;
       ctx.stroke();
     }

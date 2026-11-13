@@ -42,3 +42,6 @@ supabase/.temp/
 
 # Local image study (not deployed)
 public/WorldLeaders.png
+
+# Local browser validation profiles
+.chrome-profile-*/
