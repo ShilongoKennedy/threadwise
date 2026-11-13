@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowRight, ArrowUpRight, RotateCcw } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BookOpen, RotateCcw } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import type { Seminar, SeminarTheory } from "@/lib/threadwise/seminar";
+import type { SeminarLesson } from "@/lib/threadwise/seminar-lesson";
+import { SeminarLessonView } from "@/components/threadwise/SeminarLessonView";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/seminar")({
@@ -26,7 +28,7 @@ type SavedSeminar = {
   quote_text: string;
   context: string | null;
   question: string;
-  seminar: Seminar;
+  seminar: Seminar & { lesson?: SeminarLesson };
   stand: "A" | "B" | "undecided" | null;
   verdict_shown: boolean;
   created_at: string;
@@ -45,6 +47,9 @@ function SeminarPage() {
   const [saved, setSaved] = useState<SavedSeminar[]>([]);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [lesson, setLesson] = useState<SeminarLesson | null>(null);
+  const [lessonBusy, setLessonBusy] = useState(false);
+  const [lessonError, setLessonError] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -76,7 +81,7 @@ function SeminarPage() {
         quote_text: text,
         context: context.trim() || null,
         question: seminar.question,
-        seminar,
+        seminar: lesson ? { ...seminar, lesson } : seminar,
         stand,
         verdict_shown: verdictOpen,
       })
@@ -96,6 +101,9 @@ function SeminarPage() {
     setText(item.quote_text);
     setContext(item.context ?? "");
     setSeminar(item.seminar);
+    setLesson(item.seminar.lesson ?? null);
+    setLessonBusy(false);
+    setLessonError(null);
     setStand(item.stand);
     setRevealed(true);
     setVerdictOpen(item.verdict_shown);
@@ -115,6 +123,9 @@ function SeminarPage() {
     setVerdictOpen(false);
     setSavedId(null);
     setSaveState("idle");
+    setLesson(null);
+    setLessonBusy(false);
+    setLessonError(null);
     try {
       const response = await fetch("/api/seminar", {
         method: "POST",
@@ -146,6 +157,46 @@ function SeminarPage() {
     setVerdictOpen(false);
     setSavedId(null);
     setSaveState("idle");
+    setLesson(null);
+    setLessonBusy(false);
+    setLessonError(null);
+  };
+
+  const openDeeperLesson = async () => {
+    if (!seminar || lessonBusy) return;
+    setLessonBusy(true);
+    setLessonError(null);
+    try {
+      const response = await fetch("/api/seminar-lesson", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, context, seminar }),
+      });
+      const body = (await response.json()) as { lesson?: SeminarLesson; error?: string };
+      if (!response.ok || !body.lesson) throw new Error(body.error ?? "The deeper lesson could not be built.");
+      setLesson(body.lesson);
+      if (savedId && userId) {
+        void supabase
+          .from("analyst_seminars")
+          .update({ seminar: { ...seminar, lesson: body.lesson } })
+          .eq("id", savedId);
+        setSaved((previous) =>
+          previous.map((item) =>
+            item.id === savedId ? { ...item, seminar: { ...item.seminar, lesson: body.lesson } } : item,
+          ),
+        );
+      }
+      window.setTimeout(() => {
+        const target = document.getElementById("deeper-lesson");
+        if (!target) return;
+        const top = target.getBoundingClientRect().top + window.scrollY - 140;
+        window.scrollTo({ top, behavior: "smooth" });
+      }, 80);
+    } catch (caught) {
+      setLessonError(caught instanceof Error ? caught.message : "The deeper lesson could not be built.");
+    } finally {
+      setLessonBusy(false);
+    }
   };
 
   return (
@@ -484,6 +535,56 @@ function SeminarPage() {
                   </div>
                 )}
               </section>
+
+              <section className="mt-10 tw-glass-panel overflow-hidden">
+                <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
+                  <div>
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+                      If the argument is clear but the subject is not
+                    </p>
+                    <h2 className="mt-2 max-w-[22ch] font-display text-[30px] leading-[1.02] md:text-[38px]">
+                      Take the deeper lesson.
+                    </h2>
+                    <p className="mt-2 max-w-[58ch] font-serif text-[14px] leading-[1.65] text-[#1A1A1A]/62">
+                      The terms, the background, both mechanisms, the crux as a test, the mistakes to
+                      avoid, and a worked example — taught from the question you brought.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void openDeeperLesson()}
+                    disabled={lessonBusy}
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#1A1A1A] px-5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF] disabled:cursor-wait disabled:opacity-60"
+                  >
+                    {lessonBusy ? "Building the lesson…" : lesson ? "Rebuild the lesson" : "Go deeper"}
+                    {lessonBusy ? <BookOpen className="h-3.5 w-3.5 animate-pulse" /> : <ArrowRight className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#1A1A1A]/10 px-5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35 md:px-6">
+                  <span>One deeper model pass · built from this seminar</span>
+                  <span>~5–7 min read</span>
+                </div>
+              </section>
+
+              {lessonBusy ? (
+                <div className="mt-6 space-y-3" aria-live="polite">
+                  <div className="h-3 w-36 animate-pulse rounded-full bg-[#1A1A1A]/10" />
+                  <div className="h-10 w-3/4 animate-pulse rounded-xl bg-[#1A1A1A]/10" />
+                  <div className="h-3 w-2/3 animate-pulse rounded-full bg-[#1A1A1A]/8" />
+                  <div className="h-3 w-1/2 animate-pulse rounded-full bg-[#1A1A1A]/8" />
+                </div>
+              ) : null}
+
+              {lessonError ? (
+                <p className="mt-6 border-l-2 border-[#C1121F] pl-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#C1121F]">
+                  {lessonError}{" "}
+                  <button type="button" onClick={() => void openDeeperLesson()} className="underline underline-offset-4">
+                    Try again
+                  </button>
+                </p>
+              ) : null}
+
+              {lesson ? <SeminarLessonView lesson={lesson} /> : null}
 
               <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
                 <div>

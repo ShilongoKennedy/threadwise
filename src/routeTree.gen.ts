@@ -47,6 +47,7 @@ import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
 import { Route as ApiQuestionGapRouteImport } from './routes/api/question-gap'
 import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
 import { Route as ApiSeminarRouteImport } from './routes/api/seminar'
+import { Route as ApiSeminarLessonRouteImport } from './routes/api/seminar-lesson'
 import { Route as ApiThinkingProfileRouteImport } from './routes/api/thinking-profile'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as ApiWeeklyReviewRouteImport } from './routes/api/weekly-review'
@@ -248,6 +249,11 @@ const ApiSeminarRoute = ApiSeminarRouteImport.update({
   path: '/api/seminar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSeminarLessonRoute = ApiSeminarLessonRouteImport.update({
+  id: '/api/seminar-lesson',
+  path: '/api/seminar-lesson',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiThinkingProfileRoute = ApiThinkingProfileRouteImport.update({
   id: '/api/thinking-profile',
   path: '/api/thinking-profile',
@@ -338,6 +344,7 @@ export interface FileRoutesByFullPath {
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/seminar': typeof ApiSeminarRoute
+  '/api/seminar-lesson': typeof ApiSeminarLessonRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
@@ -388,6 +395,7 @@ export interface FileRoutesByTo {
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/seminar': typeof ApiSeminarRoute
+  '/api/seminar-lesson': typeof ApiSeminarLessonRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
@@ -439,6 +447,7 @@ export interface FileRoutesById {
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/seminar': typeof ApiSeminarRoute
+  '/api/seminar-lesson': typeof ApiSeminarLessonRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
@@ -491,6 +500,7 @@ export interface FileRouteTypes {
     | '/api/question-gap'
     | '/api/reads-public'
     | '/api/seminar'
+    | '/api/seminar-lesson'
     | '/api/thinking-profile'
     | '/api/threadwise'
     | '/api/weekly-review'
@@ -541,6 +551,7 @@ export interface FileRouteTypes {
     | '/api/question-gap'
     | '/api/reads-public'
     | '/api/seminar'
+    | '/api/seminar-lesson'
     | '/api/thinking-profile'
     | '/api/threadwise'
     | '/api/weekly-review'
@@ -591,6 +602,7 @@ export interface FileRouteTypes {
     | '/api/question-gap'
     | '/api/reads-public'
     | '/api/seminar'
+    | '/api/seminar-lesson'
     | '/api/thinking-profile'
     | '/api/threadwise'
     | '/api/weekly-review'
@@ -642,6 +654,7 @@ export interface RootRouteChildren {
   ApiQuestionGapRoute: typeof ApiQuestionGapRoute
   ApiReadsPublicRoute: typeof ApiReadsPublicRoute
   ApiSeminarRoute: typeof ApiSeminarRoute
+  ApiSeminarLessonRoute: typeof ApiSeminarLessonRoute
   ApiThinkingProfileRoute: typeof ApiThinkingProfileRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   ApiWeeklyReviewRoute: typeof ApiWeeklyReviewRoute
@@ -922,6 +935,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSeminarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/seminar-lesson': {
+      id: '/api/seminar-lesson'
+      path: '/api/seminar-lesson'
+      fullPath: '/api/seminar-lesson'
+      preLoaderRoute: typeof ApiSeminarLessonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/thinking-profile': {
       id: '/api/thinking-profile'
       path: '/api/thinking-profile'
@@ -1034,6 +1054,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiQuestionGapRoute: ApiQuestionGapRoute,
   ApiReadsPublicRoute: ApiReadsPublicRoute,
   ApiSeminarRoute: ApiSeminarRoute,
+  ApiSeminarLessonRoute: ApiSeminarLessonRoute,
   ApiThinkingProfileRoute: ApiThinkingProfileRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   ApiWeeklyReviewRoute: ApiWeeklyReviewRoute,
