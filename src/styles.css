@@ -1168,3 +1168,8 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   .blink-auto { animation: none; opacity: 0; }
 }
+
+
+/* The record landing. */
+html:has(.record-page) { scroll-behavior: smooth; }
+.record-page { overflow-x: clip; }

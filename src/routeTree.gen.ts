@@ -21,6 +21,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as ReachRouteImport } from './routes/reach'
 import { Route as ReadsRouteImport } from './routes/reads'
+import { Route as RecordRouteImport } from './routes/record'
 import { Route as RedactedRouteImport } from './routes/redacted'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SeminarRouteImport } from './routes/seminar'
@@ -114,6 +115,11 @@ const ReachRoute = ReachRouteImport.update({
 const ReadsRoute = ReadsRouteImport.update({
   id: '/reads',
   path: '/reads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecordRoute = RecordRouteImport.update({
+  id: '/record',
+  path: '/record',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RedactedRoute = RedactedRouteImport.update({
@@ -300,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/questions': typeof QuestionsRoute
   '/reach': typeof ReachRoute
   '/reads': typeof ReadsRoute
+  '/record': typeof RecordRoute
   '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
@@ -348,6 +355,7 @@ export interface FileRoutesByTo {
   '/questions': typeof QuestionsRoute
   '/reach': typeof ReachRoute
   '/reads': typeof ReadsRoute
+  '/record': typeof RecordRoute
   '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
@@ -397,6 +405,7 @@ export interface FileRoutesById {
   '/questions': typeof QuestionsRoute
   '/reach': typeof ReachRoute
   '/reads': typeof ReadsRoute
+  '/record': typeof RecordRoute
   '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
@@ -447,6 +456,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/reach'
     | '/reads'
+    | '/record'
     | '/redacted'
     | '/review'
     | '/seminar'
@@ -495,6 +505,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/reach'
     | '/reads'
+    | '/record'
     | '/redacted'
     | '/review'
     | '/seminar'
@@ -543,6 +554,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/reach'
     | '/reads'
+    | '/record'
     | '/redacted'
     | '/review'
     | '/seminar'
@@ -592,6 +604,7 @@ export interface RootRouteChildren {
   QuestionsRoute: typeof QuestionsRoute
   ReachRoute: typeof ReachRoute
   ReadsRoute: typeof ReadsRoute
+  RecordRoute: typeof RecordRoute
   RedactedRoute: typeof RedactedRoute
   ReviewRoute: typeof ReviewRoute
   SeminarRoute: typeof SeminarRoute
@@ -712,6 +725,13 @@ declare module '@tanstack/react-router' {
       path: '/reads'
       fullPath: '/reads'
       preLoaderRoute: typeof ReadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/record': {
+      id: '/record'
+      path: '/record'
+      fullPath: '/record'
+      preLoaderRoute: typeof RecordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/redacted': {
@@ -968,6 +988,7 @@ const rootRouteChildren: RootRouteChildren = {
   QuestionsRoute: QuestionsRoute,
   ReachRoute: ReachRoute,
   ReadsRoute: ReadsRoute,
+  RecordRoute: RecordRoute,
   RedactedRoute: RedactedRoute,
   ReviewRoute: ReviewRoute,
   SeminarRoute: SeminarRoute,
