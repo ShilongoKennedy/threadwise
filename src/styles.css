@@ -1343,3 +1343,14 @@ html:has(.record-page) { scroll-behavior: smooth; }
   height: 0.7em;
   pointer-events: none;
 }
+
+
+/* Atlas introduction */
+.atlas-headline .signature-flourish {
+  color: #C49A67;
+  opacity: 0.9;
+}
+.atlas-headline .signature-pen {
+  background: #C49A67;
+  box-shadow: 0 0 0 3px rgba(196, 154, 103, 0.12);
+}

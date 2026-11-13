@@ -37,6 +37,8 @@ const CITIES = [
   },
 ] as const;
 
+export const ATLAS_LOCATIONS = CITIES;
+
 const ARCS = [
   { from: "vienna", to: "tehran", color: 0x1a4bff, opacity: 0.9 },
   { from: "tehran", to: "natanz", color: 0xc1121f, opacity: 0.92 },
@@ -213,12 +215,23 @@ function GlobeFallback() {
   );
 }
 
-export function GeoGlobe() {
+export function GeoGlobe({
+  selectedId = null,
+  onSelect,
+}: {
+  selectedId?: string | null;
+  onSelect?: (id: string | null) => void;
+}) {
   const mountRef = useRef<HTMLDivElement>(null);
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const selectedRef = useRef<string | null>(selectedId);
   const [active, setActive] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    selectedRef.current = selectedId;
+  }, [selectedId]);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -247,6 +260,8 @@ export function GeoGlobe() {
     renderer.domElement.style.display = "block";
     renderer.domElement.style.pointerEvents = "none";
     mount.appendChild(renderer.domElement);
+    mount.style.touchAction = "none";
+    mount.style.cursor = "grab";
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(31, width / Math.max(height, 1), 0.1, 50);
@@ -351,13 +366,13 @@ export function GeoGlobe() {
     const applyLayout = () => {
       const aspect = mount.clientWidth / Math.max(mount.clientHeight, 1);
       if (aspect > 1.08) {
-        group.position.x = 1.75;
-        group.position.y = -0.08;
-        group.scale.setScalar(1.35);
+        group.position.x = 0;
+        group.position.y = 0.02;
+        group.scale.setScalar(0.82);
       } else {
-        group.position.x = 0.18;
-        group.position.y = -1.22;
-        group.scale.setScalar(0.46);
+        group.position.x = 0;
+        group.position.y = -0.48;
+        group.scale.setScalar(0.42);
       }
     };
     applyLayout();
@@ -365,10 +380,52 @@ export function GeoGlobe() {
     let pointerX = 0;
     let pointerY = 0;
     let autoRotation = 0;
-    let targetRotationX = -0.06;
-    let targetRotationY = (-138 * Math.PI) / 180;
+    let targetRotationX = -0.04;
+    const BASE_Y = (-138 * Math.PI) / 180;
+    let targetRotationY = BASE_Y;
+    let dragging = false;
+    let lastPointerX = 0;
+    let lastPointerY = 0;
+    let resumeAt = 0;
+    let previousSelected: string | null = null;
     group.rotation.y = targetRotationY;
     group.rotation.x = targetRotationX;
+
+    const stopDragging = () => {
+      if (!dragging) return;
+      dragging = false;
+      mount.style.cursor = "grab";
+      resumeAt = Date.now() + 2200;
+    };
+
+    const onDragStart = (event: PointerEvent) => {
+      dragging = true;
+      lastPointerX = event.clientX;
+      lastPointerY = event.clientY;
+      mount.style.cursor = "grabbing";
+    };
+
+    const onDragMove = (event: PointerEvent) => {
+      if (!dragging) return;
+      const dx = event.clientX - lastPointerX;
+      const dy = event.clientY - lastPointerY;
+      lastPointerX = event.clientX;
+      lastPointerY = event.clientY;
+      targetRotationY += dx * 0.005;
+      targetRotationX = Math.max(-0.55, Math.min(0.55, targetRotationX + dy * 0.0035));
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      camera.position.z = Math.max(4.9, Math.min(8.8, camera.position.z + event.deltaY * 0.0016));
+      camera.updateProjectionMatrix();
+      resumeAt = Date.now() + 2200;
+    };
+
+    mount.addEventListener("pointerdown", onDragStart);
+    window.addEventListener("pointermove", onDragMove, { passive: true });
+    window.addEventListener("pointerup", stopDragging);
+    mount.addEventListener("wheel", onWheel, { passive: false });
 
     const onPointerMove = (event: PointerEvent) => {
       if (reduceMotion) return;
@@ -402,11 +459,26 @@ export function GeoGlobe() {
     const animate = () => {
       frame = window.requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.05);
-      if (!reduceMotion) {
+      const focus = selectedRef.current
+        ? CITIES.find((entry) => entry.id === selectedRef.current)
+        : undefined;
+      if (!reduceMotion && !focus && !dragging && Date.now() > resumeAt) {
         autoRotation += delta * 0.025;
-        targetRotationY = (-138 * Math.PI) / 180 + autoRotation + pointerX * 0.13;
-        targetRotationX = -0.06 + pointerY * 0.08;
+        targetRotationY = BASE_Y + autoRotation + pointerX * 0.1;
+        targetRotationX = -0.04 + pointerY * 0.06;
       }
+      if (focus) {
+        const p = latLonToVector3(focus.lat, focus.lon, 1);
+        targetRotationY = Math.atan2(-p.x, p.z);
+        targetRotationX = 0;
+        previousSelected = focus.id;
+      } else if (previousSelected) {
+        autoRotation = group.rotation.y - BASE_Y;
+        previousSelected = null;
+      }
+      const layoutMobile = camera.aspect < 1.08;
+      const targetGroupY = layoutMobile ? (focus ? 0.34 : -0.48) : 0.02;
+      group.position.y += (targetGroupY - group.position.y) * 0.055;
       group.rotation.y += (targetRotationY - group.rotation.y) * 0.035;
       group.rotation.x += (targetRotationX - group.rotation.x) * 0.035;
       renderer.render(scene, camera);
@@ -447,6 +519,10 @@ export function GeoGlobe() {
       disposed = true;
       window.cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", onPointerMove);
+      mount.removeEventListener("pointerdown", onDragStart);
+      window.removeEventListener("pointermove", onDragMove);
+      window.removeEventListener("pointerup", stopDragging);
+      mount.removeEventListener("wheel", onWheel);
       ro.disconnect();
       renderer.dispose();
       scene.traverse((object) => {
@@ -467,7 +543,7 @@ export function GeoGlobe() {
       {failed ? <GlobeFallback /> : null}
       <div className={`absolute inset-0 transition-opacity duration-700 ${ready || failed ? "opacity-100" : "opacity-0"}`}>
         {CITIES.map((item) => {
-          const isActive = active === item.id;
+          const isActive = active === item.id || selectedId === item.id;
           return (
             <button
               key={item.id}
@@ -480,7 +556,12 @@ export function GeoGlobe() {
               onPointerLeave={() => setActive(null)}
               onFocus={() => setActive(item.id)}
               onBlur={() => setActive(null)}
-              onClick={() => setActive((current) => (current === item.id ? null : item.id))}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                setActive(item.id);
+                onSelect?.(item.id);
+              }}
               className="group absolute left-0 top-0 flex cursor-pointer flex-col items-center opacity-0 transition-opacity duration-300"
               style={{ willChange: "transform" }}
             >
@@ -489,13 +570,13 @@ export function GeoGlobe() {
                   item.tone === "red"
                     ? "border-[#C1121F]/45 bg-[#FFF8EA] text-[#C1121F]"
                     : "border-[#1A4BFF]/35 bg-[#FFF8EA] text-[#1A3FCC]"
-                } ${isActive ? "scale-110" : ""}`}
+                } ${isActive ? "scale-110" : ""} ${selectedId === item.id ? "ring-2 ring-[#1A4BFF]/40 ring-offset-2 ring-offset-[#0B0907]" : ""}`}
               >
                 {item.number}
               </span>
               <span
-                className={`absolute left-8 top-1/2 hidden md:block -translate-y-1/2 whitespace-nowrap border border-[#11110F]/20 bg-[#FFF9EC]/95 px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#11110F]/75 shadow-[0_4px_14px_rgba(40,30,20,0.1)] transition-all duration-200 group-hover:border-[#1A4BFF]/30 group-hover:text-[#1A4BFF] ${
-                  isActive ? "border-[#1A4BFF]/35 text-[#1A4BFF]" : ""
+                className={`absolute left-8 top-1/2 hidden -translate-y-1/2 whitespace-nowrap border border-[#C9A77D]/25 bg-[#100C09]/90 px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#F4EBDD]/80 shadow-[0_4px_14px_rgba(0,0,0,0.3)] backdrop-blur-md transition-all duration-200 md:block ${
+                  isActive ? "opacity-100" : "pointer-events-none opacity-0"
                 }`}
               >
                 {item.name}

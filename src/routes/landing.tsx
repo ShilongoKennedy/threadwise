@@ -1,10 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
-import { BrandLockup } from "@/components/threadwise/BrandLockup";
-import { GeoGlobe } from "@/components/record/GeoGlobe";
+import { ATLAS_LOCATIONS, GeoGlobe } from "@/components/record/GeoGlobe";
 import { GlassHeader } from "@/components/threadwise/GlassHeader";
+import { AtlasDock } from "@/components/threadwise/AtlasDock";
 
 
 export const Route = createFileRoute("/landing")({
@@ -71,109 +71,182 @@ const PLACE_INDEX = [
   { id: "natanz", no: "03", name: "Natanz", coords: "33.7N 51.7E", note: "One of the enrichment sites the report cannot verify." },
 ] as const;
 
+const LOCATION_CONTEXT: Record<string, {
+  number: string;
+  name: string;
+  coords: string;
+  description: string;
+  featured: string;
+  connected: string;
+  status: string;
+}> = {
+  vienna: {
+    number: "01",
+    name: "VIENNA",
+    coords: "48.2°N 16.4°E",
+    description: "International Atomic Energy Agency.",
+    featured: "IAEA–Iran: The demand, the permission and the unanswered questions.",
+    connected: "Vienna · Tehran · Natanz",
+    status: "ACTIVE CASE",
+  },
+  tehran: {
+    number: "02",
+    name: "TEHRAN",
+    coords: "35.7°N 51.4°E",
+    description: "The government that controls the permission.",
+    featured: "The demand is public. The permission is not.",
+    connected: "Vienna · Tehran · Natanz",
+    status: "PERMISSION HELD",
+  },
+  natanz: {
+    number: "03",
+    name: "NATANZ",
+    coords: "33.7°N 51.7°E",
+    description: "An enrichment site the record cannot yet verify.",
+    featured: "The site is known. The answer is still missing.",
+    connected: "Vienna · Tehran · Natanz",
+    status: "UNVERIFIED",
+  },
+};
+
 function LandingExperiment() {
-  const [activePlace, setActivePlace] = useState<string | null>(null);
-  const [entering, setEntering] = useState(false);
-  const navigate = useNavigate();
-  const timerRef = useRef<number | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  const selectedLocation = selected
+    ? ATLAS_LOCATIONS.find((location) => location.id === selected)
+    : undefined;
+  const context = selected ? LOCATION_CONTEXT[selected] : undefined;
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) window.clearTimeout(timerRef.current);
-    };
-  }, []);
-
-  const openRead = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    if (entering) return;
-    setEntering(true);
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const delay = reduced ? 0 : window.innerWidth < 768 ? 620 : 1100;
-    timerRef.current = window.setTimeout(() => {
-      void navigate({ to: "/read/$token", params: { token: SAMPLE_TOKEN } });
-    }, delay);
-  };
   return (
-    <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FDFBF7] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
-      <div
-        className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
-      <div className="pointer-events-none absolute left-6 top-24 z-0 h-4 w-4 border-l border-t border-[#1A1A1A]/20" />
-      <div className="pointer-events-none absolute right-6 top-24 z-0 h-4 w-4 border-r border-t border-[#1A1A1A]/20" />
+    <div className="relative h-[100dvh] w-full overflow-hidden bg-[#080604] font-sans text-[#F4EBDD] selection:bg-[#1A4BFF] selection:text-white">
+      <main className="relative h-full w-full overflow-hidden">
+        <section className="atlas-page relative h-full w-full overflow-hidden">
+          {/* architectural atmosphere */}
+          <div className="pointer-events-none absolute inset-0 z-0">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,#2b1b10_0%,#120c08_46%,#050403_100%)]" />
+            <div className="absolute inset-y-0 left-0 w-[15%] bg-[linear-gradient(90deg,#030201_0%,#160e09_38%,rgba(22,14,9,0)_100%)] opacity-90" />
+            <div className="absolute inset-y-0 right-0 w-[15%] bg-[linear-gradient(270deg,#030201_0%,#160e09_38%,rgba(22,14,9,0)_100%)] opacity-90" />
+            <div className="atlas-column absolute inset-y-0 left-[13%] w-px bg-[#C49A67]/10" />
+            <div className="atlas-column absolute inset-y-0 right-[13%] w-px bg-[#C49A67]/10" />
+            <div className="absolute left-[18%] top-[-20%] h-[125%] w-[34%] rotate-[16deg] bg-[linear-gradient(90deg,transparent,rgba(220,174,119,0.055),transparent)] blur-2xl" />
+            <div className="absolute right-[10%] top-[-10%] h-[120%] w-[22%] -rotate-[17deg] bg-[linear-gradient(90deg,transparent,rgba(220,174,119,0.035),transparent)] blur-3xl" />
+            <div className="absolute inset-x-0 bottom-0 h-[45%] bg-[radial-gradient(ellipse_at_50%_0%,rgba(194,141,86,0.17),transparent_58%),linear-gradient(0deg,#030201_0%,#1a110a_70%,transparent_100%)]" />
+            <div className="absolute left-1/2 top-[61%] h-[15%] w-[46%] -translate-x-1/2 rounded-[50%] border border-[#C49A67]/20 bg-[radial-gradient(ellipse_at_50%_50%,rgba(232,185,126,0.16),transparent_66%)] shadow-[0_0_90px_rgba(153,104,60,0.14)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,transparent_12%,rgba(0,0,0,0.44)_78%)]" />
+          </div>
 
-      <main id="main" className="relative z-10 flex-1">
-        {/* THE EYE IS THE PAGE */}
-        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
-          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[linear-gradient(180deg,#FAF2E5_0%,#F2E7D4_48%,#E3C6A3_100%)]">
-            <img
-              src="/hero/desert-field.jpg"
-              alt=""
-              className="desert-field absolute inset-x-0 bottom-0 h-[54%] w-full object-cover object-bottom opacity-80"
-              draggable={false}
+          {/* globe */}
+          <div className="absolute inset-0 z-10">
+            <GeoGlobe selectedId={selected} onSelect={setSelected} />
+          </div>
+
+          <GlassHeader section="atlas" />
+
+          {/* introduction */}
+          <div
+            className={`atlas-intro pointer-events-none absolute left-[4.5%] top-[21%] z-30 w-[27%] max-w-[440px] transition-all duration-500 ${
+              selected ? "md:opacity-55" : "opacity-100"
+            } max-md:left-5 max-md:right-5 max-md:top-[14%] max-md:w-auto ${selected ? "max-md:pointer-events-none max-md:opacity-0" : ""}`}
+          >
+            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#AFC0FF]">
+              The read / IAEA–Iran
+            </p>
+            <SignatureHeadline
+              text="See what the story hides."
+              className="atlas-headline mt-2 max-w-[560px] text-[clamp(48px,5.3vw,84px)] leading-[0.84] text-[#F4EBDD]"
             />
-            <div className="absolute inset-x-0 top-0 h-[54%] bg-[linear-gradient(180deg,#FAF2E5_0%,rgba(250,242,229,0.86)_34%,rgba(250,242,229,0.2)_78%,transparent_100%)]" />
+            <p className="mt-6 max-w-[31ch] font-serif text-[16px] leading-[1.65] text-[#F4EBDD]/62">
+              Explore sources, connect the evidence, question the assumptions and uncover what
+              others overlook.
+            </p>
+            <div className="pointer-events-auto mt-7 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className="inline-flex items-center gap-2 rounded-full bg-[#F4EBDD] px-4 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#15100C] transition-colors hover:bg-[#AFC0FF]"
+              >
+                Explore the globe
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+              <Link
+                to="/cases"
+                className="inline-flex items-center gap-2 rounded-full border border-[#C9A77D]/30 px-4 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#F4EBDD]/70 transition-colors hover:border-[#AFC0FF]/50 hover:text-[#AFC0FF]"
+              >
+                Enter a case
+              </Link>
+            </div>
           </div>
 
-          <div className="pointer-events-none absolute bottom-[10%] left-0 z-[3] w-[88%] max-w-[1000px] md:w-[57.5%]">
-            <img
-              src="/hero/desert-tree.jpg"
-              alt=""
-              className="desert-tree-plate w-full"
-              draggable={false}
-            />
-          </div>
-
-          <div className="globe-stage absolute inset-0 z-[5]">
-            <div className="pointer-events-none absolute right-[4%] top-[16%] hidden h-[58%] w-[46%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(63,46,32,0.17)_0%,rgba(63,46,32,0.055)_48%,transparent_72%)] blur-3xl md:block" />
-            <GeoGlobe />
-          </div>
-          <div className="pointer-events-none absolute inset-0 z-[2] hidden bg-[radial-gradient(ellipse_50%_48%_at_27%_38%,#F2E7D4_0%,#F2E7D4_56%,rgba(242,231,212,0.92)_66%,rgba(242,231,212,0.4)_82%,transparent_94%)] md:block" />
-          <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_20%,rgba(242,231,212,0.92)_30%,rgba(242,231,212,0.45)_46%,rgba(242,231,212,0.04)_62%,transparent_72%)] md:hidden" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-32 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
-
-          <GlassHeader />
-
-
-          <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
-            <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
-              <div className="pointer-events-none relative z-20 max-w-[62vw] md:max-w-[560px]">
-                <SignatureHeadline
-                  text="See what the story hides."
-                  fire
-                  className="letterpress max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,6.7vw,96px)] leading-[0.82] text-[#11110F]"
-                />
-                <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-12">
+          {/* contextual investigation panel */}
+          <aside
+            className={`atlas-panel fixed bottom-[86px] left-3 right-3 z-40 max-h-[54dvh] overflow-y-auto transition-all duration-500 md:absolute md:bottom-auto md:left-auto md:right-[4.5%] md:top-[18%] md:max-h-none md:w-[25%] md:max-w-[360px] ${
+              context ? "pointer-events-auto translate-y-0 opacity-100 md:translate-x-0" : "pointer-events-none translate-y-4 opacity-0 md:translate-x-4"
+            }`}
+          >
+            <div className="relative rounded-[20px] border border-[#C9A77D]/20 bg-[#120D09]/85 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.4)] backdrop-blur-[22px] md:p-6">
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                aria-label="Close location panel"
+                className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full border border-[#F4EBDD]/15 font-mono text-[10px] text-[#F4EBDD]/45 transition-colors hover:border-[#AFC0FF]/40 hover:text-[#AFC0FF]"
+              >
+                ×
+              </button>
+              {context ? (
+                <>
+                  <p className="font-mono text-[8px] uppercase tracking-[0.17em] text-[#AFC0FF]">
+                    {context.number} / Location
+                  </p>
+                  <h2 className="mt-2 font-display text-[34px] leading-none tracking-[-0.02em] text-[#F4EBDD]">
+                    {context.name}
+                  </h2>
+                  <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.14em] text-[#F4EBDD]/35">
+                    {context.coords}
+                  </p>
+                  <p className="mt-5 font-serif text-[14px] leading-[1.6] text-[#F4EBDD]/65">
+                    {context.description}
+                  </p>
+                  <div className="mt-6 border-t border-[#C9A77D]/15 pt-4">
+                    <p className="font-mono text-[7px] uppercase tracking-[0.17em] text-[#C9A77D]/65">
+                      Featured investigation
+                    </p>
+                    <p className="mt-2 font-serif text-[14px] leading-[1.55] text-[#F4EBDD]/75">
+                      {context.featured}
+                    </p>
+                  </div>
+                  <div className="mt-5 grid grid-cols-2 gap-3 border-t border-[#C9A77D]/15 pt-4">
+                    <div>
+                      <p className="font-mono text-[7px] uppercase tracking-[0.13em] text-[#F4EBDD]/30">
+                        Connected
+                      </p>
+                      <p className="mt-1 font-mono text-[8px] uppercase leading-[1.6] tracking-[0.08em] text-[#F4EBDD]/55">
+                        {context.connected}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-mono text-[7px] uppercase tracking-[0.13em] text-[#F4EBDD]/30">
+                        Status
+                      </p>
+                      <p className="mt-1 font-mono text-[8px] uppercase leading-[1.6] tracking-[0.08em] text-[#C1121F]/80">
+                        {context.status}
+                      </p>
+                    </div>
+                  </div>
                   <Link
                     to="/read/$token"
                     params={{ token: SAMPLE_TOKEN }}
-                    className="group inline-flex items-center gap-2 border-b border-[#C74212]/35 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#11110F]/70 transition-colors hover:border-[#C74212] hover:text-[#C74212]"
+                    className="mt-6 inline-flex w-full items-center justify-between border-t border-[#C9A77D]/20 pt-4 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#AFC0FF] transition-colors hover:text-[#F4EBDD]"
                   >
-                    Open the IAEA read
-                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    Explore investigation
+                    <ArrowUpRight className="h-3.5 w-3.5" />
                   </Link>
-                  <Link
-                    to="/analyst"
-                    className="group inline-flex items-center gap-2 border-b border-[#1A4BFF]/25 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#1A4BFF]/80 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
-                  >
-                    Bring your own source
-                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  </Link>
-                </div>
-              </div>
+                </>
+              ) : null}
             </div>
-          </div>
+          </aside>
+
+          <AtlasDock onExplore={() => setSelected(null)} />
         </section>
-
       </main>
-
-
     </div>
   );
 }
