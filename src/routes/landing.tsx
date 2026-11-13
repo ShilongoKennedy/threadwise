@@ -110,48 +110,56 @@ function LandingExperiment() {
       <main id="main" className="relative z-10 flex-1">
         {/* THE EYE IS THE PAGE */}
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
-          <div className="globe-stage absolute inset-0 z-0">
-            <div className="pointer-events-none absolute right-[4%] top-[16%] hidden h-[58%] w-[46%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(63,46,32,0.17)_0%,rgba(63,46,32,0.055)_48%,transparent_72%)] blur-3xl md:block" />
-            <GeoGlobe />
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[linear-gradient(180deg,#FAF2E5_0%,#F2E7D4_48%,#E3C6A3_100%)]">
+            <img
+              src="/hero/desert-field.jpg"
+              alt=""
+              className="desert-field absolute inset-x-0 bottom-0 h-[54%] w-full object-cover object-bottom opacity-80"
+              draggable={false}
+            />
+            <div className="absolute inset-x-0 top-0 h-[54%] bg-[linear-gradient(180deg,#FAF2E5_0%,rgba(250,242,229,0.86)_34%,rgba(250,242,229,0.2)_78%,transparent_100%)]" />
           </div>
-          <div className="pointer-events-none absolute inset-0 z-10 hidden bg-[radial-gradient(ellipse_50%_48%_at_27%_38%,#F2E7D4_0%,#F2E7D4_56%,rgba(242,231,212,0.92)_66%,rgba(242,231,212,0.4)_82%,transparent_94%)] md:block" />
-          <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_20%,rgba(242,231,212,0.92)_30%,rgba(242,231,212,0.45)_46%,rgba(242,231,212,0.04)_62%,transparent_72%)] md:hidden" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-32 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] h-[32%] overflow-hidden">
+          <div className="pointer-events-none absolute bottom-[10%] left-0 z-[3] w-[88%] max-w-[1000px] md:w-[57.5%]">
             <img
               src="/hero/desert-tree.jpg"
               alt=""
-              className="desert-photo absolute bottom-0 left-0 h-full w-[84%] max-w-[1180px] object-cover object-left"
+              className="desert-tree-plate w-full"
               draggable={false}
             />
-            <div className="absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.55)_55%,transparent_100%)]" />
-            <div className="absolute inset-y-0 right-0 w-40 bg-[linear-gradient(90deg,transparent_0%,rgba(242,231,212,0.72)_70%,#F2E7D4_100%)]" />
           </div>
+
+          <div className="globe-stage absolute inset-0 z-[5]">
+            <div className="pointer-events-none absolute right-[4%] top-[16%] hidden h-[58%] w-[46%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(63,46,32,0.17)_0%,rgba(63,46,32,0.055)_48%,transparent_72%)] blur-3xl md:block" />
+            <GeoGlobe />
+          </div>
+          <div className="pointer-events-none absolute inset-0 z-[2] hidden bg-[radial-gradient(ellipse_50%_48%_at_27%_38%,#F2E7D4_0%,#F2E7D4_56%,rgba(242,231,212,0.92)_66%,rgba(242,231,212,0.4)_82%,transparent_94%)] md:block" />
+          <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_20%,rgba(242,231,212,0.92)_30%,rgba(242,231,212,0.45)_46%,rgba(242,231,212,0.04)_62%,transparent_72%)] md:hidden" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-32 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
 
           <GlassHeader />
 
 
-          <div className="pointer-events-none relative z-20 mx-auto flex min-h-[calc(100dvh-62px)] w-full max-w-[1400px] flex-col justify-between px-5 pb-6 pt-8 md:px-8 md:pb-8 md:pt-10">
-            <div className="flex flex-1 items-start pt-[12vh] md:pt-[10vh]">
-              <div className="pointer-events-auto relative z-20 max-w-[62vw] md:max-w-[600px]">
+          <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
+            <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
+              <div className="pointer-events-auto relative z-20 max-w-[62vw] md:max-w-[560px]">
                 <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">
                   The read / IAEA–Iran <span className="mx-2 text-[#11110F]/20">|</span>{" "}
                   <span className="text-[#11110F]/35">09 Nov 2026</span>
                 </p>
                 <SignatureHeadline
                   text="See what the story hides."
-                  className="letterpress mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,7.3vw,108px)] leading-[0.82] text-[#11110F]"
+                  className="letterpress mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,6.7vw,96px)] leading-[0.82] text-[#11110F]"
                 />
-                <p className="mt-5 max-w-[38ch] font-serif text-[17px] leading-[1.6] text-[#11110F]/65 md:text-[19px]">
+                <p className="mt-8 max-w-[38ch] font-serif md:mt-16 text-[17px] leading-[1.6] text-[#11110F]/65 md:text-[19px]">
                   Behind every claim is a trail of evidence. Follow the arguments, question the
                   assumptions and uncover what others overlook.
                 </p>
                 <p className="mt-3 max-w-[46ch] font-mono text-[9px] uppercase leading-[1.8] tracking-[0.14em] text-[#11110F]/40">
                   Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
                 </p>
-                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <Link
                     to="/read/$token"
                     params={{ token: SAMPLE_TOKEN }}
@@ -171,14 +179,15 @@ function LandingExperiment() {
               </div>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-t border-[#11110F]/15 pt-3 font-mono text-[8px] uppercase tracking-[0.14em] text-[#11110F]/35">
-              <div className="flex flex-wrap gap-x-5 gap-y-1">
-                <span>01 Vienna / 48.2N 16.4E</span>
-                <span>02 Tehran / 35.7N 51.4E</span>
-                <span className="text-[#C1121F]/70">03 Natanz / 33.7N 51.7E</span>
-              </div>
-              <span>Ocular record / 09 Nov 2026</span>
+          </div>
+
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-t border-[#11110F]/20 px-5 pb-3 pt-3 font-mono text-[8px] uppercase tracking-[0.14em] text-[#11110F]/55 md:px-8">
+            <div className="flex flex-wrap gap-x-5 gap-y-1">
+              <span>01 Vienna / 48.2N 16.4E</span>
+              <span>02 Tehran / 35.7N 51.4E</span>
+              <span className="text-[#C1121F]/75">03 Natanz / 33.7N 51.7E</span>
             </div>
+            <span>Ocular record / 09 Nov 2026</span>
           </div>
         </section>
 

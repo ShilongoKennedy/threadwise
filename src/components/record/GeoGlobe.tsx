@@ -122,12 +122,12 @@ function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasE
         });
       });
       ctx.closePath();
-      ctx.fillStyle = "#C9AE8D";
+      ctx.fillStyle = "#C3A47C";
       ctx.fill("evenodd");
       ctx.strokeStyle = "rgba(86, 66, 47, 0.1)";
       ctx.lineWidth = 7;
       ctx.stroke();
-      ctx.strokeStyle = "rgba(74, 59, 45, 0.72)";
+      ctx.strokeStyle = "rgba(68, 53, 40, 0.78)";
       ctx.lineWidth = 1.3;
       ctx.stroke();
     }
@@ -254,7 +254,7 @@ export function GeoGlobe() {
     camera.lookAt(0, 0, 0);
 
     const group = new THREE.Group();
-    group.position.set(0.78, 0.05, 0);
+    group.position.set(0.78, -0.08, 0);
     scene.add(group);
 
     const globeTexture = new THREE.CanvasTexture(document.createElement("canvas"));
@@ -351,11 +351,13 @@ export function GeoGlobe() {
     const applyLayout = () => {
       const aspect = mount.clientWidth / Math.max(mount.clientHeight, 1);
       if (aspect > 1.08) {
-        group.position.x = 1.02;
-        group.scale.setScalar(1);
+        group.position.x = 1.75;
+        group.position.y = -0.08;
+        group.scale.setScalar(1.35);
       } else {
-        group.position.x = 0.36;
-        group.scale.setScalar(0.65);
+        group.position.x = 0.18;
+        group.position.y = -1.22;
+        group.scale.setScalar(0.46);
       }
     };
     applyLayout();
@@ -364,7 +366,7 @@ export function GeoGlobe() {
     let pointerY = 0;
     let autoRotation = 0;
     let targetRotationX = -0.06;
-    let targetRotationY = (-90 * Math.PI) / 180;
+    let targetRotationY = (-138 * Math.PI) / 180;
     group.rotation.y = targetRotationY;
     group.rotation.x = targetRotationX;
 
@@ -402,7 +404,7 @@ export function GeoGlobe() {
       const delta = Math.min(clock.getDelta(), 0.05);
       if (!reduceMotion) {
         autoRotation += delta * 0.025;
-        targetRotationY = (-90 * Math.PI) / 180 + autoRotation + pointerX * 0.13;
+        targetRotationY = (-138 * Math.PI) / 180 + autoRotation + pointerX * 0.13;
         targetRotationX = -0.06 + pointerY * 0.08;
       }
       group.rotation.y += (targetRotationY - group.rotation.y) * 0.035;
@@ -492,12 +494,12 @@ export function GeoGlobe() {
                 {item.number}
               </span>
               <span
-                className={`mt-2 whitespace-nowrap border border-[#11110F]/20 bg-[#FFF9EC] px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#11110F]/75 shadow-[0_4px_14px_rgba(40,30,20,0.1)] transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 ${
-                  isActive ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
+                className={`absolute left-8 top-1/2 hidden md:block -translate-y-1/2 whitespace-nowrap border border-[#11110F]/20 bg-[#FFF9EC]/95 px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#11110F]/75 shadow-[0_4px_14px_rgba(40,30,20,0.1)] transition-all duration-200 group-hover:border-[#1A4BFF]/30 group-hover:text-[#1A4BFF] ${
+                  isActive ? "border-[#1A4BFF]/35 text-[#1A4BFF]" : ""
                 }`}
               >
-                {item.number} / {item.name}
-                <span className="block pt-1 text-[6.5px] leading-[1.5] tracking-[0.1em] text-[#11110F]/40">
+                {item.name}
+                <span className={`${isActive ? "block" : "hidden"} pt-1 text-[6.5px] leading-[1.5] tracking-[0.1em] text-[#11110F]/40`}>
                   {item.country} · {item.note}
                 </span>
               </span>
