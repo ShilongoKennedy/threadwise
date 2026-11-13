@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 
 export function RecordEye() {
+  const uid = useId().replace(/:/g, "");
   const ref = useRef<HTMLDivElement>(null);
   const [pupil, setPupil] = useState({ x: 0, y: 0 });
 
@@ -16,31 +17,31 @@ export function RecordEye() {
     <div ref={ref} onPointerMove={move} className="relative w-full" aria-hidden="true">
       <svg viewBox="0 0 1000 560" className="w-full">
         <defs>
-          <clipPath id="record-eye-clip">
+          <clipPath id={`${uid}-record-eye-clip`}>
             <path d="M 45 300 C 160 165 340 112 500 112 C 660 112 840 165 955 300 C 840 500 660 540 500 540 C 340 540 160 500 45 300 Z" />
           </clipPath>
-          <radialGradient id="record-sclera" cx="54%" cy="42%" r="72%">
+          <radialGradient id={`${uid}-record-sclera`} cx="54%" cy="42%" r="72%">
             <stop offset="0%" stopColor="#FBF5E8" />
             <stop offset="62%" stopColor="#F4EBDD" />
             <stop offset="100%" stopColor="#E6D9C6" />
           </radialGradient>
-          <linearGradient id="record-eyeshadow" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={`${uid}-record-eyeshadow`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#2A241D" stopOpacity="0.42" />
             <stop offset="60%" stopColor="#2A241D" stopOpacity="0.08" />
             <stop offset="100%" stopColor="#2A241D" stopOpacity="0" />
           </linearGradient>
-          <radialGradient id="record-iris" cx="42%" cy="36%" r="72%">
+          <radialGradient id={`${uid}-record-iris`} cx="42%" cy="36%" r="72%">
             <stop offset="0%" stopColor="#4A6BFF" />
             <stop offset="34%" stopColor="#2A4BFA" />
             <stop offset="74%" stopColor="#1737E8" />
             <stop offset="100%" stopColor="#07152F" />
           </radialGradient>
-          <radialGradient id="record-pupil" cx="44%" cy="38%" r="72%">
+          <radialGradient id={`${uid}-record-pupil`} cx="44%" cy="38%" r="72%">
             <stop offset="0%" stopColor="#24262B" />
             <stop offset="46%" stopColor="#0B0C0E" />
             <stop offset="100%" stopColor="#000000" />
           </radialGradient>
-          <linearGradient id="record-cornea" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id={`${uid}-record-cornea`} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#FBF5E8" stopOpacity="0.5" />
             <stop offset="42%" stopColor="#FBF5E8" stopOpacity="0.05" />
             <stop offset="100%" stopColor="#FBF5E8" stopOpacity="0" />
@@ -64,13 +65,13 @@ export function RecordEye() {
         </g>
 
         <g>
-          <path d="M 45 300 C 160 165 340 112 500 112 C 660 112 840 165 955 300 C 840 500 660 540 500 540 C 340 540 160 500 45 300 Z" fill="url(#record-sclera)" />
-          <g clipPath="url(#record-eye-clip)">
-            <path d="M 45 300 C 160 165 340 112 500 112 C 660 112 840 165 955 300 L 955 250 L 45 250 Z" fill="url(#record-eyeshadow)" />
+          <path d="M 45 300 C 160 165 340 112 500 112 C 660 112 840 165 955 300 C 840 500 660 540 500 540 C 340 540 160 500 45 300 Z" fill={`url(#${uid}-record-sclera)`} />
+          <g clipPath={`url(#${uid}-record-eye-clip)`}>
+            <path d="M 45 300 C 160 165 340 112 500 112 C 660 112 840 165 955 300 L 955 250 L 45 250 Z" fill={`url(#${uid}-record-eyeshadow)`} />
             <g className="iris-move" style={{ transform: `translate(${pupil.x}px, ${pupil.y}px)` }}>
               <circle cx="500" cy="280" r="168" fill="#07152F" opacity="0.25" />
               <circle cx="500" cy="280" r="158" fill="#0B1D3A" />
-              <circle cx="500" cy="280" r="150" fill="url(#record-iris)" />
+              <circle cx="500" cy="280" r="150" fill={`url(#${uid}-record-iris)`} />
               <g className="iris-spin">
                 <g strokeLinecap="round">
                   {Array.from({ length: 56 }).map((_, index) => {
@@ -95,10 +96,10 @@ export function RecordEye() {
                 <circle cx="500" cy="280" r="138" fill="none" stroke="#0B1D3A" strokeWidth="6" opacity="0.55" />
                 <circle cx="500" cy="280" r="150" fill="none" stroke="#FF4B2B" strokeWidth="2" />
               </g>
-              <circle cx="500" cy="280" r="54" fill="url(#record-pupil)" />
+              <circle cx="500" cy="280" r="54" fill={`url(#${uid}-record-pupil)`} />
               <ellipse cx="472" cy="248" rx="21" ry="15" fill="#FBF5E8" opacity="0.8" transform="rotate(-24 472 248)" />
               <ellipse cx="548" cy="312" rx="7" ry="5" fill="#FBF5E8" opacity="0.45" />
-              <ellipse cx="500" cy="280" rx="150" ry="150" fill="url(#record-cornea)" />
+              <ellipse cx="500" cy="280" rx="150" ry="150" fill={`url(#${uid}-record-cornea)`} />
             </g>
             <path d="M 45 300 C 160 165 340 112 500 112 C 660 112 840 165 955 300" fill="none" stroke="#11110F" strokeWidth="9" strokeLinecap="round" />
             <path d="M 45 300 C 160 500 660 540 955 300" fill="none" stroke="#11110F" strokeWidth="4" strokeLinecap="round" />
@@ -110,7 +111,7 @@ export function RecordEye() {
           <path d="M 78 272 C 190 138 350 82 500 82 C 646 82 800 134 918 262" fill="none" stroke="#11110F" strokeWidth="2" strokeLinecap="round" opacity="0.35" />
         </g>
 
-        <g className="blink-auto" clipPath="url(#record-eye-clip)" pointerEvents="none">
+        <g className="blink-auto" clipPath={`url(#${uid}-record-eye-clip)`} pointerEvents="none">
           <rect x="0" y="0" width="1000" height="300" fill="#EBDCC7" />
           <rect x="0" y="300" width="1000" height="280" fill="#EBDCC7" />
           <path d="M 50 300 Q 500 344 950 300" fill="none" stroke="#11110F" strokeWidth="6" strokeLinecap="round" />

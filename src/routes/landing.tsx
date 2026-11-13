@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useId, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
@@ -116,9 +116,9 @@ function LandingExperiment() {
           </div>
           <div className="pointer-events-none absolute inset-0 z-[1] hidden bg-[linear-gradient(90deg,#FDFBF7_0%,#FDFBF7_30%,rgba(253,251,247,0.94)_42%,rgba(253,251,247,0.55)_54%,rgba(253,251,247,0.12)_64%,transparent_72%)] md:block" />
 
-          <div className="pointer-events-none absolute bottom-[12%] right-[22%] top-[11%] z-[6] hidden w-[24%] md:block">
-            <div className="h-full w-full drop-shadow-[10px_0_22px_rgba(17,17,15,0.22)]">
-              <HeroEyeBand />
+          <div className="pointer-events-none absolute right-[7%] top-[11%] z-[6] hidden aspect-square w-[32%] md:block">
+            <div className="h-full w-full drop-shadow-[0_24px_40px_rgba(17,17,15,0.20)]">
+              <HeroEyeTear />
             </div>
           </div>
 
@@ -161,10 +161,14 @@ function LandingExperiment() {
             </div>
 
             <div className="mt-8 md:hidden">
-              <div className="relative mb-5 h-[300px] w-full overflow-hidden">
-                <HeroEyeBand mobile />
+              <div className="relative">
+                <AtlasMap active={activePlace} onActive={setActivePlace} mobile />
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <div className="pointer-events-auto h-[190px] w-[190px] drop-shadow-[0_18px_28px_rgba(17,17,15,0.18)]">
+                    <HeroEyeTear mobile />
+                  </div>
+                </div>
               </div>
-              <AtlasMap active={activePlace} onActive={setActivePlace} mobile />
               <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
                 <span>The IAEA read / in places</span>
                 <span>09 Nov 2026</span>
@@ -483,14 +487,32 @@ function LandingExperiment() {
   );
 }
 
-function HeroEyeBand({ mobile = false }: { mobile?: boolean }) {
-  const clip = "polygon(0 0, 99.3% 0, 100% 4%, 99.1% 9%, 100% 14%, 98.9% 20%, 100% 26%, 99.4% 32%, 100% 38%, 98.8% 44%, 100% 50%, 99.2% 56%, 100% 62%, 99% 68%, 100% 74%, 99.5% 80%, 100% 86%, 98.8% 92%, 100% 100%, 0.5% 100%, 0 95%, 0.9% 90%, 0 84%, 0.4% 78%, 0 72%, 1% 66%, 0 60%, 0.3% 54%, 0 48%, 0.8% 42%, 0 36%, 0.5% 30%, 0 24%, 1.1% 18%, 0 12%, 0.4% 6%)";
+function HeroEyeTear({ mobile = false }: { mobile?: boolean }) {
+  const uid = useId().replace(/:/g, "");
+  const tear = "M 381.7 200.0 L 382.6 218.0 L 381.0 236.0 L 374.2 252.8 L 366.9 269.1 L 358.7 284.8 L 348.5 299.2 L 339.3 314.3 L 328.2 328.2 L 315.5 340.8 L 299.5 348.9 L 283.7 356.6 L 266.6 360.9 L 250.4 366.1 L 233.5 368.3 L 216.6 368.7 L 200.0 373.9 L 182.7 375.4 L 165.3 374.4 L 147.9 371.7 L 131.6 365.1 L 116.1 356.9 L 100.6 348.7 L 87.5 337.0 L 73.9 326.1 L 60.8 314.3 L 49.2 300.8 L 37.7 286.8 L 29.9 270.4 L 24.1 253.4 L 23.4 235.1 L 23.6 217.4 L 25.8 200.0 L 27.6 183.0 L 30.7 166.3 L 34.2 149.7 L 36.6 132.3 L 43.2 116.2 L 52.4 101.4 L 63.6 88.0 L 76.6 76.6 L 89.6 65.5 L 102.7 54.4 L 116.8 44.3 L 130.6 32.4 L 146.9 24.8 L 163.7 17.5 L 181.9 16.2 L 200.0 15.1 L 217.9 18.7 L 234.6 26.3 L 251.1 31.6 L 267.9 36.0 L 283.2 44.3 L 299.3 51.4 L 312.4 63.1 L 324.0 76.0 L 335.6 88.7 L 344.7 103.3 L 350.9 119.3 L 357.5 134.7 L 365.3 149.9 L 373.9 165.4 L 379.1 182.4 Z";
   return (
-    <div className="relative h-full w-full" style={{ clipPath: clip, WebkitClipPath: clip }}>
-      <div className="absolute inset-0 bg-[#171714]" />
-      <div className="absolute inset-0 bg-[#8E2B2B]" style={{ clipPath: "inset(0 0 0 50%)" }} />
-      <div className="pointer-events-none absolute inset-0 opacity-[0.12] [background-image:repeating-linear-gradient(0deg,transparent_0,transparent_5px,#F1E9D8_5px,#F1E9D8_6px)]" />
-      <div className={`absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 ${mobile ? "w-[58%] max-w-[230px]" : "w-[78%] max-w-[270px]"} pointer-events-auto`}>
+    <div className="relative h-full w-full">
+      <svg viewBox="0 0 400 400" className="h-full w-full" aria-hidden="true">
+        <defs>
+          <linearGradient id={`${uid}-field`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#171714" />
+            <stop offset="0.5" stopColor="#171714" />
+            <stop offset="0.5" stopColor="#8E2B2B" />
+            <stop offset="1" stopColor="#8E2B2B" />
+          </linearGradient>
+          <linearGradient id={`${uid}-rim`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#FDFBF7" />
+            <stop offset="1" stopColor="#E8DECD" />
+          </linearGradient>
+          <filter id={`${uid}-rough`} x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.014 0.038" numOctaves="2" seed="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+        <path d={tear} fill={`url(#${uid}-field)`} stroke={`url(#${uid}-rim)`} strokeWidth="7" strokeLinejoin="round" filter={`url(#${uid}-rough)`} />
+        <path d={tear} fill="none" stroke="#11110F" strokeWidth="1" opacity="0.35" transform="translate(0 3)" />
+      </svg>
+      <div className={`pointer-events-auto absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 ${mobile ? "w-[64%]" : "w-[76%]"}`}>
         <RecordEye />
       </div>
     </div>
