@@ -165,7 +165,7 @@ function LandingExperiment() {
             <GeoGlobe selectedId={selected} onSelect={setSelected} />
           </div>
 
-          <GlassHeader section="atlas" />
+          <GlassHeader section="atlas" tone="dark" />
 
           {/* introduction */}
           <div

@@ -220,11 +220,13 @@ export function GeoGlobe({
   onSelect,
   theme = "dark",
   mobileScale = 0.42,
+  layout = "center",
 }: {
   selectedId?: string | null;
   onSelect?: (id: string | null) => void;
   theme?: "dark" | "light";
   mobileScale?: number;
+  layout?: "center" | "right";
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -370,9 +372,15 @@ export function GeoGlobe({
     const applyLayout = () => {
       const desktop = window.innerWidth >= 768;
       if (desktop) {
-        group.position.x = 0.1;
-        group.position.y = 0.34;
-        group.scale.setScalar(1.2);
+        if (layout === "right") {
+          group.position.x = 1.72;
+          group.position.y = -0.06;
+          group.scale.setScalar(1.42);
+        } else {
+          group.position.x = 0.1;
+          group.position.y = 0.34;
+          group.scale.setScalar(1.2);
+        }
       } else {
         group.position.x = 0;
         group.position.y = -0.48;
@@ -481,7 +489,7 @@ export function GeoGlobe({
         previousSelected = null;
       }
       const layoutMobile = camera.aspect < 1.08;
-      const targetGroupY = layoutMobile ? (focus ? 0.34 : -0.48) : 0.3;
+      const targetGroupY = layoutMobile ? (focus ? 0.34 : -0.48) : layout === "right" ? -0.06 : 0.3;
       group.position.y += (targetGroupY - group.position.y) * 0.055;
       group.rotation.y += (targetRotationY - group.rotation.y) * 0.035;
       group.rotation.x += (targetRotationX - group.rotation.x) * 0.035;

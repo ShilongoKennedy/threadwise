@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { AppHeader } from "@/components/threadwise/AppHeader";
+import { GlassHeader } from "@/components/threadwise/GlassHeader";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
@@ -95,96 +95,63 @@ function LandingPage() {
   };
   return (
     <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FDFBF7] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
-      <div
-        className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
-      <div className="pointer-events-none absolute left-6 top-24 z-0 h-4 w-4 border-l border-t border-[#1A1A1A]/20" />
-      <div className="pointer-events-none absolute right-6 top-24 z-0 h-4 w-4 border-r border-t border-[#1A1A1A]/20" />
-
-      <AppHeader marketing />
-
       <main id="main" className="relative z-10 flex-1">
-        {/* ATLAS HERO */}
-        <section className={`atlas-hero relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28 ${entering ? "is-entering" : ""}`}>
-          <div className="pointer-events-none absolute inset-0 z-[1] hidden bg-[linear-gradient(90deg,#FDFBF7_0%,#FDFBF7_30%,rgba(253,251,247,0.94)_42%,rgba(253,251,247,0.55)_54%,rgba(253,251,247,0.12)_64%,transparent_72%)] md:block" />
-
-          <div className="relative z-10 mx-auto flex min-h-[680px] w-full max-w-[1200px] flex-col justify-start px-5 pb-10 pt-10 md:justify-between md:px-8 md:pb-12 md:pt-14">
-            <div className="atlas-copy max-w-[650px] pb-8 md:pb-10">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
-                <span>The read / IAEA–Iran</span>
-                <span className="h-3 w-px bg-[#1A4BFF]/25" />
-                <span className="text-[#1A1A1A]/40">09 Nov 2026</span>
-              </div>
-              <SignatureHeadline
-                text="See what the story hides."
-                className="mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(58px,7.6vw,112px)] leading-[0.82]"
-              />
-              <p className="mt-5 max-w-[46ch] font-serif text-[17px] leading-[1.55] text-[#1A1A1A]/70 md:text-[19px]">
-                Every claim has a geography. This is the IAEA read, plotted.
-              </p>
-              <p className="mt-3 max-w-[52ch] font-mono text-[9px] uppercase leading-[1.7] tracking-[0.14em] text-[#1A1A1A]/50 md:text-[10px]">
-                Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
-              </p>
-              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-                <Link
-                  to="/read/$token"
-                  params={{ token: SAMPLE_TOKEN }}
-                  onClick={openRead}
-                  aria-busy={entering}
-                  className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
-                >
-                  Open the IAEA read
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-                <Link
-                  to="/analyst"
-                  className="inline-flex items-center gap-2 border-b-2 border-[#1A4BFF]/30 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] transition-colors hover:border-[#1A4BFF]"
-                >
-                  Bring your own source
-                  <ArrowRight className="h-3 w-3" />
-                </Link>
-              </div>
-            </div>
-
-
-          <div className="relative z-0 mt-6 h-[360px] w-full md:absolute md:inset-y-0 md:right-0 md:mt-0 md:h-full md:w-[60%]">
-            <div className="pointer-events-none absolute inset-[8%] rounded-full bg-[radial-gradient(circle_at_48%_50%,rgba(84,55,28,0.24),rgba(84,55,28,0.08)_48%,transparent_72%)] blur-2xl" />
-            <div className="pointer-events-auto relative h-full w-full [filter:drop-shadow(0_30px_50px_rgba(84,55,28,0.14))]">
-              <GeoGlobe theme="light" mobileScale={0.72} />
-            </div>
+        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[linear-gradient(180deg,#FAF2E5_0%,#F2E7D4_48%,#E3C6A3_100%)]">
+            <img
+              src="/hero/desert-field.jpg"
+              alt=""
+              className="desert-field absolute inset-x-0 bottom-0 h-[54%] w-full object-cover object-bottom opacity-80"
+              draggable={false}
+            />
+            <div className="absolute inset-x-0 top-0 h-[54%] bg-[linear-gradient(180deg,#FAF2E5_0%,rgba(250,242,229,0.86)_34%,rgba(250,242,229,0.2)_78%,transparent_100%)]" />
           </div>
 
-            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 bg-transparent pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-              <div>
-                <div className="flex flex-wrap gap-x-5 gap-y-2">
-                  <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
-                  <span className="flex items-center gap-2"><span className="h-px w-5 border-t border-dashed border-[#C1121F]" /> permission denied</span>
+          <div className="pointer-events-none absolute bottom-[10%] left-0 z-[3] w-[88%] max-w-[1000px] md:w-[57.5%]">
+            <img
+              src="/hero/desert-tree.jpg"
+              alt=""
+              className="desert-tree-plate w-full"
+              draggable={false}
+            />
+          </div>
+
+          <div className="globe-stage absolute inset-0 z-[5]">
+            <div className="pointer-events-none absolute right-[4%] top-[16%] hidden h-[58%] w-[46%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(63,46,32,0.17)_0%,rgba(63,46,32,0.055)_48%,transparent_72%)] blur-3xl md:block" />
+            <GeoGlobe theme="light" layout="right" />
+          </div>
+          <div className="pointer-events-none absolute inset-0 z-[2] hidden bg-[radial-gradient(ellipse_50%_48%_at_27%_38%,#F2E7D4_0%,#F2E7D4_56%,rgba(242,231,212,0.92)_66%,rgba(242,231,212,0.4)_82%,transparent_94%)] md:block" />
+          <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_20%,rgba(242,231,212,0.92)_30%,rgba(242,231,212,0.45)_46%,rgba(242,231,212,0.04)_62%,transparent_72%)] md:hidden" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-32 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
+
+          <GlassHeader />
+
+          <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
+            <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
+              <div className="pointer-events-none relative z-20 max-w-[62vw] md:max-w-[560px]">
+                <SignatureHeadline
+                  text="See what the story hides."
+                  fire
+                  className="letterpress max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,6.7vw,96px)] leading-[0.82] text-[#11110F]"
+                />
+                <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-12">
+                  <Link
+                    to="/read/$token"
+                    params={{ token: SAMPLE_TOKEN }}
+                    className="group inline-flex items-center gap-2 border-b border-[#C74212]/35 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#11110F]/70 transition-colors hover:border-[#C74212] hover:text-[#C74212]"
+                  >
+                    Open the IAEA read
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </Link>
+                  <Link
+                    to="/analyst"
+                    className="group inline-flex items-center gap-2 border-b border-[#1A4BFF]/25 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#1A4BFF]/80 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
+                  >
+                    Bring your own source
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </Link>
                 </div>
-                <p className="mt-2 text-[8px] tracking-[0.08em] text-[#1A1A1A]/30">
-                  Natural Earth 1:110m · illustrative route
-                </p>
-              </div>
-            </div>
-          </div>
-
-
-          <div className="atlas-enter-curtain" aria-hidden={!entering}>
-            <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col justify-between px-5 py-10 md:px-8 md:py-14">
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
-                Threadwise / the read
-              </p>
-              <div className="pb-6">
-                <p className="font-display text-[clamp(52px,9vw,112px)] leading-[0.9] tracking-[-0.035em]">
-                  IAEA–Iran.
-                </p>
-                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
-                  Opening the record…
-                </p>
               </div>
             </div>
           </div>

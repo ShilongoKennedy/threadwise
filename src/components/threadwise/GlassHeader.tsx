@@ -13,14 +13,15 @@ const NAV = [
 ] as const;
 
 /** The experimental hero's floating glass navigation. */
-export function GlassHeader({ section = "record" }: { section?: string }) {
+export function GlassHeader({ section = "record", tone = "light" }: { section?: string; tone?: "light" | "dark" }) {
+  const dark = tone === "dark";
   const [open, setOpen] = useState(false);
 
   return (
     <div className="pointer-events-none fixed inset-x-0 top-4 z-50 px-4 md:top-5 md:px-6">
-      <header className="pointer-events-auto relative mx-auto w-full max-w-[1240px] rounded-[22px] border border-[#8A745C]/20 bg-[#120D09]/70 shadow-[0_16px_50px_rgba(0,0,0,0.34),0_2px_8px_rgba(0,0,0,0.18)] backdrop-blur-[22px]">
+      <header className={`pointer-events-auto relative mx-auto w-full max-w-[1240px] rounded-[22px] border backdrop-blur-[22px] ${dark ? "border-[#8A745C]/20 bg-[#120D09]/70 shadow-[0_16px_50px_rgba(0,0,0,0.34),0_2px_8px_rgba(0,0,0,0.18)]" : "border-[#8A745C]/20 bg-[#FDFBF7]/72 shadow-[0_14px_46px_rgba(43,33,23,0.10),0_2px_8px_rgba(43,33,23,0.05)]"}`}>
         <div className="flex h-[58px] items-center justify-between gap-4 px-4 md:h-[62px] md:px-5">
-          <div className="brand-emboss shrink-0 [filter:brightness(0)_invert(1)] opacity-90">
+          <div className={`brand-emboss shrink-0 ${dark ? "[filter:brightness(0)_invert(1)] opacity-90" : ""}`}>
             <BrandLockup size="md" asLink />
           </div>
 
@@ -30,12 +31,12 @@ export function GlassHeader({ section = "record" }: { section?: string }) {
                 key={item.key}
                 to={item.to}
                 className={`group relative py-2 font-mono text-[9px] uppercase tracking-[0.15em] transition-colors ${
-                  section === item.key ? "text-[#AFC0FF]" : "text-[#F4EBDD]/50 hover:text-[#AFC0FF]"
+                  section === item.key ? (dark ? "text-[#AFC0FF]" : "text-[#1A4BFF]") : (dark ? "text-[#F4EBDD]/50 hover:text-[#AFC0FF]" : "text-[#1A1A1A]/55 hover:text-[#1A4BFF]")
                 }`}
               >
                 {item.label}
                 <span
-                  className={`absolute inset-x-0 -bottom-[3px] mx-auto h-px bg-[#AFC0FF] transition-transform duration-200 ${
+                  className={`absolute inset-x-0 -bottom-[3px] mx-auto h-px transition-transform ${dark ? "bg-[#AFC0FF]" : "bg-[#1A4BFF]"} duration-200 ${
                     section === item.key ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
@@ -47,7 +48,7 @@ export function GlassHeader({ section = "record" }: { section?: string }) {
             <Link
               to="/profile"
               aria-label="Profile"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F4EBDD] text-[#120D09] transition-colors hover:bg-[#AFC0FF]"
+              className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${dark ? "bg-[#F4EBDD] text-[#120D09] hover:bg-[#AFC0FF]" : "bg-[#1A1A1A] text-[#FDFBF7] hover:bg-[#1A4BFF]"}`}
             >
               <User className="h-3.5 w-3.5" strokeWidth={1.7} />
             </Link>
@@ -64,7 +65,7 @@ export function GlassHeader({ section = "record" }: { section?: string }) {
               aria-expanded={open}
               aria-controls="glass-mobile-nav"
               onClick={() => setOpen((current) => !current)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#C9A77D]/20 text-[#F4EBDD]/65 transition-colors hover:border-[#AFC0FF]/40 hover:text-[#AFC0FF] lg:hidden"
+              className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors lg:hidden ${dark ? "border-[#C9A77D]/20 text-[#F4EBDD]/65 hover:border-[#AFC0FF]/40 hover:text-[#AFC0FF]" : "border-[#1A1A1A]/18 text-[#1A1A1A]/65 hover:border-[#1A4BFF]/40 hover:text-[#1A4BFF]"}`}
             >
               {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
@@ -74,7 +75,7 @@ export function GlassHeader({ section = "record" }: { section?: string }) {
         {open ? (
           <div
             id="glass-mobile-nav"
-            className="border-t border-[#C9A77D]/15 px-4 pb-4 pt-3 lg:hidden"
+            className={`border-t px-4 pb-4 pt-3 lg:hidden ${dark ? "border-[#C9A77D]/15" : "border-[#8A745C]/15"}`}
           >
             <nav aria-label="Mobile primary" className="grid grid-cols-2 gap-x-4 gap-y-1">
               {NAV.map((item) => (
@@ -83,7 +84,7 @@ export function GlassHeader({ section = "record" }: { section?: string }) {
                   to={item.to}
                   onClick={() => setOpen(false)}
                   className={`border-b border-[#1A1A1A]/8 py-2.5 font-mono text-[10px] uppercase tracking-[0.15em] ${
-                    section === item.key ? "text-[#AFC0FF]" : "text-[#1A1A1A]/65"
+                    section === item.key ? (dark ? "text-[#AFC0FF]" : "text-[#1A4BFF]") : (dark ? "text-[#F4EBDD]/65" : "text-[#1A1A1A]/65")
                   }`}
                 >
                   {item.label}
@@ -93,7 +94,7 @@ export function GlassHeader({ section = "record" }: { section?: string }) {
             <Link
               to="/analyst"
               onClick={() => setOpen(false)}
-              className="mt-3 inline-flex items-center gap-1.5 text-[#AFC0FF]"
+              className={`mt-3 inline-flex items-center gap-1.5 ${dark ? "text-[#AFC0FF]" : "text-[#1A4BFF]"}`}
             >
               <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em]">
                 Read a Source
