@@ -12,13 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
 import { Route as CasesRouteImport } from './routes/cases'
-import { Route as CutRouteImport } from './routes/cut'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MarginRouteImport } from './routes/margin'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as QuestionsRouteImport } from './routes/questions'
+import { Route as ReachRouteImport } from './routes/reach'
 import { Route as ReadsRouteImport } from './routes/reads'
 import { Route as RedactedRouteImport } from './routes/redacted'
 import { Route as ReviewRouteImport } from './routes/review'
@@ -70,11 +70,6 @@ const CasesRoute = CasesRouteImport.update({
   path: '/cases',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CutRoute = CutRouteImport.update({
-  id: '/cut',
-  path: '/cut',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DigestRoute = DigestRouteImport.update({
   id: '/digest',
   path: '/digest',
@@ -103,6 +98,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const QuestionsRoute = QuestionsRouteImport.update({
   id: '/questions',
   path: '/questions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReachRoute = ReachRouteImport.update({
+  id: '/reach',
+  path: '/reach',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReadsRoute = ReadsRouteImport.update({
@@ -285,13 +285,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
-  '/cut': typeof CutRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
+  '/reach': typeof ReachRoute
   '/reads': typeof ReadsRoute
   '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
@@ -332,13 +332,13 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
-  '/cut': typeof CutRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
+  '/reach': typeof ReachRoute
   '/reads': typeof ReadsRoute
   '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
@@ -380,13 +380,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
-  '/cut': typeof CutRoute
   '/digest': typeof DigestRoute
   '/login': typeof LoginRoute
   '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
+  '/reach': typeof ReachRoute
   '/reads': typeof ReadsRoute
   '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
@@ -429,13 +429,13 @@ export interface FileRouteTypes {
     | '/'
     | '/analyst'
     | '/cases'
-    | '/cut'
     | '/digest'
     | '/login'
     | '/margin'
     | '/privacy'
     | '/profile'
     | '/questions'
+    | '/reach'
     | '/reads'
     | '/redacted'
     | '/review'
@@ -476,13 +476,13 @@ export interface FileRouteTypes {
     | '/'
     | '/analyst'
     | '/cases'
-    | '/cut'
     | '/digest'
     | '/login'
     | '/margin'
     | '/privacy'
     | '/profile'
     | '/questions'
+    | '/reach'
     | '/reads'
     | '/redacted'
     | '/review'
@@ -523,13 +523,13 @@ export interface FileRouteTypes {
     | '/'
     | '/analyst'
     | '/cases'
-    | '/cut'
     | '/digest'
     | '/login'
     | '/margin'
     | '/privacy'
     | '/profile'
     | '/questions'
+    | '/reach'
     | '/reads'
     | '/redacted'
     | '/review'
@@ -571,13 +571,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalystRoute: typeof AnalystRoute
   CasesRoute: typeof CasesRoute
-  CutRoute: typeof CutRoute
   DigestRoute: typeof DigestRoute
   LoginRoute: typeof LoginRoute
   MarginRoute: typeof MarginRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   QuestionsRoute: typeof QuestionsRoute
+  ReachRoute: typeof ReachRoute
   ReadsRoute: typeof ReadsRoute
   RedactedRoute: typeof RedactedRoute
   ReviewRoute: typeof ReviewRoute
@@ -638,13 +638,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CasesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cut': {
-      id: '/cut'
-      path: '/cut'
-      fullPath: '/cut'
-      preLoaderRoute: typeof CutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/digest': {
       id: '/digest'
       path: '/digest'
@@ -685,6 +678,13 @@ declare module '@tanstack/react-router' {
       path: '/questions'
       fullPath: '/questions'
       preLoaderRoute: typeof QuestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reach': {
+      id: '/reach'
+      path: '/reach'
+      fullPath: '/reach'
+      preLoaderRoute: typeof ReachRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reads': {
@@ -939,13 +939,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalystRoute: AnalystRoute,
   CasesRoute: CasesRoute,
-  CutRoute: CutRoute,
   DigestRoute: DigestRoute,
   LoginRoute: LoginRoute,
   MarginRoute: MarginRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   QuestionsRoute: QuestionsRoute,
+  ReachRoute: ReachRoute,
   ReadsRoute: ReadsRoute,
   RedactedRoute: RedactedRoute,
   ReviewRoute: ReviewRoute,
