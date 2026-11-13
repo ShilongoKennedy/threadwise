@@ -197,6 +197,196 @@ function makeArc(start: THREE.Vector3, end: THREE.Vector3, color: number, opacit
   return route;
 }
 
+function seededRandom(seed: number) {
+  let value = seed;
+  return () => {
+    value = (value * 16807) % 2147483647;
+    return (value - 1) / 2147483646;
+  };
+}
+
+function makeAcaciaLeafTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 128;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.clearRect(0, 0, 128, 128);
+    ctx.strokeStyle = "rgba(255,255,255,0.9)";
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(64, 122);
+    ctx.quadraticCurveTo(62, 78, 64, 22);
+    ctx.stroke();
+    for (let row = 0; row < 9; row += 1) {
+      const y = 28 + row * 9;
+      const spread = 8 + row * 2.4;
+      const tilt = (row - 4) * 0.09;
+      for (const side of [-1, 1]) {
+        ctx.save();
+        ctx.translate(64, y);
+        ctx.rotate(tilt + side * 0.48);
+        ctx.beginPath();
+        ctx.ellipse(side * spread * 0.5, 0, spread * 0.52, 2.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearFilter;
+  return texture;
+}
+
+function createAcaciaTree() {
+  const random = seededRandom(7741);
+  const group = new THREE.Group();
+  const bark = new THREE.MeshStandardMaterial({ color: 0x584431, roughness: 0.94, metalness: 0.02 });
+  const tips: THREE.Vector3[] = [];
+
+  const addSegment = (a: THREE.Vector3, b: THREE.Vector3, r0: number, r1: number) => {
+    const direction = b.clone().sub(a);
+    const length = direction.length();
+    const geometry = new THREE.CylinderGeometry(r1, r0, length, 6, 1);
+    const mesh = new THREE.Mesh(geometry, bark);
+    mesh.position.copy(a).add(b).multiplyScalar(0.5);
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+    group.add(mesh);
+  };
+
+  // Trunk with an irregular, wind-shaped lean.
+  const trunk = [
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(0.05, 0.55, 0.02),
+    new THREE.Vector3(-0.03, 1.05, 0.03),
+    new THREE.Vector3(0.09, 1.52, 0.01),
+    new THREE.Vector3(0.01, 1.95, 0),
+  ];
+  for (let index = 0; index < trunk.length - 1; index += 1) {
+    addSegment(trunk[index], trunk[index + 1], 0.17 - index * 0.027, 0.14 - index * 0.027);
+  }
+
+  // Roots catch the light at the base without needing a ground plane.
+  for (let index = 0; index < 7; index += 1) {
+    const angle = (index / 7) * Math.PI * 2 + random() * 0.4;
+    const length = 0.55 + random() * 0.35;
+    addSegment(
+      new THREE.Vector3(0, 0.08, 0),
+      new THREE.Vector3(Math.cos(angle) * length, -0.18, Math.sin(angle) * length),
+      0.07,
+      0.014,
+    );
+  }
+
+  const grow = (start: THREE.Vector3, direction: THREE.Vector3, length: number, radius: number, depth: number) => {
+    const end = start
+      .clone()
+      .addScaledVector(direction.clone().normalize(), length)
+      .add(new THREE.Vector3((random() - 0.5) * 0.14, random() * 0.1, (random() - 0.5) * 0.14));
+    addSegment(start, end, radius, radius * 0.58);
+    if (depth <= 0) {
+      tips.push(end);
+      return;
+    }
+    const branches = 2;
+    for (let branch = 0; branch < branches; branch += 1) {
+      const axis = new THREE.Vector3(random() - 0.5, random() - 0.5, random() - 0.5).normalize();
+      const childDirection = direction
+        .clone()
+        .applyAxisAngle(axis, 0.45 + random() * 0.36)
+        .add(new THREE.Vector3(0, 0.1, 0))
+        .normalize();
+      grow(end, childDirection, length * (0.58 + random() * 0.16), radius * 0.58, depth - 1);
+    }
+  };
+
+  const crownPoints = [
+    { point: new THREE.Vector3(0.02, 1.4, 0), direction: new THREE.Vector3(0.9, 0.5, 0.08), length: 0.95 },
+    { point: new THREE.Vector3(0.04, 1.68, 0), direction: new THREE.Vector3(-0.78, 0.55, 0.24), length: 1.08 },
+    { point: new THREE.Vector3(0.03, 1.86, 0), direction: new THREE.Vector3(0.15, 0.55, 0.88), length: 0.95 },
+    { point: new THREE.Vector3(0.01, 1.88, 0), direction: new THREE.Vector3(0.05, 0.5, -0.9), length: 1.02 },
+  ];
+  for (const crown of crownPoints) {
+    grow(crown.point, crown.direction, crown.length, 0.115, 2);
+  }
+
+  // Broad, flattened acacia crown.
+  const pads = tips.map((tip) => ({
+    x: tip.x,
+    y: tip.y + 0.12,
+    z: tip.z,
+    radius: 0.42 + random() * 0.22,
+  }));
+  pads.push(
+    { x: 0.15, y: 2.72, z: 0, radius: 0.92 },
+    { x: -0.85, y: 2.62, z: 0.25, radius: 0.72 },
+    { x: 0.9, y: 2.65, z: -0.2, radius: 0.78 },
+    { x: 0.1, y: 2.55, z: 0.88, radius: 0.66 },
+    { x: 0.12, y: 2.6, z: -0.85, radius: 0.68 },
+  );
+
+  const leafGeometry = new THREE.PlaneGeometry(0.13, 0.22);
+  const leafMaterial = new THREE.MeshStandardMaterial({
+    map: makeAcaciaLeafTexture(),
+    alphaTest: 0.3,
+    color: 0xffffff,
+    roughness: 0.86,
+    metalness: 0,
+    side: THREE.DoubleSide,
+  });
+  const leafCount = pads.length * 64;
+  const leaves = new THREE.InstancedMesh(leafGeometry, leafMaterial, leafCount);
+  const dummy = new THREE.Object3D();
+  const color = new THREE.Color();
+  let leafIndex = 0;
+  for (const pad of pads) {
+    for (let index = 0; index < 64; index += 1) {
+      const angle = random() * Math.PI * 2;
+      const radial = Math.sqrt(random()) * pad.radius;
+      dummy.position.set(
+        pad.x + Math.cos(angle) * radial,
+        pad.y + (random() - 0.5) * 0.24 - (radial / Math.max(pad.radius, 0.01)) * 0.12,
+        pad.z + Math.sin(angle) * radial,
+      );
+      dummy.rotation.set(random() * Math.PI, random() * Math.PI * 2, random() * Math.PI);
+      dummy.scale.setScalar(0.6 + random() * 0.7);
+      dummy.updateMatrix();
+      leaves.setMatrixAt(leafIndex, dummy.matrix);
+      color.setHSL(0.21 + random() * 0.035, 0.34 + random() * 0.12, 0.18 + random() * 0.07);
+      leaves.setColorAt(leafIndex, color);
+      leafIndex += 1;
+    }
+  }
+  leaves.instanceMatrix.needsUpdate = true;
+  if (leaves.instanceColor) leaves.instanceColor.needsUpdate = true;
+  group.add(leaves);
+
+  // A soft contact shadow at the base.
+  const shadowCanvas = document.createElement("canvas");
+  shadowCanvas.width = 256;
+  shadowCanvas.height = 128;
+  const shadowContext = shadowCanvas.getContext("2d");
+  if (shadowContext) {
+    const gradient = shadowContext.createRadialGradient(128, 64, 8, 128, 64, 118);
+    gradient.addColorStop(0, "rgba(32, 23, 16, 0.42)");
+    gradient.addColorStop(0.55, "rgba(32, 23, 16, 0.16)");
+    gradient.addColorStop(1, "rgba(32, 23, 16, 0)");
+    shadowContext.fillStyle = gradient;
+    shadowContext.fillRect(0, 0, 256, 128);
+  }
+  const shadowTexture = new THREE.CanvasTexture(shadowCanvas);
+  const shadow = new THREE.Sprite(new THREE.SpriteMaterial({ map: shadowTexture, transparent: true, depthWrite: false, opacity: 0.8 }));
+  shadow.position.set(0, 0.03, 0.1);
+  shadow.scale.set(2.1, 1.05, 1);
+  group.add(shadow);
+
+  group.scale.setScalar(0.44);
+  group.rotation.y = -0.5;
+  return group;
+}
+
 function GlobeFallback() {
   return (
     <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
@@ -254,7 +444,12 @@ export function GeoGlobe() {
     camera.lookAt(0, 0, 0);
 
     const group = new THREE.Group();
+    group.position.set(0.78, 0.05, 0);
     scene.add(group);
+
+    const tree = createAcaciaTree();
+    tree.position.set(-2.2, -2.78, -0.25);
+    scene.add(tree);
 
     const globeTexture = new THREE.CanvasTexture(document.createElement("canvas"));
     globeTexture.colorSpace = THREE.SRGBColorSpace;
@@ -346,6 +541,27 @@ export function GeoGlobe() {
     const rim = new THREE.DirectionalLight(0xffe8ce, 0.8);
     rim.position.set(-4, -2.4, -3.8);
     scene.add(rim);
+    const treeLight = new THREE.PointLight(0xffdcb4, 0.78, 7, 2);
+    treeLight.position.set(-2.5, -0.4, 2.1);
+    scene.add(treeLight);
+
+    const applyLayout = () => {
+      const aspect = mount.clientWidth / Math.max(mount.clientHeight, 1);
+      if (aspect > 1.08) {
+        group.position.x = 0.78;
+        group.scale.setScalar(1);
+        tree.visible = true;
+        tree.position.set(-2.2, -2.95, -0.25);
+        tree.scale.setScalar(0.45);
+      } else {
+        group.position.x = 0.3;
+        group.scale.setScalar(0.65);
+        tree.visible = true;
+        tree.position.set(-0.95, -2.8, -0.25);
+        tree.scale.setScalar(0.24);
+      }
+    };
+    applyLayout();
 
     let pointerX = 0;
     let pointerY = 0;
@@ -405,6 +621,7 @@ export function GeoGlobe() {
       renderer.setSize(nextWidth, nextHeight, false);
       camera.aspect = nextWidth / nextHeight;
       camera.updateProjectionMatrix();
+      applyLayout();
     });
     ro.observe(mount);
 

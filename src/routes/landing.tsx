@@ -109,15 +109,19 @@ function LandingExperiment() {
       <main id="main" className="relative z-10 flex-1">
         {/* THE EYE IS THE PAGE */}
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
-          <div className="globe-stage absolute right-[-14%] top-[5%] z-0 h-[86%] w-[112%] md:right-[-13%] md:top-[4%] md:h-[90%] md:w-[61%]">
-            <div className="pointer-events-none absolute inset-[8%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(63,46,32,0.18)_0%,rgba(63,46,32,0.06)_48%,transparent_72%)] blur-3xl" />
+          <div className="globe-stage absolute inset-0 z-0">
+            <div className="pointer-events-none absolute right-[4%] top-[16%] hidden h-[58%] w-[46%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(63,46,32,0.17)_0%,rgba(63,46,32,0.055)_48%,transparent_72%)] blur-3xl md:block" />
             <GeoGlobe />
           </div>
-          <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_32%,rgba(242,231,212,0.94)_43%,rgba(242,231,212,0.58)_55%,rgba(242,231,212,0.12)_68%,transparent_78%)]" />
+          <div className="pointer-events-none absolute inset-0 z-10 hidden bg-[radial-gradient(ellipse_50%_48%_at_27%_38%,#F2E7D4_0%,#F2E7D4_56%,rgba(242,231,212,0.92)_66%,rgba(242,231,212,0.4)_82%,transparent_94%)] md:block" />
+          <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_20%,rgba(242,231,212,0.92)_30%,rgba(242,231,212,0.45)_46%,rgba(242,231,212,0.04)_62%,transparent_72%)] md:hidden" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-32 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
 
           <header className="relative z-40 mx-auto flex w-full max-w-[1400px] items-center justify-between px-5 py-4 md:px-8 md:py-5">
-            <BrandLockup size="md" asLink />
+            <div className="brand-emboss">
+              <BrandLockup size="md" asLink />
+            </div>
             <div className="hidden items-center gap-5 font-mono text-[8px] uppercase tracking-[0.16em] text-[#11110F]/35 sm:flex">
               <span>The read / experiment 11</span>
               <span className="h-3 w-px bg-[#11110F]/15" />
@@ -134,7 +138,7 @@ function LandingExperiment() {
                 <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">The read / IAEA–Iran</p>
                 <SignatureHeadline
                   text="See what the story hides."
-                  className="mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,7.3vw,108px)] leading-[0.82] text-[#11110F]"
+                  className="letterpress mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,7.3vw,108px)] leading-[0.82] text-[#11110F]"
                 />
                 <p className="mt-5 max-w-[38ch] font-serif text-[17px] leading-[1.6] text-[#11110F]/65 md:text-[19px]">
                   Every claim has a geography. This is the IAEA read, pulled into focus.
@@ -360,7 +364,9 @@ function LandingExperiment() {
         <div className="mx-auto max-w-[1200px] px-5 md:px-8">
           <div className="grid gap-10 md:grid-cols-[1.1fr_1.9fr] md:gap-16">
             <div>
+              <div className="brand-emboss">
               <BrandLockup size="md" asLink />
+            </div>
               <p className="mt-5 max-w-[15ch] font-display text-[32px] leading-[0.98] tracking-[-0.025em] md:text-[42px]">
                 A reading desk for sources you do not trust yet.
               </p>

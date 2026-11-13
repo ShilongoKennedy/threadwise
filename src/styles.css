@@ -1253,3 +1253,15 @@ html:has(.record-page) { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   .art-eye-spin, .art-eye-blink { animation: none; }
 }
+
+
+/* Letterpress ink, not extrusion. */
+.letterpress .signature-letter {
+  text-shadow:
+    0 1px 0 rgba(255, 250, 240, 0.56),
+    0 1.4px 0 rgba(17, 17, 15, 0.045),
+    0 2px 3px rgba(17, 17, 15, 0.07);
+}
+.brand-emboss svg {
+  filter: drop-shadow(0 1px 0 rgba(255, 250, 240, 0.72)) drop-shadow(0 1px 1px rgba(17, 17, 15, 0.12));
+}
