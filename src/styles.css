@@ -1290,3 +1290,27 @@ html:has(.record-page) { scroll-behavior: smooth; }
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
 }
+
+
+/* Ember line for the minimal hero. */
+.fire-headline .signature-pen {
+  background: #E45B1E;
+  box-shadow: 0 0 0 3px rgba(228, 91, 30, 0.12);
+}
+.fire-headline .signature-flourish {
+  opacity: 0.95;
+  filter: drop-shadow(0 1px 2px rgba(155, 48, 12, 0.16));
+}
+.fire-headline.is-signed .signature-flourish {
+  animation:
+    signature-flourish 900ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards,
+    ember-line 5.5s ease-in-out 900ms infinite alternate;
+}
+@keyframes ember-line {
+  0% { opacity: 0.82; filter: drop-shadow(0 1px 2px rgba(155,48,12,0.12)); }
+  48% { opacity: 1; filter: drop-shadow(0 1px 4px rgba(224,79,24,0.3)); }
+  100% { opacity: 0.9; filter: drop-shadow(0 1px 2px rgba(155,48,12,0.18)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fire-headline.is-signed .signature-flourish { animation: signature-flourish 1ms linear forwards; }
+}

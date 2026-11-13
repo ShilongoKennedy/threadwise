@@ -143,51 +143,14 @@ function LandingExperiment() {
 
           <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
             <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
-              <div className="pointer-events-auto relative z-20 max-w-[62vw] md:max-w-[560px]">
-                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">
-                  The read / IAEA–Iran <span className="mx-2 text-[#11110F]/20">|</span>{" "}
-                  <span className="text-[#11110F]/35">09 Nov 2026</span>
-                </p>
+              <div className="pointer-events-none relative z-20 max-w-[62vw] md:max-w-[560px]">
                 <SignatureHeadline
                   text="See what the story hides."
-                  className="letterpress mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,6.7vw,96px)] leading-[0.82] text-[#11110F]"
+                  fire
+                  className="letterpress max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,6.7vw,96px)] leading-[0.82] text-[#11110F]"
                 />
-                <p className="mt-8 max-w-[38ch] font-serif md:mt-16 text-[17px] leading-[1.6] text-[#11110F]/65 md:text-[19px]">
-                  Behind every claim is a trail of evidence. Follow the arguments, question the
-                  assumptions and uncover what others overlook.
-                </p>
-                <p className="mt-3 max-w-[46ch] font-mono text-[9px] uppercase leading-[1.8] tracking-[0.14em] text-[#11110F]/40">
-                  Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
-                </p>
-                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
-                  <Link
-                    to="/read/$token"
-                    params={{ token: SAMPLE_TOKEN }}
-                    className="inline-flex items-center gap-2 border border-[#11110F] bg-[#11110F] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#F3EADF] transition-colors hover:bg-[#1A4BFF]"
-                  >
-                    Open the IAEA read
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                  <Link
-                    to="/analyst"
-                    className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/30 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] transition-colors hover:border-[#1A4BFF]"
-                  >
-                    Bring your own source
-                    <ArrowRight className="h-3 w-3" />
-                  </Link>
-                </div>
               </div>
             </div>
-
-          </div>
-
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-t border-[#11110F]/20 px-5 pb-3 pt-3 font-mono text-[8px] uppercase tracking-[0.14em] text-[#11110F]/55 md:px-8">
-            <div className="flex flex-wrap gap-x-5 gap-y-1">
-              <span>01 Vienna / 48.2N 16.4E</span>
-              <span>02 Tehran / 35.7N 51.4E</span>
-              <span className="text-[#C1121F]/75">03 Natanz / 33.7N 51.7E</span>
-            </div>
-            <span>Ocular record / 09 Nov 2026</span>
           </div>
         </section>
 

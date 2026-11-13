@@ -1,14 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 type Props = {
   text: string;
   className?: string;
+  fire?: boolean;
 };
 
 const DRIFT = ["0.008em", "-0.006em", "0.012em", "-0.01em", "0.004em"];
 const TILT = ["-0.5deg", "0.35deg", "-0.3deg", "0.6deg", "-0.45deg"];
 
-export function SignatureHeadline({ text, className = "" }: Props) {
+export function SignatureHeadline({ text, className = "", fire = false }: Props) {
+  const uid = useId().replace(/:/g, "");
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const penRef = useRef<HTMLSpanElement>(null);
 
@@ -83,7 +85,7 @@ export function SignatureHeadline({ text, className = "" }: Props) {
   let index = 0;
 
   return (
-    <h1 ref={headlineRef} aria-label={text} className={`signature-headline ${className}`}>
+    <h1 ref={headlineRef} aria-label={text} className={`signature-headline ${fire ? "fire-headline" : ""} ${className}`}>
       <span aria-hidden="true">
         {words.map((word, wordIndex) => {
           const letters = Array.from(word);
@@ -116,14 +118,50 @@ export function SignatureHeadline({ text, className = "" }: Props) {
         })}
       </span>
       <span ref={penRef} className="signature-pen" aria-hidden="true" />
-      <svg className="signature-flourish" viewBox="0 0 700 30" preserveAspectRatio="none" aria-hidden="true">
+      <svg
+        className={`signature-flourish ${fire ? "fire-flourish" : ""}`}
+        viewBox="0 0 700 30"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        {fire ? (
+          <defs>
+            <linearGradient id={`${uid}-ember`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#6E1B07" stopOpacity="0.4" />
+              <stop offset="14%" stopColor="#C93E12" />
+              <stop offset="38%" stopColor="#F06A18" />
+              <stop offset="58%" stopColor="#FFB84E" />
+              <stop offset="72%" stopColor="#FF7A1A" />
+              <stop offset="88%" stopColor="#C74212" />
+              <stop offset="100%" stopColor="#6E1B07" stopOpacity="0.4" />
+            </linearGradient>
+            <filter id={`${uid}-ember-glow`} x="-10%" y="-120%" width="120%" height="340%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="soft" />
+              <feMerge>
+                <feMergeNode in="soft" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+        ) : null}
         <path
           d="M2 24 C110 4 205 27 305 16 C410 4 505 28 610 12 C646 7 672 4 696 7"
           fill="none"
-          stroke="currentColor"
-          strokeWidth="1.2"
+          stroke={fire ? `url(#${uid}-ember)` : "currentColor"}
+          strokeWidth="1.8"
           strokeLinecap="round"
+          filter={fire ? `url(#${uid}-ember-glow)` : undefined}
         />
+        {fire ? (
+          <path
+            d="M2 24 C110 4 205 27 305 16 C410 4 505 28 610 12 C646 7 672 4 696 7"
+            fill="none"
+            stroke="#FFE2A8"
+            strokeWidth="0.45"
+            strokeLinecap="round"
+            opacity="0.82"
+          />
+        ) : null}
       </svg>
     </h1>
   );

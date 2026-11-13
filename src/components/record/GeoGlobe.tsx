@@ -507,10 +507,6 @@ export function GeoGlobe() {
           );
         })}
       </div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between px-1 font-mono text-[7px] uppercase tracking-[0.15em] text-[#11110F]/30">
-        <span>38.2N / 48.6E · live geography</span>
-        <span className="text-[#1A4BFF]/55">Three.js / natural earth</span>
-      </div>
     </div>
   );
 }
