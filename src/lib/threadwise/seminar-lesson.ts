@@ -5,55 +5,55 @@ import type { Seminar } from "@/lib/threadwise/seminar";
 
 const keyTermSchema = z.object({
   term: z.string().trim().min(2).max(90),
-  plain: z.string().trim().min(20).max(420),
-  why_it_matters: z.string().trim().min(20).max(420),
+  plain: z.string().trim().min(20).max(900),
+  why_it_matters: z.string().trim().min(20).max(900),
 });
 
 const backgroundSchema = z.object({
   heading: z.string().trim().min(3).max(100),
-  body: z.string().trim().min(60).max(1100),
+  body: z.string().trim().min(60).max(2200),
 });
 
 const mechanismSchema = z.object({
   theory: z.enum(["A", "B"]),
   heading: z.string().trim().min(3).max(110),
-  body: z.string().trim().min(60).max(1000),
-  strength: z.string().trim().min(30).max(420),
-  weakness: z.string().trim().min(30).max(420),
+  body: z.string().trim().min(60).max(2200),
+  strength: z.string().trim().min(30).max(900),
+  weakness: z.string().trim().min(30).max(900),
 });
 
 const misconceptionSchema = z.object({
-  mistake: z.string().trim().min(20).max(300),
-  correction: z.string().trim().min(30).max(500),
+  mistake: z.string().trim().min(20).max(600),
+  correction: z.string().trim().min(30).max(1100),
 });
 
 const checkSchema = z.object({
-  question: z.string().trim().min(10).max(260),
-  answer: z.string().trim().min(20).max(600),
+  question: z.string().trim().min(10).max(500),
+  answer: z.string().trim().min(20).max(1200),
 });
 
 const nextSourceSchema = z.object({
   kind: z.string().trim().min(3).max(120),
-  why: z.string().trim().min(20).max(360),
+  why: z.string().trim().min(20).max(700),
 });
 
 export const seminarLessonSchema = z.object({
   title: z.string().trim().min(5).max(140),
-  summary: z.string().trim().min(80).max(700),
+  summary: z.string().trim().min(80).max(1800),
   key_terms: z.array(keyTermSchema).min(3).max(5),
   background: z.array(backgroundSchema).min(2).max(3),
   mechanisms: z.array(mechanismSchema).length(2),
   crux: z.object({
     heading: z.string().trim().min(3).max(110),
-    explanation: z.string().trim().min(60).max(900),
-    test: z.string().trim().min(40).max(520),
+    explanation: z.string().trim().min(60).max(1800),
+    test: z.string().trim().min(40).max(1000),
   }),
   misconceptions: z.array(misconceptionSchema).min(2).max(4),
   worked_example: z.object({
     heading: z.string().trim().min(3).max(120),
-    scenario: z.string().trim().min(40).max(800),
-    walkthrough: z.string().trim().min(80).max(1300),
-    lesson: z.string().trim().min(30).max(500),
+    scenario: z.string().trim().min(40).max(1500),
+    walkthrough: z.string().trim().min(80).max(2400),
+    lesson: z.string().trim().min(30).max(1000),
   }),
   check: z.array(checkSchema).min(2).max(4),
   next_sources: z.array(nextSourceSchema).min(2).max(4),
@@ -100,8 +100,8 @@ ${JSON.stringify(seminar)}
 
 Write the deeper lesson. It should teach the terms, background, mechanisms, crux, common errors, one worked example, a short self-check and source types to look for. Do not simply restate the seminar.`,
     temperature: 0.35,
-    maxOutputTokens: 4200,
-    maxRetries: 1,
+    maxOutputTokens: 7000,
+    maxRetries: 2,
   });
 
   const mechanisms = [...object.mechanisms].sort((a, b) => a.theory.localeCompare(b.theory)) as SeminarLesson["mechanisms"];
