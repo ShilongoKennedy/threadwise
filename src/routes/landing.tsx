@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { ArtEye } from "@/components/record/ArtEye";
 
 
 export const Route = createFileRoute("/landing")({
@@ -108,19 +109,9 @@ function LandingExperiment() {
       <main id="main" className="relative z-10 flex-1">
         {/* THE EYE IS THE PAGE */}
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
-          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            <video
-              className="eye-video"
-              src="/eye/mix4058.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              aria-hidden="true"
-            />
+          <div className="art-eye-wrap pointer-events-auto absolute left-[82%] top-[66%] z-0 w-[125vw] -translate-x-1/2 -translate-y-1/2 md:left-[66%] md:top-[50%] md:w-[76vw]">
+            <ArtEye />
           </div>
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[5] h-[64%] bg-[linear-gradient(180deg,#F2E7D4_0%,#F2E7D4_62%,rgba(242,231,212,0.82)_82%,transparent_100%)] md:hidden" />
           <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_32%,rgba(242,231,212,0.94)_43%,rgba(242,231,212,0.58)_55%,rgba(242,231,212,0.12)_68%,transparent_78%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
 
@@ -176,7 +167,7 @@ function LandingExperiment() {
                 <span>02 Tehran / 35.7N 51.4E</span>
                 <span className="text-[#C1121F]/70">03 Natanz / 33.7N 51.7E</span>
               </div>
-              <span>Ocular record / 09 Nov 2026 · Footage Mixkit</span>
+              <span>Ocular record / 09 Nov 2026</span>
             </div>
           </div>
         </section>

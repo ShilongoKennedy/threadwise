@@ -1225,27 +1225,31 @@ html:has(.record-page) { scroll-behavior: smooth; }
 
 
 
-/* A real macro eye, held softly inside the page. */
-.eye-video {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100vw;
-  height: auto;
-  max-width: none;
-  transform: translateY(-50%);
-  object-fit: cover;
-  filter: contrast(1.03) brightness(.94) saturate(.82);
-  -webkit-mask-image: radial-gradient(ellipse 52% 56% at 54% 48%, #000 48%, transparent 88%);
-  mask-image: radial-gradient(ellipse 52% 56% at 54% 48%, #000 48%, transparent 88%);
+/* The hand-drawn eye. */
+.art-eye-wrap {
+  -webkit-mask-image: radial-gradient(ellipse 56% 60% at 55% 50%, #000 52%, transparent 90%);
+  mask-image: radial-gradient(ellipse 56% 60% at 55% 50%, #000 52%, transparent 90%);
 }
-@media (max-width: 767px) {
-  .eye-video {
-    left: -6vw;
-    top: 72%;
-    width: 190vw;
-  }
+.art-eye-iris {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.art-eye-spin {
+  transform-origin: 620px 410px;
+  animation: art-eye-spin 34s linear infinite;
+}
+@keyframes art-eye-spin {
+  to { transform: rotate(360deg); }
+}
+.art-eye-blink {
+  opacity: 0;
+  animation: art-eye-blink 7s infinite;
+}
+@keyframes art-eye-blink {
+  0%, 90%, 100% { opacity: 0; }
+  92%, 96% { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .eye-video { display: none; }
+  .art-eye-spin, .art-eye-blink { animation: none; }
 }
