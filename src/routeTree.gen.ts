@@ -11,9 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
-import { Route as BoardRouteImport } from './routes/board'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DigestRouteImport } from './routes/digest'
+import { Route as EyeRouteImport } from './routes/eye'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MarginRouteImport } from './routes/margin'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -66,11 +66,6 @@ const AnalystRoute = AnalystRouteImport.update({
   path: '/analyst',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BoardRoute = BoardRouteImport.update({
-  id: '/board',
-  path: '/board',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CasesRoute = CasesRouteImport.update({
   id: '/cases',
   path: '/cases',
@@ -79,6 +74,11 @@ const CasesRoute = CasesRouteImport.update({
 const DigestRoute = DigestRouteImport.update({
   id: '/digest',
   path: '/digest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EyeRoute = EyeRouteImport.update({
+  id: '/eye',
+  path: '/eye',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -290,9 +290,9 @@ const ApiReadTokenRoute = ApiReadTokenRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
-  '/board': typeof BoardRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
+  '/eye': typeof EyeRoute
   '/login': typeof LoginRoute
   '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
@@ -338,9 +338,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
-  '/board': typeof BoardRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
+  '/eye': typeof EyeRoute
   '/login': typeof LoginRoute
   '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
@@ -387,9 +387,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
-  '/board': typeof BoardRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
+  '/eye': typeof EyeRoute
   '/login': typeof LoginRoute
   '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
@@ -437,9 +437,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/analyst'
-    | '/board'
     | '/cases'
     | '/digest'
+    | '/eye'
     | '/login'
     | '/margin'
     | '/privacy'
@@ -485,9 +485,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/analyst'
-    | '/board'
     | '/cases'
     | '/digest'
+    | '/eye'
     | '/login'
     | '/margin'
     | '/privacy'
@@ -533,9 +533,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/analyst'
-    | '/board'
     | '/cases'
     | '/digest'
+    | '/eye'
     | '/login'
     | '/margin'
     | '/privacy'
@@ -582,9 +582,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalystRoute: typeof AnalystRoute
-  BoardRoute: typeof BoardRoute
   CasesRoute: typeof CasesRoute
   DigestRoute: typeof DigestRoute
+  EyeRoute: typeof EyeRoute
   LoginRoute: typeof LoginRoute
   MarginRoute: typeof MarginRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -644,13 +644,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalystRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/board': {
-      id: '/board'
-      path: '/board'
-      fullPath: '/board'
-      preLoaderRoute: typeof BoardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/cases': {
       id: '/cases'
       path: '/cases'
@@ -663,6 +656,13 @@ declare module '@tanstack/react-router' {
       path: '/digest'
       fullPath: '/digest'
       preLoaderRoute: typeof DigestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eye': {
+      id: '/eye'
+      path: '/eye'
+      fullPath: '/eye'
+      preLoaderRoute: typeof EyeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -958,9 +958,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalystRoute: AnalystRoute,
-  BoardRoute: BoardRoute,
   CasesRoute: CasesRoute,
   DigestRoute: DigestRoute,
+  EyeRoute: EyeRoute,
   LoginRoute: LoginRoute,
   MarginRoute: MarginRoute,
   PrivacyRoute: PrivacyRoute,
