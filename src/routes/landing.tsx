@@ -109,7 +109,7 @@ function LandingExperiment() {
       <main id="main" className="relative z-10 flex-1">
         {/* THE EYE IS THE PAGE */}
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
-          <div className="pointer-events-auto absolute left-[88%] top-[63%] z-0 w-[95vw] -translate-x-1/2 -translate-y-1/2 md:left-[72%] md:top-[52%] md:w-[160vw]">
+          <div className="pointer-events-auto absolute left-[80%] top-[62%] z-0 w-[115vw] -translate-x-1/2 -translate-y-1/2 md:left-[75%] md:top-[49%] md:w-[68vw]">
             <div className="[filter:drop-shadow(5px_0_0_rgba(26,75,255,0.08))_drop-shadow(-3px_0_0_rgba(193,18,31,0.06))]">
               <RecordEye />
             </div>

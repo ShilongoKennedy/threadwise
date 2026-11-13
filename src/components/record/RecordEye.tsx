@@ -49,19 +49,20 @@ export function RecordEye() {
         </defs>
 
         <g stroke="#11110F" fill="none" strokeLinecap="round">
-          <path d="M 160 226 C 145 196 134 174 124 142" strokeWidth="4" />
-          <path d="M 225 188 C 213 156 209 132 202 98" strokeWidth="4" />
-          <path d="M 302 156 C 296 122 296 100 294 66" strokeWidth="4.5" />
-          <path d="M 390 132 C 390 98 394 76 398 44" strokeWidth="5" />
-          <path d="M 485 122 C 489 88 495 66 503 34" strokeWidth="5" />
-          <path d="M 580 126 C 588 92 596 72 606 42" strokeWidth="5" />
-          <path d="M 675 144 C 686 112 696 92 710 60" strokeWidth="4.5" />
-          <path d="M 765 174 C 780 146 792 128 810 98" strokeWidth="4" />
-          <path d="M 842 210 C 860 184 874 168 894 142" strokeWidth="3.5" />
-          <path d="M 215 440 C 206 462 198 474 186 490" strokeWidth="2" opacity="0.7" />
-          <path d="M 330 500 C 324 516 318 526 310 540" strokeWidth="2" opacity="0.65" />
-          <path d="M 690 500 C 696 516 704 526 714 540" strokeWidth="2" opacity="0.65" />
-          <path d="M 800 440 C 810 460 818 470 830 484" strokeWidth="2" opacity="0.65" />
+          <path d="M 152 235 C 130 212 114 190 100 158" strokeWidth="4.5" />
+          <path d="M 205 192 C 189 164 180 142 172 108" strokeWidth="4" />
+          <path d="M 275 162 C 264 132 258 110 253 74" strokeWidth="4.5" />
+          <path d="M 350 140 C 344 108 341 86 340 50" strokeWidth="5" />
+          <path d="M 430 124 C 428 94 428 72 431 38" strokeWidth="5" />
+          <path d="M 520 118 C 526 86 531 64 539 30" strokeWidth="5" />
+          <path d="M 615 128 C 625 96 635 74 649 42" strokeWidth="4.5" />
+          <path d="M 705 148 C 720 118 733 98 751 68" strokeWidth="4" />
+          <path d="M 795 180 C 812 154 827 137 848 110" strokeWidth="3.5" />
+          <path d="M 870 218 C 890 196 904 182 924 160" strokeWidth="3" />
+          <path d="M 215 440 C 207 458 199 472 188 488" strokeWidth="2" opacity="0.7" />
+          <path d="M 330 500 C 324 514 316 526 306 540" strokeWidth="2.2" opacity="0.65" />
+          <path d="M 690 500 C 698 514 706 526 716 538" strokeWidth="2.2" opacity="0.65" />
+          <path d="M 800 440 C 811 458 821 470 834 484" strokeWidth="2" opacity="0.65" />
         </g>
 
         <g>
@@ -74,10 +75,10 @@ export function RecordEye() {
               <circle cx="500" cy="280" r="150" fill={`url(#${uid}-record-iris)`} />
               <g className="iris-spin">
                 <g strokeLinecap="round">
-                  {Array.from({ length: 56 }).map((_, index) => {
-                    const angle = (index / 56) * Math.PI * 2;
-                    const inner = 58 + (index % 5) * 3;
-                    const outer = 128 + (index % 7) * 3;
+                  {Array.from({ length: 110 }).map((_, index) => {
+                    const angle = (index / 110) * Math.PI * 2;
+                    const inner = 48 + (index % 6) * 2.2;
+                    const outer = 128 + (index % 9) * 2.2;
                     return (
                       <line
                         key={index}
@@ -85,20 +86,20 @@ export function RecordEye() {
                         y1={280 + Math.sin(angle) * inner}
                         x2={500 + Math.cos(angle) * outer}
                         y2={280 + Math.sin(angle) * outer}
-                        stroke={index % 4 === 0 ? "#F1E9D8" : "#4F6BFF"}
-                        strokeWidth={index % 3 === 0 ? 1 : 0.55}
-                        opacity={index % 4 === 0 ? 0.32 : 0.25}
+                        stroke={index % 7 === 0 ? "#F1E9D8" : index % 5 === 0 ? "#2B45C8" : "#4F6BFF"}
+                        strokeWidth={index % 5 === 0 ? 0.8 : 0.38}
+                        opacity={index % 7 === 0 ? 0.3 : index % 3 === 0 ? 0.2 : 0.12}
                       />
                     );
                   })}
                 </g>
-                <circle cx="500" cy="280" r="74" fill="none" stroke="#B9C6FF" strokeWidth="1" strokeDasharray="2 5" opacity="0.5" />
-                <circle cx="500" cy="280" r="138" fill="none" stroke="#0B1D3A" strokeWidth="6" opacity="0.55" />
-                <circle cx="500" cy="280" r="150" fill="none" stroke="#FF4B2B" strokeWidth="2" />
+                <circle cx="500" cy="280" r="66" fill="none" stroke="#B9C6FF" strokeWidth="0.9" strokeDasharray="2 5" opacity="0.45" />
+                <circle cx="500" cy="280" r="139" fill="none" stroke="#0B1D3A" strokeWidth="8" opacity="0.6" />
+                <circle cx="500" cy="280" r="150" fill="none" stroke="#E5B8A9" strokeWidth="1.2" opacity="0.8" />
               </g>
-              <circle cx="500" cy="280" r="54" fill={`url(#${uid}-record-pupil)`} />
-              <ellipse cx="472" cy="248" rx="21" ry="15" fill="#FBF5E8" opacity="0.8" transform="rotate(-24 472 248)" />
-              <ellipse cx="548" cy="312" rx="7" ry="5" fill="#FBF5E8" opacity="0.45" />
+              <circle cx="500" cy="280" r="43" fill={`url(#${uid}-record-pupil)`} />
+              <ellipse cx="476" cy="254" rx="15" ry="11" fill="#FBF5E8" opacity="0.78" transform="rotate(-24 476 254)" />
+              <ellipse cx="535" cy="303" rx="5" ry="3.5" fill="#FBF5E8" opacity="0.4" />
               <ellipse cx="500" cy="280" rx="150" ry="150" fill={`url(#${uid}-record-cornea)`} />
             </g>
             <path d="M 45 300 C 160 165 340 112 500 112 C 660 112 840 165 955 300" fill="none" stroke="#11110F" strokeWidth="9" strokeLinecap="round" />
