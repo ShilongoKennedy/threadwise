@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useId, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { RecordEye } from "@/components/record/RecordEye";
-import { CosmicPlate } from "@/components/record/CosmicPlate";
+
 
 export const Route = createFileRoute("/landing")({
   head: () => ({
@@ -107,11 +107,11 @@ function LandingExperiment() {
       <div className="pointer-events-none absolute right-6 top-24 z-0 h-4 w-4 border-r border-t border-[#1A1A1A]/20" />
 
       <main id="main" className="relative z-10 flex-1">
-        {/* COSMIC HERO */}
-        <section className="relative min-h-[100dvh] w-full overflow-hidden bg-[#05070C] text-[#F3EADF]">
-          <CosmicPlate />
-          <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,#05070C_0%,rgba(5,7,12,0.94)_28%,rgba(5,7,12,0.52)_48%,rgba(5,7,12,0.08)_70%,transparent_84%)]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-56 bg-[linear-gradient(0deg,#05070C_0%,transparent_100%)]" />
+        {/* SPECIMEN HERO */}
+        <section className="relative min-h-[100dvh] w-full overflow-hidden bg-[#07130F] text-[#F3EADF]">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_68%_45%,#17261F_0%,#0A1712_48%,#050C09_100%)]" />
+          <div className="pointer-events-none absolute left-5 top-24 h-3 w-3 border-l border-t border-[#F3EADF]/20 md:left-8" />
+          <div className="pointer-events-none absolute right-5 top-24 h-3 w-3 border-r border-t border-[#F3EADF]/20 md:right-8" />
 
           <header className="relative z-40 mx-auto flex w-full max-w-[1400px] items-center justify-between px-5 py-4 md:px-8 md:py-5">
             <div className="[filter:brightness(0)_invert(1)]">
@@ -127,16 +127,16 @@ function LandingExperiment() {
             </Link>
           </header>
 
-          <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-62px)] w-full max-w-[1400px] flex-col justify-between px-5 pb-6 pt-6 md:px-8 md:pb-8 md:pt-4">
-            <div className="grid flex-1 items-center gap-9 md:grid-cols-[1.02fr_1fr] md:gap-12">
-              <div className="max-w-[650px]">
+          <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-62px)] w-full max-w-[1400px] flex-col justify-between px-5 pb-6 pt-8 md:px-8 md:pb-8 md:pt-10">
+            <div className="grid flex-1 items-center gap-10 md:grid-cols-[0.9fr_1.1fr]">
+              <div className="relative z-20 max-w-[610px]">
                 <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#89A5FF]">The read / IAEA–Iran</p>
                 <SignatureHeadline
                   text="See what the story hides."
-                  className="mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(54px,7.4vw,112px)] leading-[0.82] text-[#F3EADF]"
+                  className="mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(52px,7.3vw,108px)] leading-[0.82] text-[#F3EADF]"
                 />
-                <p className="mt-5 max-w-[44ch] font-serif text-[17px] leading-[1.6] text-[#F3EADF]/65 md:text-[19px]">
-                  Every claim has a geography. This is the IAEA read, plotted against the dark.
+                <p className="mt-5 max-w-[40ch] font-serif text-[17px] leading-[1.6] text-[#F3EADF]/65 md:text-[19px]">
+                  Every claim has a geography. This is the IAEA read, pulled as a print.
                 </p>
                 <p className="mt-3 max-w-[46ch] font-mono text-[9px] uppercase leading-[1.8] tracking-[0.14em] text-[#F3EADF]/35">
                   Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
@@ -160,14 +160,14 @@ function LandingExperiment() {
                 </div>
               </div>
 
-              <div className="relative mx-auto w-full max-w-[620px] md:pl-6">
-                <div className="pointer-events-none absolute inset-[11%] rounded-full bg-[#1A4BFF]/10 blur-3xl" />
-                <div className="pointer-events-none absolute inset-[1%] rounded-full border border-[#F3EADF]/10" />
-                <div className="pointer-events-none absolute inset-[8%] rounded-full border border-[#1A4BFF]/15" />
-                <div className="relative z-10 drop-shadow-[0_0_70px_rgba(26,75,255,0.20)]">
-                  <RecordEye />
-                </div>
-                <div className="pointer-events-none absolute bottom-[8%] left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-[#FF5B3D]/70 shadow-[0_0_18px_rgba(255,91,61,0.7)]" />
+              <div className="relative hidden h-[680px] md:block">
+                <SpecimenSheet />
+              </div>
+            </div>
+
+            <div className="mt-8 md:hidden">
+              <div className="relative h-[470px]">
+                <SpecimenSheet mobile />
               </div>
             </div>
 
@@ -177,7 +177,7 @@ function LandingExperiment() {
                 <span>02 Tehran / 35.7N 51.4E</span>
                 <span className="text-[#FF5B3D]/70">03 Natanz / 33.7N 51.7E</span>
               </div>
-              <span>Signal / 09 Nov 2026 · Plate NASA/JPL-Caltech</span>
+              <span>Specimen 011 / observed 09 Nov 2026</span>
             </div>
           </div>
         </section>
@@ -437,34 +437,37 @@ function LandingExperiment() {
   );
 }
 
-function HeroEyeTear({ mobile = false }: { mobile?: boolean }) {
-  const uid = useId().replace(/:/g, "");
-  const tear = "M 381.7 200.0 L 382.6 218.0 L 381.0 236.0 L 374.2 252.8 L 366.9 269.1 L 358.7 284.8 L 348.5 299.2 L 339.3 314.3 L 328.2 328.2 L 315.5 340.8 L 299.5 348.9 L 283.7 356.6 L 266.6 360.9 L 250.4 366.1 L 233.5 368.3 L 216.6 368.7 L 200.0 373.9 L 182.7 375.4 L 165.3 374.4 L 147.9 371.7 L 131.6 365.1 L 116.1 356.9 L 100.6 348.7 L 87.5 337.0 L 73.9 326.1 L 60.8 314.3 L 49.2 300.8 L 37.7 286.8 L 29.9 270.4 L 24.1 253.4 L 23.4 235.1 L 23.6 217.4 L 25.8 200.0 L 27.6 183.0 L 30.7 166.3 L 34.2 149.7 L 36.6 132.3 L 43.2 116.2 L 52.4 101.4 L 63.6 88.0 L 76.6 76.6 L 89.6 65.5 L 102.7 54.4 L 116.8 44.3 L 130.6 32.4 L 146.9 24.8 L 163.7 17.5 L 181.9 16.2 L 200.0 15.1 L 217.9 18.7 L 234.6 26.3 L 251.1 31.6 L 267.9 36.0 L 283.2 44.3 L 299.3 51.4 L 312.4 63.1 L 324.0 76.0 L 335.6 88.7 L 344.7 103.3 L 350.9 119.3 L 357.5 134.7 L 365.3 149.9 L 373.9 165.4 L 379.1 182.4 Z";
+function SpecimenSheet({ mobile = false }: { mobile?: boolean }) {
   return (
-    <div className="relative h-full w-full">
-      <svg viewBox="0 0 400 400" className="h-full w-full" aria-hidden="true">
-        <defs>
-          <linearGradient id={`${uid}-field`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#171714" />
-            <stop offset="0.5" stopColor="#171714" />
-            <stop offset="0.5" stopColor="#8E2B2B" />
-            <stop offset="1" stopColor="#8E2B2B" />
-          </linearGradient>
-          <linearGradient id={`${uid}-rim`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#FDFBF7" />
-            <stop offset="1" stopColor="#E8DECD" />
-          </linearGradient>
-          <filter id={`${uid}-rough`} x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.02 0.06" numOctaves="2" seed="3" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-        <path d={tear} fill={`url(#${uid}-field)`} stroke={`url(#${uid}-rim)`} strokeWidth="7" strokeLinejoin="round" filter={`url(#${uid}-rough)`} />
-        <path d={tear} fill="none" stroke="#11110F" strokeWidth="1" opacity="0.35" transform="translate(0 3)" />
-      </svg>
-      <div className={`pointer-events-auto absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 ${mobile ? "w-[64%]" : "w-[76%]"}`}>
-        <RecordEye />
+    <div className={`absolute ${mobile ? "inset-x-0 bottom-0 top-0 mx-auto h-full w-[92%]" : "right-[-2%] top-[-2%] h-full w-[96%]"} rotate-[-1.2deg] bg-[#F2E7D4] text-[#11110F] shadow-[18px_24px_0_rgba(0,0,0,0.18),32px_46px_80px_rgba(0,0,0,0.42)]`}>
+      <div className="pointer-events-none absolute inset-0 opacity-[0.12] [background-image:radial-gradient(#11110F_0.55px,transparent_0.7px)] [background-size:3px_3px] mix-blend-multiply" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(17,17,15,0.08),transparent)]" />
+      <div className="relative flex h-full flex-col p-5 md:p-7">
+        <div className="flex items-start justify-between gap-4 border-b border-[#11110F]/20 pb-2 font-mono text-[7px] uppercase tracking-[0.15em] text-[#11110F]/45">
+          <span>Plate 011 / ocular</span>
+          <span>Threadwise / IAEA–Iran</span>
+        </div>
+
+        <div className="relative flex flex-1 items-center justify-center py-4">
+          <div className="pointer-events-none absolute inset-x-[8%] top-1/2 h-px bg-[#11110F]/15" />
+          <div className="pointer-events-none absolute inset-y-[10%] left-1/2 w-px bg-[#11110F]/12" />
+          <div className="relative w-[90%] max-w-[610px] [filter:drop-shadow(3px_0_0_rgba(26,75,255,0.14))_drop-shadow(-2px_0_0_rgba(193,18,31,0.12))]">
+            <RecordEye />
+          </div>
+          <span className="absolute right-[5%] top-[18%] rotate-[7deg] border border-[#C1121F] px-2 py-1 font-mono text-[7px] uppercase tracking-[0.15em] text-[#C1121F]">
+            Specimen / open
+          </span>
+          <span className="absolute bottom-[8%] left-[5%] font-mono text-[7px] uppercase tracking-[0.13em] text-[#11110F]/35">
+            Iris / cobalt · 09.11.2026
+          </span>
+        </div>
+
+        <div className="flex items-end justify-between gap-4 border-t border-[#11110F]/20 pt-2 font-mono text-[7px] uppercase tracking-[0.14em] text-[#11110F]/40">
+          <span>48.2N 16.4E · 35.7N 51.4E · 33.7N 51.7E</span>
+          <span>Plate 001 / 001</span>
+        </div>
       </div>
+      <div className="pointer-events-none absolute inset-0 z-30 opacity-[0.07] [background-image:radial-gradient(#11110F_0.55px,transparent_0.75px)] [background-size:3px_3px] mix-blend-multiply" />
     </div>
   );
 }
