@@ -24,6 +24,7 @@ import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SeminarRouteImport } from './routes/seminar'
 import { Route as TearRouteImport } from './routes/tear'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as WeighRouteImport } from './routes/weigh'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
 import { Route as ApiAnalystFindingsRouteImport } from './routes/api/analyst-findings'
@@ -127,6 +128,11 @@ const TearRoute = TearRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeighRoute = WeighRouteImport.update({
+  id: '/weigh',
+  path: '/weigh',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WorkspaceRoute = WorkspaceRouteImport.update({
@@ -291,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/seminar': typeof SeminarRoute
   '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
+  '/weigh': typeof WeighRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-findings': typeof ApiAnalystFindingsRoute
@@ -337,6 +344,7 @@ export interface FileRoutesByTo {
   '/seminar': typeof SeminarRoute
   '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
+  '/weigh': typeof WeighRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-findings': typeof ApiAnalystFindingsRoute
@@ -384,6 +392,7 @@ export interface FileRoutesById {
   '/seminar': typeof SeminarRoute
   '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
+  '/weigh': typeof WeighRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
   '/api/analyst-findings': typeof ApiAnalystFindingsRoute
@@ -432,6 +441,7 @@ export interface FileRouteTypes {
     | '/seminar'
     | '/tear'
     | '/terms'
+    | '/weigh'
     | '/workspace'
     | '/api/analyst'
     | '/api/analyst-findings'
@@ -478,6 +488,7 @@ export interface FileRouteTypes {
     | '/seminar'
     | '/tear'
     | '/terms'
+    | '/weigh'
     | '/workspace'
     | '/api/analyst'
     | '/api/analyst-findings'
@@ -524,6 +535,7 @@ export interface FileRouteTypes {
     | '/seminar'
     | '/tear'
     | '/terms'
+    | '/weigh'
     | '/workspace'
     | '/api/analyst'
     | '/api/analyst-findings'
@@ -571,6 +583,7 @@ export interface RootRouteChildren {
   SeminarRoute: typeof SeminarRoute
   TearRoute: typeof TearRoute
   TermsRoute: typeof TermsRoute
+  WeighRoute: typeof WeighRoute
   WorkspaceRoute: typeof WorkspaceRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
   ApiAnalystFindingsRoute: typeof ApiAnalystFindingsRoute
@@ -707,6 +720,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/weigh': {
+      id: '/weigh'
+      path: '/weigh'
+      fullPath: '/weigh'
+      preLoaderRoute: typeof WeighRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/workspace': {
@@ -931,6 +951,7 @@ const rootRouteChildren: RootRouteChildren = {
   SeminarRoute: SeminarRoute,
   TearRoute: TearRoute,
   TermsRoute: TermsRoute,
+  WeighRoute: WeighRoute,
   WorkspaceRoute: WorkspaceRoute,
   ApiAnalystRoute: ApiAnalystRoute,
   ApiAnalystFindingsRoute: ApiAnalystFindingsRoute,
