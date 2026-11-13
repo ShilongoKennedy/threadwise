@@ -119,19 +119,34 @@ function LandingExperiment() {
           <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-32 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
 
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] h-[32%] overflow-hidden">
+            <img
+              src="/hero/desert-tree.jpg"
+              alt=""
+              className="desert-photo absolute bottom-0 left-0 h-full w-[84%] max-w-[1180px] object-cover object-left"
+              draggable={false}
+            />
+            <div className="absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.55)_55%,transparent_100%)]" />
+            <div className="absolute inset-y-0 right-0 w-40 bg-[linear-gradient(90deg,transparent_0%,rgba(242,231,212,0.72)_70%,#F2E7D4_100%)]" />
+          </div>
+
           <GlassHeader />
 
 
           <div className="pointer-events-none relative z-20 mx-auto flex min-h-[calc(100dvh-62px)] w-full max-w-[1400px] flex-col justify-between px-5 pb-6 pt-8 md:px-8 md:pb-8 md:pt-10">
-            <div className="flex flex-1 items-center">
+            <div className="flex flex-1 items-start pt-[12vh] md:pt-[10vh]">
               <div className="pointer-events-auto relative z-20 max-w-[62vw] md:max-w-[600px]">
-                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">The read / IAEA–Iran</p>
+                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#1A4BFF]">
+                  The read / IAEA–Iran <span className="mx-2 text-[#11110F]/20">|</span>{" "}
+                  <span className="text-[#11110F]/35">09 Nov 2026</span>
+                </p>
                 <SignatureHeadline
                   text="See what the story hides."
                   className="letterpress mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,7.3vw,108px)] leading-[0.82] text-[#11110F]"
                 />
                 <p className="mt-5 max-w-[38ch] font-serif text-[17px] leading-[1.6] text-[#11110F]/65 md:text-[19px]">
-                  Every claim has a geography. This is the IAEA read, pulled into focus.
+                  Behind every claim is a trail of evidence. Follow the arguments, question the
+                  assumptions and uncover what others overlook.
                 </p>
                 <p className="mt-3 max-w-[46ch] font-mono text-[9px] uppercase leading-[1.8] tracking-[0.14em] text-[#11110F]/40">
                   Vienna issues the demand · Tehran controls the permission · Natanz stays unverified

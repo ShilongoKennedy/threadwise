@@ -1265,3 +1265,13 @@ html:has(.record-page) { scroll-behavior: smooth; }
 .brand-emboss svg {
   filter: drop-shadow(0 1px 0 rgba(255, 250, 240, 0.72)) drop-shadow(0 1px 1px rgba(17, 17, 15, 0.12));
 }
+
+
+/* The Namibian desert plate, blended into the hero. */
+.desert-photo {
+  filter: saturate(0.88) contrast(1.02) brightness(1.01);
+  -webkit-mask-image: linear-gradient(to top, #000 56%, transparent 100%), linear-gradient(to right, #000 68%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 56%, transparent 100%), linear-gradient(to right, #000 68%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
