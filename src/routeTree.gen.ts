@@ -47,6 +47,7 @@ import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
 import { Route as ApiQuestionGapRouteImport } from './routes/api/question-gap'
 import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
 import { Route as ApiSeminarRouteImport } from './routes/api/seminar'
+import { Route as ApiSeminarFollowupRouteImport } from './routes/api/seminar-followup'
 import { Route as ApiSeminarLessonRouteImport } from './routes/api/seminar-lesson'
 import { Route as ApiThinkingProfileRouteImport } from './routes/api/thinking-profile'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
@@ -249,6 +250,11 @@ const ApiSeminarRoute = ApiSeminarRouteImport.update({
   path: '/api/seminar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSeminarFollowupRoute = ApiSeminarFollowupRouteImport.update({
+  id: '/api/seminar-followup',
+  path: '/api/seminar-followup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSeminarLessonRoute = ApiSeminarLessonRouteImport.update({
   id: '/api/seminar-lesson',
   path: '/api/seminar-lesson',
@@ -344,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/seminar': typeof ApiSeminarRoute
+  '/api/seminar-followup': typeof ApiSeminarFollowupRoute
   '/api/seminar-lesson': typeof ApiSeminarLessonRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
@@ -395,6 +402,7 @@ export interface FileRoutesByTo {
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/seminar': typeof ApiSeminarRoute
+  '/api/seminar-followup': typeof ApiSeminarFollowupRoute
   '/api/seminar-lesson': typeof ApiSeminarLessonRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
@@ -447,6 +455,7 @@ export interface FileRoutesById {
   '/api/question-gap': typeof ApiQuestionGapRoute
   '/api/reads-public': typeof ApiReadsPublicRoute
   '/api/seminar': typeof ApiSeminarRoute
+  '/api/seminar-followup': typeof ApiSeminarFollowupRoute
   '/api/seminar-lesson': typeof ApiSeminarLessonRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
@@ -500,6 +509,7 @@ export interface FileRouteTypes {
     | '/api/question-gap'
     | '/api/reads-public'
     | '/api/seminar'
+    | '/api/seminar-followup'
     | '/api/seminar-lesson'
     | '/api/thinking-profile'
     | '/api/threadwise'
@@ -551,6 +561,7 @@ export interface FileRouteTypes {
     | '/api/question-gap'
     | '/api/reads-public'
     | '/api/seminar'
+    | '/api/seminar-followup'
     | '/api/seminar-lesson'
     | '/api/thinking-profile'
     | '/api/threadwise'
@@ -602,6 +613,7 @@ export interface FileRouteTypes {
     | '/api/question-gap'
     | '/api/reads-public'
     | '/api/seminar'
+    | '/api/seminar-followup'
     | '/api/seminar-lesson'
     | '/api/thinking-profile'
     | '/api/threadwise'
@@ -654,6 +666,7 @@ export interface RootRouteChildren {
   ApiQuestionGapRoute: typeof ApiQuestionGapRoute
   ApiReadsPublicRoute: typeof ApiReadsPublicRoute
   ApiSeminarRoute: typeof ApiSeminarRoute
+  ApiSeminarFollowupRoute: typeof ApiSeminarFollowupRoute
   ApiSeminarLessonRoute: typeof ApiSeminarLessonRoute
   ApiThinkingProfileRoute: typeof ApiThinkingProfileRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
@@ -935,6 +948,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSeminarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/seminar-followup': {
+      id: '/api/seminar-followup'
+      path: '/api/seminar-followup'
+      fullPath: '/api/seminar-followup'
+      preLoaderRoute: typeof ApiSeminarFollowupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/seminar-lesson': {
       id: '/api/seminar-lesson'
       path: '/api/seminar-lesson'
@@ -1054,6 +1074,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiQuestionGapRoute: ApiQuestionGapRoute,
   ApiReadsPublicRoute: ApiReadsPublicRoute,
   ApiSeminarRoute: ApiSeminarRoute,
+  ApiSeminarFollowupRoute: ApiSeminarFollowupRoute,
   ApiSeminarLessonRoute: ApiSeminarLessonRoute,
   ApiThinkingProfileRoute: ApiThinkingProfileRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,

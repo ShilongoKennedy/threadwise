@@ -1408,3 +1408,40 @@ main {
   position: relative;
   z-index: 10;
 }
+
+
+/* Tutor answers use a narrow, readable markdown register. */
+.tutor-prose {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  line-height: 1.72;
+  color: color-mix(in oklab, var(--foreground) 76%, transparent);
+}
+.tutor-prose p { margin: 0 0 0.7em; }
+.tutor-prose p:last-child { margin-bottom: 0; }
+.tutor-prose strong { color: var(--foreground); font-weight: 600; }
+.tutor-prose em { font-style: italic; }
+.tutor-prose ul, .tutor-prose ol { margin: 0.5em 0 0.8em; padding-left: 1.2em; }
+.tutor-prose ul { list-style: disc; }
+.tutor-prose ol { list-style: decimal; }
+.tutor-prose li { margin: 0.25em 0; padding-left: 0.15em; }
+.tutor-prose h1, .tutor-prose h2, .tutor-prose h3 {
+  margin: 1em 0 0.4em;
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1.15;
+  color: var(--foreground);
+}
+.tutor-prose blockquote {
+  margin: 0.8em 0;
+  border-left: 2px solid color-mix(in oklab, var(--brass) 60%, transparent);
+  padding-left: 0.9em;
+  color: color-mix(in oklab, var(--foreground) 60%, transparent);
+}
+.tutor-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: color-mix(in oklab, var(--brass) 12%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+}

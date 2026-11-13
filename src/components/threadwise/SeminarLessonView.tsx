@@ -1,5 +1,7 @@
 import { BookOpen, Check, Compass } from "lucide-react";
+import type { Seminar } from "@/lib/threadwise/seminar";
 import type { SeminarLesson } from "@/lib/threadwise/seminar-lesson";
+import { SeminarTutor } from "@/components/threadwise/SeminarTutor";
 
 const CONTENTS = [
   ["terms", "The terms"],
@@ -24,7 +26,7 @@ function SectionHead({ number, title, kicker }: { number: string; title: string;
   );
 }
 
-export function SeminarLessonView({ lesson }: { lesson: SeminarLesson }) {
+export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: SeminarLesson; text: string; context: string; seminar: Seminar }) {
   const words = JSON.stringify(lesson).split(/\s+/).length;
   const minutes = Math.max(4, Math.round(words / 190));
 
@@ -187,6 +189,8 @@ export function SeminarLessonView({ lesson }: { lesson: SeminarLesson }) {
               ))}
             </div>
           </section>
+
+          <SeminarTutor text={text} context={context} seminar={seminar} lesson={lesson} />
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-5">
             <p className="inline-flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">

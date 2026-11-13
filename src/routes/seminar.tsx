@@ -584,7 +584,7 @@ function SeminarPage() {
                 </p>
               ) : null}
 
-              {lesson ? <SeminarLessonView lesson={lesson} /> : null}
+              {lesson ? <SeminarLessonView lesson={lesson} text={text} context={context} seminar={seminar} /> : null}
 
               <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
                 <div>
