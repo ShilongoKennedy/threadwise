@@ -1,11 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useId, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { AppHeader } from "@/components/threadwise/AppHeader";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { RecordEye } from "@/components/record/RecordEye";
-import { CartographicField } from "@/components/record/CartographicField";
+import { SpaceBackdrop } from "@/components/record/SpaceBackdrop";
 
 export const Route = createFileRoute("/landing")({
   head: () => ({
@@ -107,128 +106,78 @@ function LandingExperiment() {
       <div className="pointer-events-none absolute left-6 top-24 z-0 h-4 w-4 border-l border-t border-[#1A1A1A]/20" />
       <div className="pointer-events-none absolute right-6 top-24 z-0 h-4 w-4 border-r border-t border-[#1A1A1A]/20" />
 
-      <AppHeader marketing />
-
       <main id="main" className="relative z-10 flex-1">
-        {/* ATLAS HERO */}
-        <section className={`atlas-hero relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28 ${entering ? "is-entering" : ""}`}>
-          <div className="absolute inset-0 hidden md:block">
-            <CartographicField active={activePlace} />
-          </div>
-          <div className="pointer-events-none absolute inset-0 z-[1] hidden bg-[linear-gradient(90deg,#FDFBF7_0%,#FDFBF7_30%,rgba(253,251,247,0.94)_42%,rgba(253,251,247,0.55)_54%,rgba(253,251,247,0.12)_64%,transparent_72%)] md:block" />
+        {/* COSMIC HERO */}
+        <section className="relative min-h-[100dvh] w-full overflow-hidden bg-[#05070C] text-[#F3EADF]">
+          <SpaceBackdrop />
+          <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,#05070C_0%,rgba(5,7,12,0.94)_28%,rgba(5,7,12,0.52)_48%,rgba(5,7,12,0.08)_70%,transparent_84%)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-56 bg-[linear-gradient(0deg,#05070C_0%,transparent_100%)]" />
 
-          <div className="pointer-events-none absolute right-[7%] top-[11%] z-[6] hidden aspect-square w-[32%] md:block">
-            <div className="h-full w-full drop-shadow-[0_24px_40px_rgba(17,17,15,0.20)]">
-              <HeroEyeTear />
+          <header className="relative z-40 mx-auto flex w-full max-w-[1400px] items-center justify-between px-5 py-4 md:px-8 md:py-5">
+            <div className="[filter:brightness(0)_invert(1)]">
+              <BrandLockup size="md" asLink />
             </div>
-          </div>
-
-          <div className="relative z-10 mx-auto flex min-h-[680px] w-full max-w-[1200px] flex-col justify-between px-5 pb-10 pt-10 md:px-8 md:pb-12 md:pt-14">
-            <div className="atlas-copy max-w-[650px] pb-8 md:pb-10">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
-                <span>The read / IAEA–Iran</span>
-                <span className="h-3 w-px bg-[#1A4BFF]/25" />
-                <span className="text-[#1A1A1A]/40">09 Nov 2026</span>
-              </div>
-              <SignatureHeadline
-                text="See what the story hides."
-                className="mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(58px,7.6vw,112px)] leading-[0.82]"
-              />
-              <p className="mt-5 max-w-[46ch] font-serif text-[17px] leading-[1.55] text-[#1A1A1A]/70 md:text-[19px]">
-                Every claim has a geography. This is the IAEA read, plotted.
-              </p>
-              <p className="mt-3 max-w-[52ch] font-mono text-[9px] uppercase leading-[1.7] tracking-[0.14em] text-[#1A1A1A]/50 md:text-[10px]">
-                Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
-              </p>
-              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-                <Link
-                  to="/read/$token"
-                  params={{ token: SAMPLE_TOKEN }}
-                  onClick={openRead}
-                  aria-busy={entering}
-                  className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
-                >
-                  Open the IAEA read
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-                <Link
-                  to="/analyst"
-                  className="inline-flex items-center gap-2 border-b-2 border-[#1A4BFF]/30 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] transition-colors hover:border-[#1A4BFF]"
-                >
-                  Bring your own source
-                  <ArrowRight className="h-3 w-3" />
-                </Link>
-              </div>
+            <div className="hidden items-center gap-5 font-mono text-[8px] uppercase tracking-[0.16em] text-[#F3EADF]/40 sm:flex">
+              <span>The record / experiment 11</span>
+              <span className="h-3 w-px bg-[#F3EADF]/20" />
+              <span>09 Nov 2026</span>
             </div>
+            <Link to="/" className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#F3EADF]/55 border-b border-[#F3EADF]/25 pb-0.5 hover:text-[#F3EADF]">
+              Back to site
+            </Link>
+          </header>
 
-            <div className="mt-8 md:hidden">
-              <div className="relative h-[320px] overflow-hidden border border-[#1A1A1A]/10">
-                <CartographicField active={activePlace} mobile />
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <div className="pointer-events-auto h-[190px] w-[190px] drop-shadow-[0_18px_28px_rgba(17,17,15,0.18)]">
-                    <HeroEyeTear mobile />
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
-                <span>The IAEA read / in places</span>
-                <span>09 Nov 2026</span>
-              </div>
-            </div>
-
-            <div className="atlas-meta flex flex-wrap items-end justify-between gap-5 border-t border-[#1A1A1A]/15 bg-[#FDFBF7] pt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-              <div>
-                <div className="flex flex-wrap gap-x-5 gap-y-2">
-                  <span className="flex items-center gap-2"><span className="h-px w-5 bg-[#1A4BFF]" /> the demand</span>
-                  <span className="flex items-center gap-2"><span className="h-px w-5 border-t border-dashed border-[#C1121F]" /> permission denied</span>
-                </div>
-                <p className="mt-2 text-[8px] tracking-[0.08em] text-[#1A1A1A]/30">
-                  Coordinate field · illustrative route
+          <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-62px)] w-full max-w-[1400px] flex-col justify-between px-5 pb-6 pt-6 md:px-8 md:pb-8 md:pt-4">
+            <div className="grid flex-1 items-center gap-9 md:grid-cols-[1.02fr_1fr] md:gap-12">
+              <div className="max-w-[650px]">
+                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#89A5FF]">The read / IAEA–Iran</p>
+                <SignatureHeadline
+                  text="See what the story hides."
+                  className="mt-2 max-w-[720px] -rotate-[1.2deg] text-[clamp(54px,7.4vw,112px)] leading-[0.82] text-[#F3EADF]"
+                />
+                <p className="mt-5 max-w-[44ch] font-serif text-[17px] leading-[1.6] text-[#F3EADF]/65 md:text-[19px]">
+                  Every claim has a geography. This is the IAEA read, plotted against the dark.
                 </p>
-              </div>
-              <div className="w-full text-left leading-relaxed md:w-[310px] md:text-right">
-                <p className="text-[#1A1A1A]/60">The places</p>
-                {PLACE_INDEX.map((place) => (
+                <p className="mt-3 max-w-[46ch] font-mono text-[9px] uppercase leading-[1.8] tracking-[0.14em] text-[#F3EADF]/35">
+                  Vienna issues the demand · Tehran controls the permission · Natanz stays unverified
+                </p>
+                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <Link
-                    key={place.id}
                     to="/read/$token"
                     params={{ token: SAMPLE_TOKEN }}
-                    onMouseEnter={() => setActivePlace(place.id)}
-                    onMouseLeave={() => setActivePlace(null)}
-                    onFocus={() => setActivePlace(place.id)}
-                    onBlur={() => setActivePlace(null)}
-                    className={`mt-1 block border-b border-transparent pb-0.5 text-[10px] transition-colors hover:border-[#1A4BFF] ${
-                      activePlace === place.id ? "text-[#1A4BFF]" : place.id === "natanz" ? "text-[#C1121F]" : "text-[#1A1A1A]/70"
-                    }`}
+                    className="inline-flex items-center gap-2 border border-[#F3EADF]/30 bg-[#F3EADF] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#0A0A0A] transition-colors hover:bg-[#FF5B3D]"
                   >
-                    {place.no} {place.name}{" "}
-                    <span className={activePlace === place.id ? "text-[#1A4BFF]/50" : place.id === "natanz" ? "text-[#C1121F]/50" : "text-[#1A1A1A]/30"}>
-                      {place.coords}
-                    </span>
+                    Open the IAEA read
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
-                ))}
-                <p className="mt-2 h-[30px] max-w-[310px] overflow-hidden text-[8px] leading-[1.45] tracking-[0.08em] text-[#1A1A1A]/40 line-clamp-2 md:ml-auto">
-                  {activePlace
-                    ? PLACE_INDEX.find((place) => place.id === activePlace)?.note
-                    : "Hover a site to read its note."}
-                </p>
+                  <Link
+                    to="/analyst"
+                    className="inline-flex items-center gap-2 border-b border-[#89A5FF]/30 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#89A5FF] transition-colors hover:border-[#89A5FF]"
+                  >
+                    Bring your own source
+                    <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="relative mx-auto w-full max-w-[620px] md:pl-6">
+                <div className="pointer-events-none absolute inset-[11%] rounded-full bg-[#1A4BFF]/10 blur-3xl" />
+                <div className="pointer-events-none absolute inset-[1%] rounded-full border border-[#F3EADF]/10" />
+                <div className="pointer-events-none absolute inset-[8%] rounded-full border border-[#1A4BFF]/15" />
+                <div className="relative z-10 drop-shadow-[0_0_70px_rgba(26,75,255,0.20)]">
+                  <RecordEye />
+                </div>
+                <div className="pointer-events-none absolute bottom-[8%] left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-[#FF5B3D]/70 shadow-[0_0_18px_rgba(255,91,61,0.7)]" />
               </div>
             </div>
-          </div>
 
-          <div className="atlas-enter-curtain" aria-hidden={!entering}>
-            <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col justify-between px-5 py-10 md:px-8 md:py-14">
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
-                Threadwise / the read
-              </p>
-              <div className="pb-6">
-                <p className="font-display text-[clamp(52px,9vw,112px)] leading-[0.9] tracking-[-0.035em]">
-                  IAEA–Iran.
-                </p>
-                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A4BFF]">
-                  Opening the record…
-                </p>
+            <div className="mt-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-t border-[#F3EADF]/12 pt-3 font-mono text-[8px] uppercase tracking-[0.14em] text-[#F3EADF]/30">
+              <div className="flex flex-wrap gap-x-5 gap-y-1">
+                <span>01 Vienna / 48.2N 16.4E</span>
+                <span>02 Tehran / 35.7N 51.4E</span>
+                <span className="text-[#FF5B3D]/70">03 Natanz / 33.7N 51.7E</span>
               </div>
+              <span>Signal / observed 09 Nov 2026</span>
             </div>
           </div>
         </section>
