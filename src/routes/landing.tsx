@@ -149,187 +149,23 @@ function LandingExperiment() {
                   fire
                   className="letterpress max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,6.7vw,96px)] leading-[0.82] text-[#11110F]"
                 />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* THE LOOP */}
-        <section id="loop" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-8 md:py-20">
-          <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#1A4BFF]/30 pb-2">
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A4BFF]">
-              The method
-            </p>
-          </div>
-
-          <div className="mt-8 grid gap-10 md:grid-cols-[0.72fr_1.28fr] md:gap-16">
-            <div>
-              <h2 className="max-w-[12ch] font-display text-[34px] leading-[0.95] md:text-[52px]">
-                What happens after the read.
-              </h2>
-              <p className="mt-4 max-w-[38ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/70">
-                A read is the beginning. The questions, predictions and corrections are what make it
-                checkable later.
-              </p>
-              <div className="mt-6 flex flex-col items-start gap-2">
-                <Link
-                  to="/questions"
-                  className="group inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
-                >
-                  Open the questions
-                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </Link>
-                <Link
-                  to="/profile"
-                  className="group inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/55 underline underline-offset-4 transition-colors hover:text-[#1A4BFF]"
-                >
-                  See the thinking profile
-                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </Link>
-              </div>
-            </div>
-
-            <ol className="grid border-t border-[#1A1A1A]/12 sm:grid-cols-2">
-              {LOOP.map((step, index) => (
-                <li
-                  key={step.n}
-                  className={`border-b border-[#1A1A1A]/10 py-5 ${
-                    index % 2 === 0 ? "sm:border-r sm:pr-6" : "sm:pl-6"
-                  }`}
-                >
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-display text-[38px] leading-none text-[#1A4BFF]/80">
-                      {step.n}
-                    </span>
-                    <h3 className="font-display text-[22px] leading-tight">{step.title}</h3>
-                  </div>
-                  <p className="mt-2 max-w-[34ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/65">
-                    {step.body}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        {/* THE RECORD, SHOWN */}
-        <section className="relative w-full border-y border-[#1A1A1A]/15 bg-[#FDFBF7] text-[#1A1A1A]">
-          <div className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
-            <div className="flex flex-wrap items-baseline justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.14em]">
-              <p className="text-[#1A4BFF]">The record / from the IAEA read</p>
-              <p className="text-[#1A1A1A]/35">09 Nov 2026 · 001</p>
-            </div>
-
-            <div className="mt-5 grid gap-6 md:grid-cols-[0.8fr_1.2fr] md:items-end md:gap-14">
-              <h2 className="max-w-[13ch] font-display text-[38px] leading-[0.94] md:text-[52px]">
-                What the read leaves behind.
-              </h2>
-              <p className="max-w-[50ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/60">
-                A chat window gives you an answer and forgets it. This leaves a record: the question
-                the read opened, the correction it needed, and what to watch next.
-              </p>
-            </div>
-
-            <ol className="mt-10 grid border-t border-[#1A1A1A]/15 md:grid-cols-3">
-              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:pr-7">
-                <div className="flex items-baseline gap-3">
-                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">01</span>
-                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Question</span>
+                <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-12">
+                  <Link
+                    to="/read/$token"
+                    params={{ token: SAMPLE_TOKEN }}
+                    className="group inline-flex items-center gap-2 border-b border-[#C74212]/35 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#11110F]/70 transition-colors hover:border-[#C74212] hover:text-[#C74212]"
+                  >
+                    Open the IAEA read
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </Link>
+                  <Link
+                    to="/analyst"
+                    className="group inline-flex items-center gap-2 border-b border-[#1A4BFF]/25 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#1A4BFF]/80 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
+                  >
+                    Bring your own source
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </Link>
                 </div>
-                <p className="mt-4 max-w-[26ch] font-display text-[25px] leading-[1.05]">
-                  Does a confidential report to governments count as a finding against Iran at all?
-                </p>
-                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A4BFF]/65">
-                  Filed · open
-                </p>
-              </li>
-
-              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:px-7">
-                <div className="flex items-baseline gap-3">
-                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">02</span>
-                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Correction</span>
-                </div>
-                <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
-                  Removed an unsupported reporting date added beyond the move.
-                </p>
-                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]">
-                  Patched · 01
-                </p>
-              </li>
-
-              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:pl-7">
-                <div className="flex items-baseline gap-3">
-                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">03</span>
-                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Watch</span>
-                </div>
-                <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
-                  Whether the Board puts Iran on the formal agenda at its next meeting.
-                </p>
-                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
-                  Vienna · pending
-                </p>
-              </li>
-            </ol>
-
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
-              <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/30">
-                From the IAEA read · not a live record
-              </span>
-              <Link
-                to="/digest"
-                className="group inline-flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
-              >
-                Open the record
-                <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* CLOSING */}
-        <section className="mx-auto w-full max-w-[1200px] px-5 pb-24 pt-8 md:px-8 md:pb-32">
-          <div className="border-y border-[#1A1A1A]/15 py-10 md:py-16">
-            <div className="grid gap-10 md:grid-cols-[minmax(0,1.08fr)_minmax(300px,0.92fr)] md:gap-20">
-              <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
-                  The last page
-                </p>
-                <h2 className="mt-4 max-w-[12ch] font-display text-[clamp(44px,5.4vw,76px)] leading-[0.88] tracking-[-0.035em]">
-                  Read one article properly.
-                </h2>
-                <div className="mt-6 max-w-[50ch] space-y-3 font-serif text-[16px] leading-[1.65] text-[#1A1A1A]/68">
-                  <p>
-                    Ten minutes with a source you already distrust will teach you more than a month
-                    of summaries. Start with the one you have open in another tab.
-                  </p>
-                  <p>It will not tell you what to conclude. It will show you where the evidence stops.</p>
-                </div>
-              </div>
-
-              <div className="flex flex-col justify-end md:pl-8">
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/45">
-                  Start here
-                </p>
-                <Link
-                  to="/analyst"
-                  className="group mt-4 flex items-center justify-between bg-[#1A1A1A] px-4 py-4 text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF]"
-                >
-                  <span className="font-display text-[24px] leading-none">Read a source</span>
-                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Link>
-                <Link
-                  to="/read/$token"
-                  params={{ token: SAMPLE_TOKEN }}
-                  className="group flex items-center justify-between border-b border-[#1A1A1A]/15 py-4 font-serif text-[18px] text-[#1A1A1A]/80 transition-colors hover:text-[#1A4BFF]"
-                >
-                  Open the IAEA read
-                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
-                </Link>
-                <p className="mt-5 font-mono text-[9px] uppercase leading-relaxed tracking-[0.12em] text-[#1A1A1A]/40">
-                  Free while in beta
-                  <br />
-                  Sign in with Google
-                </p>
               </div>
             </div>
           </div>
@@ -337,76 +173,7 @@ function LandingExperiment() {
 
       </main>
 
-      <footer className="relative z-30 border-t border-[#1A1A1A]/15 bg-[#FDFBF7] pb-10 pt-12 md:pt-16">
-        <div className="mx-auto max-w-[1200px] px-5 md:px-8">
-          <div className="grid gap-10 md:grid-cols-[1.1fr_1.9fr] md:gap-16">
-            <div>
-              <div className="brand-emboss">
-              <BrandLockup size="md" asLink />
-            </div>
-              <p className="mt-5 max-w-[15ch] font-display text-[32px] leading-[0.98] tracking-[-0.025em] md:text-[42px]">
-                A reading desk for sources you do not trust yet.
-              </p>
-            </div>
 
-            <div className="grid grid-cols-2 gap-x-6 gap-y-9 font-mono text-[9px] uppercase tracking-[0.12em] sm:grid-cols-3">
-              <div>
-                <p className="mb-3 text-[#1A1A1A]/40">The desk</p>
-                {[
-                  { to: "/analyst", label: "The analyst", n: "01" },
-                  { to: "/questions", label: "Questions", n: "02" },
-                  { to: "/digest", label: "Record", n: "03" },
-                  { to: "/profile", label: "Profile", n: "04" },
-                ].map((item) => (
-                  <Link key={item.to} to={item.to} className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
-                    <span className="text-[8px] text-[#1A1A1A]/25">{item.n}</span>
-                    <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">
-                      {item.label}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-
-              <div>
-                <p className="mb-3 text-[#1A1A1A]/40">The record</p>
-                <Link to="/cases" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
-                  <span className="text-[8px] text-[#1A1A1A]/25">05</span>
-                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Cases</span>
-                </Link>
-                <Link
-                  to="/read/$token"
-                  params={{ token: SAMPLE_TOKEN }}
-                  className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70"
-                >
-                  <span className="text-[8px] text-[#1A1A1A]/25">06</span>
-                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">The IAEA read</span>
-                </Link>
-                <a href="#loop" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
-                  <span className="text-[8px] text-[#1A1A1A]/25">07</span>
-                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">How it works</span>
-                </a>
-              </div>
-
-              <div>
-                <p className="mb-3 text-[#1A1A1A]/40">Elsewhere</p>
-                <Link to="/terms" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
-                  <span className="text-[8px] text-[#1A1A1A]/25">08</span>
-                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Terms</span>
-                </Link>
-                <Link to="/privacy" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
-                  <span className="text-[8px] text-[#1A1A1A]/25">09</span>
-                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Privacy</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex flex-wrap justify-between gap-3 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
-            <span>© 2026 Threadwise. All rights reserved.</span>
-            <span>Built for people who check.</span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

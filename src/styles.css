@@ -1314,3 +1314,32 @@ html:has(.record-page) { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   .fire-headline.is-signed .signature-flourish { animation: signature-flourish 1ms linear forwards; }
 }
+
+
+.fire-headline .signature-letter.is-writing {
+  animation-duration: 130ms;
+}
+.fire-lick {
+  transform-box: fill-box;
+  animation: fire-lick 1.25s ease-in-out infinite alternate;
+  opacity: 0.8;
+}
+@keyframes fire-lick {
+  0% { transform: scaleY(0.66) translateY(3px); opacity: 0.55; }
+  38% { transform: scaleY(1.08) translateY(0); opacity: 0.95; }
+  100% { transform: scaleY(0.82) translateY(2px); opacity: 0.7; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fire-lick { animation: none; opacity: 0.75; }
+}
+
+
+.fire-flourish {
+  position: absolute;
+  left: 0;
+  bottom: -0.35em;
+  z-index: 1;
+  width: 100%;
+  height: 0.7em;
+  pointer-events: none;
+}
