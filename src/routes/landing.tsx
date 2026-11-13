@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/threadwise/AppHeader";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { RecordEye } from "@/components/record/RecordEye";
+import { CartographicField } from "@/components/record/CartographicField";
 
 export const Route = createFileRoute("/landing")({
   head: () => ({
@@ -111,8 +112,8 @@ function LandingExperiment() {
       <main id="main" className="relative z-10 flex-1">
         {/* ATLAS HERO */}
         <section className={`atlas-hero relative w-full overflow-hidden border-b border-[#1A1A1A]/10 pt-24 md:pt-28 ${entering ? "is-entering" : ""}`}>
-          <div className="hidden md:block">
-            <AtlasMap active={activePlace} onActive={setActivePlace} overlay />
+          <div className="absolute inset-0 hidden md:block">
+            <CartographicField active={activePlace} />
           </div>
           <div className="pointer-events-none absolute inset-0 z-[1] hidden bg-[linear-gradient(90deg,#FDFBF7_0%,#FDFBF7_30%,rgba(253,251,247,0.94)_42%,rgba(253,251,247,0.55)_54%,rgba(253,251,247,0.12)_64%,transparent_72%)] md:block" />
 
@@ -161,8 +162,8 @@ function LandingExperiment() {
             </div>
 
             <div className="mt-8 md:hidden">
-              <div className="relative">
-                <AtlasMap active={activePlace} onActive={setActivePlace} mobile />
+              <div className="relative h-[320px] overflow-hidden border border-[#1A1A1A]/10">
+                <CartographicField active={activePlace} mobile />
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                   <div className="pointer-events-auto h-[190px] w-[190px] drop-shadow-[0_18px_28px_rgba(17,17,15,0.18)]">
                     <HeroEyeTear mobile />
@@ -182,7 +183,7 @@ function LandingExperiment() {
                   <span className="flex items-center gap-2"><span className="h-px w-5 border-t border-dashed border-[#C1121F]" /> permission denied</span>
                 </div>
                 <p className="mt-2 text-[8px] tracking-[0.08em] text-[#1A1A1A]/30">
-                  Natural Earth 1:110m · illustrative route
+                  Coordinate field · illustrative route
                 </p>
               </div>
               <div className="w-full text-left leading-relaxed md:w-[310px] md:text-right">
@@ -209,7 +210,7 @@ function LandingExperiment() {
                 <p className="mt-2 h-[30px] max-w-[310px] overflow-hidden text-[8px] leading-[1.45] tracking-[0.08em] text-[#1A1A1A]/40 line-clamp-2 md:ml-auto">
                   {activePlace
                     ? PLACE_INDEX.find((place) => place.id === activePlace)?.note
-                    : "Hover a place to see why it is on the map."}
+                    : "Hover a site to read its note."}
                 </p>
               </div>
             </div>
@@ -505,8 +506,8 @@ function HeroEyeTear({ mobile = false }: { mobile?: boolean }) {
             <stop offset="1" stopColor="#E8DECD" />
           </linearGradient>
           <filter id={`${uid}-rough`} x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.014 0.038" numOctaves="2" seed="3" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" />
+            <feTurbulence type="fractalNoise" baseFrequency="0.02 0.06" numOctaves="2" seed="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" />
           </filter>
         </defs>
         <path d={tear} fill={`url(#${uid}-field)`} stroke={`url(#${uid}-rim)`} strokeWidth="7" strokeLinejoin="round" filter={`url(#${uid}-rough)`} />
