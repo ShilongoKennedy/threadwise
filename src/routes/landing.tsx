@@ -1,11 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
-import { ATLAS_LOCATIONS, GeoGlobe } from "@/components/record/GeoGlobe";
 import { GlassHeader } from "@/components/threadwise/GlassHeader";
-import { AtlasDock } from "@/components/threadwise/AtlasDock";
-
+import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
+import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { GeoGlobe } from "@/components/record/GeoGlobe";
 
 export const Route = createFileRoute("/landing")({
   head: () => ({
@@ -37,7 +36,7 @@ export const Route = createFileRoute("/landing")({
       { name: "twitter:image", content: "https://threadwise-beta.vercel.app/og.png" },
     ],
   }),
-  component: LandingExperiment,
+  component: LandingExperimentPage,
 });
 
 const SAMPLE_TOKEN = "mn4qvf4bhu";
@@ -71,213 +70,344 @@ const PLACE_INDEX = [
   { id: "natanz", no: "03", name: "Natanz", coords: "33.7N 51.7E", note: "One of the enrichment sites the report cannot verify." },
 ] as const;
 
-const LOCATION_CONTEXT: Record<string, {
-  number: string;
-  name: string;
-  coords: string;
-  description: string;
-  featured: string;
-  connected: string;
-  status: string;
-}> = {
-  vienna: {
-    number: "01",
-    name: "VIENNA",
-    coords: "48.2°N 16.4°E",
-    description: "International Atomic Energy Agency.",
-    featured: "IAEA–Iran: The demand, the permission and the unanswered questions.",
-    connected: "Vienna · Tehran · Natanz",
-    status: "ACTIVE CASE",
-  },
-  tehran: {
-    number: "02",
-    name: "TEHRAN",
-    coords: "35.7°N 51.4°E",
-    description: "The government that controls the permission.",
-    featured: "The demand is public. The permission is not.",
-    connected: "Vienna · Tehran · Natanz",
-    status: "PERMISSION HELD",
-  },
-  natanz: {
-    number: "03",
-    name: "NATANZ",
-    coords: "33.7°N 51.7°E",
-    description: "An enrichment site the record cannot yet verify.",
-    featured: "The site is known. The answer is still missing.",
-    connected: "Vienna · Tehran · Natanz",
-    status: "UNVERIFIED",
-  },
-};
-
-function LandingExperiment() {
-  const [selected, setSelected] = useState<string | null>(null);
+function LandingExperimentPage() {
+  const [activePlace, setActivePlace] = useState<string | null>(null);
+  const [entering, setEntering] = useState(false);
+  const navigate = useNavigate();
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (window.matchMedia("(min-width: 768px)").matches) setSelected("vienna");
+    return () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
   }, []);
 
-  const selectedLocation = selected
-    ? ATLAS_LOCATIONS.find((location) => location.id === selected)
-    : undefined;
-  const context = selected ? LOCATION_CONTEXT[selected] : undefined;
-
+  const openRead = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (entering) return;
+    setEntering(true);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const delay = reduced ? 0 : window.innerWidth < 768 ? 620 : 1100;
+    timerRef.current = window.setTimeout(() => {
+      void navigate({ to: "/read/$token", params: { token: SAMPLE_TOKEN } });
+    }, delay);
+  };
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-[#080604] font-sans text-[#F4EBDD] selection:bg-[#1A4BFF] selection:text-white">
-      <main className="relative h-full w-full overflow-hidden">
-        <section className="atlas-page relative h-full w-full overflow-hidden">
-          {/* architectural atmosphere */}
-          <div className="pointer-events-none absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,#382416_0%,#170e09_46%,#050403_100%)]" />
-            <div className="absolute left-1/2 top-[42%] h-[58%] w-[46%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(216,158,94,0.18),transparent_64%)] blur-2xl" />
-            <div className="absolute inset-y-0 left-0 w-[15%] bg-[linear-gradient(90deg,#030201_0%,#160e09_38%,rgba(22,14,9,0)_100%)] opacity-90" />
-            <div className="absolute inset-y-0 right-0 w-[15%] bg-[linear-gradient(270deg,#030201_0%,#160e09_38%,rgba(22,14,9,0)_100%)] opacity-90" />
-            <div className="absolute inset-y-0 left-[3%] w-[7%] border-r border-[#C49A67]/10 bg-[linear-gradient(90deg,#030201_0%,#24160e_52%,#070403_100%)] opacity-80" />
-            <div className="absolute inset-y-0 right-[3%] w-[7%] border-l border-[#C49A67]/10 bg-[linear-gradient(270deg,#030201_0%,#24160e_52%,#070403_100%)] opacity-80" />
-            <div className="atlas-column absolute inset-y-0 left-[13%] w-px bg-[#C49A67]/15" />
-            <div className="atlas-column absolute inset-y-0 right-[13%] w-px bg-[#C49A67]/15" />
-            <div className="absolute left-[18%] top-[-20%] h-[125%] w-[34%] rotate-[16deg] bg-[linear-gradient(90deg,transparent,rgba(235,185,125,0.09),transparent)] blur-2xl" />
-            <div className="absolute right-[10%] top-[-10%] h-[120%] w-[22%] -rotate-[17deg] bg-[linear-gradient(90deg,transparent,rgba(235,185,125,0.06),transparent)] blur-3xl" />
-            <div className="absolute inset-x-0 bottom-0 h-[45%] bg-[radial-gradient(ellipse_at_50%_0%,rgba(214,158,97,0.24),transparent_58%),linear-gradient(0deg,#030201_0%,#22150d_70%,transparent_100%)]" />
-            <div className="absolute bottom-[12%] left-1/2 h-[34%] w-[24%] -translate-x-1/2 bg-[linear-gradient(0deg,rgba(245,200,140,0.11),transparent)] blur-2xl" />
-            <div className="absolute left-1/2 top-[73%] h-[8%] w-[35%] -translate-x-1/2 rounded-[50%] border border-[#E8C28D]/35 bg-[radial-gradient(ellipse_at_50%_50%,rgba(244,206,151,0.24),transparent_66%)] shadow-[0_0_120px_rgba(193,138,79,0.28)]" />
-            <div className="absolute left-1/2 top-[78%] h-[1.8%] w-[22%] -translate-x-1/2 rounded-[50%] bg-[#F1C98E]/20 blur-xl" />
-            <svg viewBox="0 0 240 420" className="pointer-events-none absolute bottom-[15%] left-0 z-0 h-[42%] w-[20%] opacity-45" aria-hidden="true">
-              <g fill="#24301D">
-                <path d="M20 400 C40 300 68 225 145 160 C105 210 75 280 55 400 Z" />
-                <path d="M54 382 C70 285 110 205 188 142 C142 200 100 276 87 382 Z" opacity=".75" />
-                <path d="M92 360 C118 280 166 216 222 174 C176 236 138 300 125 366 Z" opacity=".6" />
-                <path d="M36 320 C55 250 102 193 168 150 C120 200 80 256 62 330 Z" opacity=".65" />
-                <path d="M80 300 C106 245 148 205 203 178 C160 220 126 260 108 306 Z" opacity=".45" />
-              </g>
-            </svg>
-            <svg viewBox="0 0 200 360" className="pointer-events-none absolute bottom-[20%] right-0 z-0 h-[32%] w-[15%] opacity-35" aria-hidden="true">
-              <g fill="#1F2A19">
-                <path d="M190 340 C165 275 126 225 58 180 C105 220 145 270 165 342 Z" />
-                <path d="M168 330 C142 270 112 230 44 195 C92 230 130 280 145 332 Z" opacity=".68" />
-                <path d="M140 310 C118 260 90 230 30 205 C75 235 106 270 120 312 Z" opacity=".5" />
-              </g>
-            </svg>
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,transparent_12%,rgba(0,0,0,0.44)_78%)]" />
-          </div>
-
-          {/* globe */}
-          <div className="absolute inset-0 z-10">
-            <GeoGlobe selectedId={selected} onSelect={setSelected} />
-          </div>
-
-          <GlassHeader section="atlas" tone="dark" />
-
-          {/* introduction */}
-          <div
-            className={`atlas-intro pointer-events-none absolute left-[7.2%] top-[17%] z-30 w-[25%] max-w-[410px] transition-all duration-500 max-md:left-5 max-md:right-5 max-md:top-[14%] max-md:w-auto ${selected ? "max-md:pointer-events-none max-md:opacity-0" : ""}`}
-          >
-            <p className="inline-block border-b border-[#C49A67]/35 pb-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-[#AFC0FF]">
-              The read / IAEA–Iran
-            </p>
-            <SignatureHeadline
-              text="See what the story hides."
-              className="atlas-headline mt-2 max-w-[560px] text-[clamp(48px,5.3vw,84px)] leading-[0.84] text-[#F4EBDD]"
+    <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FCF7ED] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
+      <main id="main" className="relative z-10 flex-1">
+        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[linear-gradient(180deg,#FAF2E5_0%,#F2E7D4_48%,#E3C6A3_100%)]">
+            <img
+              src="/hero/desert-field.jpg"
+              alt=""
+              className="desert-field absolute inset-x-0 bottom-0 h-[54%] w-full object-cover object-bottom opacity-80"
+              draggable={false}
             />
-            <p className="mt-10 max-w-[31ch] font-serif text-[16px] leading-[1.65] text-[#F4EBDD]/62">
-              Explore sources, connect the evidence, question the assumptions and uncover what
-              others overlook.
-            </p>
-            <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setSelected(null)}
-                className="inline-flex items-center gap-2 rounded-full bg-[#F4EBDD] px-4 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#15100C] transition-colors hover:bg-[#AFC0FF]"
-              >
-                Explore the globe
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-              <Link
-                to="/cases"
-                className="inline-flex items-center gap-2 rounded-full border border-[#C9A77D]/30 px-4 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#F4EBDD]/70 transition-colors hover:border-[#AFC0FF]/50 hover:text-[#AFC0FF]"
-              >
-                Enter a case
-              </Link>
-            </div>
+            <div className="absolute inset-x-0 top-0 h-[54%] bg-[linear-gradient(180deg,#FAF2E5_0%,rgba(250,242,229,0.86)_34%,rgba(250,242,229,0.2)_78%,transparent_100%)]" />
           </div>
 
-          {/* contextual investigation panel */}
-          <aside
-            className={`atlas-panel fixed bottom-[86px] left-3 right-3 z-40 max-h-[54dvh] overflow-y-auto transition-all duration-500 md:absolute md:bottom-auto md:left-auto md:right-[3.5%] md:top-[22%] md:max-h-none md:w-[25%] md:max-w-[360px] ${
-              context ? "pointer-events-auto translate-y-0 opacity-100 md:translate-x-0" : "pointer-events-none translate-y-4 opacity-0 md:translate-x-4"
-            }`}
-          >
-            <div className="relative rounded-[20px] border border-[#C9A77D]/20 bg-[#120D09]/85 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.4)] backdrop-blur-[22px] md:p-6">
-              <button
-                type="button"
-                onClick={() => setSelected(null)}
-                aria-label="Close location panel"
-                className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full border border-[#F4EBDD]/15 font-mono text-[10px] text-[#F4EBDD]/45 transition-colors hover:border-[#AFC0FF]/40 hover:text-[#AFC0FF]"
-              >
-                ×
-              </button>
-              {context ? (
-                <>
-                  <p className="inline-block border-b border-[#1A4BFF]/40 pb-1 font-mono text-[8px] uppercase tracking-[0.17em] text-[#AFC0FF]">
-                    {context.number} / Location
-                  </p>
-                  <h2 className="mt-2 font-display text-[34px] leading-none tracking-[-0.02em] text-[#F4EBDD]">
-                    {context.name}
-                  </h2>
-                  <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.14em] text-[#F4EBDD]/35">
-                    {context.coords}
-                  </p>
-                  <p className="mt-5 font-serif text-[14px] leading-[1.6] text-[#F4EBDD]/65">
-                    {context.description}
-                  </p>
-                  <div className="mt-6 border-t border-[#C9A77D]/15 pt-4">
-                    <p className="font-mono text-[7px] uppercase tracking-[0.17em] text-[#C9A77D]/65">
-                      Featured investigation
-                    </p>
-                    <p className="mt-2 font-serif text-[14px] leading-[1.55] text-[#F4EBDD]/75">
-                      {context.featured}
-                    </p>
-                  </div>
-                  <div className="mt-5 grid grid-cols-2 gap-3 border-t border-[#C9A77D]/15 pt-4">
-                    <div>
-                      <p className="font-mono text-[7px] uppercase tracking-[0.13em] text-[#F4EBDD]/30">
-                        Connected
-                      </p>
-                      <p className="mt-1 font-mono text-[8px] uppercase leading-[1.6] tracking-[0.08em] text-[#F4EBDD]/55">
-                        {context.connected}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-mono text-[7px] uppercase tracking-[0.13em] text-[#F4EBDD]/30">
-                        Status
-                      </p>
-                      <p className="mt-1 font-mono text-[8px] uppercase leading-[1.6] tracking-[0.08em] text-[#C1121F]/80">
-                        {context.status}
-                      </p>
-                    </div>
-                  </div>
+          <div className="pointer-events-none absolute bottom-[10%] left-0 z-[3] w-[88%] max-w-[1000px] md:w-[57.5%]">
+            <img
+              src="/hero/desert-tree.jpg"
+              alt=""
+              className="desert-tree-plate w-full"
+              draggable={false}
+            />
+          </div>
+
+          <div className="globe-stage absolute inset-0 z-[5]">
+            <div className="pointer-events-none absolute right-[4%] top-[16%] hidden h-[58%] w-[46%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(63,46,32,0.17)_0%,rgba(63,46,32,0.055)_48%,transparent_72%)] blur-3xl md:block" />
+            <GeoGlobe theme="light" layout="right" />
+          </div>
+          <div className="pointer-events-none absolute inset-0 z-[2] hidden bg-[radial-gradient(ellipse_50%_48%_at_27%_38%,#F2E7D4_0%,#F2E7D4_56%,rgba(242,231,212,0.92)_66%,rgba(242,231,212,0.4)_82%,transparent_94%)] md:block" />
+          <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_20%,rgba(242,231,212,0.92)_30%,rgba(242,231,212,0.45)_46%,rgba(242,231,212,0.04)_62%,transparent_72%)] md:hidden" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-32 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
+
+          <GlassHeader />
+
+          <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
+            <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
+              <div className="pointer-events-none relative z-20 max-w-[62vw] md:max-w-[560px]">
+                <SignatureHeadline
+                  text="See what the story hides."
+                  fire
+                  className="letterpress max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,6.7vw,96px)] leading-[0.82] text-[#11110F]"
+                />
+                <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-12">
                   <Link
                     to="/read/$token"
                     params={{ token: SAMPLE_TOKEN }}
-                    className="mt-6 inline-flex w-full items-center justify-between border-t border-[#C9A77D]/20 pt-4 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#AFC0FF] transition-colors hover:text-[#F4EBDD]"
+                    className="group inline-flex items-center gap-2 border-b border-[#C74212]/35 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#11110F]/70 transition-colors hover:border-[#C74212] hover:text-[#C74212]"
                   >
-                    Explore investigation
-                    <ArrowUpRight className="h-3.5 w-3.5" />
+                    Open the IAEA read
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </Link>
-                </>
-              ) : null}
+                  <Link
+                    to="/analyst"
+                    className="group inline-flex items-center gap-2 border-b border-[#1A4BFF]/25 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#1A4BFF]/80 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
+                  >
+                    Bring your own source
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
+              </div>
             </div>
-          </aside>
-
-          <div className="pointer-events-none absolute bottom-5 left-6 z-30 hidden font-mono text-[7px] uppercase tracking-[0.17em] text-[#F4EBDD]/30 md:block">
-            Interactive atlas / 01
           </div>
-          <div className="pointer-events-none absolute bottom-5 right-6 z-30 hidden font-mono text-[7px] uppercase tracking-[0.17em] text-[#F4EBDD]/30 md:block">
-            Scroll to explore ↓
-          </div>
-
-          <AtlasDock onExplore={() => setSelected(null)} />
         </section>
+
+        {/* THE LOOP */}
+        <section id="loop" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-8 md:py-20">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#1A4BFF]/30 pb-2">
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A4BFF]">
+              The method
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-10 md:grid-cols-[0.72fr_1.28fr] md:gap-16">
+            <div>
+              <h2 className="max-w-[12ch] font-display text-[34px] leading-[0.95] md:text-[52px]">
+                What happens after the read.
+              </h2>
+              <p className="mt-4 max-w-[38ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/70">
+                A read is the beginning. The questions, predictions and corrections are what make it
+                checkable later.
+              </p>
+              <div className="mt-6 flex flex-col items-start gap-2">
+                <Link
+                  to="/questions"
+                  className="group inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+                >
+                  Open the questions
+                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
+                <Link
+                  to="/profile"
+                  className="group inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/55 underline underline-offset-4 transition-colors hover:text-[#1A4BFF]"
+                >
+                  See the thinking profile
+                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
+              </div>
+            </div>
+
+            <ol className="grid border-t border-[#1A1A1A]/12 sm:grid-cols-2">
+              {LOOP.map((step, index) => (
+                <li
+                  key={step.n}
+                  className={`border-b border-[#1A1A1A]/10 py-5 ${
+                    index % 2 === 0 ? "sm:border-r sm:pr-6" : "sm:pl-6"
+                  }`}
+                >
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-display text-[38px] leading-none text-[#1A4BFF]/80">
+                      {step.n}
+                    </span>
+                    <h3 className="font-display text-[22px] leading-tight">{step.title}</h3>
+                  </div>
+                  <p className="mt-2 max-w-[34ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/65">
+                    {step.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* THE RECORD, SHOWN */}
+        <section className="relative w-full border-y border-[#1A1A1A]/12 bg-[#FCF7ED] text-[#1A1A1A]">
+          <div className="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-8 md:py-20">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.14em]">
+              <p className="text-[#1A4BFF]">The record / from the IAEA read</p>
+              <p className="text-[#1A1A1A]/35">09 Nov 2026 · 001</p>
+            </div>
+
+            <div className="mt-5 grid gap-6 md:grid-cols-[0.8fr_1.2fr] md:items-end md:gap-14">
+              <h2 className="max-w-[13ch] font-display text-[38px] leading-[0.94] md:text-[52px]">
+                What the read leaves behind.
+              </h2>
+              <p className="max-w-[50ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/60">
+                A chat window gives you an answer and forgets it. This leaves a record: the question
+                the read opened, the correction it needed, and what to watch next.
+              </p>
+            </div>
+
+            <ol className="mt-10 grid border-t border-[#1A1A1A]/15 md:grid-cols-3">
+              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:pr-7">
+                <div className="flex items-baseline gap-3">
+                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">01</span>
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Question</span>
+                </div>
+                <p className="mt-4 max-w-[26ch] font-display text-[25px] leading-[1.05]">
+                  Does a confidential report to governments count as a finding against Iran at all?
+                </p>
+                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A4BFF]/65">
+                  Filed · open
+                </p>
+              </li>
+
+              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:border-r md:px-7">
+                <div className="flex items-baseline gap-3">
+                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">02</span>
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Correction</span>
+                </div>
+                <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
+                  Removed an unsupported reporting date added beyond the move.
+                </p>
+                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]">
+                  Patched · 01
+                </p>
+              </li>
+
+              <li className="border-b border-[#1A1A1A]/15 py-5 md:border-b-0 md:pl-7">
+                <div className="flex items-baseline gap-3">
+                  <span className="font-mono text-[10px] font-bold tracking-[0.12em] text-[#1A4BFF]">03</span>
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/45">Watch</span>
+                </div>
+                <p className="mt-4 max-w-[24ch] font-display text-[25px] leading-[1.05]">
+                  Whether the Board puts Iran on the formal agenda at its next meeting.
+                </p>
+                <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+                  Vienna · pending
+                </p>
+              </li>
+            </ol>
+
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
+              <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/30">
+                From the IAEA read · not a live record
+              </span>
+              <Link
+                to="/digest"
+                className="group inline-flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline decoration-[#1A4BFF]/30 underline-offset-4 transition-colors hover:decoration-[#1A4BFF]"
+              >
+                Open the record
+                <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* CLOSING */}
+        <section className="mx-auto w-full max-w-[1200px] px-5 pb-24 pt-8 md:px-8 md:pb-32">
+          <div className="border-y border-[#1A1A1A]/15 py-10 md:py-16">
+            <div className="grid gap-10 md:grid-cols-[minmax(0,1.08fr)_minmax(300px,0.92fr)] md:gap-20">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#1A1A1A]/45">
+                  The last page
+                </p>
+                <h2 className="mt-4 max-w-[12ch] font-display text-[clamp(44px,5.4vw,76px)] leading-[0.88] tracking-[-0.035em]">
+                  Read one article properly.
+                </h2>
+                <div className="mt-6 max-w-[50ch] space-y-3 font-serif text-[16px] leading-[1.65] text-[#1A1A1A]/68">
+                  <p>
+                    Ten minutes with a source you already distrust will teach you more than a month
+                    of summaries. Start with the one you have open in another tab.
+                  </p>
+                  <p>It will not tell you what to conclude. It will show you where the evidence stops.</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-end md:pl-8">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/45">
+                  Start here
+                </p>
+                <Link
+                  to="/analyst"
+                  className="group mt-4 flex items-center justify-between bg-[#1A1A1A] px-4 py-4 text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF]"
+                >
+                  <span className="font-display text-[24px] leading-none">Read a source</span>
+                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  to="/read/$token"
+                  params={{ token: SAMPLE_TOKEN }}
+                  className="group flex items-center justify-between border-b border-[#1A1A1A]/15 py-4 font-serif text-[18px] text-[#1A1A1A]/80 transition-colors hover:text-[#1A4BFF]"
+                >
+                  Open the IAEA read
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                </Link>
+                <p className="mt-5 font-mono text-[9px] uppercase leading-relaxed tracking-[0.12em] text-[#1A1A1A]/40">
+                  Free while in beta
+                  <br />
+                  Sign in with Google
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </main>
+
+      <footer className="relative z-30 border-t border-[#1A1A1A]/12 bg-[#FCF7ED] pb-10 pt-12 md:pt-16">
+        <div className="mx-auto max-w-[1200px] px-5 md:px-8">
+          <div className="grid gap-10 md:grid-cols-[1.1fr_1.9fr] md:gap-16">
+            <div>
+              <BrandLockup size="md" asLink />
+              <p className="mt-5 max-w-[15ch] font-display text-[32px] leading-[0.98] tracking-[-0.025em] md:text-[42px]">
+                A reading desk for sources you do not trust yet.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-6 gap-y-9 font-mono text-[9px] uppercase tracking-[0.12em] sm:grid-cols-3">
+              <div>
+                <p className="mb-3 text-[#1A1A1A]/40">The desk</p>
+                {[
+                  { to: "/analyst", label: "The analyst", n: "01" },
+                  { to: "/questions", label: "Questions", n: "02" },
+                  { to: "/digest", label: "Record", n: "03" },
+                  { to: "/profile", label: "Profile", n: "04" },
+                ].map((item) => (
+                  <Link key={item.to} to={item.to} className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
+                    <span className="text-[8px] text-[#1A1A1A]/25">{item.n}</span>
+                    <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">
+                      {item.label}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+
+              <div>
+                <p className="mb-3 text-[#1A1A1A]/40">The record</p>
+                <Link to="/cases" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
+                  <span className="text-[8px] text-[#1A1A1A]/25">05</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Cases</span>
+                </Link>
+                <Link
+                  to="/read/$token"
+                  params={{ token: SAMPLE_TOKEN }}
+                  className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70"
+                >
+                  <span className="text-[8px] text-[#1A1A1A]/25">06</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">The IAEA read</span>
+                </Link>
+                <a href="#loop" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
+                  <span className="text-[8px] text-[#1A1A1A]/25">07</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">How it works</span>
+                </a>
+              </div>
+
+              <div>
+                <p className="mb-3 text-[#1A1A1A]/40">Elsewhere</p>
+                <Link to="/terms" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
+                  <span className="text-[8px] text-[#1A1A1A]/25">08</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Terms</span>
+                </Link>
+                <Link to="/privacy" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
+                  <span className="text-[8px] text-[#1A1A1A]/25">09</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Privacy</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap justify-between gap-3 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
+            <span>© 2026 Threadwise. All rights reserved.</span>
+            <span>Built for people who check.</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

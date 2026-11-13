@@ -13,20 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DigestRouteImport } from './routes/digest'
-import { Route as EyeRouteImport } from './routes/eye'
 import { Route as LandingRouteImport } from './routes/landing'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as MarginRouteImport } from './routes/margin'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as QuestionsRouteImport } from './routes/questions'
-import { Route as ReachRouteImport } from './routes/reach'
 import { Route as ReadsRouteImport } from './routes/reads'
-import { Route as RecordRouteImport } from './routes/record'
-import { Route as RedactedRouteImport } from './routes/redacted'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SeminarRouteImport } from './routes/seminar'
-import { Route as TearRouteImport } from './routes/tear'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as ApiAnalystRouteImport } from './routes/api/analyst'
@@ -80,11 +74,6 @@ const DigestRoute = DigestRouteImport.update({
   path: '/digest',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EyeRoute = EyeRouteImport.update({
-  id: '/eye',
-  path: '/eye',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LandingRoute = LandingRouteImport.update({
   id: '/landing',
   path: '/landing',
@@ -93,11 +82,6 @@ const LandingRoute = LandingRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MarginRoute = MarginRouteImport.update({
-  id: '/margin',
-  path: '/margin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -115,24 +99,9 @@ const QuestionsRoute = QuestionsRouteImport.update({
   path: '/questions',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ReachRoute = ReachRouteImport.update({
-  id: '/reach',
-  path: '/reach',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ReadsRoute = ReadsRouteImport.update({
   id: '/reads',
   path: '/reads',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecordRoute = RecordRouteImport.update({
-  id: '/record',
-  path: '/record',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RedactedRoute = RedactedRouteImport.update({
-  id: '/redacted',
-  path: '/redacted',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewRoute = ReviewRouteImport.update({
@@ -143,11 +112,6 @@ const ReviewRoute = ReviewRouteImport.update({
 const SeminarRoute = SeminarRouteImport.update({
   id: '/seminar',
   path: '/seminar',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TearRoute = TearRouteImport.update({
-  id: '/tear',
-  path: '/tear',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -316,20 +280,14 @@ export interface FileRoutesByFullPath {
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
-  '/eye': typeof EyeRoute
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
-  '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
-  '/reach': typeof ReachRoute
   '/reads': typeof ReadsRoute
-  '/record': typeof RecordRoute
-  '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
-  '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -368,20 +326,14 @@ export interface FileRoutesByTo {
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
-  '/eye': typeof EyeRoute
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
-  '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
-  '/reach': typeof ReachRoute
   '/reads': typeof ReadsRoute
-  '/record': typeof RecordRoute
-  '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
-  '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -421,20 +373,14 @@ export interface FileRoutesById {
   '/analyst': typeof AnalystRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
-  '/eye': typeof EyeRoute
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
-  '/margin': typeof MarginRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/questions': typeof QuestionsRoute
-  '/reach': typeof ReachRoute
   '/reads': typeof ReadsRoute
-  '/record': typeof RecordRoute
-  '/redacted': typeof RedactedRoute
   '/review': typeof ReviewRoute
   '/seminar': typeof SeminarRoute
-  '/tear': typeof TearRoute
   '/terms': typeof TermsRoute
   '/workspace': typeof WorkspaceRoute
   '/api/analyst': typeof ApiAnalystRoute
@@ -475,20 +421,14 @@ export interface FileRouteTypes {
     | '/analyst'
     | '/cases'
     | '/digest'
-    | '/eye'
     | '/landing'
     | '/login'
-    | '/margin'
     | '/privacy'
     | '/profile'
     | '/questions'
-    | '/reach'
     | '/reads'
-    | '/record'
-    | '/redacted'
     | '/review'
     | '/seminar'
-    | '/tear'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -527,20 +467,14 @@ export interface FileRouteTypes {
     | '/analyst'
     | '/cases'
     | '/digest'
-    | '/eye'
     | '/landing'
     | '/login'
-    | '/margin'
     | '/privacy'
     | '/profile'
     | '/questions'
-    | '/reach'
     | '/reads'
-    | '/record'
-    | '/redacted'
     | '/review'
     | '/seminar'
-    | '/tear'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -579,20 +513,14 @@ export interface FileRouteTypes {
     | '/analyst'
     | '/cases'
     | '/digest'
-    | '/eye'
     | '/landing'
     | '/login'
-    | '/margin'
     | '/privacy'
     | '/profile'
     | '/questions'
-    | '/reach'
     | '/reads'
-    | '/record'
-    | '/redacted'
     | '/review'
     | '/seminar'
-    | '/tear'
     | '/terms'
     | '/workspace'
     | '/api/analyst'
@@ -632,20 +560,14 @@ export interface RootRouteChildren {
   AnalystRoute: typeof AnalystRoute
   CasesRoute: typeof CasesRoute
   DigestRoute: typeof DigestRoute
-  EyeRoute: typeof EyeRoute
   LandingRoute: typeof LandingRoute
   LoginRoute: typeof LoginRoute
-  MarginRoute: typeof MarginRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   QuestionsRoute: typeof QuestionsRoute
-  ReachRoute: typeof ReachRoute
   ReadsRoute: typeof ReadsRoute
-  RecordRoute: typeof RecordRoute
-  RedactedRoute: typeof RedactedRoute
   ReviewRoute: typeof ReviewRoute
   SeminarRoute: typeof SeminarRoute
-  TearRoute: typeof TearRoute
   TermsRoute: typeof TermsRoute
   WorkspaceRoute: typeof WorkspaceRoute
   ApiAnalystRoute: typeof ApiAnalystRoute
@@ -710,13 +632,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DigestRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/eye': {
-      id: '/eye'
-      path: '/eye'
-      fullPath: '/eye'
-      preLoaderRoute: typeof EyeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/landing': {
       id: '/landing'
       path: '/landing'
@@ -729,13 +644,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/margin': {
-      id: '/margin'
-      path: '/margin'
-      fullPath: '/margin'
-      preLoaderRoute: typeof MarginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -759,32 +667,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuestionsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/reach': {
-      id: '/reach'
-      path: '/reach'
-      fullPath: '/reach'
-      preLoaderRoute: typeof ReachRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/reads': {
       id: '/reads'
       path: '/reads'
       fullPath: '/reads'
       preLoaderRoute: typeof ReadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/record': {
-      id: '/record'
-      path: '/record'
-      fullPath: '/record'
-      preLoaderRoute: typeof RecordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/redacted': {
-      id: '/redacted'
-      path: '/redacted'
-      fullPath: '/redacted'
-      preLoaderRoute: typeof RedactedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/review': {
@@ -799,13 +686,6 @@ declare module '@tanstack/react-router' {
       path: '/seminar'
       fullPath: '/seminar'
       preLoaderRoute: typeof SeminarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tear': {
-      id: '/tear'
-      path: '/tear'
-      fullPath: '/tear'
-      preLoaderRoute: typeof TearRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -1040,20 +920,14 @@ const rootRouteChildren: RootRouteChildren = {
   AnalystRoute: AnalystRoute,
   CasesRoute: CasesRoute,
   DigestRoute: DigestRoute,
-  EyeRoute: EyeRoute,
   LandingRoute: LandingRoute,
   LoginRoute: LoginRoute,
-  MarginRoute: MarginRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   QuestionsRoute: QuestionsRoute,
-  ReachRoute: ReachRoute,
   ReadsRoute: ReadsRoute,
-  RecordRoute: RecordRoute,
-  RedactedRoute: RedactedRoute,
   ReviewRoute: ReviewRoute,
   SeminarRoute: SeminarRoute,
-  TearRoute: TearRoute,
   TermsRoute: TermsRoute,
   WorkspaceRoute: WorkspaceRoute,
   ApiAnalystRoute: ApiAnalystRoute,
