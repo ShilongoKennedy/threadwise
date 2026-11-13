@@ -1225,19 +1225,27 @@ html:has(.record-page) { scroll-behavior: smooth; }
 
 
 
-/* A real eye, softly held by the page. */
-.eye-photo {
-  -webkit-mask-image: radial-gradient(ellipse 58% 62% at 55% 52%, #000 44%, transparent 82%);
-  mask-image: radial-gradient(ellipse 58% 62% at 55% 52%, #000 44%, transparent 82%);
-  filter: contrast(1.04) brightness(.96) saturate(.92);
-  animation: eye-breathe 30s ease-in-out infinite alternate;
-  transform-origin: 55% 52%;
-  will-change: transform;
+/* A real macro eye, held softly inside the page. */
+.eye-video {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100vw;
+  height: auto;
+  max-width: none;
+  transform: translateY(-50%);
+  object-fit: cover;
+  filter: contrast(1.03) brightness(.94) saturate(.82);
+  -webkit-mask-image: radial-gradient(ellipse 52% 56% at 54% 48%, #000 48%, transparent 88%);
+  mask-image: radial-gradient(ellipse 52% 56% at 54% 48%, #000 48%, transparent 88%);
 }
-@keyframes eye-breathe {
-  from { transform: scale(1.015) translate3d(-0.4%, 0.3%, 0); }
-  to { transform: scale(1.065) translate3d(0.4%, -0.3%, 0); }
+@media (max-width: 767px) {
+  .eye-video {
+    left: -6vw;
+    top: 72%;
+    width: 190vw;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .eye-photo { animation: none; }
+  .eye-video { display: none; }
 }
