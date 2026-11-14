@@ -55,15 +55,6 @@ export function HeroFieldwork() {
           <circle cx="568" cy="300" r="3.5" fill="#1A4BFF" fillOpacity="0.55" />
           <circle cx="1002" cy="316" r="3" fill="#1A4BFF" fillOpacity="0.4" />
 
-          {/* Topographic contours, kept low-contrast. */}
-          <g fill="none" stroke="#8F7D65" strokeOpacity="0.16">
-            <path d="M-40 790 C92 700 184 766 286 704 S438 622 560 674 S684 760 798 686" />
-            <path d="M-36 812 C104 730 198 788 310 730 S470 654 596 704 S724 782 842 714" />
-            <path d="M-22 834 C118 758 222 812 344 752 S510 686 636 732 S774 802 890 742" />
-            <path d="M0 858 C142 786 252 836 378 778 S548 718 674 760 S812 824 928 772" />
-          </g>
-
-          {/* Small chart notation. */}
           {/* Registration marks. */}
           <g stroke="#1A4BFF" strokeOpacity="0.16">
             <path d="M84 84 h18 M93 75 v18" />
@@ -98,9 +89,6 @@ export function HeroFieldwork() {
         <p className="font-mono text-[8px] uppercase tracking-[0.16em] text-[#1A1A1A]/30">09 Nov 2026 / Field note 001</p>
       </div>
 
-      <div aria-hidden className="pointer-events-none absolute bottom-[4%] left-[35%] z-[1] font-display text-[170px] leading-[0.6] tracking-[-0.08em] text-[#1A4BFF]/[0.03]">
-        001
-      </div>
     </>
   );
 }
