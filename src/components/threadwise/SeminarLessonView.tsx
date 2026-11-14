@@ -2,6 +2,7 @@ import { BookOpen, Check, Compass } from "lucide-react";
 import type { Seminar } from "@/lib/threadwise/seminar";
 import type { SeminarLesson } from "@/lib/threadwise/seminar-lesson";
 import { SeminarTutor } from "@/components/threadwise/SeminarTutor";
+import { InkRule } from "@/components/threadwise/InkMarks";
 
 const CONTENTS = [
   ["terms", "The terms"],
@@ -16,17 +17,20 @@ const CONTENTS = [
 
 function SectionHead({ number, title, kicker }: { number: string; title: string; kicker?: string }) {
   return (
-    <div className="flex items-baseline gap-4 border-b border-[#1A1A1A]/15 pb-3">
-      <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">{number}</span>
-      <div>
-        <h3 className="font-display text-[28px] leading-none tracking-[-0.02em] md:text-[34px]">{title}</h3>
-        {kicker ? <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">{kicker}</p> : null}
+    <div>
+      <div className="flex items-baseline gap-4">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">{number}</span>
+        <div>
+          <h3 className="font-display text-[28px] leading-none tracking-[-0.02em] md:text-[34px]">{title}</h3>
+          {kicker ? <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">{kicker}</p> : null}
+        </div>
       </div>
+      <InkRule className="mt-3" />
     </div>
   );
 }
 
-export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: SeminarLesson; text: string; context: string; seminar: Seminar }) {
+export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, onAskTutor }: { lesson: SeminarLesson; text: string; context: string; seminar: Seminar; tutorSeed?: string | null; onAskTutor?: (selected: string) => void }) {
   const words = JSON.stringify(lesson).split(/\s+/).length;
   const minutes = Math.max(4, Math.round(words / 190));
 
@@ -76,7 +80,7 @@ export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: 
         </aside>
 
         <article className="min-w-0 space-y-12">
-          <section id="lesson-terms" className="scroll-mt-24">
+          <section id="lesson-terms" data-loupe-section="The terms" className="scroll-mt-24">
             <SectionHead number="01" title="The terms that make the question legible." kicker="Start here" />
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {lesson.key_terms.map((term) => (
@@ -91,7 +95,7 @@ export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: 
             </div>
           </section>
 
-          <section id="lesson-background" className="scroll-mt-24">
+          <section id="lesson-background" data-loupe-section="The background" className="scroll-mt-24">
             <SectionHead number="02" title="The minimum background." kicker="What you need before the argument" />
             <div className="mt-5 space-y-5">
               {lesson.background.map((block) => (
@@ -103,7 +107,7 @@ export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: 
             </div>
           </section>
 
-          <section id="lesson-mechanisms" className="scroll-mt-24">
+          <section id="lesson-mechanisms" data-loupe-section="Two mechanisms" className="scroll-mt-24">
             <SectionHead number="03" title="Two engines, not two slogans." kicker="How each theory actually works" />
             <div className="mt-5 grid gap-3 md:grid-cols-2">
               {lesson.mechanisms.map((mechanism) => (
@@ -125,7 +129,7 @@ export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: 
             </div>
           </section>
 
-          <section id="lesson-crux" className="scroll-mt-24">
+          <section id="lesson-crux" data-loupe-section="The crux as a test" className="scroll-mt-24">
             <SectionHead number="04" title={lesson.crux.heading} kicker="The test that separates them" />
             <div className="mt-5 rounded-[20px] bg-[#1A1A1A] px-5 py-6 text-[#F4EBDD] md:px-7">
               <p className="max-w-[62ch] font-serif text-[15px] leading-[1.7] text-white/75">{lesson.crux.explanation}</p>
@@ -136,7 +140,7 @@ export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: 
             </div>
           </section>
 
-          <section id="lesson-misreadings" className="scroll-mt-24">
+          <section id="lesson-misreadings" data-loupe-section="Where careful readers slip" className="scroll-mt-24">
             <SectionHead number="05" title="Where careful readers still slip." kicker="Common misreadings" />
             <div className="mt-5 divide-y divide-[#1A1A1A]/12 border-y border-[#1A1A1A]/12">
               {lesson.misconceptions.map((item) => (
@@ -148,7 +152,7 @@ export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: 
             </div>
           </section>
 
-          <section id="lesson-example" className="scroll-mt-24">
+          <section id="lesson-example" data-loupe-section="Worked example" className="scroll-mt-24">
             <SectionHead number="06" title={lesson.worked_example.heading} kicker="One concrete walk-through" />
             <div className="mt-5 border-l-2 border-[#C49A67]/55 pl-5">
               <p className="font-serif text-[14px] leading-[1.7] text-[#1A1A1A]/60">{lesson.worked_example.scenario}</p>
@@ -159,7 +163,7 @@ export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: 
             </div>
           </section>
 
-          <section id="lesson-check" className="scroll-mt-24">
+          <section id="lesson-check" data-loupe-section="Check yourself" className="scroll-mt-24">
             <SectionHead number="07" title="Check yourself." kicker="Answer before opening" />
             <div className="mt-5 space-y-2">
               {lesson.check.map((item, index) => (
@@ -175,7 +179,7 @@ export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: 
             </div>
           </section>
 
-          <section id="lesson-next" className="scroll-mt-24">
+          <section id="lesson-next" data-loupe-section="What to explore" className="scroll-mt-24">
             <SectionHead number="08" title="What to look for next." kicker="Source types, not fake citations" />
             <div className="mt-5 grid gap-2 sm:grid-cols-2">
               {lesson.next_sources.map((source) => (
@@ -190,7 +194,14 @@ export function SeminarLessonView({ lesson, text, context, seminar }: { lesson: 
             </div>
           </section>
 
-          <SeminarTutor text={text} context={context} seminar={seminar} lesson={lesson} />
+          <SeminarTutor
+            text={text}
+            context={context}
+            seminar={seminar}
+            lesson={lesson}
+            seed={tutorSeed ?? null}
+            onSeedConsumed={() => undefined}
+          />
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-5">
             <p className="inline-flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">

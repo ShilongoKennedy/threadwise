@@ -1445,3 +1445,87 @@ main {
   padding: 0.1em 0.3em;
   border-radius: 4px;
 }
+
+
+
+
+
+
+
+
+
+
+/* ---------- A field of doors: three-dimensional world ---------- */
+.doorway-page {
+  background: #8dc4e8;
+}
+.doorway-page canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
+}
+.doorway-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(244, 239, 226, 0.2) 0%, transparent 40%),
+    linear-gradient(0deg, rgba(24, 30, 20, 0.12) 0%, transparent 18%);
+  mix-blend-mode: soft-light;
+}
+@media (max-width: 767px) {
+  .doorway-page { height: auto; min-height: 100dvh; }
+  .doorway-page::after { background: linear-gradient(0deg, rgba(24,30,20,0.18), transparent 28%); }
+}
+
+/* ---------------------------------------------------------------------------
+   The Seminar — Loupe and ink marks
+   ------------------------------------------------------------------------- */
+@keyframes tw-loupe-in {
+  from {
+    opacity: 0;
+    transform: translateY(9px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tw-loupe-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 4px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.tw-loupe-panel {
+  animation: tw-loupe-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tw-loupe-trigger {
+  animation: tw-loupe-pop 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.seminar-reading-surface ::selection {
+  background: rgba(26, 75, 255, 0.2);
+  color: #11110f;
+}
+
+.seminar-reading-surface [data-loupe-section] {
+  scroll-margin-top: 96px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tw-loupe-panel,
+  .tw-loupe-trigger {
+    animation: none;
+  }
+}

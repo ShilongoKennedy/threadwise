@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { ArrowUp, Loader2, MessageSquareText } from "lucide-react";
 import type { Seminar } from "@/lib/threadwise/seminar";
@@ -18,17 +18,29 @@ export function SeminarTutor({
   context,
   seminar,
   lesson,
+  seed,
+  onSeedConsumed,
 }: {
   text: string;
   context: string;
   seminar: Seminar;
   lesson: SeminarLesson;
+  seed?: string | null;
+  onSeedConsumed?: () => void;
 }) {
   const [question, setQuestion] = useState("");
   const [turns, setTurns] = useState<Turn[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const fieldRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (!seed) return;
+    setQuestion(seed);
+    onSeedConsumed?.();
+    window.setTimeout(() => fieldRef.current?.focus(), 80);
+  }, [seed, onSeedConsumed]);
 
   const ask = async (value?: string) => {
     const clean = (value ?? question).trim();
@@ -57,7 +69,7 @@ export function SeminarTutor({
   };
 
   return (
-    <section className="mt-12 border-t border-[#1A1A1A]/15 pt-7">
+    <section id="seminar-tutor" className="mt-12 scroll-mt-24 border-t border-[#1A1A1A]/15 pt-7">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="inline-flex items-center gap-2 font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
@@ -134,6 +146,7 @@ export function SeminarTutor({
           className="mt-4 flex items-end gap-2 rounded-[18px] border border-[#8A745C]/25 bg-[#FBF6EC]/70 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-md"
         >
           <textarea
+            ref={fieldRef}
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
             onKeyDown={(event) => {

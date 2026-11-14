@@ -43,6 +43,7 @@ import { Route as ApiReadsPublicRouteImport } from './routes/api/reads-public'
 import { Route as ApiSeminarRouteImport } from './routes/api/seminar'
 import { Route as ApiSeminarFollowupRouteImport } from './routes/api/seminar-followup'
 import { Route as ApiSeminarLessonRouteImport } from './routes/api/seminar-lesson'
+import { Route as ApiSeminarLoupeRouteImport } from './routes/api/seminar-loupe'
 import { Route as ApiThinkingProfileRouteImport } from './routes/api/thinking-profile'
 import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as ApiWeeklyReviewRouteImport } from './routes/api/weekly-review'
@@ -224,6 +225,11 @@ const ApiSeminarLessonRoute = ApiSeminarLessonRouteImport.update({
   path: '/api/seminar-lesson',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSeminarLoupeRoute = ApiSeminarLoupeRouteImport.update({
+  id: '/api/seminar-loupe',
+  path: '/api/seminar-loupe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiThinkingProfileRoute = ApiThinkingProfileRouteImport.update({
   id: '/api/thinking-profile',
   path: '/api/thinking-profile',
@@ -310,6 +316,7 @@ export interface FileRoutesByFullPath {
   '/api/seminar': typeof ApiSeminarRoute
   '/api/seminar-followup': typeof ApiSeminarFollowupRoute
   '/api/seminar-lesson': typeof ApiSeminarLessonRoute
+  '/api/seminar-loupe': typeof ApiSeminarLoupeRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
@@ -356,6 +363,7 @@ export interface FileRoutesByTo {
   '/api/seminar': typeof ApiSeminarRoute
   '/api/seminar-followup': typeof ApiSeminarFollowupRoute
   '/api/seminar-lesson': typeof ApiSeminarLessonRoute
+  '/api/seminar-loupe': typeof ApiSeminarLoupeRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
@@ -403,6 +411,7 @@ export interface FileRoutesById {
   '/api/seminar': typeof ApiSeminarRoute
   '/api/seminar-followup': typeof ApiSeminarFollowupRoute
   '/api/seminar-lesson': typeof ApiSeminarLessonRoute
+  '/api/seminar-loupe': typeof ApiSeminarLoupeRoute
   '/api/thinking-profile': typeof ApiThinkingProfileRoute
   '/api/threadwise': typeof ApiThreadwiseRoute
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
@@ -451,6 +460,7 @@ export interface FileRouteTypes {
     | '/api/seminar'
     | '/api/seminar-followup'
     | '/api/seminar-lesson'
+    | '/api/seminar-loupe'
     | '/api/thinking-profile'
     | '/api/threadwise'
     | '/api/weekly-review'
@@ -497,6 +507,7 @@ export interface FileRouteTypes {
     | '/api/seminar'
     | '/api/seminar-followup'
     | '/api/seminar-lesson'
+    | '/api/seminar-loupe'
     | '/api/thinking-profile'
     | '/api/threadwise'
     | '/api/weekly-review'
@@ -543,6 +554,7 @@ export interface FileRouteTypes {
     | '/api/seminar'
     | '/api/seminar-followup'
     | '/api/seminar-lesson'
+    | '/api/seminar-loupe'
     | '/api/thinking-profile'
     | '/api/threadwise'
     | '/api/weekly-review'
@@ -590,6 +602,7 @@ export interface RootRouteChildren {
   ApiSeminarRoute: typeof ApiSeminarRoute
   ApiSeminarFollowupRoute: typeof ApiSeminarFollowupRoute
   ApiSeminarLessonRoute: typeof ApiSeminarLessonRoute
+  ApiSeminarLoupeRoute: typeof ApiSeminarLoupeRoute
   ApiThinkingProfileRoute: typeof ApiThinkingProfileRoute
   ApiThreadwiseRoute: typeof ApiThreadwiseRoute
   ApiWeeklyReviewRoute: typeof ApiWeeklyReviewRoute
@@ -842,6 +855,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSeminarLessonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/seminar-loupe': {
+      id: '/api/seminar-loupe'
+      path: '/api/seminar-loupe'
+      fullPath: '/api/seminar-loupe'
+      preLoaderRoute: typeof ApiSeminarLoupeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/thinking-profile': {
       id: '/api/thinking-profile'
       path: '/api/thinking-profile'
@@ -950,6 +970,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSeminarRoute: ApiSeminarRoute,
   ApiSeminarFollowupRoute: ApiSeminarFollowupRoute,
   ApiSeminarLessonRoute: ApiSeminarLessonRoute,
+  ApiSeminarLoupeRoute: ApiSeminarLoupeRoute,
   ApiThinkingProfileRoute: ApiThinkingProfileRoute,
   ApiThreadwiseRoute: ApiThreadwiseRoute,
   ApiWeeklyReviewRoute: ApiWeeklyReviewRoute,

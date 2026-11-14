@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowRight, ArrowUpRight, BookOpen, RotateCcw } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowRight, ArrowUpRight, BookOpen, RotateCcw, Search } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import type { Seminar, SeminarTheory } from "@/lib/threadwise/seminar";
 import type { SeminarLesson } from "@/lib/threadwise/seminar-lesson";
 import { SeminarLessonView } from "@/components/threadwise/SeminarLessonView";
+import { SeminarLoupe, LoupeSelectionButton, LookCloserButton, useLoupeSelection, type LoupeTarget } from "@/components/threadwise/SeminarLoupe";
+import { InkArrow, InkCircle, InkRule, InkTick } from "@/components/threadwise/InkMarks";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/seminar")({
@@ -38,6 +40,22 @@ function SeminarPage() {
   const [text, setText] = useState("");
   const [context, setContext] = useState("");
   const [seminar, setSeminar] = useState<Seminar | null>(null);
+  const readingRef = useRef<HTMLElement | null>(null);
+  const [loupeTarget, setLoupeTarget] = useState<LoupeTarget | null>(null);
+  const [tutorSeed, setTutorSeed] = useState<string | null>(null);
+  const { candidate: loupeCandidate, clearCandidate } = useLoupeSelection(readingRef);
+
+  const openLoupe = (target: LoupeTarget) => {
+    setLoupeTarget(target);
+    clearCandidate();
+  };
+
+  const askTutorAbout = (selected: string) => {
+    setTutorSeed(selected);
+    window.setTimeout(() => {
+      document.getElementById("seminar-tutor")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
+  };
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stand, setStand] = useState<"A" | "B" | "undecided" | null>(null);
@@ -102,6 +120,7 @@ function SeminarPage() {
     setContext(item.context ?? "");
     setSeminar(item.seminar);
     setLesson(item.seminar.lesson ?? null);
+    setLoupeTarget(null);
     setLessonBusy(false);
     setLessonError(null);
     setStand(item.stand);
@@ -347,8 +366,8 @@ function SeminarPage() {
       )}
 
       {seminar && (
-        <main className="mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
-          <section className="grid gap-6 border-y border-[#1A1A1A]/15 py-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12 md:py-8">
+        <main ref={readingRef} className="seminar-reading-surface mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
+          <section data-loupe-section="The question underneath" className="grid gap-6 border-y border-[#1A1A1A]/15 py-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12 md:py-8">
             <div>
               <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
                 The question underneath
@@ -370,20 +389,24 @@ function SeminarPage() {
             </div>
           </section>
 
-          <section className="mt-8">
-            <div className="flex items-end justify-between gap-4 border-b border-[#1A1A1A]/15 pb-3">
+          <section data-loupe-section="Two readings" className="mt-8">
+            <div className="flex items-end justify-between gap-4 pb-1">
               <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the same thing.</h2>
               <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
                 steelmanned
               </span>
             </div>
-            <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+            <InkRule className="mt-2" />
+            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
               Arguments to test, not sourced findings.
+              <span className="inline-flex items-center gap-1 text-[#1A4BFF]/65">
+                <Search className="h-2.5 w-2.5" /> select a line, or hover “closer”
+              </span>
             </p>
 
             <div className="grid border-y border-[#1A1A1A]/15 md:grid-cols-2 md:divide-x md:divide-[#1A1A1A]/15">
               {seminar.theories.map((theory, index) => (
-                <TheoryColumn key={index} theory={theory} index={index} />
+                <TheoryColumn key={index} theory={theory} index={index} onLookCloser={openLoupe} />
               ))}
             </div>
           </section>
@@ -439,7 +462,7 @@ function SeminarPage() {
             </section>
           ) : (
             <>
-              <section className="mt-10 bg-[#1A1A1A] text-[#FDFBF7]">
+              <section data-loupe-section="The crux" className="mt-10 bg-[#1A1A1A] text-[#FDFBF7]">
                 <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
                   <div className="border-b border-white/15 px-5 py-4 md:border-b-0 md:border-r md:border-white/15 md:px-6 md:py-8">
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#7F9BFF]">
@@ -487,7 +510,7 @@ function SeminarPage() {
                 </div>
               </section>
 
-              <section className="mt-6">
+              <section data-loupe-section="The provisional verdict" className="mt-6">
                 {!verdictOpen ? (
                   <div className="flex flex-wrap items-center justify-between gap-3 border-y border-[#1A1A1A]/15 py-5">
                     <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
@@ -536,7 +559,7 @@ function SeminarPage() {
                 )}
               </section>
 
-              <section className="mt-10 tw-glass-panel overflow-hidden">
+              <section data-loupe-section="The deeper lesson" className="mt-10 tw-glass-panel overflow-hidden">
                 <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
                   <div>
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
@@ -584,7 +607,16 @@ function SeminarPage() {
                 </p>
               ) : null}
 
-              {lesson ? <SeminarLessonView lesson={lesson} text={text} context={context} seminar={seminar} /> : null}
+              {lesson ? (
+                <SeminarLessonView
+                  lesson={lesson}
+                  text={text}
+                  context={context}
+                  seminar={seminar}
+                  tutorSeed={tutorSeed}
+                  onAskTutor={askTutorAbout}
+                />
+              ) : null}
 
               <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
                 <div>
@@ -633,6 +665,21 @@ function SeminarPage() {
           )}
         </main>
       )}
+
+      {loupeCandidate && !loupeTarget ? (
+        <LoupeSelectionButton candidate={loupeCandidate} onOpen={() => openLoupe(loupeCandidate)} />
+      ) : null}
+      {seminar ? (
+        <SeminarLoupe
+          target={loupeTarget}
+          text={text}
+          context={context}
+          seminar={seminar}
+          lesson={lesson}
+          onClose={() => setLoupeTarget(null)}
+          onAskTutor={lesson ? askTutorAbout : undefined}
+        />
+      ) : null}
     </div>
   );
 }
@@ -644,11 +691,22 @@ const DISAGREEMENT: Record<Seminar["disagreement"], string> = {
   mixed: "empirical and conceptual",
 };
 
-function TheoryColumn({ theory, index }: { theory: SeminarTheory; index: number }) {
+function TheoryColumn({
+  theory,
+  index,
+  onLookCloser,
+}: {
+  theory: SeminarTheory;
+  index: number;
+  onLookCloser: (target: LoupeTarget) => void;
+}) {
   const letter = theory.key === "A" || theory.key === "B" ? theory.key : index === 0 ? "A" : "B";
   const tint = letter === "A" ? "bg-[#F4EFE6]/65" : "bg-transparent";
   return (
-    <article className={`${tint} px-5 py-6 md:px-7 md:py-8`}>
+    <article
+      data-loupe-section={`Theory ${letter}: ${theory.name}`}
+      className={`${tint} group/theory px-5 py-6 md:px-7 md:py-8`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/40">
@@ -656,23 +714,37 @@ function TheoryColumn({ theory, index }: { theory: SeminarTheory; index: number 
           </p>
           <h3 className="mt-1 max-w-[16ch] font-display text-[28px] leading-[1.02]">{theory.name}</h3>
         </div>
-        <span
-          className={`font-display text-[64px] leading-[0.7] ${letter === "A" ? "text-[#1A4BFF]" : "text-[#1A1A1A]"}`}
-          aria-hidden
-        >
-          {letter}
-        </span>
+        <div className="relative grid h-14 w-14 shrink-0 place-items-center">
+          <InkCircle className={`absolute inset-0 ${letter === "A" ? "text-[#1A4BFF]/50" : "text-[#1A1A1A]/35"}`} />
+          <span
+            className={`font-display text-[54px] leading-[0.7] ${letter === "A" ? "text-[#1A4BFF]" : "text-[#1A1A1A]"}`}
+            aria-hidden
+          >
+            {letter}
+          </span>
+        </div>
       </div>
 
-      <p className="mt-5 border-t border-[#1A1A1A]/15 pt-4 font-serif text-[15.5px] leading-relaxed text-[#1A1A1A]/80">
-        {theory.claim}
-      </p>
+      <InkRule className="mt-5" />
+      <div className="group/line group mt-3 flex items-start gap-2">
+        <p className="font-serif text-[15.5px] leading-relaxed text-[#1A1A1A]/80">{theory.claim}</p>
+        <LookCloserButton text={theory.claim} section={`Theory ${letter} · claim`} onLookCloser={onLookCloser} />
+      </div>
 
       <div className="mt-4">
-        <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
-          The mechanism
-        </p>
-        <p className="mt-1 font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/70">
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+            The mechanism
+          </p>
+          <LookCloserButton
+            text={theory.mechanism.slice(0, 680)}
+            section={`Theory ${letter} · mechanism`}
+            onLookCloser={onLookCloser}
+            className="group-hover/theory:opacity-100"
+          />
+        </div>
+        <InkRule className="mt-1.5" />
+        <p className="mt-2 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/70">
           {theory.mechanism}
         </p>
       </div>
@@ -682,10 +754,20 @@ function TheoryColumn({ theory, index }: { theory: SeminarTheory; index: number 
           <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
             It predicts
           </p>
-          <ul className="mt-1 space-y-1">
+          <InkRule className="mt-1.5" />
+          <ul className="mt-1.5 space-y-1.5">
             {theory.predictions.map((prediction) => (
-              <li key={prediction} className="font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65">
-                → {prediction}
+              <li
+                key={prediction}
+                className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65 transition-colors hover:bg-[#1A4BFF]/[0.035]"
+              >
+                <InkArrow className="mt-0.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-rotate-3" />
+                <span className="flex-1">{prediction}</span>
+                <LookCloserButton
+                  text={prediction}
+                  section={`Theory ${letter} · prediction`}
+                  onLookCloser={onLookCloser}
+                />
               </li>
             ))}
           </ul>
@@ -694,20 +776,33 @@ function TheoryColumn({ theory, index }: { theory: SeminarTheory; index: number 
           <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
             Evidence to check
           </p>
-          <ul className="mt-1 space-y-1">
+          <InkRule className="mt-1.5" />
+          <ul className="mt-1.5 space-y-1.5">
             {theory.evidence.map((item) => (
-              <li key={item} className="font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65">
-                {item}
+              <li
+                key={item}
+                className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65 transition-colors hover:bg-[#1A4BFF]/[0.035]"
+              >
+                <InkTick className="mt-0.5" />
+                <span className="flex-1">{item}</span>
+                <LookCloserButton
+                  text={item}
+                  section={`Theory ${letter} · evidence`}
+                  onLookCloser={onLookCloser}
+                />
               </li>
             ))}
           </ul>
         </div>
       </div>
 
-      <div className="mt-4 border-l-2 border-[#1A1A1A]/30 pl-3">
-        <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
-          It would be wrong if
-        </p>
+      <div className="group mt-4 border-l-2 border-[#1A1A1A]/30 pl-3 transition-colors hover:border-[#1A4BFF]/50">
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+            It would be wrong if
+          </p>
+          <LookCloserButton text={theory.falsifier} section={`Theory ${letter} · falsifier`} onLookCloser={onLookCloser} />
+        </div>
         <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-[#1A1A1A]/65">
           {theory.falsifier}
         </p>
