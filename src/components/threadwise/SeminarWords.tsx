@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { Sparkles, X } from "lucide-react";
 import type { Seminar } from "@/lib/threadwise/seminar";
 
-export type GlossaryWord = Seminar["glossary"][number];
+export type GlossaryWord = NonNullable<Seminar["glossary"]>[number];
 
 export const WORD_TONES = [
   { bg: "#F7E4BC", line: "#CFA965", ink: "#6B4A1D", wash: "#FBF2DE" },

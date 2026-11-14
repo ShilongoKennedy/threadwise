@@ -20,7 +20,7 @@ function SectionHead({ number, title, kicker }: { number: string; title: string;
   return (
     <div>
       <div className="flex items-baseline gap-4">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#4F705C]">{number}</span>
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#A3644E]">{number}</span>
         <div>
           <h3 className="font-display text-[28px] leading-none tracking-[-0.02em] md:text-[34px]">{title}</h3>
           {kicker ? <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-[#2F332C]/35">{kicker}</p> : null}
@@ -55,13 +55,13 @@ export function SeminarLessonView({
 
   return (
     <section aria-labelledby="deeper-lesson" className="mt-12 scroll-mt-24">
-      <div className="relative overflow-hidden rounded-[26px] border border-[#D8CCBA] bg-[#EAF0E7] px-5 py-7 text-[#2F332C] shadow-[0_24px_60px_-40px_rgba(47,51,44,0.45)] md:px-8 md:py-9">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_82%_12%,rgba(255,248,232,0.75),transparent_58%)]" />
-        <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-[#B9CCB7]/50" />
-        <div className="pointer-events-none absolute -right-2 -top-8 h-44 w-44 rounded-full border border-[#B9CCB7]/35" />
+      <div className="relative overflow-hidden rounded-[18px] border border-[#D8C3AA] bg-[#F7EBDD] px-5 py-7 text-[#2F332C] shadow-[0_24px_60px_-40px_rgba(47,51,44,0.45)] md:px-8 md:py-9">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_82%_12%,rgba(255,248,235,0.85),transparent_58%)]" />
+        <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-[#C8D6DE]/70" />
+        <div className="pointer-events-none absolute -right-2 -top-8 h-44 w-44 rounded-full border border-[#C8D6DE]/55" />
         <div className="relative">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <p className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#4F705C]">The deeper lesson</p>
+            <p className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#7A5B45]">The deeper lesson</p>
             <span className="h-3 w-px bg-[#2F332C]/20" />
             <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#2F332C]/42">Built from this seminar</p>
           </div>
@@ -164,12 +164,12 @@ export function SeminarLessonView({
 
           <section id="lesson-crux" data-loupe-section="The crux as a test" className="scroll-mt-24">
             <SectionHead number="04" title={lesson.crux.heading} kicker="The test that separates them" />
-            <div className="mt-5 rounded-[24px] border border-[#C9D8C4] bg-[#E5EEE1] px-5 py-6 text-[#2F332C] md:px-7">
+            <div className="mt-5 rounded-[18px] border border-[#DCC9A7] bg-[#F2E4C9] px-5 py-6 text-[#2F332C] md:px-7">
               <p className="max-w-[62ch] font-serif text-[15px] leading-[1.7] text-[#2F332C]/75">
                 <HighlightedText text={lesson.crux.explanation} glossary={glossary} onWord={onWord} />
               </p>
               <div className="mt-5 border-t border-[#2F332C]/15 pt-4">
-                <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#4F705C]">Try this on the next piece of evidence</p>
+                <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#A3644E]">Try this on the next piece of evidence</p>
                 <p className="mt-1 max-w-[62ch] font-serif text-[14px] leading-relaxed text-[#2F332C]/80">
                   <HighlightedText text={lesson.crux.test} glossary={glossary} onWord={onWord} />
                 </p>

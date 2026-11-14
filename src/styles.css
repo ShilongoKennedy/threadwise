@@ -1587,3 +1587,10 @@ main {
   .word-cloud { animation: none; }
   .seminar-word { transition: none; }
 }
+
+
+/* Seminar reading room — warm paper, not a flat wash. */
+.seminar-paper {
+  background-image: radial-gradient(rgba(82, 63, 42, 0.045) 0.6px, transparent 0.75px);
+  background-size: 5px 5px;
+}

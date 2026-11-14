@@ -227,12 +227,12 @@ function SeminarPage() {
   const glossary = seminar?.glossary ?? [];
 
   return (
-    <div className="min-h-[100dvh] bg-[#F8F3E9] text-[#2F332C]">
+    <div className="seminar-paper min-h-[100dvh] bg-[#F8F1E6] text-[#29302A]">
       <AppHeader section="seminar" />
 
-      <section className="relative overflow-hidden border-b border-[#DFD4C3] bg-[#F3EBDD] text-[#2F332C]">
+      <section className="relative overflow-hidden border-b border-[#E0D2C0] bg-[#F2E3D2] text-[#29302A]">
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.075]"
+          className="pointer-events-none absolute inset-0 opacity-[0.06]"
           style={{
             backgroundImage: "url('/world-land-dark.svg')",
             backgroundSize: "min(1600px, 130vw) auto",
@@ -242,38 +242,45 @@ function SeminarPage() {
             WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 14%, black 82%, transparent 100%)",
           }}
         />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_84%_12%,rgba(213,229,213,0.75),transparent_54%),radial-gradient(ellipse_at_8%_100%,rgba(236,215,188,0.65),transparent_48%)]" />
-        <span aria-hidden className="pointer-events-none absolute -right-6 top-16 select-none font-display text-[30vw] leading-none text-[#C9B7A0]/15">“</span>
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[37%] bg-[#E3EDF1] md:block" />
+        <div className="pointer-events-none absolute inset-y-0 right-[37%] hidden w-px bg-[#D8C3AA] md:block" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_88%_6%,rgba(174,201,217,0.5),transparent_52%),radial-gradient(ellipse_at_2%_100%,rgba(248,211,181,0.5),transparent_52%)]" />
+        <span aria-hidden className="pointer-events-none absolute -right-6 top-16 select-none font-display text-[30vw] leading-none text-[#B1674C]/15">“</span>
+        <div className="pointer-events-none absolute left-5 top-28 hidden flex-col gap-3 font-mono text-[6.5px] uppercase tracking-[0.16em] text-[#7A5B45]/45 xl:flex">
+          <span className="flex items-center gap-2"><span className="h-px w-4 bg-[#B1674C]/50" /> 01 / the passage</span>
+          <span className="flex items-center gap-2 text-[#597486]/55"><span className="h-px w-4 bg-[#788FA0]/40" /> 02 / two readings</span>
+          <span className="flex items-center gap-2 text-[#597486]/55"><span className="h-px w-4 bg-[#788FA0]/40" /> 03 / one crux</span>
+        </div>
 
         <div className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-10 pt-12 md:px-8 md:pb-14 md:pt-16">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#4F705C]">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#7A5B45]">
               The seminar
             </p>
             <span className="h-3 w-px bg-[#2F332C]/20" />
-            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#2F332C]/38">
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#29302A]/38">
               Two theories · one crux
             </p>
           </div>
 
           <div className="mt-3 grid gap-6 md:grid-cols-[minmax(0,1fr)_270px] md:items-end md:gap-12">
             <div>
-              <h1 className="max-w-[12ch] font-display text-[50px] leading-[0.9] tracking-[-0.035em] text-[#2F332C] md:text-[78px]">
+              <h1 className="max-w-[12ch] font-display text-[50px] leading-[0.9] tracking-[-0.035em] text-[#29302A] md:text-[78px]">
                 Put it on
                 <br />
-                <span className="italic text-[#6D5A42]">the table.</span>
+                <span className="italic text-[#A3644E]">the table.</span>
               </h1>
-              <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-[1.65] text-[#2F332C]/58 md:text-[16px]">
+              <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-[1.65] text-[#4D4E45]/68 md:text-[16px]">
                 Bring a quote or a question you cannot settle. The seminar builds the strongest
                 version of two rival explanations, then shows the exact point where they part.
               </p>
             </div>
-            <div className="hidden border-l border-[#2F332C]/15 pl-5 md:block">
-              <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#6D5A42]">A quiet room for</p>
-              <p className="mt-2 font-serif text-[13px] italic leading-relaxed text-[#2F332C]/55">
+            <div className="hidden border-l border-[#788FA0]/45 pl-5 md:block">
+              <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#597486]">A quiet room for</p>
+              <p className="mt-2 font-serif text-[13px] italic leading-relaxed text-[#4D4E45]/62">
                 two serious readings, one honest disagreement, and the evidence that would move you.
               </p>
-              <p className="mt-3 font-mono text-[7px] uppercase tracking-[0.11em] text-[#2F332C]/32">
+              <p className="mt-3 font-mono text-[7px] uppercase tracking-[0.11em] text-[#29302A]/35">
                 No verdict unless you ask.
               </p>
             </div>
@@ -284,29 +291,47 @@ function SeminarPage() {
               event.preventDefault();
               void convene();
             }}
-            className="mt-8 rounded-[30px] border border-[#D8CBB8] bg-[#FCF7ED] p-5 text-[#2F332C] shadow-[0_30px_70px_-46px_rgba(66,51,35,0.4)] md:p-8"
+            className="mt-8 overflow-hidden rounded-[18px] border border-[#D8C3AA] border-t-[5px] border-t-[#B1674C] bg-[#FFFCF5] text-[#29302A] shadow-[8px_8px_0_rgba(143,163,184,0.16),0_28px_60px_-46px_rgba(66,51,35,0.35)]"
           >
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#2F332C]/48">
-                The quote or question
-              </label>
-              <span className="font-mono text-[7px] uppercase tracking-[0.12em] text-[#2F332C]/25">
-                One passage is enough
-              </span>
-            </div>
-            <textarea
-              id="seminar-text"
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              rows={5}
-              maxLength={3000}
-              placeholder="Paste the sentence you cannot stop thinking about…"
-              className="mt-2 w-full resize-none bg-transparent font-display text-[21px] leading-[1.35] tracking-[-0.01em] outline-none placeholder:text-[#2F332C]/30 md:text-[29px]"
-            />
+            <div className="grid md:grid-cols-[minmax(0,1fr)_286px]">
+              <div className="p-5 md:p-8">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#4D4E45]/55">
+                    The quote or question
+                  </label>
+                  <span className="font-mono text-[7px] uppercase tracking-[0.12em] text-[#4D4E45]/28">
+                    One passage is enough
+                  </span>
+                </div>
+                <textarea
+                  id="seminar-text"
+                  value={text}
+                  onChange={(event) => setText(event.target.value)}
+                  rows={7}
+                  maxLength={3000}
+                  placeholder="Paste the sentence you cannot stop thinking about…"
+                  className="mt-3 w-full resize-none bg-transparent font-display text-[21px] leading-[1.35] tracking-[-0.01em] outline-none placeholder:text-[#4D4E45]/32 md:text-[28px]"
+                />
 
-            <div className="mt-4 grid gap-3 border-t border-[#2F332C]/12 pt-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-              <div>
-                <label htmlFor="seminar-context" className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#2F332C]/38">
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-[#29302A]/10 pt-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setText(SAMPLE);
+                      setContext("A podcast conversation about foreign aid and statecraft.");
+                    }}
+                    className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#7A5B45] underline decoration-[#C49A67]/50 underline-offset-4 hover:text-[#3F5A48]"
+                  >
+                    Use the foreign-aid quote
+                  </button>
+                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#4D4E45]/30">
+                    {text.length}/3000
+                  </span>
+                </div>
+              </div>
+
+              <aside className="flex flex-col border-t border-[#C8D6DE]/80 bg-[#E7F0F3]/68 p-5 md:border-l md:border-t-0 md:p-6">
+                <label htmlFor="seminar-context" className="font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#4D4E45]/45">
                   Context, if it matters
                 </label>
                 <input
@@ -315,46 +340,41 @@ function SeminarPage() {
                   onChange={(event) => setContext(event.target.value)}
                   maxLength={1000}
                   placeholder="Who said it, where, and what was being argued"
-                  className="mt-1 w-full border-b border-[#2F332C]/18 bg-transparent pb-2 font-serif text-[13px] outline-none placeholder:text-[#2F332C]/25 focus:border-[#4F705C]"
+                  className="mt-2 w-full border-b border-[#29302A]/18 bg-transparent pb-2 font-serif text-[13px] outline-none placeholder:text-[#4D4E45]/30 focus:border-[#3F5A48]"
                 />
-              </div>
-              <button
-                type="submit"
-                disabled={busy || text.trim().length < 20}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#3F5A47] bg-[#3F5A47] px-5 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-[#FCF7ED] transition-colors hover:border-[#2F4637] hover:bg-[#2F4637] disabled:cursor-not-allowed disabled:border-[#2F332C]/15 disabled:bg-transparent disabled:text-[#2F332C]/25"
-              >
-                {busy ? "Setting the room…" : "Convene the seminar"}
-                {!busy && <ArrowRight className="h-3.5 w-3.5" />}
-              </button>
-            </div>
 
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setText(SAMPLE);
-                  setContext("A podcast conversation about foreign aid and statecraft.");
-                }}
-                className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#6D5A42] underline decoration-[#C49A67]/50 underline-offset-4 hover:text-[#4F705C]"
-              >
-                Use the foreign-aid quote
-              </button>
-              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/28">
-                {text.length}/3000 · no verdict unless asked
-              </span>
+                <div className="mt-5 border-t border-[#29302A]/10 pt-4">
+                  <p className="font-mono text-[7px] font-bold uppercase tracking-[0.14em] text-[#597486]">A quiet room for</p>
+                  <p className="mt-2 font-serif text-[12.5px] italic leading-[1.55] text-[#4D4E45]/60">
+                    two serious readings, one honest disagreement, and the evidence that would move you.
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={busy || text.trim().length < 20}
+                  className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#3F5A48] bg-[#3F5A48] px-5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FCF7ED] transition-colors hover:border-[#2F4637] hover:bg-[#2F4637] disabled:cursor-not-allowed disabled:border-[#2F332C]/15 disabled:bg-transparent disabled:text-[#2F332C]/25"
+                >
+                  {busy ? "Setting the room…" : "Convene the seminar"}
+                  {!busy && <ArrowRight className="h-3.5 w-3.5" />}
+                </button>
+                <p className="mt-3 text-center font-mono text-[6.5px] uppercase tracking-[0.1em] text-[#4D4E45]/28">
+                  No verdict unless asked
+                </p>
+              </aside>
             </div>
           </form>
 
-          <div className="mt-4 grid gap-3 border-t border-[#2F332C]/12 pt-4 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3 border-t border-[#29302A]/12 pt-4 sm:grid-cols-3">
             {[
               ["01", "One passage", "A quote, a claim, a question."],
               ["02", "Two readings", "Steelmanned, not caricatured."],
               ["03", "One crux", "The exact point where they part."],
             ].map(([number, title, note]) => (
               <div key={number} className="flex gap-2.5 sm:block">
-                <span className="font-mono text-[7px] font-bold tracking-[0.12em] text-[#6D5A42]/65">{number}</span>
-                <p className="font-serif text-[12px] leading-snug text-[#2F332C]/55">
-                  <span className="font-semibold text-[#2F332C]/75">{title}.</span> {note}
+                <span className="font-mono text-[7px] font-bold tracking-[0.12em] text-[#A3644E]/70">{number}</span>
+                <p className="font-serif text-[12px] leading-snug text-[#4D4E45]/62">
+                  <span className="font-semibold text-[#29302A]/80">{title}.</span> {note}
                 </p>
               </div>
             ))}
@@ -413,13 +433,13 @@ function SeminarPage() {
         <main ref={readingRef} className="seminar-reading-surface mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
           <section data-loupe-section="The question underneath" className="grid gap-6 border-y border-[#1A1A1A]/15 py-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12 md:py-8">
             <div>
-              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#4F705C]">
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#7A5B45]">
                 The question underneath
               </p>
               <p className="mt-2 max-w-[62ch] font-display text-[28px] leading-[1.1] md:text-[38px]">
                 <HighlightedText text={seminar.question} glossary={glossary} onWord={openGlossaryWord} />
               </p>
-              <p className="mt-3 max-w-[62ch] font-serif text-[16px] leading-relaxed text-[#2F332C]/65">
+              <p className="mt-3 max-w-[62ch] font-serif text-[16px] leading-relaxed text-[#4D4E45]/70">
                 <HighlightedText text={seminar.restatement} glossary={glossary} onWord={openGlossaryWord} />
               </p>
             </div>
@@ -435,7 +455,7 @@ function SeminarPage() {
 
           <section data-loupe-section="Two readings" className="mt-8">
             <div className="flex items-end justify-between gap-4 pb-1">
-              <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the same thing.</h2>
+              <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the <span className="italic text-[#A3644E]">same thing.</span></h2>
               <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#2F332C]/35 sm:inline">
                 steelmanned
               </span>
@@ -517,13 +537,13 @@ function SeminarPage() {
             </section>
           ) : (
             <>
-              <section data-loupe-section="The crux" className="mt-10 overflow-hidden rounded-[28px] border border-[#C8D6C3] bg-[#E7EFE4] text-[#2F332C] shadow-[0_24px_54px_-40px_rgba(47,51,44,0.45)]">
+              <section data-loupe-section="The crux" className="mt-10 overflow-hidden rounded-[18px] border border-[#DCC9A7] bg-[#F2E4C9] text-[#29302A] shadow-[6px_6px_0_rgba(177,103,76,0.12)]">
                 <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
-                  <div className="border-b border-[#2F332C]/12 px-5 py-4 md:border-b-0 md:border-r md:border-[#2F332C]/12 md:px-6 md:py-8">
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#4F705C]">
+                  <div className="border-b border-[#29302A]/12 px-5 py-4 md:border-b-0 md:border-r md:border-[#29302A]/12 md:px-6 md:py-8">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#A3644E]">
                       The crux
                     </p>
-                    <p className="mt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#2F332C]/38">
+                    <p className="mt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#29302A]/42">
                       {DISAGREEMENT[seminar.disagreement]}
                     </p>
                     {stand && (
@@ -539,11 +559,11 @@ function SeminarPage() {
                     <p className="max-w-[38ch] font-display text-[26px] leading-[1.12] md:text-[34px]">
                       <HighlightedText text={seminar.crux} glossary={glossary} onWord={openGlossaryWord} />
                     </p>
-                    <div className="mt-6 border-t border-[#2F332C]/15 pt-4">
+                    <div className="mt-6 border-t border-[#29302A]/15 pt-4">
                       <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#2F332C]/38">
                         What would settle it
                       </p>
-                      <p className="mt-1 max-w-[62ch] font-serif text-[14px] leading-relaxed text-[#2F332C]/72">
+                      <p className="mt-1 max-w-[62ch] font-serif text-[14px] leading-relaxed text-[#29302A]/75">
                         <HighlightedText text={seminar.settle} glossary={glossary} onWord={openGlossaryWord} />
                       </p>
                     </div>
@@ -614,10 +634,10 @@ function SeminarPage() {
                 )}
               </section>
 
-              <section data-loupe-section="The deeper lesson" className="mt-10 overflow-hidden rounded-[26px] border border-[#D6C8B4] bg-[#F4EBDD] shadow-[0_24px_54px_-42px_rgba(61,43,27,0.35)]">
+              <section data-loupe-section="The deeper lesson" className="mt-10 overflow-hidden rounded-[18px] border border-[#C8D6DE] bg-[#E9F0F3] shadow-[6px_6px_0_rgba(143,163,184,0.14)]">
                 <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
                   <div>
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#4F705C]">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#7A5B45]">
                       If the argument is clear but the subject is not
                     </p>
                     <h2 className="mt-2 max-w-[22ch] font-display text-[30px] leading-[1.02] md:text-[38px]">
@@ -763,12 +783,15 @@ function TheoryColumn({
   onLookCloser: (target: LoupeTarget) => void;
 }) {
   const letter = theory.key === "A" || theory.key === "B" ? theory.key : index === 0 ? "A" : "B";
-  const tint = letter === "A" ? "border-[#DDCCB8] bg-[#FBF1E3]" : "border-[#C9D8D0] bg-[#ECF2EC]";
-  const accent = letter === "A" ? "text-[#A3644E]" : "text-[#4F705C]";
+  const tint =
+    letter === "A"
+      ? "border-[#E0C9B1] border-t-[4px] border-t-[#B1674C] bg-[#FBECDD] shadow-[5px_5px_0_rgba(177,103,76,0.11)]"
+      : "border-[#C8D6DE] border-t-[4px] border-t-[#788FA0] bg-[#E9F0F3] shadow-[5px_5px_0_rgba(120,143,160,0.12)]";
+  const accent = letter === "A" ? "text-[#A3644E]" : "text-[#597486]";
   return (
     <article
       data-loupe-section={`Theory ${letter}: ${theory.name}`}
-      className={`${tint} group/theory rounded-[26px] border p-5 shadow-[0_20px_44px_-38px_rgba(61,43,27,0.35)] md:p-7`}
+      className={`${tint} group/theory rounded-[16px] border p-5 md:p-7`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>

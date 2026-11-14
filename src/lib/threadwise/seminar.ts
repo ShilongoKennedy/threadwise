@@ -36,6 +36,11 @@ export const seminarSchema = z.object({
   }),
 });
 
+/** Stored seminars from before the word-note layer do not have a glossary. */
+export const storedSeminarSchema = seminarSchema.extend({
+  glossary: z.array(glossarySchema).min(3).max(6).optional(),
+});
+
 export type Seminar = z.infer<typeof seminarSchema>;
 export type SeminarTheory = z.infer<typeof theorySchema>;
 
