@@ -40,6 +40,8 @@ export const Route = createFileRoute("/")({
 });
 
 const SAMPLE_TOKEN = "mn4qvf4bhu";
+const LANDING_TONES = ["#8F2F23", "#1732C8", "#8C3023", "#111A52", "#174536", "#452042"];
+
 
 const LOOP = [
   {
@@ -73,12 +75,34 @@ const PLACE_INDEX = [
 function LandingPage() {
   const [activePlace, setActivePlace] = useState<string | null>(null);
   const [entering, setEntering] = useState(false);
+  const [toneIndex, setToneIndex] = useState(0);
   const navigate = useNavigate();
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, window.scrollY / max));
+      setToneIndex(Math.min(LANDING_TONES.length - 1, Math.floor(progress * LANDING_TONES.length)));
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, []);
 
@@ -94,7 +118,7 @@ function LandingPage() {
     }, delay);
   };
   return (
-    <div className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#8F2F23] font-sans text-[#F7EAD6] selection:bg-[#F1C979] selection:text-[#1A1A1A]">
+    <div className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans text-[#F7EAD6] transition-colors duration-700 selection:bg-[#F1C979] selection:text-[#1A1A1A]" style={{ backgroundColor: LANDING_TONES[toneIndex] }}>
       <main id="main" className="relative z-10 flex-1">
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden text-[#F7EAD6]">
           <div className="globe-stage absolute inset-0 z-[5]">

@@ -1773,3 +1773,145 @@ main {
 .blueprint-page .blueprint-cta * {
   color: #1A1A1A !important;
 }
+
+/* Shared site shell: the seminar's blueprint system applied outside its own field. */
+.site-blueprint {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  background-color: var(--site-bg);
+  color: var(--site-ink);
+  transition: background-color 900ms ease;
+}
+
+.site-blueprint::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    url("/seminar-stitch.svg"),
+    linear-gradient(to right, color-mix(in srgb, var(--site-ink) 15%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--site-ink) 15%, transparent) 1px, transparent 1px),
+    radial-gradient(circle, color-mix(in srgb, var(--site-ink) 42%, transparent) 1.3px, transparent 1.7px);
+  background-size: 28px 28px, 140px 140px, 140px 140px, 140px 140px;
+}
+
+.site-blueprint > * {
+  position: relative;
+  z-index: 1;
+}
+
+.site-blueprint section,
+.site-blueprint footer,
+.site-blueprint main {
+  background-color: transparent !important;
+}
+
+.site-blueprint :is(h1, h2, h3, h4, p, li, span, a, button, label, summary) {
+  color: var(--site-ink) !important;
+}
+
+.site-blueprint [class*="bg-[#FDFBF7]"],
+.site-blueprint [class*="bg-[#FCF7ED]"],
+.site-blueprint [class*="bg-[#FAF6EE]"],
+.site-blueprint [class*="bg-[#FBF6EC]"],
+.site-blueprint [class*="bg-white"] {
+  background-color: rgba(10, 8, 5, 0.18) !important;
+}
+
+.site-blueprint :is(input, textarea, select) {
+  background: rgba(10, 8, 5, 0.28) !important;
+  color: var(--site-ink) !important;
+  border-color: color-mix(in srgb, var(--site-ink) 30%, transparent) !important;
+}
+
+.site-blueprint header.sticky > div {
+  background: var(--site-header-bg) !important;
+  border-color: color-mix(in srgb, var(--site-ink) 24%, transparent) !important;
+  box-shadow: 0 16px 46px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(247, 234, 214, 0.14) !important;
+}
+
+.site-blueprint header.sticky a,
+.site-blueprint header.sticky button,
+.site-blueprint header.sticky span {
+  color: var(--site-ink) !important;
+}
+
+.site-blueprint header.sticky a[data-read-source] {
+  background: var(--site-ink) !important;
+  border-color: var(--site-ink) !important;
+  color: #1A1A1A !important;
+}
+
+.site-blueprint header.sticky a[data-read-source] span {
+  color: #1A1A1A !important;
+}
+
+.site-blueprint header.sticky a[aria-label="Threadwise — home"] svg,
+.site-blueprint header.sticky a[aria-label="Threadwise — home"] svg * {
+  filter: brightness(0) invert(1) !important;
+}
+
+.site-blueprint header.sticky nav[aria-label="Primary"] [aria-current="page"] {
+  color: var(--site-accent) !important;
+}
+
+.site-blueprint header.sticky nav[aria-label="Primary"] [aria-current="page"] > span {
+  background-color: var(--site-accent) !important;
+}
+
+.site-blueprint header.sticky [role="menu"] {
+  background: #120D09 !important;
+  border-color: color-mix(in srgb, var(--site-ink) 25%, transparent) !important;
+}
+
+.site-blueprint nav[aria-label="Primary mobile destinations"] {
+  background: color-mix(in srgb, var(--site-bg) 78%, #0A0805 22%) !important;
+  border-color: color-mix(in srgb, var(--site-ink) 24%, transparent) !important;
+}
+
+.site-blueprint nav[aria-label="Primary mobile destinations"] :is(a, span, svg) {
+  color: var(--site-ink) !important;
+}
+
+.site-blueprint nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
+  background: color-mix(in srgb, var(--site-ink) 12%, transparent) !important;
+  color: var(--site-accent) !important;
+}
+
+.site-blueprint button,
+.site-blueprint a {
+  border-color: color-mix(in srgb, var(--site-ink) 24%, transparent);
+}
+
+.site-blueprint footer a[aria-label="Threadwise — home"] svg,
+.site-blueprint footer a[aria-label="Threadwise — home"] svg * {
+  filter: brightness(0) invert(1) !important;
+}
+
+.site-blueprint [data-page-backdrop] {
+  display: none !important;
+}
+
+.site-blueprint [class*="bg-[#FAF3E7]"],
+.site-blueprint [class*="bg-[#F4EFE6]"],
+.site-blueprint [class*="bg-[#F7F1E5]"] {
+  background-color: color-mix(in srgb, var(--site-ink) 8%, transparent) !important;
+}
+
+.site-blueprint .tw-glass-panel,
+.site-blueprint .tw-glass-strip {
+  background: color-mix(in srgb, var(--site-bg) 55%, transparent) !important;
+  border-color: color-mix(in srgb, var(--site-ink) 22%, transparent) !important;
+  color: var(--site-ink) !important;
+}
+
+.site-blueprint :is(input, textarea, select)::placeholder {
+  color: color-mix(in srgb, var(--site-ink) 48%, transparent) !important;
+}
+
+.site-blueprint :is(header, main, footer) :is(input, textarea) {
+  color: var(--site-ink) !important;
+}

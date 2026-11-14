@@ -2,7 +2,7 @@ export function PageBackdrop({ tone = "light" }: { tone?: "light" | "dark" }) {
   const src = tone === "dark" ? "/world-land-dark.svg" : "/world-land-light.svg";
 
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[640px] overflow-hidden">
+    <div aria-hidden data-page-backdrop className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[640px] overflow-hidden">
       <div
         className={`absolute inset-0 ${
           tone === "dark"

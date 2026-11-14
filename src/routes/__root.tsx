@@ -4,12 +4,13 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   ClientOnly,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -163,13 +164,66 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+const SITE_TONES = [
+  { bg: "#8F2F23", ink: "#F7EAD6", header: "rgba(16, 10, 7, 0.58)", accent: "#F1C979" },
+  { bg: "#1732C8", ink: "#F7EAD6", header: "rgba(6, 12, 42, 0.5)", accent: "#F1C979" },
+  { bg: "#8C3023", ink: "#F7EAD6", header: "rgba(30, 8, 5, 0.52)", accent: "#F1C979" },
+  { bg: "#111A52", ink: "#F7EAD6", header: "rgba(4, 7, 24, 0.58)", accent: "#D9F25C" },
+  { bg: "#174536", ink: "#F7EAD6", header: "rgba(4, 20, 15, 0.52)", accent: "#D9F25C" },
+  { bg: "#452042", ink: "#F7EAD6", header: "rgba(20, 6, 19, 0.52)", accent: "#F1C979" },
+] as const;
+
+function SiteBlueprint({ pathname, children }: { pathname: string; children: ReactNode }) {
+  const [toneIndex, setToneIndex] = useState(0);
+
+  useEffect(() => {
+    setToneIndex(0);
+    let frame = 0;
+    const update = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, window.scrollY / max));
+      const next = Math.min(SITE_TONES.length - 1, Math.floor(progress * SITE_TONES.length));
+      setToneIndex(next);
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [pathname]);
+
+  const tone = SITE_TONES[toneIndex] ?? SITE_TONES[0];
+  return (
+    <div
+      className="site-blueprint"
+      style={{
+        "--site-bg": tone.bg,
+        "--site-ink": tone.ink,
+        "--site-header-bg": tone.header,
+        "--site-accent": tone.accent,
+      } as CSSProperties}
+    >
+      {children}
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const keepsOwnField = pathname === "/" || pathname.startsWith("/landing") || pathname.startsWith("/seminar");
 
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      {keepsOwnField ? <Outlet /> : <SiteBlueprint pathname={pathname}><Outlet /></SiteBlueprint>}
       <Toaster />
       <ClientOnly fallback={null}><Suspense fallback={null}><CloudSync /></Suspense></ClientOnly>
     </QueryClientProvider>
