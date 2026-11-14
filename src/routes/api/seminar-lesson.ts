@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { storedSeminarSchema, type Seminar } from "@/lib/threadwise/seminar";
+import { seminarSchema } from "@/lib/threadwise/seminar";
 
 const json = (body: unknown, status: number) =>
   Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
@@ -32,13 +32,12 @@ export const Route = createFileRoute("/api/seminar-lesson")({
         if (text.length > 3000) return json({ error: "Keep the quote under 3,000 characters." }, 413);
         if (context.length > 1000) return json({ error: "Keep the context under 1,000 characters." }, 413);
 
-        const parsed = storedSeminarSchema.safeParse(raw.seminar);
+        const parsed = seminarSchema.safeParse(raw.seminar);
         if (!parsed.success) return json({ error: "The seminar is not valid." }, 400);
 
         try {
           const { openSeminarLesson } = await import("@/lib/threadwise/seminar-lesson");
-          const lessonSeminar = { ...parsed.data, glossary: parsed.data.glossary ?? [] } as Seminar;
-          const lesson = await openSeminarLesson(text, context, lessonSeminar);
+          const lesson = await openSeminarLesson(text, context, parsed.data);
           return json({ ok: true, lesson }, 200);
         } catch (error) {
           console.error("[seminar-lesson] failed:", error);

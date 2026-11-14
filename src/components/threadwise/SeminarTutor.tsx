@@ -72,16 +72,16 @@ export function SeminarTutor({
     <section id="seminar-tutor" className="mt-12 scroll-mt-24 border-t border-[#1A1A1A]/15 pt-7">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="inline-flex items-center gap-2 font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[#4F705C]">
+          <p className="inline-flex items-center gap-2 font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
             <MessageSquareText className="h-3 w-3" /> Still unclear?
           </p>
           <h3 className="mt-2 font-display text-[30px] leading-none tracking-[-0.02em] md:text-[38px]">Ask the tutor.</h3>
-          <p className="mt-2 max-w-[56ch] font-serif text-[14px] leading-relaxed text-[#2F332C]/60">
+          <p className="mt-2 max-w-[56ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
             A follow-up grounded in this lesson. Ask for another example, a simpler explanation, or
             the evidence that would change the picture.
           </p>
         </div>
-        <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/30">Grounded in this seminar</p>
+        <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">Grounded in this seminar</p>
       </div>
 
       <div className="mt-5">
@@ -92,7 +92,7 @@ export function SeminarTutor({
                 key={suggestion}
                 type="button"
                 onClick={() => void ask(suggestion)}
-                className="rounded-full border border-[#8A745C]/25 bg-[#FAF3E7]/60 px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.08em] text-[#2F332C]/55 transition-colors hover:border-[#4F705C]/40 hover:text-[#4F705C]"
+                className="rounded-full border border-[#8A745C]/25 bg-[#FAF3E7]/60 px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.08em] text-[#1A1A1A]/55 transition-colors hover:border-[#1A4BFF]/40 hover:text-[#1A4BFF]"
               >
                 {suggestion}
               </button>
@@ -103,13 +103,13 @@ export function SeminarTutor({
             {turns.map((turn, index) =>
               turn.role === "user" ? (
                 <div key={index} className="flex justify-end">
-                  <p className="max-w-[85%] rounded-[16px] rounded-br-[4px] bg-[#DDE9DF] px-4 py-2.5 font-serif text-[13.5px] leading-relaxed text-[#2F332C]">
+                  <p className="max-w-[85%] rounded-[16px] rounded-br-[4px] bg-[#1A1A1A] px-4 py-2.5 font-serif text-[13.5px] leading-relaxed text-[#FDFBF7]">
                     {turn.content}
                   </p>
                 </div>
               ) : (
                 <div key={index} className="max-w-[92%]">
-                  <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#4F705C]">Tutor</p>
+                  <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF]">Tutor</p>
                   <div className="tutor-prose mt-1">
                     <ReactMarkdown>{turn.content}</ReactMarkdown>
                   </div>
@@ -117,8 +117,8 @@ export function SeminarTutor({
               ),
             )}
             {busy ? (
-              <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#2F332C]/40">
-                <Loader2 className="h-3 w-3 animate-spin text-[#4F705C]" /> Following the argument…
+              <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/40">
+                <Loader2 className="h-3 w-3 animate-spin text-[#1A4BFF]" /> Following the argument…
               </div>
             ) : null}
             <div ref={endRef} />
@@ -126,7 +126,7 @@ export function SeminarTutor({
         )}
 
         {error ? (
-          <p className="mt-3 border-l-2 border-[#A3644E] pl-3 font-mono text-[9px] uppercase tracking-[0.08em] text-[#A3644E]">
+          <p className="mt-3 border-l-2 border-[#C1121F] pl-3 font-mono text-[9px] uppercase tracking-[0.08em] text-[#C1121F]">
             {error}{" "}
             <button
               type="button"
@@ -158,18 +158,18 @@ export function SeminarTutor({
             rows={1}
             maxLength={600}
             placeholder="Ask about a term, a mechanism, or the evidence…"
-            className="max-h-28 min-h-10 flex-1 resize-none bg-transparent px-2 py-2 font-serif text-[14px] leading-relaxed outline-none placeholder:text-[#2F332C]/35"
+            className="max-h-28 min-h-10 flex-1 resize-none bg-transparent px-2 py-2 font-serif text-[14px] leading-relaxed outline-none placeholder:text-[#1A1A1A]/35"
           />
           <button
             type="submit"
             disabled={busy || question.trim().length < 5}
             aria-label="Ask the tutor"
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#3F5A47] text-[#FCF7ED] transition-colors hover:bg-[#2F4637] disabled:cursor-not-allowed disabled:opacity-35"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1A1A1A] text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF] disabled:cursor-not-allowed disabled:opacity-35"
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
           </button>
         </form>
-        <p className="mt-2 font-mono text-[7px] uppercase tracking-[0.1em] text-[#2F332C]/30">
+        <p className="mt-2 font-mono text-[7px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">
           Ask follow-ups only about this seminar · verify before you act
         </p>
       </div>
