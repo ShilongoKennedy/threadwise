@@ -280,8 +280,6 @@ function SeminarPage() {
       </div>
 
       <section data-seminar-tone="0" className="relative overflow-hidden text-[#F7EAD6]">
-        <div aria-hidden className="pointer-events-none absolute -right-32 top-6 h-[420px] w-[420px] rounded-full bg-[#DF8D7D]/40 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute left-1/3 top-52 h-64 w-64 rounded-full bg-[#C9A5CA]/28 blur-3xl" />
 
         <div className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-12 pt-12 md:px-8 md:pb-16 md:pt-16">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -307,9 +305,9 @@ function SeminarPage() {
               event.preventDefault();
               void convene();
             }}
-            className="tw-glass-panel mt-8 p-4 text-[#1A1A1A] md:p-6"
+            className="seminar-input-panel mt-8 rounded-[28px] p-4 text-[#F7EAD6] md:p-6"
           >
-            <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/55">
+            <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#F7EAD6]/80">
               The quote or question
             </label>
             <textarea
@@ -319,12 +317,12 @@ function SeminarPage() {
               rows={5}
               maxLength={3000}
               placeholder="Paste the sentence you cannot stop thinking about…"
-              className="mt-2 w-full resize-none bg-transparent font-display text-[20px] leading-[1.25] outline-none placeholder:text-[#1A1A1A]/25 md:text-[28px]"
+              className="mt-2 w-full resize-none bg-transparent font-display text-[20px] leading-[1.25] outline-none placeholder:text-[#F7EAD6]/48 md:text-[28px]"
             />
 
-            <div className="mt-4 grid gap-3 border-t border-[#1A1A1A]/12 pt-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+            <div className="mt-4 grid gap-3 border-t border-[#F7EAD6]/30 pt-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
               <div>
-                <label htmlFor="seminar-context" className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
+                <label htmlFor="seminar-context" className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#F7EAD6]/55">
                   Context, if it matters
                 </label>
                 <input
@@ -333,13 +331,13 @@ function SeminarPage() {
                   onChange={(event) => setContext(event.target.value)}
                   maxLength={1000}
                   placeholder="Who said it, where, and what was being argued"
-                  className="mt-1 w-full border-b border-[#1A1A1A]/20 bg-transparent pb-2 font-serif text-[13px] outline-none placeholder:text-[#1A1A1A]/30 focus:border-[#1A4BFF]"
+                  className="mt-1 w-full border-b border-[#F7EAD6]/35 bg-transparent pb-2 font-serif text-[13px] outline-none placeholder:text-[#F7EAD6]/50 focus:border-[#F1C979]"
                 />
               </div>
               <button
                 type="submit"
                 disabled={busy || text.trim().length < 20}
-                className="inline-flex min-h-12 items-center justify-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:cursor-not-allowed disabled:border-[#1A1A1A]/20 disabled:bg-transparent disabled:text-[#1A1A1A]/30"
+                className="inline-flex min-h-12 items-center justify-center gap-2 border-2 border-[#F7EAD6] bg-[#F7EAD6] px-5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A] transition-colors hover:border-[#F1C979] hover:bg-[#F1C979] disabled:cursor-not-allowed disabled:border-[#F7EAD6]/20 disabled:bg-transparent disabled:text-[#F7EAD6]/50"
               >
                 {busy ? "Setting the room…" : "Convene the seminar"}
                 {!busy && <ArrowRight className="h-3.5 w-3.5" />}
@@ -353,11 +351,11 @@ function SeminarPage() {
                   setText(SAMPLE);
                   setContext("A podcast conversation about foreign aid and statecraft.");
                 }}
-                className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4"
+                className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#F1C979] underline underline-offset-4"
               >
                 Use the foreign-aid quote
               </button>
-              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">
+              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#F7EAD6]/45">
                 {text.length}/3000 · no verdict unless asked
               </span>
             </div>
@@ -761,12 +759,8 @@ function TheoryColumn({
           </p>
           <h3 className="mt-1 max-w-[16ch] font-display text-[28px] leading-[1.02]">{theory.name}</h3>
         </div>
-        <div className="relative grid h-14 w-14 shrink-0 place-items-center">
-          <InkCircle className={`absolute inset-0 ${letter === "A" ? "text-[#1A4BFF]/50" : "text-[#1A1A1A]/35"}`} />
-          <span
-            className={`font-display text-[54px] leading-[0.7] ${letter === "A" ? "text-[#1A4BFF]" : "text-[#1A1A1A]"}`}
-            aria-hidden
-          >
+        <div className="theory-letter-ring grid h-16 w-16 shrink-0 place-items-center rounded-full">
+          <span className="font-display text-[36px] leading-none" aria-hidden>
             {letter}
           </span>
         </div>
