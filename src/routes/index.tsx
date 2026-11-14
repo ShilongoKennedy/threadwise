@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { GlassHeader } from "@/components/threadwise/GlassHeader";
-import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
 import { HeroFieldwork } from "@/components/threadwise/HeroFieldwork";
@@ -95,26 +94,14 @@ function LandingPage() {
     }, delay);
   };
   return (
-    <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FCF7ED] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
+    <div className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#8F2F23] font-sans text-[#F7EAD6] selection:bg-[#F1C979] selection:text-[#1A1A1A]">
       <main id="main" className="relative z-10 flex-1">
-        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#FAF6EE] text-[#11110F]">
-          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[linear-gradient(135deg,#FFFCF6_0%,#FAF6EE_34%,#F1F1EA_62%,#E6EEEF_100%)]">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_72%_35%,rgba(255,255,255,0.78),rgba(225,237,239,0.22)_40%,transparent_62%)]" />
-            <div className="absolute inset-x-0 bottom-0 h-[34%] bg-[linear-gradient(0deg,rgba(232,218,196,0.24),transparent_100%)]" />
-          </div>
-
-          <HeroFieldwork />
-
+        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden text-[#F7EAD6]">
           <div className="globe-stage absolute inset-0 z-[5]">
-            <div className="pointer-events-none absolute right-[4%] top-[16%] hidden h-[58%] w-[46%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(255,255,255,0.72)_0%,rgba(196,174,146,0.1)_48%,transparent_72%)] blur-3xl md:block" />
-            <GeoGlobe theme="light" layout="right" />
+            <GeoGlobe theme="blueprint" layout="right" />
           </div>
-          <div className="pointer-events-none absolute inset-0 z-[2] hidden bg-[radial-gradient(ellipse_50%_48%_at_27%_38%,#FAF6EE_0%,#FAF6EE_56%,rgba(250,246,238,0.92)_66%,rgba(250,246,238,0.4)_82%,transparent_94%)] md:block" />
-          <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,#FAF6EE_0%,#FAF6EE_20%,rgba(250,246,238,0.92)_30%,rgba(250,246,238,0.45)_46%,rgba(250,246,238,0.04)_62%,transparent_72%)] md:hidden" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-32 bg-[linear-gradient(180deg,#FAF6EE_0%,rgba(250,246,238,0.6)_45%,transparent_100%)]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32 bg-[linear-gradient(0deg,#FAF6EE_0%,rgba(250,246,238,0.6)_45%,transparent_100%)]" />
 
-          <GlassHeader />
+          <GlassHeader tone="dark" section="record" />
 
           <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
             <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
@@ -123,11 +110,9 @@ function LandingPage() {
                   <span className="h-px w-8 bg-[#1A4BFF]/55" />
                   A field note / IAEA–Iran
                 </div>
-                <SignatureHeadline
-                  text="See what the story hides."
-                  flourish={false}
-                  className="letterpress max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,6.7vw,96px)] leading-[0.82] text-[#11110F]"
-                />
+                <h1 className="max-w-[11ch] font-display text-[clamp(50px,6.7vw,100px)] leading-[0.9] tracking-[-0.045em] text-[#F7EAD6]">
+                  See what the story hides.
+                </h1>
                 <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-12">
                   <Link
                     to="/read/$token"
@@ -308,7 +293,7 @@ function LandingPage() {
                 </p>
                 <Link
                   to="/analyst"
-                  className="group mt-4 flex items-center justify-between bg-[#1A1A1A] px-4 py-4 text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF]"
+                  className="blueprint-cta group mt-4 flex items-center justify-between px-4 py-4 transition-colors"
                 >
                   <span className="font-display text-[24px] leading-none">Read a source</span>
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />

@@ -62,7 +62,7 @@ function city(id: string): Point & { lat: number; lon: number } {
   return found;
 }
 
-function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasElement {
+function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "light", width = 2048, height = 1024): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
@@ -74,12 +74,17 @@ function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasE
     ((90 - lat) / 180) * height,
   ];
 
-  ctx.fillStyle = "#FAF7F0";
-  ctx.fillRect(0, 0, width, height);
+  const blueprint = theme === "blueprint";
+  if (blueprint) {
+    ctx.clearRect(0, 0, width, height);
+  } else {
+    ctx.fillStyle = "#FAF7F0";
+    ctx.fillRect(0, 0, width, height);
+  }
 
   // Fine graticule.
   ctx.lineWidth = 1;
-  ctx.strokeStyle = "rgba(112, 101, 88, 0.09)";
+  ctx.strokeStyle = blueprint ? "rgba(247, 234, 214, 0.2)" : "rgba(112, 101, 88, 0.09)";
   for (let lon = -180; lon <= 180; lon += 30) {
     const [x] = project(lon, 0);
     ctx.beginPath();
@@ -97,6 +102,7 @@ function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasE
 
   const features = (data as { features?: Array<{ geometry?: { type: string; coordinates: unknown } }> })
     ?.features ?? [];
+  let dotPattern: CanvasPattern | null = null;
 
   const polygonsOf = (geometry: { type: string; coordinates: unknown } | undefined) => {
     if (!geometry) return [] as number[][][][];
@@ -124,34 +130,57 @@ function drawGeoTexture(data: unknown, width = 2048, height = 1024): HTMLCanvasE
         });
       });
       ctx.closePath();
-      ctx.fillStyle = "#E7D8C3";
-      ctx.fill("evenodd");
-      ctx.strokeStyle = "rgba(147, 126, 103, 0.18)";
-      ctx.lineWidth = 7;
-      ctx.stroke();
-      ctx.strokeStyle = "rgba(110, 91, 72, 0.58)";
-      ctx.lineWidth = 1.3;
-      ctx.stroke();
+      if (blueprint) {
+        if (!dotPattern) {
+          const dot = document.createElement("canvas");
+          dot.width = 6;
+          dot.height = 6;
+          const dotCtx = dot.getContext("2d");
+          if (dotCtx) {
+            dotCtx.fillStyle = "rgba(247, 234, 214, 0.66)";
+            dotCtx.beginPath();
+            dotCtx.arc(3, 3, 0.9, 0, Math.PI * 2);
+            dotCtx.fill();
+          }
+          dotPattern = ctx.createPattern(dot, "repeat");
+        }
+        ctx.fillStyle = dotPattern ?? "rgba(247, 234, 214, 0.5)";
+        ctx.fill("evenodd");
+        ctx.strokeStyle = "rgba(247, 234, 214, 0.82)";
+        ctx.lineWidth = 1.25;
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = "#E7D8C3";
+        ctx.fill("evenodd");
+        ctx.strokeStyle = "rgba(147, 126, 103, 0.18)";
+        ctx.lineWidth = 7;
+        ctx.stroke();
+        ctx.strokeStyle = "rgba(110, 91, 72, 0.58)";
+        ctx.lineWidth = 1.3;
+        ctx.stroke();
+      }
     }
   }
 
-  // A subtle land halo, then a second pass for the coast.
-  ctx.globalCompositeOperation = "source-atop";
-  const coastGradient = ctx.createLinearGradient(0, 0, width, height);
-  coastGradient.addColorStop(0, "rgba(255, 253, 248, 0.42)");
-  coastGradient.addColorStop(0.48, "rgba(255, 253, 248, 0)");
-  coastGradient.addColorStop(1, "rgba(120, 100, 80, 0.06)");
-  ctx.fillStyle = coastGradient;
-  ctx.fillRect(0, 0, width, height);
-  ctx.globalCompositeOperation = "source-over";
+  if (!blueprint) {
+    // A subtle land halo, then a second pass for the coast.
+    ctx.globalCompositeOperation = "source-atop";
+    const coastGradient = ctx.createLinearGradient(0, 0, width, height);
+    coastGradient.addColorStop(0, "rgba(255, 253, 248, 0.42)");
+    coastGradient.addColorStop(0.48, "rgba(255, 253, 248, 0)");
+    coastGradient.addColorStop(1, "rgba(120, 100, 80, 0.06)");
+    ctx.fillStyle = coastGradient;
+    ctx.fillRect(0, 0, width, height);
+    ctx.globalCompositeOperation = "source-over";
 
-  // Fine paper grain.
-  for (let i = 0; i < 28000; i += 1) {
-    const x = Math.random() * width;
-    const y = Math.random() * height;
-    const alpha = Math.random() * 0.018;
-    ctx.fillStyle = `rgba(70, 61, 50, ${alpha})`;
-    ctx.fillRect(x, y, 1, 1);
+    // Fine paper grain.
+    for (let i = 0; i < 28000; i += 1) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const alpha = Math.random() * 0.018;
+      ctx.fillStyle = `rgba(70, 61, 50, ${alpha})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
   }
 
   return canvas;
@@ -199,14 +228,15 @@ function makeArc(start: THREE.Vector3, end: THREE.Vector3, color: number, opacit
   return route;
 }
 
-function GlobeFallback() {
+function GlobeFallback({ theme }: { theme?: "dark" | "light" | "blueprint" }) {
+  const blueprint = theme === "blueprint";
   return (
     <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-      <div className="relative aspect-square w-[78%] rounded-full bg-[radial-gradient(circle_at_34%_28%,#fffdf8_0%,#f2e8d9_42%,#ddccb8_76%,#c0ac96_100%)] shadow-[inset_-34px_-26px_70px_rgba(100,84,67,0.14),0_34px_70px_rgba(89,72,55,0.1)]">
-        <div className="absolute inset-[5%] rounded-full border border-[#665544]/20" />
-        <div className="absolute inset-x-[5%] top-1/2 h-px bg-[#665544]/20" />
-        <div className="absolute inset-y-[5%] left-1/2 w-px bg-[#665544]/20" />
-        <div className="absolute inset-[24%] rounded-full border border-[#665544]/15" />
+      <div className={`relative aspect-square w-[78%] rounded-full ${blueprint ? "border border-[#F7EAD6]/30 bg-transparent shadow-[0_0_80px_rgba(247,234,214,0.08)]" : "bg-[radial-gradient(circle_at_34%_28%,#fffdf8_0%,#f2e8d9_42%,#ddccb8_76%,#c0ac96_100%)] shadow-[inset_-34px_-26px_70px_rgba(100,84,67,0.14),0_34px_70px_rgba(89,72,55,0.1)]"}`}>
+        <div className={`absolute inset-[5%] rounded-full border ${blueprint ? "border-[#F7EAD6]/25" : "border-[#665544]/20"}`} />
+        <div className={`absolute inset-x-[5%] top-1/2 h-px ${blueprint ? "bg-[#F7EAD6]/25" : "bg-[#665544]/20"}`} />
+        <div className={`absolute inset-y-[5%] left-1/2 w-px ${blueprint ? "bg-[#F7EAD6]/25" : "bg-[#665544]/20"}`} />
+        <div className={`absolute inset-[24%] rounded-full border ${blueprint ? "border-[#F7EAD6]/20" : "border-[#665544]/15"}`} />
         <div className="absolute left-[28%] top-[34%] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1A4BFF]" />
         <div className="absolute left-[61%] top-[48%] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1A4BFF]" />
         <div className="absolute left-[63%] top-[52%] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C1121F]" />
@@ -224,7 +254,7 @@ export function GeoGlobe({
 }: {
   selectedId?: string | null;
   onSelect?: (id: string | null) => void;
-  theme?: "dark" | "light";
+  theme?: "dark" | "light" | "blueprint";
   mobileScale?: number;
   layout?: "center" | "right";
 }) {
@@ -234,6 +264,7 @@ export function GeoGlobe({
   const [active, setActive] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
+  const isBlueprint = theme === "blueprint";
 
   useEffect(() => {
     selectedRef.current = selectedId;
@@ -282,28 +313,38 @@ export function GeoGlobe({
     globeTexture.colorSpace = THREE.SRGBColorSpace;
     const bumpTexture = makeBumpTexture();
 
-    const globeMaterial = new THREE.MeshStandardMaterial({
-      map: globeTexture,
-      bumpMap: bumpTexture,
-      bumpScale: 0.008,
-      roughness: 0.7,
-      metalness: 0.02,
-    });
+    const isBlueprint = theme === "blueprint";
+    const globeMaterial = isBlueprint
+      ? new THREE.MeshBasicMaterial({
+          map: globeTexture,
+          transparent: true,
+          opacity: 0.92,
+          depthWrite: false,
+        })
+      : new THREE.MeshStandardMaterial({
+          map: globeTexture,
+          bumpMap: bumpTexture,
+          bumpScale: 0.008,
+          roughness: 0.7,
+          metalness: 0.02,
+        });
 
     const globe = new THREE.Mesh(new THREE.SphereGeometry(1, 128, 96), globeMaterial);
     globe.rotation.y = 0;
     group.add(globe);
 
-    const atmosphere = new THREE.Mesh(
-      new THREE.SphereGeometry(1.018, 64, 48),
-      new THREE.MeshBasicMaterial({
-        color: 0xfff4e2,
-        transparent: true,
-        opacity: 0.08,
-        side: THREE.BackSide,
-      }),
-    );
-    group.add(atmosphere);
+    if (!isBlueprint) {
+      const atmosphere = new THREE.Mesh(
+        new THREE.SphereGeometry(1.018, 64, 48),
+        new THREE.MeshBasicMaterial({
+          color: 0xfff4e2,
+          transparent: true,
+          opacity: 0.08,
+          side: THREE.BackSide,
+        }),
+      );
+      group.add(atmosphere);
+    }
 
     const markerObjects: Array<{ id: string; object: THREE.Object3D }> = [];
     for (const item of CITIES) {
@@ -315,7 +356,7 @@ export function GeoGlobe({
       const ring = new THREE.Mesh(
         new THREE.RingGeometry(0.021, 0.032, 28),
         new THREE.MeshBasicMaterial({
-          color: item.tone === "red" ? 0xc1121f : 0x1a4bff,
+          color: isBlueprint ? (item.tone === "red" ? 0xf1c979 : 0xf7ead6) : item.tone === "red" ? 0xc1121f : 0x1a4bff,
           transparent: true,
           opacity: 0.9,
           side: THREE.DoubleSide,
@@ -330,7 +371,7 @@ export function GeoGlobe({
       const core = new THREE.Mesh(
         new THREE.CircleGeometry(0.009, 20),
         new THREE.MeshBasicMaterial({
-          color: 0xfff8ea,
+          color: isBlueprint ? 0xf7ead6 : 0xfff8ea,
           transparent: true,
           opacity: 0.95,
           side: THREE.DoubleSide,
@@ -352,7 +393,7 @@ export function GeoGlobe({
         makeArc(
           latLonToVector3(from.lat, from.lon, 1.012),
           latLonToVector3(to.lat, to.lon, 1.012),
-          arc.color,
+          isBlueprint ? (arc.color === 0xc1121f ? 0xf1c979 : 0xf7ead6) : arc.color,
           arc.opacity,
         ),
       );
@@ -513,7 +554,7 @@ export function GeoGlobe({
       .then((response) => response.json())
       .then((data) => {
         if (disposed) return;
-        const texture = new THREE.CanvasTexture(drawGeoTexture(data));
+        const texture = new THREE.CanvasTexture(drawGeoTexture(data, theme));
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
         globeMaterial.map = texture;
@@ -547,12 +588,12 @@ export function GeoGlobe({
       });
       if (renderer.domElement.parentElement === mount) mount.removeChild(renderer.domElement);
     };
-  }, []);
+  }, [theme]);
 
   return (
     <div className="relative h-full w-full">
       <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />
-      {failed ? <GlobeFallback /> : null}
+      {failed ? <GlobeFallback theme={theme} /> : null}
       <div className={`absolute inset-0 transition-opacity duration-700 ${ready || failed ? "opacity-100" : "opacity-0"}`}>
         {CITIES.map((item) => {
           const isActive = active === item.id || selectedId === item.id;
@@ -579,18 +620,22 @@ export function GeoGlobe({
             >
               <span
                 className={`flex h-7 w-7 items-center justify-center rounded-full border font-mono text-[8px] font-bold tracking-[0.04em] shadow-[0_2px_8px_rgba(40,30,20,0.18)] transition-colors ${
-                  item.tone === "red"
-                    ? "border-[#C1121F]/32 bg-[#FFFCF7] text-[#C1121F]"
-                    : "border-[#1A4BFF]/28 bg-[#FFFCF7] text-[#1A3FCC]"
-                } ${isActive ? "scale-110" : ""} ${selectedId === item.id ? "ring-2 ring-[#1A4BFF]/40 ring-offset-2 ring-offset-[#0B0907]" : ""}`}
+                  isBlueprint
+                    ? "border-[#F7EAD6]/40 bg-[#0A0805]/30 text-[#F7EAD6] backdrop-blur-sm"
+                    : item.tone === "red"
+                      ? "border-[#C1121F]/32 bg-[#FFFCF7] text-[#C1121F]"
+                      : "border-[#1A4BFF]/28 bg-[#FFFCF7] text-[#1A3FCC]"
+                } ${isActive ? "scale-110" : ""} ${selectedId === item.id ? "ring-2 ring-[#F7EAD6]/40 ring-offset-2 ring-offset-[#0B0907]" : ""}`}
               >
                 {item.number}
               </span>
               <span
                 className={`absolute left-8 top-1/2 hidden -translate-y-1/2 whitespace-nowrap border px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] shadow-[0_4px_14px_rgba(0,0,0,0.14)] transition-colors md:block ${
-                  theme === "light"
-                    ? "border-[#1A1A1A]/15 bg-[#FFFCF7] text-[#1A1A1A]/65"
-                    : "border-[#2A2118]/20 bg-[#F2E7D5] text-[#1A1410]/75"
+                  theme === "blueprint"
+                    ? "border-[#F7EAD6]/25 bg-[#0A0805]/35 text-[#F7EAD6]/70 backdrop-blur-sm"
+                    : theme === "light"
+                      ? "border-[#1A1A1A]/15 bg-[#FFFCF7] text-[#1A1A1A]/65"
+                      : "border-[#2A2118]/20 bg-[#F2E7D5] text-[#1A1410]/75"
                 } ${isActive ? "border-[#1A4BFF]/35 !text-[#1A4BFF]" : ""}`}
               >
                 {item.name}

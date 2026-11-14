@@ -48,7 +48,7 @@ export function GlassHeader({ section = "record", tone = "light" }: { section?: 
             <Link
               to="/profile"
               aria-label="Profile"
-              className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${dark ? "bg-[#F4EBDD] text-[#120D09] hover:bg-[#AFC0FF]" : "bg-[#1A1A1A] text-[#FDFBF7] hover:bg-[#1A4BFF]"}`}
+              className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${dark ? "border-[#F7EAD6]/30 bg-[#F7EAD6]/10 text-[#F7EAD6] hover:border-[#F1C979] hover:text-[#F1C979]" : "border-transparent bg-[#1A1A1A] text-[#FDFBF7] hover:bg-[#1A4BFF]"}`}
             >
               <User className="h-3.5 w-3.5" strokeWidth={1.7} />
             </Link>

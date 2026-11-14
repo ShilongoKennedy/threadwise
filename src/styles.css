@@ -1695,3 +1695,81 @@ main {
   background: rgba(247, 234, 214, 0.09) !important;
   color: #f1c979 !important;
 }
+
+/* The public landing is the first full deployment of the seminar's deep blueprint system. */
+.blueprint-page {
+  position: relative;
+  isolation: isolate;
+}
+
+.blueprint-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    url("/seminar-stitch.svg"),
+    linear-gradient(to right, color-mix(in srgb, var(--seminar-ink, #F7EAD6) 15%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--seminar-ink, #F7EAD6) 15%, transparent) 1px, transparent 1px),
+    radial-gradient(circle, color-mix(in srgb, var(--seminar-ink, #F7EAD6) 42%, transparent) 1.3px, transparent 1.7px);
+  background-size: 28px 28px, 140px 140px, 140px 140px, 140px 140px;
+}
+
+.blueprint-page > main,
+.blueprint-page > footer {
+  position: relative;
+  z-index: 1;
+}
+
+.blueprint-page section,
+.blueprint-page footer {
+  background-color: transparent !important;
+}
+
+.blueprint-page main :is(h1, h2, h3, p, li, span, a, button),
+.blueprint-page footer :is(h1, h2, h3, p, li, span, a, button) {
+  color: #F7EAD6 !important;
+}
+
+.blueprint-page .bg-\[\#1A1A1A\],
+.blueprint-page .bg-\[\#FCF7ED\],
+.blueprint-page .bg-\[\#FAF6EE\] {
+  background-color: transparent !important;
+}
+
+.blueprint-page .text-\[\#1A4BFF\],
+.blueprint-page .text-\[\#C1121F\] {
+  color: #F1C979 !important;
+}
+
+
+.blueprint-page main [class*="text-[#1A4BFF]"],
+.blueprint-page footer [class*="text-[#1A4BFF]"],
+.blueprint-page main [class*="text-[#C1121F]"],
+.blueprint-page footer [class*="text-[#C1121F]"] {
+  color: #F1C979 !important;
+}
+
+.blueprint-page main [class*="border-[#1A4BFF]"] {
+  border-color: rgba(241, 201, 121, 0.45) !important;
+}
+
+.blueprint-page footer a[aria-label="Threadwise — home"] svg,
+.blueprint-page footer a[aria-label="Threadwise — home"] svg * {
+  filter: brightness(0) invert(1) !important;
+}
+
+.blueprint-page footer a[aria-label="Threadwise — home"] span {
+  color: #F7EAD6 !important;
+}
+
+.blueprint-page .blueprint-cta {
+  background: #F7EAD6 !important;
+  border: 1px solid #F7EAD6 !important;
+  color: #1A1A1A !important;
+}
+
+.blueprint-page .blueprint-cta * {
+  color: #1A1A1A !important;
+}
