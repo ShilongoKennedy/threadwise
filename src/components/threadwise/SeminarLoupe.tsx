@@ -113,11 +113,11 @@ export function LoupeSelectionButton({
       data-loupe-trigger
       onMouseDown={(event) => event.preventDefault()}
       onClick={onOpen}
-      className="tw-loupe-trigger fixed z-[80] inline-flex h-9 -translate-x-1/2 items-center gap-2 rounded-full border border-[#1A1A1A]/20 bg-[#1A1A1A] px-2.5 pr-3 text-[#FDFBF7] shadow-[0_8px_24px_-10px_rgba(26,26,26,0.7)]"
+      className="tw-loupe-trigger fixed z-[80] inline-flex h-9 -translate-x-1/2 items-center gap-2 rounded-full border border-[#F7EAD6]/30 bg-[#0A0805]/90 px-2.5 pr-3 text-[#F7EAD6] shadow-[0_8px_24px_-10px_rgba(0,0,0,0.8)] backdrop-blur-md"
       style={{ left: candidate.left, top: candidate.top }}
       aria-label="Look closer at the selected passage"
     >
-      <span className="grid h-5 w-5 place-items-center rounded-full bg-[#1A4BFF]">
+      <span className="grid h-5 w-5 place-items-center rounded-full bg-[#F1C979] text-[#1A1A1A]">
         <Search className="h-3 w-3" strokeWidth={2.2} />
       </span>
       <span className="font-mono text-[8px] font-bold uppercase tracking-[0.12em]">Look closer</span>
@@ -141,7 +141,7 @@ export function LookCloserButton({
       type="button"
       onMouseDown={(event) => event.preventDefault()}
       onClick={() => onLookCloser({ selected: text, paragraph: text, section })}
-      className={`inline-flex shrink-0 items-center gap-1 rounded-full border border-transparent px-1.5 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.08em] text-[#1A4BFF]/70 opacity-0 transition-all hover:border-[#1A4BFF]/30 hover:bg-[#1A4BFF]/5 focus:opacity-100 group-hover:opacity-100 ${className}`}
+      className={`inline-flex shrink-0 items-center gap-1 rounded-full border border-transparent px-1.5 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.08em] text-[#F7EAD6]/60 opacity-0 transition-all hover:border-[#1A4BFF]/30 hover:bg-[#1A4BFF]/5 focus:opacity-100 group-hover:opacity-100 ${className}`}
       aria-label="Look closer at this line"
     >
       <Search className="h-2.5 w-2.5" />
@@ -229,7 +229,7 @@ export function SeminarLoupe({
         role="dialog"
         aria-modal="false"
         aria-label="Loupe note"
-        className="tw-loupe-panel fixed inset-x-3 bottom-3 z-[80] max-h-[76dvh] overflow-y-auto border border-[#1A1A1A]/20 bg-[#FBF6EC] text-[#1A1A1A] shadow-[10px_16px_0_-3px_rgba(26,26,26,0.12),0_28px_60px_-28px_rgba(26,26,26,0.45)] md:inset-x-auto md:bottom-auto md:right-6 md:top-24 md:max-h-[calc(100dvh-8rem)] md:w-[382px]"
+        className="seminar-dark-ink loupe-blueprint tw-loupe-panel fixed inset-x-3 top-20 z-[80] max-h-[calc(100dvh-6rem)] overflow-y-auto rounded-[24px] border border-[#F7EAD6]/25 text-[#F7EAD6] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] md:inset-x-auto md:right-6 md:top-24 md:max-h-[calc(100dvh-8rem)] md:w-[400px]"
       >
         <div className="relative border-b border-[#1A1A1A]/15 px-5 pb-4 pt-5">
           <span className="absolute left-0 top-5 h-16 w-1 bg-[#1A4BFF]" aria-hidden />
@@ -264,9 +264,9 @@ export function SeminarLoupe({
               <p className="flex items-center gap-2 font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
                 <Loader2 className="h-3 w-3 animate-spin" /> Focusing the lens
               </p>
-              <div className="h-2.5 w-11/12 animate-pulse rounded-full bg-[#1A1A1A]/10" />
-              <div className="h-2.5 w-4/5 animate-pulse rounded-full bg-[#1A1A1A]/8" />
-              <div className="h-2.5 w-2/3 animate-pulse rounded-full bg-[#1A1A1A]/6" />
+              <div className="h-2.5 w-11/12 animate-pulse rounded-full bg-[#F7EAD6]/18" />
+              <div className="h-2.5 w-4/5 animate-pulse rounded-full bg-[#F7EAD6]/14" />
+              <div className="h-2.5 w-2/3 animate-pulse rounded-full bg-[#F7EAD6]/10" />
             </div>
           ) : null}
 

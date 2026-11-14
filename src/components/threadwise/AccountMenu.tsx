@@ -3,7 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-export function AccountMenu({ email }: { email?: string }) {
+export function AccountMenu({ email, dark = false }: { email?: string; dark?: boolean }) {
   const [open, setOpen] = useState(false);
   const host = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -48,6 +48,7 @@ export function AccountMenu({ email }: { email?: string }) {
       {open && (
         <div
           role="menu"
+          data-dark={dark || undefined}
           className="absolute right-0 top-11 z-50 w-[220px] border-2 border-[#1A1A1A] bg-white"
         >
           <div className="border-b border-[#1A1A1A]/12 px-3 py-2">

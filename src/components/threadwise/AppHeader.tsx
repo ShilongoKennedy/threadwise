@@ -93,7 +93,7 @@ export function AppHeader({
 
             <div className="flex shrink-0 items-center gap-2">
               {signedIn ? (
-                <AccountMenu email={email} />
+                <AccountMenu email={email} dark={section === "seminar"} />
               ) : signedIn === false ? (
                 <Link
                   to="/login"

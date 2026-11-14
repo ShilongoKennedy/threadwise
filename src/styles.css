@@ -1565,7 +1565,8 @@ main {
   background-size: 28px 28px, 28px 28px, 140px 140px, 140px 140px;
 }
 
-.seminar-color-page > * {
+.seminar-color-page > section,
+.seminar-color-page > main {
   position: relative;
   z-index: 1;
 }
@@ -1575,7 +1576,7 @@ main {
   color: var(--seminar-ink);
 }
 
-.seminar-dark-ink :is(h1, h2, h3, h4, p, li, span, button, a, summary, svg, div) {
+.seminar-dark-ink :is(h1, h2, h3, h4, p, li, span, button, a, summary, svg, div, blockquote) {
   color: inherit !important;
 }
 
@@ -1646,4 +1647,49 @@ main {
 .seminar-dark-ink .tutor-prose,
 .seminar-dark-ink .tutor-prose :is(p, li, strong, em, h1, h2, h3) {
   color: var(--seminar-ink) !important;
+}
+
+.loupe-blueprint {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--seminar-bg) 82%, #090704 18%), color-mix(in srgb, var(--seminar-bg) 72%, #090704 28%));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.seminar-header header [role="menu"] {
+  background: #120d09 !important;
+  border-color: var(--seminar-header-border) !important;
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.8) !important;
+}
+
+.seminar-header header [role="menu"] :is(a, button, p, span) {
+  color: var(--seminar-header-ink) !important;
+}
+
+.seminar-header header [role="menu"] a:hover,
+.seminar-header header [role="menu"] button:hover {
+  background: rgba(247, 234, 214, 0.09) !important;
+  color: var(--seminar-header-accent) !important;
+}
+
+.seminar-header header button:focus-visible {
+  outline: 2px solid var(--seminar-header-accent) !important;
+  outline-offset: 3px;
+}
+
+
+[role="menu"][data-dark] {
+  background: #120d09 !important;
+  border-color: rgba(247, 234, 214, 0.26) !important;
+  color: #f7ead6 !important;
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.8);
+}
+
+[role="menu"][data-dark] :is(p, span, a, button) {
+  color: #f7ead6 !important;
+}
+
+[role="menu"][data-dark] :is(a, button):hover {
+  background: rgba(247, 234, 214, 0.09) !important;
+  color: #f1c979 !important;
 }
