@@ -1544,3 +1544,28 @@ main {
 .seminar-header nav[aria-label="Primary"] [aria-current="page"] > span {
   background-color: var(--seminar-header-accent) !important;
 }
+
+/* Blueprint paper texture for the seminar colour modes. */
+.seminar-color-page {
+  position: relative;
+  isolation: isolate;
+}
+
+.seminar-color-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--seminar-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--seminar-grid) 1px, transparent 1px),
+    linear-gradient(to right, rgba(25, 39, 82, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(25, 39, 82, 0.055) 1px, transparent 1px);
+  background-size: 28px 28px, 28px 28px, 140px 140px, 140px 140px;
+}
+
+.seminar-color-page > * {
+  position: relative;
+  z-index: 1;
+}
