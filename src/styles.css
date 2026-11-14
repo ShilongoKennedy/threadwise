@@ -1515,8 +1515,8 @@ main {
 }
 
 .seminar-reading-surface ::selection {
-  background: rgba(26, 75, 255, 0.2);
-  color: #11110f;
+  background: rgba(123, 155, 131, 0.28);
+  color: #1f2b22;
 }
 
 .seminar-reading-surface [data-loupe-section] {
@@ -1528,4 +1528,62 @@ main {
   .tw-loupe-trigger {
     animation: none;
   }
+}
+
+/* Seminar word notes — quiet highlights and a soft cloud. */
+.seminar-word {
+  display: inline;
+  border-radius: 3px;
+  background: linear-gradient(180deg, transparent 56%, var(--word-bg) 56%);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--word-line);
+  text-underline-offset: 3px;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.seminar-word:hover,
+.seminar-word:focus-visible {
+  background: var(--word-bg);
+  color: var(--word-ink);
+  outline: none;
+}
+
+.word-cloud {
+  animation: word-cloud-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  isolation: isolate;
+}
+
+.word-cloud-puff {
+  position: absolute;
+  z-index: 0;
+  border-radius: 9999px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.word-cloud-puff-a { width: 74px; height: 52px; left: 24px; top: -22px; }
+.word-cloud-puff-b { width: 58px; height: 42px; right: 30px; top: -14px; }
+.word-cloud-puff-c { width: 48px; height: 34px; right: 82px; top: -30px; }
+
+.word-cloud > div:last-child {
+  z-index: 1;
+}
+
+@keyframes word-cloud-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 767px) {
+  .word-cloud-puff { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word-cloud { animation: none; }
+  .seminar-word { transition: none; }
 }

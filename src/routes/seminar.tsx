@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/threadwise/AppHeader";
 import type { Seminar, SeminarTheory } from "@/lib/threadwise/seminar";
 import type { SeminarLesson } from "@/lib/threadwise/seminar-lesson";
 import { SeminarLessonView } from "@/components/threadwise/SeminarLessonView";
+import { HighlightedText, WordChips, WordCloudBubble, type GlossaryWord, type OpenWord } from "@/components/threadwise/SeminarWords";
 import { SeminarLoupe, LoupeSelectionButton, LookCloserButton, useLoupeSelection, type LoupeTarget } from "@/components/threadwise/SeminarLoupe";
 import { InkArrow, InkCircle, InkRule, InkTick } from "@/components/threadwise/InkMarks";
 import { supabase } from "@/integrations/supabase/client";
@@ -68,6 +69,11 @@ function SeminarPage() {
   const [lesson, setLesson] = useState<SeminarLesson | null>(null);
   const [lessonBusy, setLessonBusy] = useState(false);
   const [lessonError, setLessonError] = useState<string | null>(null);
+  const [openWord, setOpenWord] = useState<OpenWord | null>(null);
+
+  const openGlossaryWord = (word: GlossaryWord, tone: number, element: HTMLElement) => {
+    setOpenWord({ word, tone, rect: element.getBoundingClientRect() });
+  };
 
   useEffect(() => {
     let alive = true;
@@ -218,13 +224,15 @@ function SeminarPage() {
     }
   };
 
+  const glossary = seminar?.glossary ?? [];
+
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="min-h-[100dvh] bg-[#F8F3E9] text-[#2F332C]">
       <AppHeader section="seminar" />
 
-      <section className="relative overflow-hidden bg-[#1A1A1A] text-[#FDFBF7]">
+      <section className="relative overflow-hidden border-b border-[#DFD4C3] bg-[#F3EBDD] text-[#2F332C]">
         <div
-          className="pointer-events-none absolute inset-0 opacity-80"
+          className="pointer-events-none absolute inset-0 opacity-[0.075]"
           style={{
             backgroundImage: "url('/world-land-dark.svg')",
             backgroundSize: "min(1600px, 130vw) auto",
@@ -234,37 +242,58 @@ function SeminarPage() {
             WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 14%, black 82%, transparent 100%)",
           }}
         />
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#1A1A1A_0%,rgba(26,26,26,0.94)_30%,rgba(26,26,26,0.55)_56%,rgba(26,26,26,0.08)_82%,transparent_100%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_84%_12%,rgba(213,229,213,0.75),transparent_54%),radial-gradient(ellipse_at_8%_100%,rgba(236,215,188,0.65),transparent_48%)]" />
+        <span aria-hidden className="pointer-events-none absolute -right-6 top-16 select-none font-display text-[30vw] leading-none text-[#C9B7A0]/15">“</span>
 
-        <div className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-12 pt-12 md:px-8 md:pb-16 md:pt-16">
+        <div className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-10 pt-12 md:px-8 md:pb-14 md:pt-16">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#7F9BFF]">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#4F705C]">
               The seminar
             </p>
-            <span className="h-3 w-px bg-white/20" />
-            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/40">
+            <span className="h-3 w-px bg-[#2F332C]/20" />
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#2F332C]/38">
               Two theories · one crux
             </p>
           </div>
 
-          <h1 className="mt-3 max-w-[12ch] font-display text-[48px] leading-[0.92] tracking-[-0.03em] md:text-[76px]">
-            Put it on the table.
-          </h1>
-          <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-white/60">
-            Bring a quote or a question you cannot settle. The seminar builds the strongest
-            version of two rival explanations, then shows the exact point where they part.
-          </p>
+          <div className="mt-3 grid gap-6 md:grid-cols-[minmax(0,1fr)_270px] md:items-end md:gap-12">
+            <div>
+              <h1 className="max-w-[12ch] font-display text-[50px] leading-[0.9] tracking-[-0.035em] text-[#2F332C] md:text-[78px]">
+                Put it on
+                <br />
+                <span className="italic text-[#6D5A42]">the table.</span>
+              </h1>
+              <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-[1.65] text-[#2F332C]/58 md:text-[16px]">
+                Bring a quote or a question you cannot settle. The seminar builds the strongest
+                version of two rival explanations, then shows the exact point where they part.
+              </p>
+            </div>
+            <div className="hidden border-l border-[#2F332C]/15 pl-5 md:block">
+              <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#6D5A42]">A quiet room for</p>
+              <p className="mt-2 font-serif text-[13px] italic leading-relaxed text-[#2F332C]/55">
+                two serious readings, one honest disagreement, and the evidence that would move you.
+              </p>
+              <p className="mt-3 font-mono text-[7px] uppercase tracking-[0.11em] text-[#2F332C]/32">
+                No verdict unless you ask.
+              </p>
+            </div>
+          </div>
 
           <form
             onSubmit={(event) => {
               event.preventDefault();
               void convene();
             }}
-            className="tw-glass-panel mt-8 p-4 text-[#1A1A1A] md:p-6"
+            className="mt-8 rounded-[30px] border border-[#D8CBB8] bg-[#FCF7ED] p-5 text-[#2F332C] shadow-[0_30px_70px_-46px_rgba(66,51,35,0.4)] md:p-8"
           >
-            <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/55">
-              The quote or question
-            </label>
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#2F332C]/48">
+                The quote or question
+              </label>
+              <span className="font-mono text-[7px] uppercase tracking-[0.12em] text-[#2F332C]/25">
+                One passage is enough
+              </span>
+            </div>
             <textarea
               id="seminar-text"
               value={text}
@@ -272,12 +301,12 @@ function SeminarPage() {
               rows={5}
               maxLength={3000}
               placeholder="Paste the sentence you cannot stop thinking about…"
-              className="mt-2 w-full resize-none bg-transparent font-display text-[20px] leading-[1.25] outline-none placeholder:text-[#1A1A1A]/25 md:text-[28px]"
+              className="mt-2 w-full resize-none bg-transparent font-display text-[21px] leading-[1.35] tracking-[-0.01em] outline-none placeholder:text-[#2F332C]/30 md:text-[29px]"
             />
 
-            <div className="mt-4 grid gap-3 border-t border-[#1A1A1A]/12 pt-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+            <div className="mt-4 grid gap-3 border-t border-[#2F332C]/12 pt-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
               <div>
-                <label htmlFor="seminar-context" className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
+                <label htmlFor="seminar-context" className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#2F332C]/38">
                   Context, if it matters
                 </label>
                 <input
@@ -286,13 +315,13 @@ function SeminarPage() {
                   onChange={(event) => setContext(event.target.value)}
                   maxLength={1000}
                   placeholder="Who said it, where, and what was being argued"
-                  className="mt-1 w-full border-b border-[#1A1A1A]/20 bg-transparent pb-2 font-serif text-[13px] outline-none placeholder:text-[#1A1A1A]/30 focus:border-[#1A4BFF]"
+                  className="mt-1 w-full border-b border-[#2F332C]/18 bg-transparent pb-2 font-serif text-[13px] outline-none placeholder:text-[#2F332C]/25 focus:border-[#4F705C]"
                 />
               </div>
               <button
                 type="submit"
                 disabled={busy || text.trim().length < 20}
-                className="inline-flex min-h-12 items-center justify-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:cursor-not-allowed disabled:border-[#1A1A1A]/20 disabled:bg-transparent disabled:text-[#1A1A1A]/30"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#3F5A47] bg-[#3F5A47] px-5 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-[#FCF7ED] transition-colors hover:border-[#2F4637] hover:bg-[#2F4637] disabled:cursor-not-allowed disabled:border-[#2F332C]/15 disabled:bg-transparent disabled:text-[#2F332C]/25"
               >
                 {busy ? "Setting the room…" : "Convene the seminar"}
                 {!busy && <ArrowRight className="h-3.5 w-3.5" />}
@@ -306,18 +335,33 @@ function SeminarPage() {
                   setText(SAMPLE);
                   setContext("A podcast conversation about foreign aid and statecraft.");
                 }}
-                className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4"
+                className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#6D5A42] underline decoration-[#C49A67]/50 underline-offset-4 hover:text-[#4F705C]"
               >
                 Use the foreign-aid quote
               </button>
-              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">
+              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/28">
                 {text.length}/3000 · no verdict unless asked
               </span>
             </div>
           </form>
 
+          <div className="mt-4 grid gap-3 border-t border-[#2F332C]/12 pt-4 sm:grid-cols-3">
+            {[
+              ["01", "One passage", "A quote, a claim, a question."],
+              ["02", "Two readings", "Steelmanned, not caricatured."],
+              ["03", "One crux", "The exact point where they part."],
+            ].map(([number, title, note]) => (
+              <div key={number} className="flex gap-2.5 sm:block">
+                <span className="font-mono text-[7px] font-bold tracking-[0.12em] text-[#6D5A42]/65">{number}</span>
+                <p className="font-serif text-[12px] leading-snug text-[#2F332C]/55">
+                  <span className="font-semibold text-[#2F332C]/75">{title}.</span> {note}
+                </p>
+              </div>
+            ))}
+          </div>
+
           {error && (
-            <p className="mt-4 border-l-2 border-[#C1121F] pl-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#FF9D9D]">
+            <p className="mt-4 border-l-2 border-[#B65C43] pl-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#B65C43]">
               {error}
             </p>
           )}
@@ -328,7 +372,7 @@ function SeminarPage() {
         <section className="mx-auto w-full max-w-[1100px] px-5 pt-8 md:px-8">
           <div className="flex items-end justify-between gap-4 border-b border-[#1A1A1A]/15 pb-3">
             <h2 className="font-display text-[26px] leading-none">The archive.</h2>
-            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
+            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#2F332C]/35">
               {saved.length} saved
             </span>
           </div>
@@ -340,14 +384,14 @@ function SeminarPage() {
                   onClick={() => openSaved(item)}
                   className="group grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-baseline gap-3 py-3 text-left"
                 >
-                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/30">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <span className="min-w-0">
-                    <span className="block truncate font-serif text-[14px] leading-snug text-[#1A1A1A]/80 group-hover:text-[#1A4BFF]">
+                    <span className="block truncate font-serif text-[14px] leading-snug text-[#2F332C]/80 group-hover:text-[#4F705C]">
                       {item.question}
                     </span>
-                    <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+                    <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/35">
                       {item.stand ? `stood with ${item.stand}` : "held the tension"} ·{" "}
                       {new Date(item.created_at).toLocaleDateString("en-GB", {
                         day: "2-digit",
@@ -355,7 +399,7 @@ function SeminarPage() {
                       })}
                     </span>
                   </span>
-                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A4BFF]">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#4F705C]">
                     reopen →
                   </span>
                 </button>
@@ -369,22 +413,22 @@ function SeminarPage() {
         <main ref={readingRef} className="seminar-reading-surface mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
           <section data-loupe-section="The question underneath" className="grid gap-6 border-y border-[#1A1A1A]/15 py-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12 md:py-8">
             <div>
-              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#4F705C]">
                 The question underneath
               </p>
               <p className="mt-2 max-w-[62ch] font-display text-[28px] leading-[1.1] md:text-[38px]">
-                {seminar.question}
+                <HighlightedText text={seminar.question} glossary={glossary} onWord={openGlossaryWord} />
               </p>
-              <p className="mt-3 max-w-[62ch] font-serif text-[16px] leading-relaxed text-[#1A1A1A]/65">
-                {seminar.restatement}
+              <p className="mt-3 max-w-[62ch] font-serif text-[16px] leading-relaxed text-[#2F332C]/65">
+                <HighlightedText text={seminar.restatement} glossary={glossary} onWord={openGlossaryWord} />
               </p>
             </div>
             <div className="border-t border-[#1A1A1A]/15 pt-3 md:border-l md:border-t-0 md:pl-5 md:pt-0">
-              <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/40">
+              <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#2F332C]/40">
                 You brought
               </p>
-              <p className="mt-1 line-clamp-4 font-serif text-[12px] italic leading-relaxed text-[#1A1A1A]/55">
-                “{text}”
+              <p className="mt-1 line-clamp-4 font-serif text-[12px] italic leading-relaxed text-[#2F332C]/55">
+                “<HighlightedText text={text} glossary={glossary} onWord={openGlossaryWord} />”
               </p>
             </div>
           </section>
@@ -392,21 +436,32 @@ function SeminarPage() {
           <section data-loupe-section="Two readings" className="mt-8">
             <div className="flex items-end justify-between gap-4 pb-1">
               <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the same thing.</h2>
-              <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
+              <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#2F332C]/35 sm:inline">
                 steelmanned
               </span>
             </div>
             <InkRule className="mt-2" />
-            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/35">
               Arguments to test, not sourced findings.
-              <span className="inline-flex items-center gap-1 text-[#1A4BFF]/65">
+              <span className="inline-flex items-center gap-1 text-[#4F705C]/65">
                 <Search className="h-2.5 w-2.5" /> select a line, or hover “closer”
               </span>
+              <span className="text-[#B77A5B]/75">· tinted words open a note</span>
             </p>
+            {glossary.length > 0 ? (
+              <div className="mt-3 flex flex-wrap items-center gap-2 border-y border-[#1A1A1A]/10 py-2.5">
+                <span className="mr-1 inline-flex items-center gap-1.5 font-mono text-[7px] font-bold uppercase tracking-[0.14em] text-[#2F332C]/35">
+                  Words to keep
+                  <span className="h-1 w-1 rounded-full bg-[#C49A67]" />
+                </span>
+                <WordChips glossary={glossary} onWord={openGlossaryWord} />
+                <span className="ml-1 font-serif text-[10px] italic text-[#2F332C]/32">Tap a tinted word for a note.</span>
+              </div>
+            ) : null}
 
             <div className="grid border-y border-[#1A1A1A]/15 md:grid-cols-2 md:divide-x md:divide-[#1A1A1A]/15">
               {seminar.theories.map((theory, index) => (
-                <TheoryColumn key={index} theory={theory} index={index} onLookCloser={openLoupe} />
+                <TheoryColumn key={index} theory={theory} index={index} glossary={glossary} onWord={openGlossaryWord} onLookCloser={openLoupe} />
               ))}
             </div>
           </section>
@@ -415,13 +470,13 @@ function SeminarPage() {
             <section className="mt-10 border-y border-[#1A1A1A]/15 py-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em]">Before the crux</p>
-                <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+                <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/35">
                   choose before reading on
                 </p>
               </div>
               <div className="pt-3">
                 <h2 className="max-w-[20ch] font-display text-[30px] leading-[1.02] md:text-[36px]">Which reading survives the evidence?</h2>
-                <p className="mt-2 max-w-[56ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
+                <p className="mt-2 max-w-[56ch] font-serif text-[14px] leading-relaxed text-[#2F332C]/60">
                   This is not a vote on what is good. It is a bet on which causal account explains more
                   of what happened.
                 </p>
@@ -429,21 +484,21 @@ function SeminarPage() {
                   <button
                     type="button"
                     onClick={() => choose("A")}
-                    className="border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] hover:text-white"
+                    className="rounded-full border border-[#3F5A47] px-4 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#2F332C] transition-colors hover:bg-[#3F5A47] hover:text-[#FCF7ED]"
                   >
                     Theory A
                   </button>
                   <button
                     type="button"
                     onClick={() => choose("B")}
-                    className="border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] hover:text-white"
+                    className="rounded-full border border-[#3F5A47] px-4 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#2F332C] transition-colors hover:bg-[#3F5A47] hover:text-[#FCF7ED]"
                   >
                     Theory B
                   </button>
                   <button
                     type="button"
                     onClick={() => choose("undecided")}
-                    className="border-2 border-[#1A1A1A]/25 px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/55 transition-colors hover:border-[#1A1A1A]"
+                    className="border-2 border-[#1A1A1A]/25 px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#2F332C]/55 transition-colors hover:border-[#1A1A1A]"
                   >
                     Neither yet
                   </button>
@@ -454,7 +509,7 @@ function SeminarPage() {
                     setStand(null);
                     setRevealed(true);
                   }}
-                  className="mt-4 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 underline underline-offset-4"
+                  className="mt-4 font-mono text-[8px] uppercase tracking-[0.12em] text-[#2F332C]/35 underline underline-offset-4"
                 >
                   Reveal the crux without choosing
                 </button>
@@ -462,19 +517,19 @@ function SeminarPage() {
             </section>
           ) : (
             <>
-              <section data-loupe-section="The crux" className="mt-10 bg-[#1A1A1A] text-[#FDFBF7]">
+              <section data-loupe-section="The crux" className="mt-10 overflow-hidden rounded-[28px] border border-[#C8D6C3] bg-[#E7EFE4] text-[#2F332C] shadow-[0_24px_54px_-40px_rgba(47,51,44,0.45)]">
                 <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
-                  <div className="border-b border-white/15 px-5 py-4 md:border-b-0 md:border-r md:border-white/15 md:px-6 md:py-8">
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#7F9BFF]">
+                  <div className="border-b border-[#2F332C]/12 px-5 py-4 md:border-b-0 md:border-r md:border-[#2F332C]/12 md:px-6 md:py-8">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#4F705C]">
                       The crux
                     </p>
-                    <p className="mt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-white/40">
+                    <p className="mt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#2F332C]/38">
                       {DISAGREEMENT[seminar.disagreement]}
                     </p>
                     {stand && (
-                      <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.12em] text-white/70">
+                      <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.12em] text-[#2F332C]/55">
                         You stood with{" "}
-                        <span className="text-[#7F9BFF]">
+                        <span className="font-bold text-[#4F705C]">
                           {stand === "undecided" ? "neither yet" : `theory ${stand}`}
                         </span>
                       </p>
@@ -482,24 +537,24 @@ function SeminarPage() {
                   </div>
                   <div className="px-5 py-5 md:px-8 md:py-8">
                     <p className="max-w-[38ch] font-display text-[26px] leading-[1.12] md:text-[34px]">
-                      {seminar.crux}
+                      <HighlightedText text={seminar.crux} glossary={glossary} onWord={openGlossaryWord} />
                     </p>
-                    <div className="mt-6 border-t border-white/15 pt-4">
-                      <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">
+                    <div className="mt-6 border-t border-[#2F332C]/15 pt-4">
+                      <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#2F332C]/38">
                         What would settle it
                       </p>
-                      <p className="mt-1 max-w-[62ch] font-serif text-[14px] leading-relaxed text-white/75">
-                        {seminar.settle}
+                      <p className="mt-1 max-w-[62ch] font-serif text-[14px] leading-relaxed text-[#2F332C]/72">
+                        <HighlightedText text={seminar.settle} glossary={glossary} onWord={openGlossaryWord} />
                       </p>
                     </div>
                     {seminar.sources_needed.length > 0 && (
                       <div className="mt-4">
-                        <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">
+                        <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#2F332C]/38">
                           Look for
                         </p>
                         <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
                           {seminar.sources_needed.map((source) => (
-                            <li key={source} className="font-mono text-[9px] uppercase tracking-[0.08em] text-white/55">
+                            <li key={source} className="font-mono text-[9px] uppercase tracking-[0.08em] text-[#2F332C]/52">
                               → {source}
                             </li>
                           ))}
@@ -513,14 +568,14 @@ function SeminarPage() {
               <section data-loupe-section="The provisional verdict" className="mt-6">
                 {!verdictOpen ? (
                   <div className="flex flex-wrap items-center justify-between gap-3 border-y border-[#1A1A1A]/15 py-5">
-                    <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
+                    <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#2F332C]/60">
                       The tension is the point. If you want the evidence weighed, ask for a
                       provisional — not moral — verdict.
                     </p>
                     <button
                       type="button"
                       onClick={() => setVerdictOpen(true)}
-                      className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
+                      className="inline-flex items-center gap-2 rounded-full border border-[#3F5A47] px-4 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#2F332C] transition-colors hover:bg-[#3F5A47] hover:text-[#FCF7ED]"
                     >
                       Show a provisional verdict
                       <ArrowUpRight className="h-3 w-3" />
@@ -529,10 +584,10 @@ function SeminarPage() {
                 ) : (
                   <div className="border-y border-[#1A1A1A]/15 py-5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#4F705C]">
                         Provisional verdict
                       </p>
-                      <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
+                      <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/35">
                         empirical only · {seminar.verdict.confidence} confidence
                       </p>
                     </div>
@@ -542,16 +597,16 @@ function SeminarPage() {
                           ? "The evidence does not separate them yet."
                           : `The evidence currently leans toward theory ${seminar.verdict.lean}.`}
                       </p>
-                      <p className="mt-3 max-w-[64ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
-                        {seminar.verdict.why}
+                      <p className="mt-3 max-w-[64ch] font-serif text-[14px] leading-relaxed text-[#2F332C]/65">
+                        <HighlightedText text={seminar.verdict.why} glossary={glossary} onWord={openGlossaryWord} />
                       </p>
-                      <p className="mt-3 border-l-2 border-[#1A4BFF] pl-3 font-serif text-[13px] leading-relaxed text-[#1A1A1A]/60">
-                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF]">
+                      <p className="mt-3 border-l-2 border-[#4F705C] pl-3 font-serif text-[13px] leading-relaxed text-[#2F332C]/60">
+                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#4F705C]">
                           What would change it ·{" "}
                         </span>
-                        {seminar.verdict.change}
+                        <HighlightedText text={seminar.verdict.change} glossary={glossary} onWord={openGlossaryWord} />
                       </p>
-                      <p className="mt-4 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">
+                      <p className="mt-4 font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/30">
                         This is a judgement about explanation, not about what is right.
                       </p>
                     </div>
@@ -559,16 +614,16 @@ function SeminarPage() {
                 )}
               </section>
 
-              <section data-loupe-section="The deeper lesson" className="mt-10 tw-glass-panel overflow-hidden">
+              <section data-loupe-section="The deeper lesson" className="mt-10 overflow-hidden rounded-[26px] border border-[#D6C8B4] bg-[#F4EBDD] shadow-[0_24px_54px_-42px_rgba(61,43,27,0.35)]">
                 <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
                   <div>
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#4F705C]">
                       If the argument is clear but the subject is not
                     </p>
                     <h2 className="mt-2 max-w-[22ch] font-display text-[30px] leading-[1.02] md:text-[38px]">
                       Take the deeper lesson.
                     </h2>
-                    <p className="mt-2 max-w-[58ch] font-serif text-[14px] leading-[1.65] text-[#1A1A1A]/62">
+                    <p className="mt-2 max-w-[58ch] font-serif text-[14px] leading-[1.65] text-[#2F332C]/62">
                       The terms, the background, both mechanisms, the crux as a test, the mistakes to
                       avoid, and a worked example — taught from the question you brought.
                     </p>
@@ -577,13 +632,13 @@ function SeminarPage() {
                     type="button"
                     onClick={() => void openDeeperLesson()}
                     disabled={lessonBusy}
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#1A1A1A] px-5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF] disabled:cursor-wait disabled:opacity-60"
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#3F5A47] px-5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FCF7ED] transition-colors hover:bg-[#2F4637] disabled:cursor-wait disabled:opacity-60"
                   >
                     {lessonBusy ? "Building the lesson…" : lesson ? "Rebuild the lesson" : "Go deeper"}
                     {lessonBusy ? <BookOpen className="h-3.5 w-3.5 animate-pulse" /> : <ArrowRight className="h-3.5 w-3.5" />}
                   </button>
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#1A1A1A]/10 px-5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35 md:px-6">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#1A1A1A]/10 px-5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/35 md:px-6">
                   <span>One deeper model pass · built from this seminar</span>
                   <span>~5–7 min read</span>
                 </div>
@@ -591,15 +646,15 @@ function SeminarPage() {
 
               {lessonBusy ? (
                 <div className="mt-6 space-y-3" aria-live="polite">
-                  <div className="h-3 w-36 animate-pulse rounded-full bg-[#1A1A1A]/10" />
-                  <div className="h-10 w-3/4 animate-pulse rounded-xl bg-[#1A1A1A]/10" />
-                  <div className="h-3 w-2/3 animate-pulse rounded-full bg-[#1A1A1A]/8" />
-                  <div className="h-3 w-1/2 animate-pulse rounded-full bg-[#1A1A1A]/8" />
+                  <div className="h-3 w-36 animate-pulse rounded-full bg-[#2F332C]/8" />
+                  <div className="h-10 w-3/4 animate-pulse rounded-xl bg-[#2F332C]/8" />
+                  <div className="h-3 w-2/3 animate-pulse rounded-full bg-[#2F332C]/7" />
+                  <div className="h-3 w-1/2 animate-pulse rounded-full bg-[#2F332C]/7" />
                 </div>
               ) : null}
 
               {lessonError ? (
-                <p className="mt-6 border-l-2 border-[#C1121F] pl-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#C1121F]">
+                <p className="mt-6 border-l-2 border-[#A3644E] pl-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#A3644E]">
                   {lessonError}{" "}
                   <button type="button" onClick={() => void openDeeperLesson()} className="underline underline-offset-4">
                     Try again
@@ -615,12 +670,14 @@ function SeminarPage() {
                   seminar={seminar}
                   tutorSeed={tutorSeed}
                   onAskTutor={askTutorAbout}
+                  glossary={glossary}
+                  onWord={openGlossaryWord}
                 />
               ) : null}
 
               <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
                 <div>
-                  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/45">
+                  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#2F332C]/45">
                     Put this on the record
                   </p>
                   {userId ? (
@@ -628,7 +685,7 @@ function SeminarPage() {
                       type="button"
                       onClick={save}
                       disabled={saveState === "saving" || saveState === "saved"}
-                      className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4 disabled:text-[#1A1A1A]/35 disabled:no-underline"
+                      className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#4F705C] underline underline-offset-4 disabled:text-[#2F332C]/35 disabled:no-underline"
                     >
                       {saveState === "saved"
                         ? "Saved to the record"
@@ -639,13 +696,13 @@ function SeminarPage() {
                   ) : (
                     <Link
                       to="/login"
-                      className="mt-1 inline-block font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4"
+                      className="mt-1 inline-block font-mono text-[9px] uppercase tracking-[0.12em] text-[#4F705C] underline underline-offset-4"
                     >
                       Sign in to save this seminar
                     </Link>
                   )}
                   {saveState === "error" && (
-                    <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]">
+                    <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#A3644E]">
                       Could not save. Try again.
                     </p>
                   )}
@@ -653,11 +710,11 @@ function SeminarPage() {
                 <button
                   type="button"
                   onClick={reset}
-                  className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/50 underline underline-offset-4 hover:text-[#1A4BFF]"
+                  className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#2F332C]/50 underline underline-offset-4 hover:text-[#4F705C]"
                 >
                   <RotateCcw className="h-3 w-3" /> New seminar
                 </button>
-                <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">
+                <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#2F332C]/30">
                   Hold the tension · verify before you act
                 </p>
               </div>
@@ -680,6 +737,7 @@ function SeminarPage() {
           onAskTutor={lesson ? askTutorAbout : undefined}
         />
       ) : null}
+      <WordCloudBubble open={openWord} onClose={() => setOpenWord(null)} />
     </div>
   );
 }
@@ -694,32 +752,34 @@ const DISAGREEMENT: Record<Seminar["disagreement"], string> = {
 function TheoryColumn({
   theory,
   index,
+  glossary,
+  onWord,
   onLookCloser,
 }: {
   theory: SeminarTheory;
   index: number;
+  glossary: GlossaryWord[];
+  onWord: (word: GlossaryWord, tone: number, element: HTMLElement) => void;
   onLookCloser: (target: LoupeTarget) => void;
 }) {
   const letter = theory.key === "A" || theory.key === "B" ? theory.key : index === 0 ? "A" : "B";
-  const tint = letter === "A" ? "bg-[#F4EFE6]/65" : "bg-transparent";
+  const tint = letter === "A" ? "border-[#DDCCB8] bg-[#FBF1E3]" : "border-[#C9D8D0] bg-[#ECF2EC]";
+  const accent = letter === "A" ? "text-[#A3644E]" : "text-[#4F705C]";
   return (
     <article
       data-loupe-section={`Theory ${letter}: ${theory.name}`}
-      className={`${tint} group/theory px-5 py-6 md:px-7 md:py-8`}
+      className={`${tint} group/theory rounded-[26px] border p-5 shadow-[0_20px_44px_-38px_rgba(61,43,27,0.35)] md:p-7`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/40">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[#2F332C]/40">
             Theory {letter}
           </p>
           <h3 className="mt-1 max-w-[16ch] font-display text-[28px] leading-[1.02]">{theory.name}</h3>
         </div>
         <div className="relative grid h-14 w-14 shrink-0 place-items-center">
-          <InkCircle className={`absolute inset-0 ${letter === "A" ? "text-[#1A4BFF]/50" : "text-[#1A1A1A]/35"}`} />
-          <span
-            className={`font-display text-[54px] leading-[0.7] ${letter === "A" ? "text-[#1A4BFF]" : "text-[#1A1A1A]"}`}
-            aria-hidden
-          >
+          <InkCircle className={`absolute inset-0 ${accent} opacity-50`} />
+          <span className={`font-display text-[54px] leading-[0.7] ${accent}`} aria-hidden>
             {letter}
           </span>
         </div>
@@ -727,13 +787,15 @@ function TheoryColumn({
 
       <InkRule className="mt-5" />
       <div className="group/line group mt-3 flex items-start gap-2">
-        <p className="font-serif text-[15.5px] leading-relaxed text-[#1A1A1A]/80">{theory.claim}</p>
+        <p className="font-serif text-[15.5px] leading-relaxed text-[#2F332C]/80">
+          <HighlightedText text={theory.claim} glossary={glossary} onWord={onWord} />
+        </p>
         <LookCloserButton text={theory.claim} section={`Theory ${letter} · claim`} onLookCloser={onLookCloser} />
       </div>
 
       <div className="mt-4">
         <div className="flex items-center justify-between gap-2">
-          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#2F332C]/40">
             The mechanism
           </p>
           <LookCloserButton
@@ -744,14 +806,14 @@ function TheoryColumn({
           />
         </div>
         <InkRule className="mt-1.5" />
-        <p className="mt-2 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/70">
-          {theory.mechanism}
+        <p className="mt-2 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-[#2F332C]/70">
+          <HighlightedText text={theory.mechanism} glossary={glossary} onWord={onWord} />
         </p>
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div>
-          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#2F332C]/40">
             It predicts
           </p>
           <InkRule className="mt-1.5" />
@@ -759,10 +821,10 @@ function TheoryColumn({
             {theory.predictions.map((prediction) => (
               <li
                 key={prediction}
-                className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65 transition-colors hover:bg-[#1A4BFF]/[0.035]"
+                className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-[#2F332C]/65 transition-colors hover:bg-[#4F705C]/[0.035]"
               >
                 <InkArrow className="mt-0.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-rotate-3" />
-                <span className="flex-1">{prediction}</span>
+                <span className="flex-1"><HighlightedText text={prediction} glossary={glossary} onWord={onWord} /></span>
                 <LookCloserButton
                   text={prediction}
                   section={`Theory ${letter} · prediction`}
@@ -773,7 +835,7 @@ function TheoryColumn({
           </ul>
         </div>
         <div>
-          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#2F332C]/40">
             Evidence to check
           </p>
           <InkRule className="mt-1.5" />
@@ -781,10 +843,10 @@ function TheoryColumn({
             {theory.evidence.map((item) => (
               <li
                 key={item}
-                className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65 transition-colors hover:bg-[#1A4BFF]/[0.035]"
+                className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-[#2F332C]/65 transition-colors hover:bg-[#4F705C]/[0.035]"
               >
                 <InkTick className="mt-0.5" />
-                <span className="flex-1">{item}</span>
+                <span className="flex-1"><HighlightedText text={item} glossary={glossary} onWord={onWord} /></span>
                 <LookCloserButton
                   text={item}
                   section={`Theory ${letter} · evidence`}
@@ -796,19 +858,19 @@ function TheoryColumn({
         </div>
       </div>
 
-      <div className="group mt-4 border-l-2 border-[#1A1A1A]/30 pl-3 transition-colors hover:border-[#1A4BFF]/50">
+      <div className="group mt-4 border-l-2 border-[#1A1A1A]/30 pl-3 transition-colors hover:border-[#4F705C]/50">
         <div className="flex items-center justify-between gap-2">
-          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#2F332C]/40">
             It would be wrong if
           </p>
           <LookCloserButton text={theory.falsifier} section={`Theory ${letter} · falsifier`} onLookCloser={onLookCloser} />
         </div>
-        <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-[#1A1A1A]/65">
-          {theory.falsifier}
+        <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-[#2F332C]/65">
+          <HighlightedText text={theory.falsifier} glossary={glossary} onWord={onWord} />
         </p>
       </div>
 
-      <p className="mt-4 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#1A1A1A]/35">
+      <p className="mt-4 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#2F332C]/35">
         Assumes · {theory.assumes}
       </p>
     </article>
