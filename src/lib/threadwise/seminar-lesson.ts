@@ -100,7 +100,7 @@ ${JSON.stringify(seminar)}
 
 Write the deeper lesson. It should teach the terms, background, mechanisms, crux, common errors, one worked example, a short self-check and source types to look for. Do not simply restate the seminar.`,
     temperature: 0.35,
-    maxOutputTokens: 9000,
+    maxOutputTokens: 7000,
     maxRetries: 2,
   });
 
