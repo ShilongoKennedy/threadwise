@@ -1529,3 +1529,18 @@ main {
     animation: none;
   }
 }
+
+/* Seminar scroll palette — the header remains the app header, but its surface follows the active section. */
+.seminar-header > header > div {
+  background: var(--seminar-header-bg) !important;
+  border-color: var(--seminar-header-border) !important;
+  transition: background-color 650ms ease, border-color 650ms ease;
+}
+
+.seminar-header nav[aria-label="Primary"] [aria-current="page"] {
+  color: var(--seminar-header-accent) !important;
+}
+
+.seminar-header nav[aria-label="Primary"] [aria-current="page"] > span {
+  background-color: var(--seminar-header-accent) !important;
+}
