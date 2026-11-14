@@ -1926,18 +1926,18 @@ main {
 .site-blueprint::before,
 .blueprint-page::before {
   background-image:
-    radial-gradient(circle, color-mix(in srgb, var(--field-ink) 22%, transparent) 0.85px, transparent 1.1px),
-    linear-gradient(to right, color-mix(in srgb, var(--field-ink) 5%, transparent) 1px, transparent 1px) !important;
+    radial-gradient(circle, color-mix(in srgb, var(--field-ink) 15%, transparent) 0.7px, transparent 1.1px),
+    linear-gradient(to right, color-mix(in srgb, var(--field-ink) 3.5%, transparent) 1px, transparent 1px) !important;
   background-size: 64px 64px, 192px 192px !important;
   background-position: 0 0, 0 0 !important;
-  opacity: 0.62 !important;
+  opacity: 0.5 !important;
 }
 
 /* Nearly transparent glass headers across the system. */
 .seminar-header header > div,
 .site-blueprint header.sticky > div {
-  background: color-mix(in srgb, var(--seminar-bg, var(--site-bg)) 16%, transparent) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
   box-shadow: 0 16px 46px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
   backdrop-filter: blur(28px) saturate(1.1) !important;
   -webkit-backdrop-filter: blur(28px) saturate(1.1) !important;

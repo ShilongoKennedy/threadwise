@@ -251,12 +251,14 @@ export function GeoGlobe({
   theme = "dark",
   mobileScale = 0.42,
   layout = "center",
+  minimal = false,
 }: {
   selectedId?: string | null;
   onSelect?: (id: string | null) => void;
   theme?: "dark" | "light" | "blueprint";
   mobileScale?: number;
   layout?: "center" | "right";
+  minimal?: boolean;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -302,11 +304,12 @@ export function GeoGlobe({
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(31, width / Math.max(height, 1), 0.1, 50);
-    camera.position.set(0, 0.05, 6.9);
+    camera.position.set(0, 0.05, theme === "blueprint" ? 7.7 : 6.9);
     camera.lookAt(0, 0, 0);
 
     const group = new THREE.Group();
-    group.position.set(0.78, -0.08, 0);
+    group.position.set(theme === "blueprint" ? 0.5 : 0.78, -0.08, 0);
+    group.scale.setScalar(theme === "blueprint" ? 0.82 : 1);
     scene.add(group);
 
     const globeTexture = new THREE.CanvasTexture(document.createElement("canvas"));
@@ -595,7 +598,7 @@ export function GeoGlobe({
       <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />
       {failed ? <GlobeFallback theme={theme} /> : null}
       <div className={`absolute inset-0 transition-opacity duration-700 ${ready || failed ? "opacity-100" : "opacity-0"}`}>
-        {CITIES.map((item) => {
+        {minimal ? null : CITIES.map((item) => {
           const isActive = active === item.id || selectedId === item.id;
           return (
             <button

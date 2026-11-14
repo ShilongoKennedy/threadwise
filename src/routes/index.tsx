@@ -122,7 +122,7 @@ function LandingPage() {
       <main id="main" className="relative z-10 flex-1">
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden text-white">
           <div className="globe-stage absolute inset-0 z-[5]">
-            <GeoGlobe theme="blueprint" layout="right" />
+            <GeoGlobe theme="blueprint" layout="right" minimal />
           </div>
 
           <GlassHeader tone="dark" section="record" />
@@ -134,7 +134,7 @@ function LandingPage() {
                   <span className="h-px w-8 bg-[#1A4BFF]/55" />
                   A field note / IAEA–Iran
                 </div>
-                <h1 className="max-w-[11ch] font-display text-[clamp(50px,6.7vw,100px)] leading-[0.9] tracking-[-0.045em] text-white">
+                <h1 className="max-w-[11ch] font-display text-[clamp(48px,6vw,88px)] leading-[0.9] tracking-[-0.045em] text-white">
                   See what the story hides.
                 </h1>
                 <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-12">
