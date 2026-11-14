@@ -45,3 +45,6 @@ public/WorldLeaders.png
 
 # Local browser validation profiles
 .chrome-profile-*/
+
+# Local source assets not deployed
+assets-source/

@@ -96,34 +96,20 @@ function LandingExperimentPage() {
   return (
     <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FCF7ED] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
       <main id="main" className="relative z-10 flex-1">
-        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#F2E7D4] text-[#11110F]">
-          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[linear-gradient(180deg,#FAF2E5_0%,#F2E7D4_48%,#E3C6A3_100%)]">
-            <img
-              src="/hero/desert-field.jpg"
-              alt=""
-              className="desert-field absolute inset-x-0 bottom-0 h-[54%] w-full object-cover object-bottom opacity-80"
-              draggable={false}
-            />
-            <div className="absolute inset-x-0 top-0 h-[54%] bg-[linear-gradient(180deg,#FAF2E5_0%,rgba(250,242,229,0.86)_34%,rgba(250,242,229,0.2)_78%,transparent_100%)]" />
-          </div>
-
-          <div className="pointer-events-none absolute bottom-[10%] left-0 z-[3] w-[88%] max-w-[1000px] md:w-[57.5%]">
-            <img
-              src="/hero/desert-tree.jpg"
-              alt=""
-              className="desert-tree-plate w-full"
-              draggable={false}
-            />
+        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#FAF6EE] text-[#11110F]">
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[linear-gradient(180deg,#FFFCF6_0%,#FAF6EE_48%,#F2E9DC_100%)]">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_72%_38%,rgba(255,255,255,0.66),transparent_54%)]" />
+            <div className="absolute inset-x-0 bottom-0 h-[34%] bg-[linear-gradient(0deg,rgba(232,218,196,0.24),transparent_100%)]" />
           </div>
 
           <div className="globe-stage absolute inset-0 z-[5]">
-            <div className="pointer-events-none absolute right-[4%] top-[16%] hidden h-[58%] w-[46%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(63,46,32,0.17)_0%,rgba(63,46,32,0.055)_48%,transparent_72%)] blur-3xl md:block" />
+            <div className="pointer-events-none absolute right-[4%] top-[16%] hidden h-[58%] w-[46%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(255,255,255,0.72)_0%,rgba(196,174,146,0.1)_48%,transparent_72%)] blur-3xl md:block" />
             <GeoGlobe theme="light" layout="right" />
           </div>
-          <div className="pointer-events-none absolute inset-0 z-[2] hidden bg-[radial-gradient(ellipse_50%_48%_at_27%_38%,#F2E7D4_0%,#F2E7D4_56%,rgba(242,231,212,0.92)_66%,rgba(242,231,212,0.4)_82%,transparent_94%)] md:block" />
-          <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,#F2E7D4_0%,#F2E7D4_20%,rgba(242,231,212,0.92)_30%,rgba(242,231,212,0.45)_46%,rgba(242,231,212,0.04)_62%,transparent_72%)] md:hidden" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-32 bg-[linear-gradient(180deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32 bg-[linear-gradient(0deg,#F2E7D4_0%,rgba(242,231,212,0.6)_45%,transparent_100%)]" />
+          <div className="pointer-events-none absolute inset-0 z-[2] hidden bg-[radial-gradient(ellipse_50%_48%_at_27%_38%,#FAF6EE_0%,#FAF6EE_56%,rgba(250,246,238,0.92)_66%,rgba(250,246,238,0.4)_82%,transparent_94%)] md:block" />
+          <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,#FAF6EE_0%,#FAF6EE_20%,rgba(250,246,238,0.92)_30%,rgba(250,246,238,0.45)_46%,rgba(250,246,238,0.04)_62%,transparent_72%)] md:hidden" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-32 bg-[linear-gradient(180deg,#FAF6EE_0%,rgba(250,246,238,0.6)_45%,transparent_100%)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32 bg-[linear-gradient(0deg,#FAF6EE_0%,rgba(250,246,238,0.6)_45%,transparent_100%)]" />
 
           <GlassHeader />
 
