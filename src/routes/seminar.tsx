@@ -280,17 +280,6 @@ function SeminarPage() {
       </div>
 
       <section data-seminar-tone="0" className="relative overflow-hidden text-[#F7EAD6]">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-35"
-          style={{
-            backgroundImage: "url('/world-land-dark.svg')",
-            backgroundSize: "min(1600px, 130vw) auto",
-            backgroundPosition: "78% 46%",
-            backgroundRepeat: "no-repeat",
-            maskImage: "linear-gradient(to bottom, transparent 0%, black 14%, black 82%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 14%, black 82%, transparent 100%)",
-          }}
-        />
         <div aria-hidden className="pointer-events-none absolute -right-32 top-6 h-[420px] w-[420px] rounded-full bg-[#DF8D7D]/40 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute left-1/3 top-52 h-64 w-64 rounded-full bg-[#C9A5CA]/28 blur-3xl" />
 
