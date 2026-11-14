@@ -1569,3 +1569,55 @@ main {
   position: relative;
   z-index: 1;
 }
+
+/* Invert the reading sections over the deep colour fields. */
+.seminar-dark-ink {
+  color: var(--seminar-ink);
+}
+
+.seminar-dark-ink :is(h1, h2, h3, h4, p, li, span, button, a, summary, svg, div) {
+  color: inherit !important;
+}
+
+.seminar-dark-ink * {
+  border-color: color-mix(in srgb, var(--seminar-ink) 22%, transparent) !important;
+}
+
+.seminar-header header > div {
+  background: var(--seminar-header-bg) !important;
+  border-color: var(--seminar-header-border) !important;
+  box-shadow: 0 16px 46px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(247, 234, 214, 0.16) !important;
+}
+
+.seminar-header header,
+.seminar-header header a,
+.seminar-header header button {
+  color: var(--seminar-header-ink) !important;
+}
+
+.seminar-header header a[aria-label="Threadwise — home"] svg,
+.seminar-header header a[aria-label="Threadwise — home"] svg * {
+  filter: brightness(0) invert(1) !important;
+}
+
+.seminar-header header a[data-read-source] {
+  background: var(--seminar-header-ink) !important;
+  border-color: var(--seminar-header-ink) !important;
+  color: var(--seminar-bg) !important;
+}
+
+.seminar-header header a[data-read-source] span {
+  color: var(--seminar-bg) !important;
+}
+
+.seminar-header nav[aria-label="Primary"] [aria-current="page"] {
+  color: var(--seminar-header-accent) !important;
+}
+
+.seminar-header nav[aria-label="Primary"] [aria-current="page"] > span {
+  background-color: var(--seminar-header-accent) !important;
+}
+
+.seminar-header header a[aria-label="Threadwise — home"] span {
+  color: var(--seminar-header-ink) !important;
+}

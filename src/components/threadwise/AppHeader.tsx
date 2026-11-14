@@ -105,6 +105,7 @@ export function AppHeader({
 
               <Link
                 to="/analyst"
+                data-read-source
                 className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[#1A1A1A] px-3.5 font-mono text-[9px] font-bold uppercase tracking-[0.13em] text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF]"
               >
                 <span className="hidden sm:inline">Read a source</span>

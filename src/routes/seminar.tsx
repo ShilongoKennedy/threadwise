@@ -26,12 +26,12 @@ export const Route = createFileRoute("/seminar")({
 const SAMPLE = `"I am actually in favour of foreign aid as a tool for statecraft, because sometimes foreign aid is easier than bombing people. Sometimes you want to bribe a country to get your way."`;
 
 const TONES = [
-  { bg: "#D9A45A", header: "rgba(217, 164, 90, 0.9)", border: "rgba(72, 44, 17, 0.26)", accent: "#5E3B16" },
-  { bg: "#DB8376", header: "rgba(219, 131, 118, 0.9)", border: "rgba(91, 31, 24, 0.24)", accent: "#6C211A" },
-  { bg: "#C6D199", header: "rgba(198, 209, 153, 0.9)", border: "rgba(44, 60, 26, 0.22)", accent: "#3A4E24" },
-  { bg: "#B6C6F1", header: "rgba(182, 198, 241, 0.9)", border: "rgba(28, 47, 110, 0.24)", accent: "#1E3690" },
-  { bg: "#B5D0BD", header: "rgba(181, 208, 189, 0.9)", border: "rgba(31, 73, 54, 0.22)", accent: "#285641" },
-  { bg: "#D2B6D1", header: "rgba(210, 182, 209, 0.9)", border: "rgba(78, 38, 78, 0.22)", accent: "#5A2D58" },
+  { bg: "#8F5300", ink: "#F7EAD6", header: "rgba(18, 13, 7, 0.24)", border: "rgba(247, 234, 214, 0.26)", accent: "#F1C979" },
+  { bg: "#1732C8", ink: "#F7EAD6", header: "rgba(8, 14, 46, 0.22)", border: "rgba(247, 234, 214, 0.24)", accent: "#F1C979" },
+  { bg: "#8C3023", ink: "#F7EAD6", header: "rgba(35, 9, 5, 0.22)", border: "rgba(247, 234, 214, 0.24)", accent: "#F1C979" },
+  { bg: "#111A52", ink: "#F7EAD6", header: "rgba(4, 7, 24, 0.26)", border: "rgba(247, 234, 214, 0.24)", accent: "#D9F25C" },
+  { bg: "#174536", ink: "#F7EAD6", header: "rgba(4, 20, 15, 0.24)", border: "rgba(247, 234, 214, 0.24)", accent: "#D9F25C" },
+  { bg: "#452042", ink: "#F7EAD6", header: "rgba(20, 6, 19, 0.24)", border: "rgba(247, 234, 214, 0.24)", accent: "#F1C979" },
 ];
 
 type SavedSeminar = {
@@ -261,13 +261,17 @@ function SeminarPage() {
 
   return (
     <div
-      className="seminar-color-page min-h-[100dvh] text-[#1A1A1A] transition-colors duration-700"
+      className="seminar-color-page min-h-[100dvh] transition-colors duration-700"
       style={{
         backgroundColor: tone.bg,
-        backgroundImage: "radial-gradient(circle at 86% 0%, rgba(255,255,255,0.24), transparent 36%)",
-        "--seminar-grid": "rgba(25, 39, 82, 0.13)",
+        color: tone.ink,
+        backgroundImage: "radial-gradient(circle at 86% 0%, rgba(255,255,255,0.12), transparent 34%)",
+        "--seminar-bg": tone.bg,
+        "--seminar-ink": tone.ink,
+        "--seminar-grid": "rgba(247, 234, 214, 0.16)",
         "--seminar-header-bg": tone.header,
         "--seminar-header-border": tone.border,
+        "--seminar-header-ink": tone.ink,
         "--seminar-header-accent": tone.accent,
       } as CSSProperties}
     >
@@ -275,7 +279,7 @@ function SeminarPage() {
         <AppHeader section="seminar" />
       </div>
 
-      <section data-seminar-tone="0" className="relative overflow-hidden text-[#1A1A1A]">
+      <section data-seminar-tone="0" className="relative overflow-hidden text-[#F7EAD6]">
         <div
           className="pointer-events-none absolute inset-0 opacity-35"
           style={{
@@ -292,11 +296,11 @@ function SeminarPage() {
 
         <div className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-12 pt-12 md:px-8 md:pb-16 md:pt-16">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#A53B28]">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#F1C979]">
               The seminar
             </p>
             <span className="h-3 w-px bg-white/20" />
-            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#F7EAD6]/65">
               Two theories · one crux
             </p>
           </div>
@@ -304,7 +308,7 @@ function SeminarPage() {
           <h1 className="mt-3 max-w-[12ch] font-display text-[48px] leading-[0.92] tracking-[-0.03em] md:text-[76px]">
             Put it on the table.
           </h1>
-          <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#1A1A1A]/65">
+          <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#F7EAD6]/75">
             Bring a quote or a question you cannot settle. The seminar builds the strongest
             version of two rival explanations, then shows the exact point where they part.
           </p>
@@ -379,7 +383,7 @@ function SeminarPage() {
       </section>
 
       {saved.length > 0 && (
-        <section data-seminar-tone="5" className="mx-auto mt-8 w-full max-w-[1100px] rounded-[28px] border border-[#1A1A1A]/12 bg-[linear-gradient(135deg,#E8C583_0%,#D9AF64_100%)] px-5 py-5 shadow-[0_26px_60px_-42px_rgba(93,59,21,0.65)] md:px-7 md:py-6">
+        <section data-seminar-tone="5" className="seminar-dark-ink mx-auto mt-8 w-full max-w-[1100px] border-y border-[#F7EAD6]/20 px-5 py-6 md:px-7">
           <div className="flex items-end justify-between gap-4 border-b border-[#1A1A1A]/15 pb-3">
             <h2 className="font-display text-[26px] leading-none">The archive.</h2>
             <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
@@ -421,7 +425,7 @@ function SeminarPage() {
 
       {seminar && (
         <main ref={readingRef} className="seminar-reading-surface mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
-          <section data-loupe-section="The question underneath" data-seminar-tone="1" className="grid gap-6 rounded-[28px] border border-[#1A1A1A]/12 bg-[linear-gradient(135deg,#E7A093_0%,#D77F70_100%)] p-5 shadow-[0_26px_60px_-42px_rgba(105,35,54,0.65)] md:grid-cols-[minmax(0,1fr)_240px] md:gap-12 md:p-7">
+          <section data-loupe-section="The question underneath" data-seminar-tone="1" className="seminar-dark-ink grid gap-6 border-y border-[#F7EAD6]/20 py-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12 md:py-8">
             <div>
               <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
                 The question underneath
@@ -443,7 +447,7 @@ function SeminarPage() {
             </div>
           </section>
 
-          <section data-loupe-section="Two readings" data-seminar-tone="2" className="mt-8">
+          <section data-loupe-section="Two readings" data-seminar-tone="2" className="seminar-dark-ink mt-8">
             <div className="flex items-end justify-between gap-4 pb-1">
               <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the same thing.</h2>
               <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
@@ -458,7 +462,7 @@ function SeminarPage() {
               </span>
             </p>
 
-            <div className="grid overflow-hidden rounded-[28px] border border-[#1A1A1A]/12 shadow-[0_26px_60px_-42px_rgba(83,44,28,0.58)] md:grid-cols-2 md:divide-x md:divide-[#1A1A1A]/15">
+            <div className="grid border-y border-[#F7EAD6]/20 md:grid-cols-2 md:divide-x md:divide-[#F7EAD6]/20">
               {seminar.theories.map((theory, index) => (
                 <TheoryColumn key={index} theory={theory} index={index} onLookCloser={openLoupe} />
               ))}
@@ -466,7 +470,7 @@ function SeminarPage() {
           </section>
 
           {!revealed ? (
-            <section data-seminar-tone="2" className="mt-8 rounded-[28px] border border-[#1A1A1A]/12 bg-[linear-gradient(135deg,#E9D676_0%,#D5BE59_100%)] p-5 shadow-[0_24px_56px_-42px_rgba(100,78,20,0.6)]">
+            <section data-seminar-tone="2" className="seminar-dark-ink mt-10 border-y border-[#F7EAD6]/20 py-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em]">Before the crux</p>
                 <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
@@ -516,7 +520,7 @@ function SeminarPage() {
             </section>
           ) : (
             <>
-              <section data-loupe-section="The crux" data-seminar-tone="3" className="mt-8 overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#2947C8_0%,#172C90_100%)] text-[#FDFBF7]">
+              <section data-loupe-section="The crux" data-seminar-tone="3" className="seminar-dark-ink mt-10 overflow-hidden border-y border-[#F7EAD6]/20">
                 <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
                   <div className="border-b border-white/15 px-5 py-4 md:border-b-0 md:border-r md:border-white/15 md:px-6 md:py-8">
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#D9F25C]">
@@ -564,7 +568,7 @@ function SeminarPage() {
                 </div>
               </section>
 
-              <section data-loupe-section="The provisional verdict" data-seminar-tone="4" className="mt-6 rounded-[28px] border border-[#1A1A1A]/12 bg-[linear-gradient(135deg,#C4DCCB_0%,#A5C4B2_100%)] p-5 shadow-[0_24px_56px_-42px_rgba(35,59,120,0.55)]">
+              <section data-loupe-section="The provisional verdict" data-seminar-tone="4" className="seminar-dark-ink mt-6 border-y border-[#F7EAD6]/20 py-5">
                 {!verdictOpen ? (
                   <div className="flex flex-wrap items-center justify-between gap-3 border-y border-[#1A1A1A]/15 py-5">
                     <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
@@ -613,7 +617,7 @@ function SeminarPage() {
                 )}
               </section>
 
-              <section data-loupe-section="The deeper lesson" data-seminar-tone="5" className="mt-8 overflow-hidden rounded-[28px] border border-[#1A1A1A]/12 bg-[linear-gradient(135deg,#DEC4E0_0%,#C5A2C9_100%)] shadow-[0_26px_60px_-42px_rgba(76,36,91,0.6)]">
+              <section data-loupe-section="The deeper lesson" data-seminar-tone="5" className="mt-10 overflow-hidden rounded-[28px] border border-[#F7EAD6]/20 bg-[#F7EAD6] text-[#1A1A1A] shadow-[0_30px_70px_-38px_rgba(0,0,0,0.45)]">
                 <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
                   <div>
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
@@ -672,7 +676,7 @@ function SeminarPage() {
                 />
               ) : null}
 
-              <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-4">
+              <div className="seminar-dark-ink mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[#F7EAD6]/20 pt-4">
                 <div>
                   <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/45">
                     Put this on the record
@@ -755,7 +759,7 @@ function TheoryColumn({
   onLookCloser: (target: LoupeTarget) => void;
 }) {
   const letter = theory.key === "A" || theory.key === "B" ? theory.key : index === 0 ? "A" : "B";
-  const tint = letter === "A" ? "bg-[linear-gradient(135deg,#E3A184_0%,#D28A6C_100%)]" : "bg-[linear-gradient(135deg,#B9CCF8_0%,#95AEF1_100%)]";
+  const tint = "bg-transparent";
   return (
     <article
       data-loupe-section={`Theory ${letter}: ${theory.name}`}
