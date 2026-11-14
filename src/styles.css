@@ -1636,3 +1636,14 @@ main {
   border: 1px solid color-mix(in srgb, currentColor 42%, transparent);
   background: color-mix(in srgb, currentColor 7%, transparent);
 }
+
+
+.seminar-dark-ink .seminar-dark-cta,
+.seminar-dark-ink .seminar-dark-cta * {
+  color: #1A1A1A !important;
+}
+
+.seminar-dark-ink .tutor-prose,
+.seminar-dark-ink .tutor-prose :is(p, li, strong, em, h1, h2, h3) {
+  color: var(--seminar-ink) !important;
+}

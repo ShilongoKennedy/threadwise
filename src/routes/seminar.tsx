@@ -604,7 +604,7 @@ function SeminarPage() {
                 )}
               </section>
 
-              <section data-loupe-section="The deeper lesson" data-seminar-tone="5" className="mt-10 overflow-hidden rounded-[28px] border border-[#F7EAD6]/20 bg-[#F7EAD6] text-[#1A1A1A] shadow-[0_30px_70px_-38px_rgba(0,0,0,0.45)]">
+              <section data-loupe-section="The deeper lesson" data-seminar-tone="5" className="seminar-dark-ink mt-10 border-y border-[#F7EAD6]/20 py-8">
                 <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
                   <div>
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
@@ -622,13 +622,13 @@ function SeminarPage() {
                     type="button"
                     onClick={() => void openDeeperLesson()}
                     disabled={lessonBusy}
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#1A1A1A] px-5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF] disabled:cursor-wait disabled:opacity-60"
+                    className="seminar-dark-cta inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#F7EAD6] px-5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A] transition-colors hover:bg-[#F1C979] disabled:cursor-wait disabled:opacity-60"
                   >
                     {lessonBusy ? "Building the lesson…" : lesson ? "Rebuild the lesson" : "Go deeper"}
                     {lessonBusy ? <BookOpen className="h-3.5 w-3.5 animate-pulse" /> : <ArrowRight className="h-3.5 w-3.5" />}
                   </button>
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#1A1A1A]/10 px-5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35 md:px-6">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#F7EAD6]/20 px-5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-[#F7EAD6]/50 md:px-6">
                   <span>One deeper model pass · built from this seminar</span>
                   <span>~5–7 min read</span>
                 </div>

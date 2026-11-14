@@ -35,10 +35,8 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
   const minutes = Math.max(4, Math.round(words / 190));
 
   return (
-    <section aria-labelledby="deeper-lesson" className="mt-12 scroll-mt-24">
-      <div className="relative overflow-hidden rounded-[24px] border border-[#8A745C]/25 bg-[#15110D] px-5 py-7 text-[#F4EBDD] shadow-[0_28px_70px_-36px_rgba(41,28,17,0.7)] md:px-8 md:py-9">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_82%_12%,rgba(207,148,86,0.18),transparent_55%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-[url('/world-land-dark.svg')] bg-[length:1100px_auto] bg-[position:88%_40%] bg-no-repeat opacity-25" />
+    <section aria-labelledby="deeper-lesson" className="seminar-dark-ink mt-12 scroll-mt-24">
+      <div className="border-b border-[#F7EAD6]/20 pb-7">
         <div className="relative">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <p className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#9FB2FF]">The deeper lesson</p>
@@ -84,7 +82,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             <SectionHead number="01" title="The terms that make the question legible." kicker="Start here" />
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {lesson.key_terms.map((term) => (
-                <div key={term.term} className="tw-glass-strip p-4">
+                <div key={term.term} className="border-t border-[#F7EAD6]/20 pt-4">
                   <h4 className="font-display text-[19px] leading-tight">{term.term}</h4>
                   <p className="mt-2 font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/72">{term.plain}</p>
                   <p className="mt-2 border-t border-[#1A1A1A]/10 pt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#1A1A1A]/40">
@@ -111,7 +109,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             <SectionHead number="03" title="Two engines, not two slogans." kicker="How each theory actually works" />
             <div className="mt-5 grid gap-3 md:grid-cols-2">
               {lesson.mechanisms.map((mechanism) => (
-                <div key={mechanism.theory} className="tw-glass-panel p-5">
+                <div key={mechanism.theory} className="border-l border-[#F7EAD6]/20 pl-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">Theory {mechanism.theory}</p>
@@ -131,7 +129,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
 
           <section id="lesson-crux" data-loupe-section="The crux as a test" className="scroll-mt-24">
             <SectionHead number="04" title={lesson.crux.heading} kicker="The test that separates them" />
-            <div className="mt-5 rounded-[20px] bg-[#1A1A1A] px-5 py-6 text-[#F4EBDD] md:px-7">
+            <div className="mt-5 border-y border-[#F7EAD6]/20 py-5">
               <p className="max-w-[62ch] font-serif text-[15px] leading-[1.7] text-white/75">{lesson.crux.explanation}</p>
               <div className="mt-5 border-t border-white/15 pt-4">
                 <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#9FB2FF]">Try this on the next piece of evidence</p>
@@ -167,7 +165,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             <SectionHead number="07" title="Check yourself." kicker="Answer before opening" />
             <div className="mt-5 space-y-2">
               {lesson.check.map((item, index) => (
-                <details key={item.question} className="group tw-glass-strip px-4 py-3">
+                <details key={item.question} className="group border-b border-[#F7EAD6]/20 py-3">
                   <summary className="flex cursor-pointer list-none items-start gap-3 font-serif text-[14px] leading-snug text-[#1A1A1A]/80 marker:content-none">
                     <span className="font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-[#1A4BFF]">{String(index + 1).padStart(2, "0")}</span>
                     <span className="flex-1">{item.question}</span>

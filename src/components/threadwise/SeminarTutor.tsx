@@ -92,7 +92,7 @@ export function SeminarTutor({
                 key={suggestion}
                 type="button"
                 onClick={() => void ask(suggestion)}
-                className="rounded-full border border-[#8A745C]/25 bg-[#FAF3E7]/60 px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.08em] text-[#1A1A1A]/55 transition-colors hover:border-[#1A4BFF]/40 hover:text-[#1A4BFF]"
+                className="rounded-full border border-[#F7EAD6]/30 bg-transparent px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.08em] text-[#F7EAD6]/70 transition-colors hover:border-[#F7EAD6]/70 hover:text-[#F7EAD6]"
               >
                 {suggestion}
               </button>
@@ -143,7 +143,7 @@ export function SeminarTutor({
             event.preventDefault();
             void ask();
           }}
-          className="mt-4 flex items-end gap-2 rounded-[18px] border border-[#8A745C]/25 bg-[#FBF6EC]/70 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-md"
+          className="mt-4 flex items-end gap-2 rounded-[18px] border border-[#F7EAD6]/30 bg-[#0A0805]/20 p-2 backdrop-blur-md"
         >
           <textarea
             ref={fieldRef}
@@ -158,13 +158,13 @@ export function SeminarTutor({
             rows={1}
             maxLength={600}
             placeholder="Ask about a term, a mechanism, or the evidence…"
-            className="max-h-28 min-h-10 flex-1 resize-none bg-transparent px-2 py-2 font-serif text-[14px] leading-relaxed outline-none placeholder:text-[#1A1A1A]/35"
+            className="max-h-28 min-h-10 flex-1 resize-none bg-transparent px-2 py-2 font-serif text-[14px] leading-relaxed outline-none placeholder:text-[#F7EAD6]/45"
           />
           <button
             type="submit"
             disabled={busy || question.trim().length < 5}
             aria-label="Ask the tutor"
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1A1A1A] text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF] disabled:cursor-not-allowed disabled:opacity-35"
+            className="seminar-dark-cta inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F7EAD6] text-[#1A1A1A] transition-colors hover:bg-[#F1C979] disabled:cursor-not-allowed disabled:opacity-35"
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
           </button>
