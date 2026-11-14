@@ -1348,7 +1348,7 @@ html:has(.record-page) { scroll-behavior: smooth; }
 /* Atlas introduction */
 .atlas-headline .signature-flourish {
   color: #C49A67;
-  opacity: 0.9;
+  opacity: 1;
 }
 .atlas-headline .signature-pen {
   background: #C49A67;
@@ -1558,11 +1558,13 @@ main {
   z-index: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(to right, var(--seminar-grid) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--seminar-grid) 1px, transparent 1px),
-    linear-gradient(to right, rgba(25, 39, 82, 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(25, 39, 82, 0.055) 1px, transparent 1px);
-  background-size: 28px 28px, 28px 28px, 140px 140px, 140px 140px;
+    url("/seminar-stitch.svg"),
+    linear-gradient(to right, color-mix(in srgb, var(--seminar-ink) 15%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--seminar-ink) 15%, transparent) 1px, transparent 1px),
+    radial-gradient(circle, color-mix(in srgb, var(--seminar-ink) 42%, transparent) 1.3px, transparent 1.7px);
+  background-size: 28px 28px, 140px 140px, 140px 140px, 140px 140px;
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  opacity: 1;
 }
 
 .seminar-color-page > section,
