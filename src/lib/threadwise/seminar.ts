@@ -13,7 +13,14 @@ const theorySchema = z.object({
   assumes: z.string().trim().min(10).max(300),
 });
 
+const glossarySchema = z.object({
+  term: z.string().trim().min(2).max(70),
+  plain: z.string().trim().min(20).max(340),
+  why: z.string().trim().min(12).max(220),
+});
+
 export const seminarSchema = z.object({
+  glossary: z.array(glossarySchema).min(3).max(6),
   question: z.string().trim().min(10).max(260),
   restatement: z.string().trim().min(40).max(700),
   theories: z.array(theorySchema).length(2),
@@ -27,6 +34,11 @@ export const seminarSchema = z.object({
     why: z.string().trim().min(40).max(700),
     change: z.string().trim().min(20).max(400),
   }),
+});
+
+/** Stored seminars from before the word-note layer do not have a glossary. */
+export const storedSeminarSchema = seminarSchema.extend({
+  glossary: z.array(glossarySchema).min(3).max(6).optional(),
 });
 
 export type Seminar = z.infer<typeof seminarSchema>;
@@ -45,7 +57,8 @@ RULES
 - Do not invent facts. If the evidence is thin, say so in evidence and sources_needed.
 - The crux is one question that actually separates the theories. Not "both have merits".
 - settle is a specific observation, comparison or dataset that would move a reasonable reader.
-- The verdict is provisional and empirical only. Use "undecided" when the evidence does not separate them. State what would change it. Never make a moral verdict.`;
+- The verdict is provisional and empirical only. Use "undecided" when the evidence does not separate them. State what would change it. Never make a moral verdict.
+- Choose 4–6 glossary terms for a curious reader. They must be genuinely non-obvious words or short phrases that carry the argument, not generic words. Each term must appear verbatim (case-insensitive) somewhere in your quotation analysis, theories, crux, settle or verdict. Explain the term in this context in one calm, concrete sentence (under 32 words), then say why remembering it helps in one short sentence. No dictionary padding.`;
 
 export async function openSeminar(text: string, context: string): Promise<Seminar> {
   const { object } = await generateObject({
@@ -58,7 +71,7 @@ ${text.slice(0, 3000)}
 ${context.trim() ? `CONTEXT PROVIDED BY THE READER:\n${context.slice(0, 1000)}\n\n` : ""}
 Open the seminar. Return two rival theories, the crux, what would settle it, and a provisional empirical verdict.`,
     temperature: 0.3,
-    maxOutputTokens: 2600,
+    maxOutputTokens: 9000,
     maxRetries: 1,
   });
 
