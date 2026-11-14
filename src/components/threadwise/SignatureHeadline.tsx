@@ -5,12 +5,13 @@ type Props = {
   text: string;
   className?: string;
   fire?: boolean;
+  flourish?: boolean;
 };
 
 const DRIFT = ["0.008em", "-0.006em", "0.012em", "-0.01em", "0.004em"];
 const TILT = ["-0.5deg", "0.35deg", "-0.3deg", "0.6deg", "-0.45deg"];
 
-export function SignatureHeadline({ text, className = "", fire = false }: Props) {
+export function SignatureHeadline({ text, className = "", fire = false, flourish = true }: Props) {
   const uid = useId().replace(/:/g, "");
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const penRef = useRef<HTMLSpanElement>(null);
@@ -121,7 +122,7 @@ export function SignatureHeadline({ text, className = "", fire = false }: Props)
       <span ref={penRef} className="signature-pen" aria-hidden="true" />
       {fire ? (
         <FireFlourish />
-      ) : (
+      ) : flourish ? (
         <svg className="signature-flourish" viewBox="0 0 700 30" preserveAspectRatio="none" aria-hidden="true">
           <path
             d="M2 24 C110 4 205 27 305 16 C410 4 505 28 610 12 C646 7 672 4 696 7"
@@ -131,7 +132,7 @@ export function SignatureHeadline({ text, className = "", fire = false }: Props)
             strokeLinecap="round"
           />
         </svg>
-      )}
+      ) : null}
     </h1>
   );
 }

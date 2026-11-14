@@ -373,9 +373,9 @@ export function GeoGlobe({
       const desktop = window.innerWidth >= 768;
       if (desktop) {
         if (layout === "right") {
-          group.position.x = 1.72;
-          group.position.y = -0.06;
-          group.scale.setScalar(1.42);
+          group.position.x = 1.55;
+          group.position.y = 0.12;
+          group.scale.setScalar(1.22);
         } else {
           group.position.x = 0.1;
           group.position.y = 0.34;

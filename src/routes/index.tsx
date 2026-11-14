@@ -5,6 +5,7 @@ import { GlassHeader } from "@/components/threadwise/GlassHeader";
 import { SignatureHeadline } from "@/components/threadwise/SignatureHeadline";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
+import { HeroFieldwork } from "@/components/threadwise/HeroFieldwork";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -97,10 +98,12 @@ function LandingPage() {
     <div className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#FCF7ED] font-sans text-[#1A1A1A] selection:bg-[#1A4BFF] selection:text-white">
       <main id="main" className="relative z-10 flex-1">
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden bg-[#FAF6EE] text-[#11110F]">
-          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[linear-gradient(180deg,#FFFCF6_0%,#FAF6EE_48%,#F2E9DC_100%)]">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_72%_38%,rgba(255,255,255,0.66),transparent_54%)]" />
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[linear-gradient(135deg,#FFFCF6_0%,#FAF6EE_34%,#F1F1EA_62%,#E6EEEF_100%)]">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_72%_35%,rgba(255,255,255,0.78),rgba(225,237,239,0.22)_40%,transparent_62%)]" />
             <div className="absolute inset-x-0 bottom-0 h-[34%] bg-[linear-gradient(0deg,rgba(232,218,196,0.24),transparent_100%)]" />
           </div>
+
+          <HeroFieldwork />
 
           <div className="globe-stage absolute inset-0 z-[5]">
             <div className="pointer-events-none absolute right-[4%] top-[16%] hidden h-[58%] w-[46%] rounded-full bg-[radial-gradient(circle_at_48%_48%,rgba(255,255,255,0.72)_0%,rgba(196,174,146,0.1)_48%,transparent_72%)] blur-3xl md:block" />
@@ -116,9 +119,13 @@ function LandingPage() {
           <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
             <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
               <div className="pointer-events-none relative z-20 max-w-[62vw] md:max-w-[560px]">
+                <div className="mb-4 flex items-center gap-3 font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]/75">
+                  <span className="h-px w-8 bg-[#1A4BFF]/55" />
+                  A field note / IAEA–Iran
+                </div>
                 <SignatureHeadline
                   text="See what the story hides."
-                  fire
+                  flourish={false}
                   className="letterpress max-w-[720px] -rotate-[1.2deg] text-[clamp(40px,6.7vw,96px)] leading-[0.82] text-[#11110F]"
                 />
                 <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-12">
