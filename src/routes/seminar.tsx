@@ -26,12 +26,12 @@ export const Route = createFileRoute("/seminar")({
 const SAMPLE = `"I am actually in favour of foreign aid as a tool for statecraft, because sometimes foreign aid is easier than bombing people. Sometimes you want to bribe a country to get your way."`;
 
 const TONES = [
-  { bg: "#8F5300", ink: "#F7EAD6", header: "rgba(18, 13, 7, 0.24)", border: "rgba(247, 234, 214, 0.26)", accent: "#F1C979" },
-  { bg: "#1732C8", ink: "#F7EAD6", header: "rgba(8, 14, 46, 0.22)", border: "rgba(247, 234, 214, 0.24)", accent: "#F1C979" },
-  { bg: "#8C3023", ink: "#F7EAD6", header: "rgba(35, 9, 5, 0.22)", border: "rgba(247, 234, 214, 0.24)", accent: "#F1C979" },
-  { bg: "#111A52", ink: "#F7EAD6", header: "rgba(4, 7, 24, 0.26)", border: "rgba(247, 234, 214, 0.24)", accent: "#D9F25C" },
-  { bg: "#174536", ink: "#F7EAD6", header: "rgba(4, 20, 15, 0.24)", border: "rgba(247, 234, 214, 0.24)", accent: "#D9F25C" },
-  { bg: "#452042", ink: "#F7EAD6", header: "rgba(20, 6, 19, 0.24)", border: "rgba(247, 234, 214, 0.24)", accent: "#F1C979" },
+  { bg: "#8F3524", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
+  { bg: "#8A4A1E", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
+  { bg: "#4C4C24", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
+  { bg: "#1F4A46", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
+  { bg: "#29336B", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
+  { bg: "#47284F", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
 ];
 
 type SavedSeminar = {
@@ -279,7 +279,7 @@ function SeminarPage() {
         <AppHeader section="seminar" />
       </div>
 
-      <section data-seminar-tone="0" className="relative overflow-hidden text-[#F7EAD6]">
+      <section data-seminar-tone="0" className="relative overflow-hidden text-white">
 
         <div className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-12 pt-12 md:px-8 md:pb-16 md:pt-16">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -287,7 +287,7 @@ function SeminarPage() {
               The seminar
             </p>
             <span className="h-3 w-px bg-white/20" />
-            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#F7EAD6]/65">
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/65">
               Two theories · one crux
             </p>
           </div>
@@ -295,7 +295,7 @@ function SeminarPage() {
           <h1 className="mt-3 max-w-[12ch] font-display text-[48px] leading-[0.92] tracking-[-0.03em] md:text-[76px]">
             Put it on the table.
           </h1>
-          <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-[#F7EAD6]/75">
+          <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-white/75">
             Bring a quote or a question you cannot settle. The seminar builds the strongest
             version of two rival explanations, then shows the exact point where they part.
           </p>
@@ -305,9 +305,9 @@ function SeminarPage() {
               event.preventDefault();
               void convene();
             }}
-            className="seminar-input-panel mt-8 rounded-[28px] p-4 text-[#F7EAD6] md:p-6"
+            className="seminar-input-panel mt-8 rounded-[28px] p-4 text-white md:p-6"
           >
-            <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#F7EAD6]/80">
+            <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/80">
               The quote or question
             </label>
             <textarea
@@ -317,12 +317,12 @@ function SeminarPage() {
               rows={5}
               maxLength={3000}
               placeholder="Paste the sentence you cannot stop thinking about…"
-              className="mt-2 w-full resize-none bg-transparent font-display text-[20px] leading-[1.25] outline-none placeholder:text-[#F7EAD6]/48 md:text-[28px]"
+              className="mt-2 w-full resize-none bg-transparent font-display text-[20px] leading-[1.25] outline-none placeholder:text-white/48 md:text-[28px]"
             />
 
             <div className="mt-4 grid gap-3 border-t border-[#F7EAD6]/30 pt-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
               <div>
-                <label htmlFor="seminar-context" className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#F7EAD6]/55">
+                <label htmlFor="seminar-context" className="font-mono text-[8px] uppercase tracking-[0.14em] text-white/55">
                   Context, if it matters
                 </label>
                 <input
@@ -331,13 +331,13 @@ function SeminarPage() {
                   onChange={(event) => setContext(event.target.value)}
                   maxLength={1000}
                   placeholder="Who said it, where, and what was being argued"
-                  className="mt-1 w-full border-b border-[#F7EAD6]/35 bg-transparent pb-2 font-serif text-[13px] outline-none placeholder:text-[#F7EAD6]/50 focus:border-[#F1C979]"
+                  className="mt-1 w-full border-b border-[#F7EAD6]/35 bg-transparent pb-2 font-serif text-[13px] outline-none placeholder:text-white/50 focus:border-[#F1C979]"
                 />
               </div>
               <button
                 type="submit"
                 disabled={busy || text.trim().length < 20}
-                className="inline-flex min-h-12 items-center justify-center gap-2 border-2 border-[#F7EAD6] bg-[#F7EAD6] px-5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A] transition-colors hover:border-[#F1C979] hover:bg-[#F1C979] disabled:cursor-not-allowed disabled:border-[#F7EAD6]/20 disabled:bg-transparent disabled:text-[#F7EAD6]/50"
+                className="inline-flex min-h-12 items-center justify-center gap-2 border-2 border-[#F7EAD6] bg-[#F7EAD6] px-5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A] transition-colors hover:border-[#F1C979] hover:bg-[#F1C979] disabled:cursor-not-allowed disabled:border-[#F7EAD6]/20 disabled:bg-transparent disabled:text-white/50"
               >
                 {busy ? "Setting the room…" : "Convene the seminar"}
                 {!busy && <ArrowRight className="h-3.5 w-3.5" />}
@@ -355,7 +355,7 @@ function SeminarPage() {
               >
                 Use the foreign-aid quote
               </button>
-              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#F7EAD6]/45">
+              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/45">
                 {text.length}/3000 · no verdict unless asked
               </span>
             </div>
@@ -628,7 +628,7 @@ function SeminarPage() {
                     {lessonBusy ? <BookOpen className="h-3.5 w-3.5 animate-pulse" /> : <ArrowRight className="h-3.5 w-3.5" />}
                   </button>
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#F7EAD6]/20 px-5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-[#F7EAD6]/50 md:px-6">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#F7EAD6]/20 px-5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-white/50 md:px-6">
                   <span>One deeper model pass · built from this seminar</span>
                   <span>~5–7 min read</span>
                 </div>

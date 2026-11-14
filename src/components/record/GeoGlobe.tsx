@@ -84,7 +84,7 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
 
   // Fine graticule.
   ctx.lineWidth = 1;
-  ctx.strokeStyle = blueprint ? "rgba(247, 234, 214, 0.2)" : "rgba(112, 101, 88, 0.09)";
+  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.2)" : "rgba(112, 101, 88, 0.09)";
   for (let lon = -180; lon <= 180; lon += 30) {
     const [x] = project(lon, 0);
     ctx.beginPath();
@@ -137,16 +137,16 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
           dot.height = 6;
           const dotCtx = dot.getContext("2d");
           if (dotCtx) {
-            dotCtx.fillStyle = "rgba(247, 234, 214, 0.66)";
+            dotCtx.fillStyle = "rgba(255, 255, 255, 0.72)";
             dotCtx.beginPath();
             dotCtx.arc(3, 3, 0.9, 0, Math.PI * 2);
             dotCtx.fill();
           }
           dotPattern = ctx.createPattern(dot, "repeat");
         }
-        ctx.fillStyle = dotPattern ?? "rgba(247, 234, 214, 0.5)";
+        ctx.fillStyle = dotPattern ?? "rgba(255, 255, 255, 0.55)";
         ctx.fill("evenodd");
-        ctx.strokeStyle = "rgba(247, 234, 214, 0.82)";
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
         ctx.lineWidth = 1.25;
         ctx.stroke();
       } else {
@@ -232,11 +232,11 @@ function GlobeFallback({ theme }: { theme?: "dark" | "light" | "blueprint" }) {
   const blueprint = theme === "blueprint";
   return (
     <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-      <div className={`relative aspect-square w-[78%] rounded-full ${blueprint ? "border border-[#F7EAD6]/30 bg-transparent shadow-[0_0_80px_rgba(247,234,214,0.08)]" : "bg-[radial-gradient(circle_at_34%_28%,#fffdf8_0%,#f2e8d9_42%,#ddccb8_76%,#c0ac96_100%)] shadow-[inset_-34px_-26px_70px_rgba(100,84,67,0.14),0_34px_70px_rgba(89,72,55,0.1)]"}`}>
-        <div className={`absolute inset-[5%] rounded-full border ${blueprint ? "border-[#F7EAD6]/25" : "border-[#665544]/20"}`} />
-        <div className={`absolute inset-x-[5%] top-1/2 h-px ${blueprint ? "bg-[#F7EAD6]/25" : "bg-[#665544]/20"}`} />
-        <div className={`absolute inset-y-[5%] left-1/2 w-px ${blueprint ? "bg-[#F7EAD6]/25" : "bg-[#665544]/20"}`} />
-        <div className={`absolute inset-[24%] rounded-full border ${blueprint ? "border-[#F7EAD6]/20" : "border-[#665544]/15"}`} />
+      <div className={`relative aspect-square w-[78%] rounded-full ${blueprint ? "border border-white/30 bg-transparent shadow-[0_0_80px_rgba(247,234,214,0.08)]" : "bg-[radial-gradient(circle_at_34%_28%,#fffdf8_0%,#f2e8d9_42%,#ddccb8_76%,#c0ac96_100%)] shadow-[inset_-34px_-26px_70px_rgba(100,84,67,0.14),0_34px_70px_rgba(89,72,55,0.1)]"}`}>
+        <div className={`absolute inset-[5%] rounded-full border ${blueprint ? "border-white/25" : "border-[#665544]/20"}`} />
+        <div className={`absolute inset-x-[5%] top-1/2 h-px ${blueprint ? "bg-white/25" : "bg-[#665544]/20"}`} />
+        <div className={`absolute inset-y-[5%] left-1/2 w-px ${blueprint ? "bg-white/25" : "bg-[#665544]/20"}`} />
+        <div className={`absolute inset-[24%] rounded-full border ${blueprint ? "border-white/20" : "border-[#665544]/15"}`} />
         <div className="absolute left-[28%] top-[34%] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1A4BFF]" />
         <div className="absolute left-[61%] top-[48%] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1A4BFF]" />
         <div className="absolute left-[63%] top-[52%] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C1121F]" />
@@ -356,7 +356,7 @@ export function GeoGlobe({
       const ring = new THREE.Mesh(
         new THREE.RingGeometry(0.021, 0.032, 28),
         new THREE.MeshBasicMaterial({
-          color: isBlueprint ? (item.tone === "red" ? 0xf1c979 : 0xf7ead6) : item.tone === "red" ? 0xc1121f : 0x1a4bff,
+          color: isBlueprint ? (item.tone === "red" ? 0xf1c979 : 0xffffff) : item.tone === "red" ? 0xc1121f : 0x1a4bff,
           transparent: true,
           opacity: 0.9,
           side: THREE.DoubleSide,
@@ -371,7 +371,7 @@ export function GeoGlobe({
       const core = new THREE.Mesh(
         new THREE.CircleGeometry(0.009, 20),
         new THREE.MeshBasicMaterial({
-          color: isBlueprint ? 0xf7ead6 : 0xfff8ea,
+          color: isBlueprint ? 0xffffff : 0xfff8ea,
           transparent: true,
           opacity: 0.95,
           side: THREE.DoubleSide,
@@ -393,7 +393,7 @@ export function GeoGlobe({
         makeArc(
           latLonToVector3(from.lat, from.lon, 1.012),
           latLonToVector3(to.lat, to.lon, 1.012),
-          isBlueprint ? (arc.color === 0xc1121f ? 0xf1c979 : 0xf7ead6) : arc.color,
+          isBlueprint ? (arc.color === 0xc1121f ? 0xf1c979 : 0xffffff) : arc.color,
           arc.opacity,
         ),
       );
@@ -621,18 +621,18 @@ export function GeoGlobe({
               <span
                 className={`flex h-7 w-7 items-center justify-center rounded-full border font-mono text-[8px] font-bold tracking-[0.04em] shadow-[0_2px_8px_rgba(40,30,20,0.18)] transition-colors ${
                   isBlueprint
-                    ? "border-[#F7EAD6]/40 bg-[#0A0805]/30 text-[#F7EAD6] backdrop-blur-sm"
+                    ? "border-white/40 bg-[#0A0805]/30 text-white backdrop-blur-sm"
                     : item.tone === "red"
                       ? "border-[#C1121F]/32 bg-[#FFFCF7] text-[#C1121F]"
                       : "border-[#1A4BFF]/28 bg-[#FFFCF7] text-[#1A3FCC]"
-                } ${isActive ? "scale-110" : ""} ${selectedId === item.id ? "ring-2 ring-[#F7EAD6]/40 ring-offset-2 ring-offset-[#0B0907]" : ""}`}
+                } ${isActive ? "scale-110" : ""} ${selectedId === item.id ? "ring-2 ring-white/40 ring-offset-2 ring-offset-[#0B0907]" : ""}`}
               >
                 {item.number}
               </span>
               <span
                 className={`absolute left-8 top-1/2 hidden -translate-y-1/2 whitespace-nowrap border px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] shadow-[0_4px_14px_rgba(0,0,0,0.14)] transition-colors md:block ${
                   theme === "blueprint"
-                    ? "border-[#F7EAD6]/25 bg-[#0A0805]/35 text-[#F7EAD6]/70 backdrop-blur-sm"
+                    ? "border-white/25 bg-[#0A0805]/35 text-white/70 backdrop-blur-sm"
                     : theme === "light"
                       ? "border-[#1A1A1A]/15 bg-[#FFFCF7] text-[#1A1A1A]/65"
                       : "border-[#2A2118]/20 bg-[#F2E7D5] text-[#1A1410]/75"

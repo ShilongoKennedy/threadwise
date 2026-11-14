@@ -1710,9 +1710,9 @@ main {
   pointer-events: none;
   background-image:
     url("/seminar-stitch.svg"),
-    linear-gradient(to right, color-mix(in srgb, var(--seminar-ink, #F7EAD6) 15%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--seminar-ink, #F7EAD6) 15%, transparent) 1px, transparent 1px),
-    radial-gradient(circle, color-mix(in srgb, var(--seminar-ink, #F7EAD6) 42%, transparent) 1.3px, transparent 1.7px);
+    linear-gradient(to right, color-mix(in srgb, var(--seminar-ink, #FFFFFF) 15%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--seminar-ink, #FFFFFF) 15%, transparent) 1px, transparent 1px),
+    radial-gradient(circle, color-mix(in srgb, var(--seminar-ink, #FFFFFF) 42%, transparent) 1.3px, transparent 1.7px);
   background-size: 28px 28px, 140px 140px, 140px 140px, 140px 140px;
 }
 
@@ -1729,7 +1729,7 @@ main {
 
 .blueprint-page main :is(h1, h2, h3, p, li, span, a, button),
 .blueprint-page footer :is(h1, h2, h3, p, li, span, a, button) {
-  color: #F7EAD6 !important;
+  color: #FFFFFF !important;
 }
 
 .blueprint-page .bg-\[\#1A1A1A\],
@@ -1761,12 +1761,12 @@ main {
 }
 
 .blueprint-page footer a[aria-label="Threadwise — home"] span {
-  color: #F7EAD6 !important;
+  color: #FFFFFF !important;
 }
 
 .blueprint-page .blueprint-cta {
-  background: #F7EAD6 !important;
-  border: 1px solid #F7EAD6 !important;
+  background: #FFFFFF !important;
+  border: 1px solid #FFFFFF !important;
   color: #1A1A1A !important;
 }
 
@@ -1914,4 +1914,47 @@ main {
 
 .site-blueprint :is(header, main, footer) :is(input, textarea) {
   color: var(--site-ink) !important;
+}
+
+
+/* One planned background field: no brick grid, just sparse thread dots and quiet column threads. */
+.seminar-color-page { --field-ink: var(--seminar-ink); }
+.site-blueprint { --field-ink: var(--site-ink); }
+.blueprint-page { --field-ink: #FFFFFF; }
+
+.seminar-color-page::before,
+.site-blueprint::before,
+.blueprint-page::before {
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--field-ink) 22%, transparent) 0.85px, transparent 1.1px),
+    linear-gradient(to right, color-mix(in srgb, var(--field-ink) 5%, transparent) 1px, transparent 1px) !important;
+  background-size: 64px 64px, 192px 192px !important;
+  background-position: 0 0, 0 0 !important;
+  opacity: 0.62 !important;
+}
+
+/* Nearly transparent glass headers across the system. */
+.seminar-header header > div,
+.site-blueprint header.sticky > div {
+  background: color-mix(in srgb, var(--seminar-bg, var(--site-bg)) 16%, transparent) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 16px 46px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(28px) saturate(1.1) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.1) !important;
+}
+
+.seminar-header header,
+.seminar-header header a,
+.seminar-header header button,
+.seminar-header header span,
+.site-blueprint header.sticky,
+.site-blueprint header.sticky a,
+.site-blueprint header.sticky button,
+.site-blueprint header.sticky span {
+  color: #FFFFFF !important;
+}
+
+.seminar-header header a[data-read-source] span,
+.site-blueprint header.sticky a[data-read-source] span {
+  color: #1A1A1A !important;
 }

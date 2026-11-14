@@ -40,7 +40,7 @@ export const Route = createFileRoute("/")({
 });
 
 const SAMPLE_TOKEN = "mn4qvf4bhu";
-const LANDING_TONES = ["#8F2F23", "#1732C8", "#8C3023", "#111A52", "#174536", "#452042"];
+const LANDING_TONES = ["#8F3524", "#8A4A1E", "#4C4C24", "#1F4A46", "#29336B", "#47284F"];
 
 
 const LOOP = [
@@ -118,9 +118,9 @@ function LandingPage() {
     }, delay);
   };
   return (
-    <div className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans text-[#F7EAD6] transition-colors duration-700 selection:bg-[#F1C979] selection:text-[#1A1A1A]" style={{ backgroundColor: LANDING_TONES[toneIndex] }}>
+    <div className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans text-white transition-colors duration-700 selection:bg-[#F1C979] selection:text-[#1A1A1A]" style={{ backgroundColor: LANDING_TONES[toneIndex] }}>
       <main id="main" className="relative z-10 flex-1">
-        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden text-[#F7EAD6]">
+        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden text-white">
           <div className="globe-stage absolute inset-0 z-[5]">
             <GeoGlobe theme="blueprint" layout="right" />
           </div>
@@ -134,7 +134,7 @@ function LandingPage() {
                   <span className="h-px w-8 bg-[#1A4BFF]/55" />
                   A field note / IAEA–Iran
                 </div>
-                <h1 className="max-w-[11ch] font-display text-[clamp(50px,6.7vw,100px)] leading-[0.9] tracking-[-0.045em] text-[#F7EAD6]">
+                <h1 className="max-w-[11ch] font-display text-[clamp(50px,6.7vw,100px)] leading-[0.9] tracking-[-0.045em] text-white">
                   See what the story hides.
                 </h1>
                 <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-12">

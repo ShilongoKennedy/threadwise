@@ -165,12 +165,12 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 const SITE_TONES = [
-  { bg: "#8F2F23", ink: "#F7EAD6", header: "rgba(16, 10, 7, 0.58)", accent: "#F1C979" },
-  { bg: "#1732C8", ink: "#F7EAD6", header: "rgba(6, 12, 42, 0.5)", accent: "#F1C979" },
-  { bg: "#8C3023", ink: "#F7EAD6", header: "rgba(30, 8, 5, 0.52)", accent: "#F1C979" },
-  { bg: "#111A52", ink: "#F7EAD6", header: "rgba(4, 7, 24, 0.58)", accent: "#D9F25C" },
-  { bg: "#174536", ink: "#F7EAD6", header: "rgba(4, 20, 15, 0.52)", accent: "#D9F25C" },
-  { bg: "#452042", ink: "#F7EAD6", header: "rgba(20, 6, 19, 0.52)", accent: "#F1C979" },
+  { bg: "#8F3524", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
+  { bg: "#8A4A1E", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
+  { bg: "#4C4C24", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
+  { bg: "#1F4A46", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
+  { bg: "#29336B", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
+  { bg: "#47284F", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
 ] as const;
 
 function SiteBlueprint({ pathname, children }: { pathname: string; children: ReactNode }) {
