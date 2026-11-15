@@ -4,7 +4,6 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
-import { HeroRocket } from "@/components/threadwise/HeroRocket";
 import { paletteFor } from "@/lib/threadwise/palette";
 import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
 
@@ -147,12 +146,6 @@ function LandingPage() {
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden">
           <div className="globe-stage absolute inset-0 z-[5]">
             <GeoGlobe theme="blueprint" layout="right" minimal mobileScale={0.9} />
-          </div>
-
-          <div className="hero-rocket-stage pointer-events-none absolute inset-0 z-[6] overflow-hidden" aria-hidden="true">
-            <div className="hero-rocket">
-              <HeroRocket />
-            </div>
           </div>
 
           <AppHeader section="record" marketing />
