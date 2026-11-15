@@ -4,7 +4,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
-import { paletteFor } from "@/lib/threadwise/palette";
+import { paletteFor, type BlueprintColor } from "@/lib/threadwise/palette";
 import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
 
 export const Route = createFileRoute("/")({
@@ -41,7 +41,10 @@ export const Route = createFileRoute("/")({
 });
 
 const SAMPLE_TOKEN = "mn4qvf4bhu";
-const LANDING_TONES = paletteFor("/");
+const LANDING_TONES: BlueprintColor[] = [
+  ...paletteFor("/"),
+  { hex: "#FFFBFB", label: "Paper White", ink: "#111111", wave: "dark" },
+];
 
 
 const LOOP = [
@@ -131,11 +134,12 @@ function LandingPage() {
   return (
     <div
       className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans transition-colors duration-700 selection:bg-[#D8CCFF] selection:text-[#1A1A1A]"
+      data-field-ink={darkInk ? "dark" : "light"}
       style={{
         backgroundColor: tone.hex,
         color: tone.ink,
         "--blueprint-ink": tone.ink,
-        "--blueprint-accent": darkInk ? "#4A3A00" : "#D8CCFF",
+        "--blueprint-accent": darkInk ? "#1A4BFF" : "#D8CCFF",
         "--wave-art": tone.wave === "dark" ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")',
         "--wave-opacity": tone.wave === "dark" ? "0.7" : "0.72",
         "--landing-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
