@@ -277,11 +277,11 @@ function QuestionPage() {
               </p>
             ) : null}
 
-            <div className="mt-6 grid grid-cols-1 border-2 border-[#1A1A1A] md:grid-cols-2 md:divide-x md:divide-[#1A1A1A]/12">
+            <div className="bp-card mt-6 grid grid-cols-1 overflow-hidden md:grid-cols-2 md:divide-x md:divide-white/12">
               {(["for", "against"] as const).map((side) => {
                 const list = findings.filter((finding) => finding.stance === side);
                 return (
-                  <section key={side} className="border-b border-[#1A1A1A]/12 px-4 py-3 last:border-b-0 md:border-b-0">
+                  <section key={side} className="border-b border-white/12 px-5 py-4 last:border-b-0 md:border-b-0">
                     <p
                       className={`font-mono text-[9px] font-bold uppercase tracking-[0.18em] ${
                         side === "for" ? "text-[#1A4BFF]" : "text-[#C1121F]"
@@ -316,7 +316,7 @@ function QuestionPage() {
                                 <Link
                                   to="/read/$token"
                                   params={{ token: finding.read_token }}
-                                  className="text-[#1A4BFF] underline underline-offset-4"
+                                  className="text-[#FFE8D6] underline underline-offset-4"
                                 >
                                   read
                                 </Link>

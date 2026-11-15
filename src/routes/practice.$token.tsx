@@ -236,7 +236,7 @@ function PracticePage() {
                       const index = EXERCISES.findIndex((item) => item.kind === kind);
                       choose(EXERCISES[(index + 1) % EXERCISES.length]!.kind);
                     }}
-                    className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4"
+                    className="bp-button bp-button--ghost bp-button--sm"
                   >
                     Next exercise
                   </button>
@@ -246,16 +246,12 @@ function PracticePage() {
 
             {revealed && (
               <>
-                <section className="mt-6 border-2 border-[#1A4BFF] bg-white">
-                  <div className="flex items-center justify-between bg-[#1A4BFF] px-3 py-1.5">
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white">
-                      The read's answer
-                    </span>
-                    <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-white/75">
-                      {passed}/{checks.length} structural checks
-                    </span>
+                <section className="bp-card mt-6">
+                  <div className="bp-card__header">
+                    <p className="bp-card__eyebrow">The read's answer</p>
+                    <span className="bp-badge">{passed}/{checks.length} structural checks</span>
                   </div>
-                  <p className="whitespace-pre-line px-4 py-3 font-serif text-[15px] leading-relaxed text-[#1A1A1A]/85">
+                  <p className="whitespace-pre-line p-5 font-serif text-[15px] leading-relaxed text-white/85">
                     {modelAnswer}
                   </p>
                 </section>
