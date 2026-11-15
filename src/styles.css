@@ -3717,3 +3717,36 @@ body header.app-header .app-header__signin:hover { color: #DDD6FE !important; -w
   .hero-ship { animation: none; transform: translate3d(48vw, 34vh, 0) rotate(-5deg); opacity: 0.82; }
   .hero-ship::after { animation: none; }
 }
+
+/* A small reusable launch crossing the field. */
+.hero-rocket-stage { contain: layout paint; }
+.hero-rocket {
+  position: absolute;
+  left: 78%;
+  bottom: -360px;
+  width: clamp(62px, 6vw, 98px);
+  opacity: 0;
+  filter: drop-shadow(0 0 14px rgba(185, 215, 255, 0.22));
+  will-change: transform, opacity;
+  animation: hero-rocket-launch 17s cubic-bezier(0.38, 0, 0.62, 1) infinite;
+}
+@keyframes hero-rocket-launch {
+  0% { transform: translate3d(0, 0, 0) rotate(3deg); opacity: 0; }
+  7% { opacity: 0.96; }
+  35% { transform: translate3d(-2vw, -48vh, 0) rotate(2.4deg); opacity: 0.96; }
+  68% { transform: translate3d(-5vw, -104vh, 0) rotate(1.6deg); opacity: 0.92; }
+  88% { transform: translate3d(-7vw, -146vh, 0) rotate(1deg); opacity: 0.72; }
+  100% { transform: translate3d(-8vw, -170vh, 0) rotate(0.5deg); opacity: 0; }
+}
+@media (max-width: 767px) {
+  .hero-rocket { left: 72%; bottom: -300px; width: 54px; animation-duration: 14s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-rocket { animation: none; bottom: 12vh; left: 80%; opacity: 0.82; transform: rotate(2deg); }
+}
+
+/* Keep the launch beneath the masthead, never across the nav. */
+.hero-rocket-stage { top: 84px; }
+@media (max-width: 767px) {
+  .hero-rocket-stage { top: 58px; }
+}
