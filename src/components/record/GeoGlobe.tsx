@@ -703,7 +703,7 @@ export function GeoGlobe({
         ? CITIES.find((entry) => entry.id === selectedRef.current)
         : undefined;
       if (!reduceMotion && !focus && !dragging && Date.now() > resumeAt) {
-        autoRotation += delta * 0.036;
+        autoRotation += delta * 0.085;
         targetRotationY = BASE_Y + autoRotation + pointerX * 0.1;
         targetRotationX = -0.04 + pointerY * 0.06;
       }
