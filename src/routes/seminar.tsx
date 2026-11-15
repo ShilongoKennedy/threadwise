@@ -231,15 +231,6 @@ function SeminarPage() {
     if (text.trim().length < 20 || busy) return;
     setBusy(true);
     setError(null);
-    setSeminar(null);
-    setStand(null);
-    setRevealed(false);
-    setVerdictOpen(false);
-    setSavedId(null);
-    setSaveState("idle");
-    setLesson(null);
-    setLessonBusy(false);
-    setLessonError(null);
     try {
       const response = await fetch("/api/seminar", {
         method: "POST",
@@ -249,6 +240,14 @@ function SeminarPage() {
       const body = (await response.json()) as { seminar?: Seminar; error?: string };
       if (!response.ok || !body.seminar) throw new Error(body.error ?? "The seminar could not be convened.");
       setSeminar(body.seminar);
+      setStand(null);
+      setRevealed(false);
+      setVerdictOpen(false);
+      setSavedId(null);
+      setSaveState("idle");
+      setLesson(null);
+      setLessonBusy(false);
+      setLessonError(null);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "The seminar could not be convened.");
     } finally {
