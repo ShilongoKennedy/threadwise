@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { ArrowRight, ArrowUpRight, BookOpen, RotateCcw, Search } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BookOpen, Check, RotateCcw, Search } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import type { Seminar, SeminarTheory } from "@/lib/threadwise/seminar";
 import type { SeminarLesson } from "@/lib/threadwise/seminar-lesson";
 import { SeminarLessonView } from "@/components/threadwise/SeminarLessonView";
 import { SeminarLoupe, LoupeSelectionButton, LookCloserButton, useLoupeSelection, type LoupeTarget } from "@/components/threadwise/SeminarLoupe";
-import { InkArrow, InkCircle, InkRule, InkTick } from "@/components/threadwise/InkMarks";
 import { supabase } from "@/integrations/supabase/client";
 import { paletteFor } from "@/lib/threadwise/palette";
 import { ReadingFocusToggle, ReadingProgress } from "@/components/threadwise/BlueprintUI";
@@ -439,7 +438,7 @@ function SeminarPage() {
       </section>
 
       {saved.length > 0 && (
-        <section data-seminar-tone="5" className="seminar-dark-ink mx-auto mt-8 w-full max-w-[1100px] border-y border-[#F7EAD6]/20 px-5 py-6 md:px-7">
+        <section data-seminar-tone="5" className="seminar-dark-ink bp-card mx-auto mt-8 w-full max-w-[1100px] px-5 py-6 md:px-7">
           <div className="flex items-end justify-between gap-4 border-b border-[#1A1A1A]/15 pb-3">
             <h2 className="font-display text-[26px] leading-none">The archive.</h2>
             <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
@@ -458,7 +457,7 @@ function SeminarPage() {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <span className="min-w-0">
-                    <span className="block truncate font-serif text-[14px] leading-snug text-[#1A1A1A]/80 group-hover:text-[#1A4BFF]">
+                    <span className="block truncate font-serif text-[14px] leading-snug text-[#1A1A1A]/80 group-hover:text-[#E7A574]">
                       {item.question}
                     </span>
                     <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
@@ -469,7 +468,7 @@ function SeminarPage() {
                       })}
                     </span>
                   </span>
-                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A4BFF]">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#E7A574]">
                     reopen →
                   </span>
                 </button>
@@ -484,7 +483,7 @@ function SeminarPage() {
           <SeminarReadingNav />
           <section id="s-question" data-reading-section="s-question" data-loupe-section="The question underneath" data-seminar-tone="1" className="seminar-dark-ink reading-section grid gap-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12">
             <div>
-              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#E7A574]">
                 The question underneath
               </p>
               <p className="mt-2 max-w-[62ch] font-display text-[28px] leading-[1.1] md:text-[38px]">
@@ -511,10 +510,10 @@ function SeminarPage() {
                 steelmanned
               </span>
             </div>
-            <InkRule className="mt-2" />
+            <div className="reading-rule mt-2" />
             <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
               Arguments to test, not sourced findings.
-              <span className="inline-flex items-center gap-1 text-[#1A4BFF]/65">
+              <span className="inline-flex items-center gap-1 text-[#E7A574]/65">
                 <Search className="h-2.5 w-2.5" /> select a line, or hover “closer”
               </span>
             </p>
@@ -527,7 +526,7 @@ function SeminarPage() {
           </section>
 
           {!revealed ? (
-            <section data-seminar-tone="2" className="seminar-dark-ink mt-10 border-y border-[#F7EAD6]/20 py-5">
+            <section data-seminar-tone="2" className="seminar-dark-ink reading-section mt-10">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em]">Before the crux</p>
                 <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
@@ -544,21 +543,21 @@ function SeminarPage() {
                   <button
                     type="button"
                     onClick={() => choose("A")}
-                    className="border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] hover:text-white"
+                    className="bp-button bp-button--secondary bp-button--sm"
                   >
                     Theory A
                   </button>
                   <button
                     type="button"
                     onClick={() => choose("B")}
-                    className="border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] hover:text-white"
+                    className="bp-button bp-button--secondary bp-button--sm"
                   >
                     Theory B
                   </button>
                   <button
                     type="button"
                     onClick={() => choose("undecided")}
-                    className="border-2 border-[#1A1A1A]/25 px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/55 transition-colors hover:border-[#1A1A1A]"
+                    className="bp-button bp-button--ghost bp-button--sm"
                   >
                     Neither yet
                   </button>
@@ -580,7 +579,7 @@ function SeminarPage() {
               <section id="s-crux" data-reading-section="s-crux" data-loupe-section="The crux" data-seminar-tone="3" className="seminar-dark-ink reading-section mt-10 overflow-hidden">
                 <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
                   <div className="border-b border-white/15 px-5 py-4 md:border-b-0 md:border-r md:border-white/15 md:px-6 md:py-8">
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#D9F25C]">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#E7A574]">
                       The crux
                     </p>
                     <p className="mt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-white/40">
@@ -589,7 +588,7 @@ function SeminarPage() {
                     {stand && (
                       <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.12em] text-white/70">
                         You stood with{" "}
-                        <span className="text-[#D9F25C]">
+                        <span className="text-[#E7A574]">
                           {stand === "undecided" ? "neither yet" : `theory ${stand}`}
                         </span>
                       </p>
@@ -627,7 +626,7 @@ function SeminarPage() {
 
               <section id="s-verdict" data-reading-section="s-verdict" data-loupe-section="The provisional verdict" data-seminar-tone="4" className="seminar-dark-ink reading-section mt-6">
                 {!verdictOpen ? (
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-y border-[#1A1A1A]/15 py-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-5">
                     <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
                       The tension is the point. If you want the evidence weighed, ask for a
                       provisional — not moral — verdict.
@@ -635,16 +634,16 @@ function SeminarPage() {
                     <button
                       type="button"
                       onClick={() => setVerdictOpen(true)}
-                      className="inline-flex items-center gap-2 border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
+                      className="bp-button bp-button--secondary bp-button--sm"
                     >
                       Show a provisional verdict
                       <ArrowUpRight className="h-3 w-3" />
                     </button>
                   </div>
                 ) : (
-                  <div className="border-y border-[#1A1A1A]/15 py-5">
+                  <div className="border-t border-white/15 pt-5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#E7A574]">
                         Provisional verdict
                       </p>
                       <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
@@ -661,7 +660,7 @@ function SeminarPage() {
                         {seminar.verdict.why}
                       </p>
                       <p className="mt-3 border-l-2 border-[#1A4BFF] pl-3 font-serif text-[13px] leading-relaxed text-[#1A1A1A]/60">
-                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF]">
+                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#E7A574]">
                           What would change it ·{" "}
                         </span>
                         {seminar.verdict.change}
@@ -677,7 +676,7 @@ function SeminarPage() {
               <section id="s-lesson" data-reading-section="s-lesson" data-loupe-section="The deeper lesson" data-seminar-tone="5" className="seminar-dark-ink reading-section mt-10">
                 <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
                   <div>
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#E7A574]">
                       If the argument is clear but the subject is not
                     </p>
                     <h2 className="mt-2 max-w-[22ch] font-display text-[30px] leading-[1.02] md:text-[38px]">
@@ -692,7 +691,7 @@ function SeminarPage() {
                     type="button"
                     onClick={() => void openDeeperLesson()}
                     disabled={lessonBusy}
-                    className="seminar-dark-cta inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#F7EAD6] px-5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A] transition-colors hover:bg-[#F1C979] disabled:cursor-wait disabled:opacity-60"
+                    className="bp-button bp-button--primary"
                   >
                     {lessonBusy ? "Building the lesson…" : lesson ? "Rebuild the lesson" : "Go deeper"}
                     {lessonBusy ? <BookOpen className="h-3.5 w-3.5 animate-pulse" /> : <ArrowRight className="h-3.5 w-3.5" />}
@@ -743,7 +742,7 @@ function SeminarPage() {
                       type="button"
                       onClick={save}
                       disabled={saveState === "saving" || saveState === "saved"}
-                      className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4 disabled:text-[#1A1A1A]/35 disabled:no-underline"
+                      className="bp-button bp-button--ghost bp-button--sm"
                     >
                       {saveState === "saved"
                         ? "Saved to the record"
@@ -754,7 +753,7 @@ function SeminarPage() {
                   ) : (
                     <Link
                       to="/login"
-                      className="mt-1 inline-block font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4"
+                      className="bp-button bp-button--ghost bp-button--sm"
                     >
                       Sign in to save this seminar
                     </Link>
@@ -768,7 +767,7 @@ function SeminarPage() {
                 <button
                   type="button"
                   onClick={reset}
-                  className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/50 underline underline-offset-4 hover:text-[#1A4BFF]"
+                  className="bp-button bp-button--ghost bp-button--sm"
                 >
                   <RotateCcw className="h-3 w-3" /> New seminar
                 </button>
@@ -836,7 +835,7 @@ function TheoryColumn({
         </div>
       </div>
 
-      <InkRule className="mt-5" />
+      <div className="reading-rule mt-5" />
       <div className="group/line group mt-3 flex items-start gap-2">
         <p className="font-serif text-[15.5px] leading-relaxed text-[#1A1A1A]/80">{theory.claim}</p>
         <LookCloserButton text={theory.claim} section={`Theory ${letter} · claim`} onLookCloser={onLookCloser} />
@@ -854,7 +853,7 @@ function TheoryColumn({
             className="group-hover/theory:opacity-100"
           />
         </div>
-        <InkRule className="mt-1.5" />
+        <div className="reading-rule mt-1.5" />
         {theory.mechanism_steps?.length ? (
           <div className="mechanism-flow mt-3">
             {theory.mechanism_steps.map((step, stepIndex) => (
@@ -877,14 +876,14 @@ function TheoryColumn({
           <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
             It predicts
           </p>
-          <InkRule className="mt-1.5" />
+          <div className="reading-rule mt-1.5" />
           <ul className="mt-1.5 space-y-1.5">
             {theory.predictions.map((prediction) => (
               <li
                 key={prediction}
                 className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65 transition-colors hover:bg-[#1A4BFF]/[0.035]"
               >
-                <InkArrow className="mt-0.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-rotate-3" />
+                <ArrowRight className="mt-0.5 h-3 w-3 shrink-0 text-[#E7A574]" />
                 <span className="flex-1">{prediction}</span>
                 <LookCloserButton
                   text={prediction}
@@ -899,14 +898,14 @@ function TheoryColumn({
           <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">
             Evidence to check
           </p>
-          <InkRule className="mt-1.5" />
+          <div className="reading-rule mt-1.5" />
           <ul className="mt-1.5 space-y-1.5">
             {theory.evidence.map((item) => (
               <li
                 key={item}
                 className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65 transition-colors hover:bg-[#1A4BFF]/[0.035]"
               >
-                <InkTick className="mt-0.5" />
+                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#E7A574]" />
                 <span className="flex-1">{item}</span>
                 <LookCloserButton
                   text={item}

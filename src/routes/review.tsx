@@ -165,7 +165,7 @@ function ReviewPage() {
                       params={
                         review.next.kind === "question" ? { id: review.next.id } : undefined
                       }
-                      className="mt-4 inline-flex items-center gap-2 border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+                      className="mt-4 inline-flex items-center gap-2 bp-button bp-button--primary bp-button--sm"
                     >
                       {review.next.kind === "question"
                         ? "Open the question"

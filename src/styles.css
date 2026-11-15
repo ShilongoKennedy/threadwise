@@ -2327,8 +2327,8 @@ html.reading-focus .bp-scrim {
   background: var(--theory-accent, #FFE8D6);
   opacity: 0.95;
 }
-.theory-panel--a { --theory-accent: #D9F25C; }
-.theory-panel--b { --theory-accent: #73E5D4; }
+.theory-panel--a { --theory-accent: #E7A574; }
+.theory-panel--b { --theory-accent: #AFC3D9; }
 
 .mechanism-flow {
   display: flex;
@@ -2470,3 +2470,11 @@ html.reading-focus .bp-scrim {
   .reading-section__title { font-size: clamp(27px, 8vw, 34px); }
   .reading-section__body { margin-top: 16px; font-size: 15.5px; }
 }
+
+.reading-rule {
+  height: 1px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+}
+.theory-panel--a .theory-letter-ring { color: #E7A574; }
+.theory-panel--b .theory-letter-ring { color: #AFC3D9; }

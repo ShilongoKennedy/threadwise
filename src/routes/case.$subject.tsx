@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
+import { BPEmptyState, bpButtonClass } from "@/components/threadwise/BlueprintUI";
 import { buildCaseLedger, type CaseRead } from "@/lib/threadwise/case-ledger";
 
 export const Route = createFileRoute("/case/$subject")({
@@ -34,21 +35,30 @@ function CasePage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <AppHeader section="cases" />
 
-      <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#1A4BFF]">Case file</p>
+      <main className="bp-page bp-page--narrow">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#E7A574]">Case file</p>
         <h1 className="mt-3 font-display text-[34px] leading-none md:text-[46px]">{subject}</h1>
 
         {reads.length === 0 ? (
-          <p className="mt-8 border-2 border-dashed border-[#1A1A1A]/25 p-8 text-center font-serif text-[14px] text-[#1A1A1A]/65">
-            No reads filed under this case yet.
-          </p>
+          <BPEmptyState
+            className="mt-8"
+            eyebrow="Case file"
+            title="No reads filed under this case yet."
+            body="Reads are filed under a case automatically when the subject matches."
+            action={
+              <Link to="/analyst" className={bpButtonClass({ variant: "primary" })}>
+                Read a source
+              </Link>
+            }
+          />
         ) : (
           <>
             {ledger.change && (
-              <section className="mt-8 border-2 border-[#1A4BFF] bg-white">
-                <div className="bg-[#1A4BFF] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-white">
+              <section className="bp-card mt-8">
+                <div className="bp-card__header">
                   What changed since the previous read
                 </div>
                 <div className="px-4 py-3">
@@ -67,7 +77,7 @@ function CasePage() {
             )}
 
             <section className="mt-8">
-              <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#1A1A1A] pb-2">
+              <div className="flex flex-wrap items-end justify-between gap-2 border-b border-white/20 pb-2">
                 <h2 className="font-display text-[24px] leading-none">The ledger.</h2>
                 <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/50">
                   {claims.length} claim{claims.length === 1 ? "" : "s"}
@@ -94,7 +104,7 @@ function CasePage() {
                         <p className="max-w-[64ch] font-serif text-[14px] leading-snug text-[#1A1A1A]/85">
                           {claim.text}
                         </p>
-                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF]">
+                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#E7A574]">
                           {claim.kind} · {claim.latestConfidence}
                         </span>
                       </div>
@@ -115,7 +125,7 @@ function CasePage() {
                             key={read.token}
                             to="/read/$token"
                             params={{ token: read.token }}
-                            className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A4BFF] underline underline-offset-4"
+                            className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#E7A574] underline underline-offset-4"
                           >
                             {date(read.at)}
                           </Link>
@@ -162,7 +172,7 @@ function CasePage() {
                   {read.mode ? ` · ${read.mode}` : ""}
                 </p>
                 <Link to="/read/$token" params={{ token: read.token }} className="group mt-1 block">
-                  <h2 className="font-display text-[18px] leading-snug group-hover:text-[#1A4BFF]">{read.input}</h2>
+                  <h2 className="font-display text-[18px] leading-snug group-hover:text-[#E7A574]">{read.input}</h2>
                   <p className="mt-1.5 line-clamp-3 max-w-[62ch] border-l-2 border-[#C1121F] pl-3 font-serif text-[13px] leading-snug text-[#1A1A1A]/65">
                     {read.falsifier}
                   </p>

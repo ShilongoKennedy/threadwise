@@ -141,7 +141,7 @@ export function LookCloserButton({
       type="button"
       onMouseDown={(event) => event.preventDefault()}
       onClick={() => onLookCloser({ selected: text, paragraph: text, section })}
-      className={`inline-flex shrink-0 items-center gap-1 rounded-full border border-transparent px-1.5 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.08em] text-[#F7EAD6]/60 opacity-0 transition-all hover:border-[#1A4BFF]/30 hover:bg-[#1A4BFF]/5 focus:opacity-100 group-hover:opacity-100 ${className}`}
+      className={`reading-closer inline-flex shrink-0 items-center gap-1 rounded-full border border-white/18 bg-white/5 px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.08em] text-white/65 transition-colors hover:border-[#E7A574]/60 hover:bg-[#E7A574]/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E7A574] ${className}`}
       aria-label="Look closer at this line"
     >
       <Search className="h-2.5 w-2.5" />

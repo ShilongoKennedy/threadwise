@@ -454,7 +454,7 @@ function AnalystPage() {
             )}
 
             {reading && !report && (
-              <div className="mt-4 border-2 border-[#1A4BFF] bg-white px-4 py-3">
+              <div className="bp-card mt-4 p-4">
                 <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
                   This is what I read — correct anything wrong, then read it
                 </p>
@@ -674,7 +674,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         }
       />
 
-      <details className="mb-4 border-2 border-[#1A1A1A] px-3 xl:hidden">
+      <details className="bp-card mb-4 px-3 xl:hidden">
         <summary className="flex min-h-11 cursor-pointer items-center font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
           Contents
         </summary>
@@ -808,7 +808,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
                   }
                 })();
               }}
-              className="border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF]"
+              className="bp-button bp-button--primary bp-button--sm"
             >
               {watchState === "saving" ? "Keeping…" : "Watch these signals"}
             </button>
@@ -872,7 +872,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
               event.preventDefault();
               void ask(question);
             }}
-            className="flex items-center gap-2 border-2 border-[#1A1A1A] bg-white px-3 py-2"
+            className="flex items-center gap-2"
           >
             <input
               value={question}

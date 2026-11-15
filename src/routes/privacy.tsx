@@ -25,10 +25,11 @@ function PrivacyPage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <MinimalHeader label="Threadwise // Privacy" />
 
 
-      <main id="main" className="mx-auto w-full max-w-[820px] px-4 py-10 md:px-6 md:py-14">
+      <main id="main" className="bp-page bp-page--narrow">
         <h1 className="font-display text-[38px] leading-none md:text-[52px]">What we hold.</h1>
         <p className="mt-4 text-base leading-relaxed text-[#1A1A1A]/70">
           Written plainly, because a privacy page nobody reads protects nobody. Last updated 2
@@ -93,11 +94,11 @@ function PrivacyPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-9 border-t border-[#1A1A1A]/15 pt-5">
-      <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]/65">
+    <section className="reading-section mt-9">
+      <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-white/70">
         {title}
       </h2>
-      <div className="mt-2 space-y-3 font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/85">
+      <div className="mt-3 max-w-[68ch] space-y-3 font-serif text-[15px] leading-[1.7] text-white/80">
         {children}
       </div>
     </section>
