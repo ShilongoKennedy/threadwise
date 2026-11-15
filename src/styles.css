@@ -2504,3 +2504,17 @@ html.reading-focus .bp-scrim {
 @media (max-width: 640px) {
   .lesson-card { padding: 15px; border-radius: 13px; }
 }
+
+/* Primary buttons inside dark reading sections must keep dark ink on the cream fill. */
+.seminar-dark-ink .bp-button--primary,
+.seminar-dark-ink .bp-button--primary * {
+  color: #3A1912 !important;
+}
+.seminar-dark-ink .bp-button--primary {
+  background: #FFF8F0 !important;
+  border-color: #FFF8F0 !important;
+}
+.seminar-dark-ink .bp-button--primary:hover {
+  background: #FFE8D6 !important;
+  border-color: #E7A574 !important;
+}

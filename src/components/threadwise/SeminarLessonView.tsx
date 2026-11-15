@@ -186,7 +186,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             <div className="mt-5 grid gap-2 sm:grid-cols-2">
               {lesson.next_sources.map((source) => (
                 <div key={source.kind} className="lesson-card flex items-start gap-3">
-                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#E7A574]" />
+                  <ReadingMarker variant="check" />
                   <div>
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-[#1A1A1A]/65">{source.kind}</p>
                     <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-[#1A1A1A]/55">{source.why}</p>
