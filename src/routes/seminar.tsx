@@ -34,7 +34,7 @@ const TONES = paletteFor("/seminar").map((color) => {
     header: "rgba(255, 255, 255, 0.035)",
     border: darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.2)",
     accent: darkInk ? "#4A3A00" : "#FFE6A3",
-    brandFilter: darkInk ? "none" : "brightness(0) invert(1)",
+    brandFilter: darkInk ? "brightness(0)" : "brightness(0) invert(1)",
   };
 });
 

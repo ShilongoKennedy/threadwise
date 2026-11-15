@@ -172,25 +172,32 @@ function SiteBlueprint({ pathname, children }: { pathname: string; children: Rea
 
   useEffect(() => {
     setToneIndex(0);
-    let frame = 0;
-    const update = () => {
-      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, window.scrollY / max));
-      const next = Math.min(palette.length - 1, Math.floor(progress * palette.length));
-      setToneIndex(next);
-    };
-    const onScroll = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
+    const main = document.querySelector("main");
+    if (!main) return;
+    const allSections = Array.from(main.querySelectorAll<HTMLElement>("section"));
+    const sections = allSections.filter((section) => !section.parentElement?.closest("section"));
+    const nodes = sections.length ? sections : [main];
+    const ratios = new Map<Element, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          ratios.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
+        }
+        let best = nodes[0];
+        let bestRatio = -1;
+        nodes.forEach((node) => {
+          const ratio = ratios.get(node) ?? 0;
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            best = node;
+          }
+        });
+        setToneIndex(Math.max(0, nodes.indexOf(best)) % palette.length);
+      },
+      { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.05, 0.15, 0.3, 0.5, 0.75, 1] },
+    );
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
   }, [pathname]);
 
   const tone = palette[toneIndex] ?? palette[0];
@@ -204,7 +211,7 @@ function SiteBlueprint({ pathname, children }: { pathname: string; children: Rea
         "--site-header-bg": "rgba(255, 255, 255, 0.035)",
         "--site-header-border": darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.16)",
         "--site-header-ink": tone.ink,
-        "--site-brand-filter": darkInk ? "none" : "brightness(0) invert(1)",
+        "--site-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
         "--site-accent": darkInk ? "#4A3A00" : "#FFE6A3",
       } as CSSProperties}
     >

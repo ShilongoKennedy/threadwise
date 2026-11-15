@@ -86,24 +86,32 @@ function LandingPage() {
   }, []);
 
   useEffect(() => {
-    let frame = 0;
-    const update = () => {
-      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, window.scrollY / max));
-      setToneIndex(Math.min(LANDING_TONES.length - 1, Math.floor(progress * LANDING_TONES.length)));
-    };
-    const onScroll = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
+    const main = document.querySelector("main");
+    if (!main) return;
+    const allSections = Array.from(main.querySelectorAll<HTMLElement>("section"));
+    const sections = allSections.filter((section) => !section.parentElement?.closest("section"));
+    const nodes = sections.length ? sections : [main];
+    const ratios = new Map<Element, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          ratios.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
+        }
+        let best = nodes[0];
+        let bestRatio = -1;
+        nodes.forEach((node) => {
+          const ratio = ratios.get(node) ?? 0;
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            best = node;
+          }
+        });
+        setToneIndex(Math.max(0, nodes.indexOf(best)) % LANDING_TONES.length);
+      },
+      { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.05, 0.15, 0.3, 0.5, 0.75, 1] },
+    );
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
   }, []);
 
   const tone = LANDING_TONES[toneIndex] ?? LANDING_TONES[0];
@@ -126,7 +134,8 @@ function LandingPage() {
         backgroundColor: tone.hex,
         color: tone.ink,
         "--blueprint-ink": tone.ink,
-        "--landing-brand-filter": darkInk ? "none" : "brightness(0) invert(1)",
+        "--blueprint-accent": darkInk ? "#4A3A00" : "#FFE6A3",
+        "--landing-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
         "--landing-header-border": darkInk ? "rgba(17,17,17,0.22)" : "rgba(255,255,255,0.16)",
       } as CSSProperties}
     >

@@ -1740,28 +1740,27 @@ main {
 
 .blueprint-page .text-\[\#1A4BFF\],
 .blueprint-page .text-\[\#C1121F\] {
-  color: #F1C979 !important;
+  color: var(--blueprint-accent, #FFE6A3) !important;
 }
-
 
 .blueprint-page main [class*="text-[#1A4BFF]"],
 .blueprint-page footer [class*="text-[#1A4BFF]"],
 .blueprint-page main [class*="text-[#C1121F]"],
 .blueprint-page footer [class*="text-[#C1121F]"] {
-  color: #F1C979 !important;
+  color: var(--blueprint-accent, #FFE6A3) !important;
 }
 
 .blueprint-page main [class*="border-[#1A4BFF]"] {
-  border-color: rgba(241, 201, 121, 0.45) !important;
+  border-color: color-mix(in srgb, var(--blueprint-ink, #FFFFFF) 30%, transparent) !important;
 }
 
 .blueprint-page footer a[aria-label="Threadwise — home"] svg,
 .blueprint-page footer a[aria-label="Threadwise — home"] svg * {
-  filter: brightness(0) invert(1) !important;
+  filter: var(--landing-brand-filter, brightness(0) invert(1)) !important;
 }
 
 .blueprint-page footer a[aria-label="Threadwise — home"] span {
-  color: #FFFFFF !important;
+  color: var(--blueprint-ink, #FFFFFF) !important;
 }
 
 .blueprint-page .blueprint-cta {
@@ -1982,4 +1981,36 @@ main {
 /* Header border follows the current ink so it stays visible on the yellow field. */
 .seminar-header header > div {
   border-color: var(--seminar-header-border, rgba(255,255,255,.2)) !important;
+}
+
+
+/* Accent labels must survive the golden background. */
+.site-blueprint main [class*="text-[#1A4BFF]"],
+.site-blueprint main [class*="text-[#C1121F]"],
+.site-blueprint main [class*="text-[#8A745C]"] {
+  color: var(--site-accent, #FFE6A3) !important;
+}
+
+.blueprint-page header,
+.blueprint-page header :is(a, button, span, svg) {
+  color: var(--blueprint-ink, #FFFFFF) !important;
+}
+
+.blueprint-page header > div {
+  border-color: var(--landing-header-border, rgba(255, 255, 255, 0.16)) !important;
+}
+
+.blueprint-page header a[data-read-source],
+.blueprint-page header a[data-read-source] span {
+  color: #1A1A1A !important;
+}
+
+
+.blueprint-page header a[aria-label="Threadwise — home"] span,
+.blueprint-page header a[aria-label="Threadwise — home"] {
+  color: var(--blueprint-ink, #FFFFFF) !important;
+}
+
+.blueprint-page footer a[aria-label="Threadwise — home"] span {
+  color: var(--blueprint-ink, #FFFFFF) !important;
 }
