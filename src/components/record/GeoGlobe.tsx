@@ -84,7 +84,7 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
 
   // Fine graticule.
   ctx.lineWidth = 1;
-  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.2)" : "rgba(112, 101, 88, 0.09)";
+  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.34)" : "rgba(112, 101, 88, 0.09)";
   for (let lon = -180; lon <= 180; lon += 30) {
     const [x] = project(lon, 0);
     ctx.beginPath();
@@ -137,7 +137,7 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
           dot.height = 6;
           const dotCtx = dot.getContext("2d");
           if (dotCtx) {
-            dotCtx.fillStyle = "rgba(255, 255, 255, 0.72)";
+            dotCtx.fillStyle = "rgba(255, 255, 255, 0.86)";
             dotCtx.beginPath();
             dotCtx.arc(3, 3, 0.9, 0, Math.PI * 2);
             dotCtx.fill();
@@ -146,8 +146,8 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
         }
         ctx.fillStyle = dotPattern ?? "rgba(255, 255, 255, 0.55)";
         ctx.fill("evenodd");
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
-        ctx.lineWidth = 1.25;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.38)";
+        ctx.lineWidth = 0.9;
         ctx.stroke();
       } else {
         ctx.fillStyle = "#E7D8C3";
@@ -321,7 +321,7 @@ export function GeoGlobe({
       ? new THREE.MeshBasicMaterial({
           map: globeTexture,
           transparent: true,
-          opacity: 0.92,
+          opacity: 1,
           depthWrite: false,
         })
       : new THREE.MeshStandardMaterial({
@@ -336,7 +336,19 @@ export function GeoGlobe({
     globe.rotation.y = 0;
     group.add(globe);
 
-    if (!isBlueprint) {
+    if (isBlueprint) {
+      const rim = new THREE.Mesh(
+        new THREE.SphereGeometry(1.025, 64, 48),
+        new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.12,
+          side: THREE.BackSide,
+          depthWrite: false,
+        }),
+      );
+      group.add(rim);
+    } else {
       const atmosphere = new THREE.Mesh(
         new THREE.SphereGeometry(1.018, 64, 48),
         new THREE.MeshBasicMaterial({
@@ -359,7 +371,7 @@ export function GeoGlobe({
       const ring = new THREE.Mesh(
         new THREE.RingGeometry(0.021, 0.032, 28),
         new THREE.MeshBasicMaterial({
-          color: isBlueprint ? (item.tone === "red" ? 0xf1c979 : 0xffffff) : item.tone === "red" ? 0xc1121f : 0x1a4bff,
+          color: isBlueprint ? 0xffffff : item.tone === "red" ? 0xc1121f : 0x1a4bff,
           transparent: true,
           opacity: 0.9,
           side: THREE.DoubleSide,
@@ -389,17 +401,12 @@ export function GeoGlobe({
       markerObjects.push({ id: item.id, object: anchor });
     }
 
-    for (const arc of ARCS) {
-      const from = city(arc.from);
-      const to = city(arc.to);
-      group.add(
-        makeArc(
-          latLonToVector3(from.lat, from.lon, 1.012),
-          latLonToVector3(to.lat, to.lon, 1.012),
-          isBlueprint ? (arc.color === 0xc1121f ? 0xf1c979 : 0xffffff) : arc.color,
-          arc.opacity,
-        ),
-      );
+    if (!isBlueprint) {
+      for (const arc of ARCS) {
+        const from = city(arc.from);
+        const to = city(arc.to);
+        group.add(makeArc(latLonToVector3(from.lat, from.lon, 1.012), latLonToVector3(to.lat, to.lon, 1.012), arc.color, arc.opacity));
+      }
     }
 
     scene.add(new THREE.AmbientLight(0xfff8ec, 0.88));
@@ -417,9 +424,9 @@ export function GeoGlobe({
       const desktop = window.innerWidth >= 768;
       if (desktop) {
         if (layout === "right") {
-          group.position.x = 1.55;
-          group.position.y = 0.12;
-          group.scale.setScalar(1.22);
+          group.position.x = isBlueprint ? 1.38 : 1.55;
+          group.position.y = isBlueprint ? 0.08 : 0.12;
+          group.scale.setScalar(isBlueprint ? 1.3 : 1.22);
         } else {
           group.position.x = 0.1;
           group.position.y = 0.34;
