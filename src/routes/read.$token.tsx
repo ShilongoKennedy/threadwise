@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/threadwise/AppHeader";
-import { bpButtonClass, ReadingFocusToggle, ReadingProgress } from "@/components/threadwise/BlueprintUI";
+import { bpButtonClass, ReadingCallout, ReadingFocusToggle, ReadingProgress } from "@/components/threadwise/BlueprintUI";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { useEffect, useState } from "react";
 
@@ -624,7 +624,11 @@ function buildBlocks(report: Report) {
     blocks.push({
       key: "counter",
       title: "The counter-reading",
-      body: <p className="border-l-2 border-[#1A4BFF] pl-3">{report.counter_reading}</p>,
+      body: (
+        <ReadingCallout tone="counter" eyebrow="The other reading" title="What the strongest counter-case says">
+          <p>{report.counter_reading}</p>
+        </ReadingCallout>
+      ),
     });
   }
 
@@ -686,9 +690,9 @@ function buildBlocks(report: Report) {
     key: "falsifier",
     title: "What would prove this wrong",
     body: (
-      <p className="border-l-2 border-[#C1121F] pl-4 text-[15px] leading-relaxed">
-        {report.falsifier}
-      </p>
+      <ReadingCallout tone="falsifier" eyebrow="Evidence to check" title="What would prove this wrong">
+        <p>{report.falsifier}</p>
+      </ReadingCallout>
     ),
   });
 

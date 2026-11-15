@@ -203,3 +203,26 @@ export function ReadingProgress() {
     </div>
   );
 }
+
+
+export function ReadingCallout({
+  eyebrow,
+  title,
+  children,
+  tone = "claim",
+  className,
+}: {
+  eyebrow: string;
+  title?: string;
+  children: ReactNode;
+  tone?: "claim" | "counter" | "evidence" | "falsifier";
+  className?: string;
+}) {
+  return (
+    <aside className={cn("reading-callout", `reading-callout--${tone}`, className)}>
+      <p className="reading-callout__eyebrow">{eyebrow}</p>
+      {title ? <p className="reading-callout__title">{title}</p> : null}
+      <div className="reading-callout__body">{children}</div>
+    </aside>
+  );
+}

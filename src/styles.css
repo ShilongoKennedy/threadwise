@@ -2271,3 +2271,39 @@ html.reading-focus .bp-scrim {
   background: #E7A574;
   transition: width 80ms linear;
 }
+
+
+/* Reading callouts sit inside the document, not on top of it. */
+.reading-callout {
+  margin-block: 28px;
+  border-left: 2px solid rgba(255, 255, 255, 0.28);
+  padding: 2px 0 2px 20px;
+}
+.reading-callout--claim { border-color: #E7A574; }
+.reading-callout--counter { border-color: #A9B8FF; }
+.reading-callout--evidence { border-color: rgba(255, 255, 255, 0.28); }
+.reading-callout--falsifier { border-color: #E7A574; }
+.reading-callout__eyebrow { font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: #FFE8D6; }
+.reading-callout__title { margin-top: 6px; font-family: var(--font-display); font-size: 24px; line-height: 1.08; }
+.reading-callout__body { margin-top: 8px; font-family: var(--font-serif); font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.78); }
+.reading-callout__body p { margin: 0; }
+
+@media (max-width: 640px) {
+  .reading-callout { margin-block: 22px; padding-left: 14px; }
+  .reading-callout__title { font-size: 21px; }
+}
+
+.seminar-reading-nav {
+  position: sticky;
+  top: 84px;
+  z-index: 25;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(18, 10, 8, 0.34);
+  padding: 4px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  scrollbar-width: none;
+}
+.seminar-reading-nav::-webkit-scrollbar { display: none; }

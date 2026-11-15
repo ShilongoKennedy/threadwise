@@ -51,6 +51,55 @@ type SavedSeminar = {
   created_at: string;
 };
 
+const SEMINAR_SECTIONS = [
+  { id: "s-question", n: "01", label: "The question" },
+  { id: "s-readings", n: "02", label: "Two readings" },
+  { id: "s-crux", n: "03", label: "The crux" },
+  { id: "s-verdict", n: "04", label: "The verdict" },
+  { id: "s-lesson", n: "05", label: "The lesson" },
+];
+
+function SeminarReadingNav() {
+  const [active, setActive] = useState("s-question");
+
+  useEffect(() => {
+    const nodes = SEMINAR_SECTIONS.map((item) => document.getElementById(item.id)).filter(
+      (node): node is HTMLElement => Boolean(node),
+    );
+    if (!nodes.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        }
+      },
+      { rootMargin: "-15% 0px -62% 0px", threshold: [0, 0.1, 0.5] },
+    );
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <nav aria-label="Seminar sections" className="seminar-reading-nav mb-8">
+      <div className="flex min-w-max items-center gap-1">
+        {SEMINAR_SECTIONS.map((item) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            aria-current={active === item.id ? "true" : undefined}
+            className={`inline-flex items-center gap-2 rounded-full px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] transition-colors ${
+              active === item.id ? "bg-white/12 text-white" : "text-white/55 hover:bg-white/6 hover:text-white"
+            }`}
+          >
+            <span className={active === item.id ? "text-[#FFE8D6]" : "text-[#FFE8D6]/55"}>{item.n}</span>
+            {item.label}
+          </a>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
 function SeminarPage() {
   const [text, setText] = useState("");
   const [context, setContext] = useState("");
@@ -432,7 +481,8 @@ function SeminarPage() {
 
       {seminar && (
         <main ref={readingRef} className="seminar-reading-surface mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
-          <section data-loupe-section="The question underneath" data-seminar-tone="1" className="seminar-dark-ink grid gap-6 border-y border-[#F7EAD6]/20 py-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12 md:py-8">
+          <SeminarReadingNav />
+          <section id="s-question" data-reading-section="s-question" data-loupe-section="The question underneath" data-seminar-tone="1" className="seminar-dark-ink grid gap-6 border-y border-[#F7EAD6]/20 py-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12 md:py-8">
             <div>
               <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
                 The question underneath
@@ -454,7 +504,7 @@ function SeminarPage() {
             </div>
           </section>
 
-          <section data-loupe-section="Two readings" data-seminar-tone="2" className="seminar-dark-ink mt-8">
+          <section id="s-readings" data-reading-section="s-readings" data-loupe-section="Two readings" data-seminar-tone="2" className="seminar-dark-ink mt-8">
             <div className="flex items-end justify-between gap-4 pb-1">
               <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the same thing.</h2>
               <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
@@ -527,7 +577,7 @@ function SeminarPage() {
             </section>
           ) : (
             <>
-              <section data-loupe-section="The crux" data-seminar-tone="3" className="seminar-dark-ink mt-10 overflow-hidden border-y border-[#F7EAD6]/20">
+              <section id="s-crux" data-reading-section="s-crux" data-loupe-section="The crux" data-seminar-tone="3" className="seminar-dark-ink mt-10 overflow-hidden border-y border-[#F7EAD6]/20">
                 <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
                   <div className="border-b border-white/15 px-5 py-4 md:border-b-0 md:border-r md:border-white/15 md:px-6 md:py-8">
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#D9F25C]">
@@ -575,7 +625,7 @@ function SeminarPage() {
                 </div>
               </section>
 
-              <section data-loupe-section="The provisional verdict" data-seminar-tone="4" className="seminar-dark-ink mt-6 border-y border-[#F7EAD6]/20 py-5">
+              <section id="s-verdict" data-reading-section="s-verdict" data-loupe-section="The provisional verdict" data-seminar-tone="4" className="seminar-dark-ink mt-6 border-y border-[#F7EAD6]/20 py-5">
                 {!verdictOpen ? (
                   <div className="flex flex-wrap items-center justify-between gap-3 border-y border-[#1A1A1A]/15 py-5">
                     <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
@@ -624,7 +674,7 @@ function SeminarPage() {
                 )}
               </section>
 
-              <section data-loupe-section="The deeper lesson" data-seminar-tone="5" className="seminar-dark-ink mt-10 border-y border-[#F7EAD6]/20 py-8">
+              <section id="s-lesson" data-reading-section="s-lesson" data-loupe-section="The deeper lesson" data-seminar-tone="5" className="seminar-dark-ink mt-10 border-y border-[#F7EAD6]/20 py-8">
                 <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
                   <div>
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
