@@ -2,14 +2,15 @@ export type BlueprintColor = {
   hex: string;
   label: string;
   ink: string;
+  wave: "light" | "dark";
 };
 
 export const BLUEPRINT_PALETTE: readonly BlueprintColor[] = [
-  { hex: "#B3261E", label: "Soft Red", ink: "#FFFFFF" },
-  { hex: "#1F2DEE", label: "Bright Indigo", ink: "#FFFFFF" },
-  { hex: "#FF40D6", label: "Cotton Bloom", ink: "#FFFFFF" },
-  { hex: "#9F0DF3", label: "Purple (X11)", ink: "#FFFFFF" },
-  { hex: "#F0D71D", label: "Golden Glow", ink: "#111111" },
+  { hex: "#B3261E", label: "Soft Red", ink: "#FFFFFF", wave: "light" },
+  { hex: "#1F2DEE", label: "Bright Indigo", ink: "#FFFFFF", wave: "light" },
+  { hex: "#FF40D6", label: "Cotton Bloom", ink: "#FFFFFF", wave: "dark" },
+  { hex: "#9F0DF3", label: "Purple (X11)", ink: "#FFFFFF", wave: "light" },
+  { hex: "#F0D71D", label: "Golden Glow", ink: "#111111", wave: "dark" },
 ];
 
 function hash(value: string) {

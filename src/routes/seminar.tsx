@@ -34,6 +34,7 @@ const TONES = paletteFor("/seminar").map((color) => {
     header: "rgba(255, 255, 255, 0.035)",
     border: darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.2)",
     accent: darkInk ? "#4A3A00" : "#FFE6A3",
+    wave: color.wave,
     brandFilter: darkInk ? "brightness(0)" : "brightness(0) invert(1)",
   };
 });
@@ -277,6 +278,8 @@ function SeminarPage() {
         "--seminar-header-ink": tone.ink,
         "--seminar-header-accent": tone.accent,
         "--seminar-brand-filter": tone.brandFilter,
+        "--wave-art": tone.wave === "dark" ? 'url("/blueprint-waves-dark.svg")' : 'url("/blueprint-waves.svg")',
+        "--wave-opacity": tone.wave === "dark" ? "0.65" : "0.72",
       } as CSSProperties}
     >
       <div className="seminar-header contents">

@@ -84,7 +84,7 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
 
   // Fine graticule.
   ctx.lineWidth = 1;
-  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.34)" : "rgba(112, 101, 88, 0.09)";
+  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.48)" : "rgba(112, 101, 88, 0.09)";
   for (let lon = -180; lon <= 180; lon += 30) {
     const [x] = project(lon, 0);
     ctx.beginPath();
@@ -137,7 +137,7 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
           dot.height = 6;
           const dotCtx = dot.getContext("2d");
           if (dotCtx) {
-            dotCtx.fillStyle = "rgba(255, 255, 255, 0.86)";
+            dotCtx.fillStyle = "rgba(255, 255, 255, 0.96)";
             dotCtx.beginPath();
             dotCtx.arc(3, 3, 0.9, 0, Math.PI * 2);
             dotCtx.fill();
@@ -146,8 +146,8 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
         }
         ctx.fillStyle = dotPattern ?? "rgba(255, 255, 255, 0.55)";
         ctx.fill("evenodd");
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.38)";
-        ctx.lineWidth = 0.9;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.56)";
+        ctx.lineWidth = 1.0;
         ctx.stroke();
       } else {
         ctx.fillStyle = "#E7D8C3";
@@ -342,7 +342,7 @@ export function GeoGlobe({
         new THREE.MeshBasicMaterial({
           color: 0xffffff,
           transparent: true,
-          opacity: 0.12,
+          opacity: 0.2,
           side: THREE.BackSide,
           depthWrite: false,
         }),
@@ -362,7 +362,7 @@ export function GeoGlobe({
     }
 
     const markerObjects: Array<{ id: string; object: THREE.Object3D }> = [];
-    for (const item of CITIES) {
+    if (!minimal) for (const item of CITIES) {
       const position = latLonToVector3(item.lat, item.lon, 1.018);
       const anchor = new THREE.Object3D();
       anchor.position.copy(position);
@@ -540,7 +540,7 @@ export function GeoGlobe({
         previousSelected = null;
       }
       const layoutMobile = camera.aspect < 1.08;
-      const targetGroupY = layoutMobile ? (focus ? 0.34 : -0.48) : layout === "right" ? -0.06 : 0.3;
+      const targetGroupY = layoutMobile ? (focus ? 0.34 : isBlueprint ? -0.96 : -0.48) : layout === "right" ? -0.06 : 0.3;
       group.position.y += (targetGroupY - group.position.y) * 0.055;
       group.rotation.y += (targetRotationY - group.rotation.y) * 0.035;
       group.rotation.x += (targetRotationX - group.rotation.x) * 0.035;
