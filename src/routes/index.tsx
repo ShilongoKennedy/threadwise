@@ -44,7 +44,7 @@ export const Route = createFileRoute("/")({
 const SAMPLE_TOKEN = "mn4qvf4bhu";
 const LANDING_TONES: BlueprintColor[] = [
   { hex: "#000000", label: "Void Black", ink: "#FFFFFF", wave: "light" },
-  ...paletteFor("/").slice(1),
+  { hex: "#0F1420", label: "Midnight Ink", ink: "#FFFFFF", wave: "light" },
   { hex: "#FFFBFB", label: "Paper White", ink: "#111111", wave: "dark" },
 ];
 
@@ -112,7 +112,8 @@ function LandingPage() {
             best = node;
           }
         });
-        setToneIndex(Math.max(0, nodes.indexOf(best)) % LANDING_TONES.length);
+        const index = Math.max(0, nodes.indexOf(best));
+        setToneIndex(index >= 3 ? 2 : index === 0 ? 0 : 1);
       },
       { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.05, 0.15, 0.3, 0.5, 0.75, 1] },
     );

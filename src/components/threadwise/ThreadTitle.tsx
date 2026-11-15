@@ -15,21 +15,23 @@ export function ThreadTitle({ className = "" }: { className?: string }) {
   const rootRef = useRef<HTMLHeadingElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wordRefs = useRef<Array<HTMLSpanElement | null>>([]);
-  const activeRef = useRef<number | null>(null);
+  const activeRef = useRef(false);
   const fibersRef = useRef<Fiber[]>([]);
   const pointerRef = useRef({ x: 0, y: 0 });
   const frameRef = useRef<number | null>(null);
   const startedRef = useRef(0);
   const enabledRef = useRef(true);
-  const [active, setActive] = useState<number | null>(null);
+  const [active, setActive] = useState(false);
 
   useEffect(() => {
-    enabledRef.current = !window.matchMedia("(pointer: coarse)").matches && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    enabledRef.current =
+      !window.matchMedia("(pointer: coarse)").matches &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }, []);
 
   useEffect(() => {
     activeRef.current = active;
-    if (active === null) {
+    if (!active) {
       stopAnimation();
       const canvas = canvasRef.current;
       const ctx = canvas?.getContext("2d");
@@ -37,7 +39,7 @@ export function ThreadTitle({ className = "" }: { className?: string }) {
       return;
     }
     startedRef.current = performance.now();
-    makeFibers(active);
+    makeFibers();
     startAnimation();
     return stopAnimation;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -45,9 +47,7 @@ export function ThreadTitle({ className = "" }: { className?: string }) {
 
   useEffect(() => {
     const onResize = () => {
-      if (activeRef.current !== null) {
-        makeFibers(activeRef.current);
-      }
+      if (activeRef.current) makeFibers();
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -61,15 +61,13 @@ export function ThreadTitle({ className = "" }: { className?: string }) {
     }
   }
 
-  function makeFibers(index: number) {
+  function makeFibers() {
     const root = rootRef.current;
-    const word = wordRefs.current[index];
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
-    if (!root || !word || !canvas || !ctx) return;
+    if (!root || !canvas || !ctx) return;
 
     const rootRect = root.getBoundingClientRect();
-    const wordRect = word.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const cssWidth = Math.max(1, Math.ceil(rootRect.width));
     const cssHeight = Math.max(1, Math.ceil(rootRect.height));
@@ -78,77 +76,74 @@ export function ThreadTitle({ className = "" }: { className?: string }) {
     canvas.style.width = `${cssWidth}px`;
     canvas.style.height = `${cssHeight}px`;
 
-    const style = window.getComputedStyle(word);
-    const fontSize = Number.parseFloat(style.fontSize);
-    const offscreen = document.createElement("canvas");
-    const offCtx = offscreen.getContext("2d");
-    if (!offCtx) return;
+    const all: Fiber[] = [];
 
-    const wordWidth = Math.max(1, Math.ceil(wordRect.width * dpr));
-    const wordHeight = Math.max(1, Math.ceil(Math.max(wordRect.height, fontSize) * dpr));
-    offscreen.width = wordWidth;
-    offscreen.height = wordHeight;
-    offCtx.scale(dpr, dpr);
-    offCtx.font = `${style.fontWeight} ${fontSize}px ${style.fontFamily}`;
-    offCtx.fillStyle = "#FFFFFF";
-    offCtx.textBaseline = "top";
-    offCtx.fillText(word.textContent ?? "", 0, 0);
+    for (const word of wordRefs.current) {
+      if (!word) continue;
+      const wordRect = word.getBoundingClientRect();
+      if (!wordRect.width || !wordRect.height) continue;
+      const style = window.getComputedStyle(word);
+      const fontSize = Number.parseFloat(style.fontSize);
+      const offscreen = document.createElement("canvas");
+      const offCtx = offscreen.getContext("2d");
+      if (!offCtx) continue;
 
-    const image = offCtx.getImageData(0, 0, offscreen.width, offscreen.height).data;
-    const step = Math.max(3, Math.round(5 / dpr));
-    const candidates: Array<{ x: number; y: number }> = [];
-    const offsetX = wordRect.left - rootRect.left;
-    const offsetY = wordRect.top - rootRect.top;
-    for (let y = 0; y < offscreen.height; y += step) {
-      for (let x = 0; x < offscreen.width; x += step) {
-        if (image[(y * offscreen.width + x) * 4 + 3] > 110) {
-          candidates.push({ x: offsetX + x / dpr, y: offsetY + y / dpr });
+      const wordWidth = Math.max(1, Math.ceil(wordRect.width * dpr));
+      const wordHeight = Math.max(1, Math.ceil(Math.max(wordRect.height, fontSize) * dpr));
+      offscreen.width = wordWidth;
+      offscreen.height = wordHeight;
+      offCtx.scale(dpr, dpr);
+      offCtx.font = `${style.fontWeight} ${fontSize}px ${style.fontFamily}`;
+      offCtx.fillStyle = "#FFFFFF";
+      offCtx.textBaseline = "top";
+      offCtx.fillText(word.textContent ?? "", 0, 0);
+
+      const image = offCtx.getImageData(0, 0, offscreen.width, offscreen.height).data;
+      const step = Math.max(3, Math.round(5 / dpr));
+      const offsetX = wordRect.left - rootRect.left;
+      const offsetY = wordRect.top - rootRect.top;
+      const candidates: Array<{ x: number; y: number }> = [];
+      for (let y = 0; y < offscreen.height; y += step) {
+        for (let x = 0; x < offscreen.width; x += step) {
+          if (image[(y * offscreen.width + x) * 4 + 3] > 110) {
+            candidates.push({ x: offsetX + x / dpr, y: offsetY + y / dpr });
+          }
         }
       }
-    }
 
-    if (candidates.length > 180) {
-      const stride = candidates.length / 180;
-      const sparse: typeof candidates = [];
+      const perWordCap = 150;
+      const stride = candidates.length > perWordCap ? candidates.length / perWordCap : 1;
       for (let index = 0; index < candidates.length; index += stride) {
-        sparse.push(candidates[Math.floor(index)]);
+        const point = candidates[Math.floor(index)];
+        if (!point) continue;
+        all.push({
+          ox: point.x,
+          oy: point.y,
+          phase: Math.random() * Math.PI * 2,
+          amp: 8 + Math.random() * 20,
+          lean: (Math.random() - 0.5) * 1.6,
+          width: 0.5 + Math.random() * 0.6,
+        });
       }
-      fibersRef.current = sparse.map((point) => ({
-        ox: point.x,
-        oy: point.y,
-        phase: Math.random() * Math.PI * 2,
-        amp: 8 + Math.random() * 20,
-        lean: (Math.random() - 0.5) * 1.6,
-        width: 0.5 + Math.random() * 0.6,
-      }));
-    } else {
-      fibersRef.current = candidates.map((point) => ({
-        ox: point.x,
-        oy: point.y,
-        phase: Math.random() * Math.PI * 2,
-        amp: 8 + Math.random() * 20,
-        lean: (Math.random() - 0.5) * 1.6,
-        width: 0.5 + Math.random() * 0.6,
-      }));
     }
 
+    fibersRef.current = all;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, cssWidth, cssHeight);
   }
 
   function startAnimation() {
     stopAnimation();
-    const root = rootRef.current;
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
-    if (!root || !canvas || !ctx) return;
-    const rootRect = root.getBoundingClientRect();
+    if (!canvas || !ctx) return;
 
     const draw = (now: number) => {
-      if (activeRef.current === null) return;
+      if (!activeRef.current) return;
       const elapsed = now - startedRef.current;
-      const width = canvas.width / (window.devicePixelRatio || 1);
-      const height = canvas.height / (window.devicePixelRatio || 1);
+      const dpr = window.devicePixelRatio || 1;
+      const width = canvas.width / dpr;
+      const height = canvas.height / dpr;
       ctx.clearRect(0, 0, width, height);
 
       const pointer = pointerRef.current;
@@ -187,12 +182,15 @@ export function ThreadTitle({ className = "" }: { className?: string }) {
     <h1
       ref={rootRef}
       className={`thread-title ${className}`}
+      onPointerEnter={() => {
+        if (enabledRef.current) setActive(true);
+      }}
       onPointerMove={(event) => {
         const rect = rootRef.current?.getBoundingClientRect();
         if (!rect) return;
         pointerRef.current = { x: event.clientX - rect.left, y: event.clientY - rect.top };
       }}
-      onPointerLeave={() => setActive(null)}
+      onPointerLeave={() => setActive(false)}
     >
       {TITLE.split(" ").map((word, index) => (
         <span key={`${word}-${index}`} className="thread-title__word">
@@ -200,11 +198,7 @@ export function ThreadTitle({ className = "" }: { className?: string }) {
             ref={(node) => {
               wordRefs.current[index] = node;
             }}
-            className={`thread-title__word-text ${active === index ? "is-unravelling" : ""}`}
-            onPointerEnter={() => {
-              if (!enabledRef.current) return;
-              setActive(index);
-            }}
+            className={`thread-title__word-text ${active ? "is-unravelling" : ""}`}
           >
             {word}
           </span>
