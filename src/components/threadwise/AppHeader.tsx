@@ -6,6 +6,7 @@ import {
   BookOpen,
   Compass,
   HelpCircle,
+  Menu,
   Presentation,
   ScanSearch,
   X,
@@ -84,9 +85,6 @@ export function AppHeader({
   }, []);
 
   const sectionKey = section === "record" ? "digest" : section;
-  const current = NAV.find((item) => item.key === sectionKey);
-  const currentIndex = Math.max(1, NAV.findIndex((item) => item.key === sectionKey) + 1);
-
   return (
     <>
       <header className={`app-header sticky top-0 z-50 ${scrolled ? "is-scrolled" : ""}`}>
@@ -94,24 +92,23 @@ export function AppHeader({
           <div className="app-header__inner">
             <div className="app-header__brand">
               <BrandLockup size="md" asLink />
-              <div className="app-header__current" aria-live="polite">
-                <span className="app-header__folio">{String(currentIndex).padStart(2, "0")}</span>
-                <span className="app-header__current-label">{current?.label ?? "Index"}</span>
-                <span className="app-header__hang" aria-hidden="true" />
-              </div>
             </div>
 
+            <nav aria-label="Primary" className="app-header__nav hidden lg:flex">
+              {NAV.map((item) => (
+                <Link
+                  key={item.key}
+                  to={item.to}
+                  data-nav={item.key}
+                  aria-current={sectionKey === item.key ? "page" : undefined}
+                  className="app-header__link"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
             <div className="app-header__actions">
-              <button
-                type="button"
-                onClick={() => setIndexOpen(true)}
-                className="app-header__index"
-                aria-haspopup="dialog"
-                aria-expanded={indexOpen}
-              >
-                <span className="app-header__index-knot" aria-hidden="true" />
-                Index
-              </button>
               {signedIn ? (
                 <AccountMenu email={email} dark />
               ) : signedIn === false ? (
@@ -119,69 +116,79 @@ export function AppHeader({
                   Sign in
                 </Link>
               ) : null}
+
               <Link to="/analyst" data-read-source className="app-header__cta">
-                <span className="hidden sm:inline">Read a source</span>
-                <span className="sm:hidden">Read</span>
+                Read a source
                 <ArrowUpRight className="h-3 w-3" />
               </Link>
+
+              <button
+                type="button"
+                onClick={() => setIndexOpen(true)}
+                className="app-header__menu lg:hidden"
+                aria-label="Open menu"
+                aria-haspopup="dialog"
+                aria-expanded={indexOpen}
+              >
+                <Menu className="h-4 w-4" />
+              </button>
             </div>
           </div>
-          <div className="app-header__thread" aria-hidden="true"><span /></div>
         </div>
       </header>
 
       {indexOpen
         ? createPortal(
             <div className="app-index" role="dialog" aria-modal="true" aria-label="Threadwise index">
-          <button type="button" className="app-index__scrim" onClick={() => setIndexOpen(false)} aria-label="Close index" />
-          <div className="app-index__panel">
-            <div className="app-index__head">
-              <div>
-                <p className="app-index__eyebrow">Threadwise / Index</p>
-                <p className="app-index__title">Six ways into the work.</p>
+              <button type="button" className="app-index__scrim" onClick={() => setIndexOpen(false)} aria-label="Close index" />
+              <div className="app-index__panel">
+                <div className="app-index__head">
+                  <div>
+                    <p className="app-index__eyebrow">Threadwise / Index</p>
+                    <p className="app-index__title">Six ways into the work.</p>
+                  </div>
+                  <button type="button" className="app-index__close" onClick={() => setIndexOpen(false)}>
+                    <X className="h-4 w-4" /> Close
+                  </button>
+                </div>
+                <nav aria-label="Index">
+                  <ol className="app-index__list">
+                    {NAV.map((item, index) => (
+                      <li key={item.key}>
+                        <Link
+                          to={item.to}
+                          onClick={() => setIndexOpen(false)}
+                          aria-current={sectionKey === item.key ? "page" : undefined}
+                          className={`app-index__link ${sectionKey === item.key ? "is-active" : ""}`}
+                        >
+                          <span className="app-index__number">{String(index + 1).padStart(2, "0")}</span>
+                          <span className="app-index__copy">
+                            <span className="app-index__label">{item.label}</span>
+                            <span className="app-index__note">{item.note}</span>
+                          </span>
+                          <ArrowUpRight className="app-index__arrow h-4 w-4" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+                <div className="app-index__foot">
+                  <span>Read carefully · verify before you act</span>
+                  <span className="flex items-center gap-4">
+                    {signedIn === false ? (
+                      <Link to="/login" onClick={() => setIndexOpen(false)} className="app-index__account">
+                        Sign in
+                      </Link>
+                    ) : signedIn ? (
+                      <Link to="/profile" onClick={() => setIndexOpen(false)} className="app-index__account">
+                        Profile
+                      </Link>
+                    ) : null}
+                    {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                  </span>
+                </div>
               </div>
-              <button type="button" className="app-index__close" onClick={() => setIndexOpen(false)}>
-                <X className="h-4 w-4" /> Close
-              </button>
-            </div>
-            <nav aria-label="Index">
-              <ol className="app-index__list">
-                {NAV.map((item, index) => (
-                  <li key={item.key}>
-                    <Link
-                      to={item.to}
-                      onClick={() => setIndexOpen(false)}
-                      aria-current={sectionKey === item.key ? "page" : undefined}
-                      className={`app-index__link ${sectionKey === item.key ? "is-active" : ""}`}
-                    >
-                      <span className="app-index__number">{String(index + 1).padStart(2, "0")}</span>
-                      <span className="app-index__copy">
-                        <span className="app-index__label">{item.label}</span>
-                        <span className="app-index__note">{item.note}</span>
-                      </span>
-                      <ArrowUpRight className="app-index__arrow h-4 w-4" />
-                    </Link>
-                  </li>
-                ))}
-              </ol>
-            </nav>
-            <div className="app-index__foot">
-              <span>Read carefully · verify before you act</span>
-              <span className="flex items-center gap-4">
-                {signedIn === false ? (
-                  <Link to="/login" onClick={() => setIndexOpen(false)} className="app-index__account">
-                    Sign in
-                  </Link>
-                ) : signedIn ? (
-                  <Link to="/profile" onClick={() => setIndexOpen(false)} className="app-index__account">
-                    Profile
-                  </Link>
-                ) : null}
-                {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
-              </span>
-            </div>
-          </div>
-        </div>,
+            </div>,
             document.body,
           )
         : null}
