@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { ThreadTitle } from "@/components/threadwise/ThreadTitle";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
 import { paletteFor, type BlueprintColor } from "@/lib/threadwise/palette";
 import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
@@ -157,9 +158,7 @@ function LandingPage() {
           <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
             <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
               <div className="pointer-events-none relative z-20 max-w-[90vw] md:max-w-[560px]">
-                <h1 className="max-w-[11ch] font-display text-[clamp(48px,6vw,88px)] leading-[0.9] tracking-[-0.045em] text-white">
-                  See what the story hides.
-                </h1>
+                <ThreadTitle className="max-w-[11ch] font-display text-[clamp(48px,6vw,88px)] leading-[0.9] tracking-[-0.045em] text-white" />
                 <div className="pointer-events-auto mt-9 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center md:mt-12">
                   <Link
                     to="/read/$token"

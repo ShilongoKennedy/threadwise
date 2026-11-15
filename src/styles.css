@@ -4146,3 +4146,33 @@ body header.app-header .app-header__signin:hover { color: #DDD6FE !important; -w
 .blueprint-page[data-field-ink="light"] .app-header__shell {
   border-bottom-color: rgba(17, 17, 17, 0.12) !important;
 }
+
+/* The title at rest is normal type; hovered words become a burst of white fibers. */
+.thread-title {
+  position: relative;
+  display: block;
+  isolation: isolate;
+}
+.thread-title__word {
+  position: relative;
+  z-index: 2;
+  display: inline;
+}
+.thread-title__word-text {
+  position: relative;
+  display: inline-block;
+  transition: opacity 120ms ease;
+}
+.thread-title__word-text.is-unravelling {
+  opacity: 0.24;
+}
+.thread-title__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.thread-title { pointer-events: auto; }
