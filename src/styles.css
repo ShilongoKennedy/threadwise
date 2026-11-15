@@ -3128,3 +3128,190 @@ h1, h2, h3, .font-display { text-wrap: balance; }
   .app-header__inner { height: 56px; }
   .app-header__index { padding: 7px 9px; }
 }
+
+/* Cream folio slips: readable on every bright field colour. */
+.app-header__shell {
+  border-bottom: 0 !important;
+  background: transparent !important;
+  padding-top: 12px !important;
+  padding-bottom: 8px !important;
+}
+.app-header__inner {
+  display: flex !important;
+  height: 60px !important;
+  align-items: center;
+  justify-content: space-between;
+}
+.app-header__brand-card {
+  display: inline-flex;
+  min-height: 50px;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(26, 16, 13, 0.12);
+  border-radius: 13px;
+  background: #F7EFE2;
+  padding: 6px 12px 6px 9px;
+  box-shadow: 0 10px 28px rgba(20, 8, 5, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.app-header__brand-card a[aria-label] { color: #1A100D !important; }
+.app-header__brand-card .thread-wordmark,
+.app-header__brand-card .thread-wordmark__text,
+.app-header__brand-card a[aria-label] span {
+  color: #1A100D !important;
+}
+.app-header__brand-card a[aria-label] svg { filter: none !important; }
+.app-header__brand-card .thread-wordmark__thread { color: #1A100D !important; opacity: 0.45; }
+.app-header__brand-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(26, 16, 13, 0.18);
+}
+.app-header__current {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.app-header__folio {
+  font-family: var(--font-display);
+  font-size: 17px !important;
+  font-style: italic;
+  color: #A8412B !important;
+}
+.app-header__current-label {
+  font-family: var(--font-mono);
+  font-size: 8px !important;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(26, 16, 13, 0.6) !important;
+  white-space: nowrap;
+}
+.app-header__index {
+  border: 1px solid rgba(26, 16, 13, 0.14) !important;
+  background: #F7EFE2 !important;
+  color: #1A100D !important;
+  padding: 8px 12px !important;
+  box-shadow: 0 8px 22px rgba(20, 8, 5, 0.12);
+}
+.app-header__index:hover {
+  border-color: rgba(168, 65, 43, 0.5) !important;
+  background: #FFF9F0 !important;
+  color: #1A100D !important;
+}
+.app-header__index-knot { border-color: #A8412B !important; }
+.app-header__index-knot::after { background: #A8412B !important; }
+.app-header__signin { color: #1A100D !important; background: #F7EFE2; border-radius: 999px; padding: 8px 12px; box-shadow: 0 8px 22px rgba(20,8,5,.12); }
+.app-header__signin:hover { color: #A8412B !important; }
+.app-header__cta {
+  border-color: rgba(26, 16, 13, 0.14) !important;
+  background: #F7EFE2 !important;
+  color: #1A100D !important;
+  box-shadow: 0 8px 22px rgba(20, 8, 5, 0.12);
+}
+.app-header__cta:hover { border-color: #A8412B !important; background: #FFF9F0 !important; }
+.app-header__thread { display: none !important; }
+
+/* Make the index a paper sheet, not a dark drawer. */
+.app-index__scrim { background: rgba(12, 5, 10, 0.46) !important; }
+.app-index__panel {
+  border-left: 1px solid rgba(26, 16, 13, 0.18) !important;
+  background:
+    radial-gradient(ellipse 80% 50% at 100% 0%, rgba(168, 65, 43, 0.09), transparent 60%),
+    #F7EFE2 !important;
+  box-shadow: -30px 0 80px rgba(0, 0, 0, 0.2) !important;
+}
+.app-index__eyebrow { color: #A8412B !important; }
+.app-index__title { color: #1A100D !important; }
+.app-index__close { border-color: rgba(26, 16, 13, 0.22) !important; color: #1A100D !important; }
+.app-index__close:hover { border-color: #A8412B !important; }
+.app-index__link { border-bottom-color: rgba(26, 16, 13, 0.14) !important; }
+.app-index__link:hover, .app-index__link.is-active { background: rgba(26, 16, 13, 0.055) !important; }
+.app-index__number { color: #A8412B !important; }
+.app-index__label { color: #1A100D !important; }
+.app-index__note { color: rgba(26, 16, 13, 0.52) !important; }
+.app-index__arrow { color: #A8412B !important; }
+.app-index__foot { border-top-color: rgba(26, 16, 13, 0.16) !important; color: rgba(26, 16, 13, 0.5) !important; }
+.app-index__account { color: #A8412B !important; }
+
+@media (max-width: 640px) {
+  .app-header__shell { padding-top: 9px !important; padding-bottom: 6px !important; }
+  .app-header__inner { height: 52px !important; }
+  .app-header__brand-card { min-height: 44px; padding: 4px 9px 4px 7px; gap: 8px; }
+  .app-header__brand .thread-wordmark { font-size: 19px; }
+  .app-header__brand svg { width: 22px; height: 22px; }
+  .app-header__brand-divider { height: 16px; }
+  .app-header__folio { font-size: 15px !important; }
+  .app-header__current-label { display: none !important; }
+  .app-header__cta { display: none !important; }
+  .app-header__index { padding: 7px 10px !important; font-size: 9px !important; }
+}
+
+/* The cream header sits inside main on marketing pages; pin its ink explicitly. */
+body header.app-header .app-header__brand-card :is(a, span),
+body header.app-header .app-header__brand-card .thread-wordmark,
+body header.app-header .app-header__brand-card .thread-wordmark__thread,
+body header.app-header .app-header__index,
+body header.app-header .app-header__index span,
+body header.app-header .app-header__signin,
+body header.app-header .app-header__cta,
+body header.app-header .app-header__cta span {
+  color: #1A100D !important;
+}
+body header.app-header .app-header__brand-card a[aria-label] svg {
+  filter: none !important;
+}
+body header.app-header .app-header__brand-card .app-header__folio {
+  color: #A8412B !important;
+}
+body header.app-header .app-header__brand-card .app-header__current-label {
+  color: rgba(26, 16, 13, 0.58) !important;
+}
+body header.app-header .app-header__index:hover,
+body header.app-header .app-header__cta:hover,
+body header.app-header .app-header__signin:hover {
+  color: #A8412B !important;
+}
+
+/* Beat the global brand text-fill rule inside the cream folio. */
+body header.app-header .app-header__brand-card * {
+  -webkit-text-fill-color: #1A100D !important;
+}
+body header.app-header .app-header__brand-card .app-header__folio {
+  -webkit-text-fill-color: #A8412B !important;
+}
+body header.app-header .app-header__brand-card .app-header__current-label {
+  -webkit-text-fill-color: rgba(26, 16, 13, 0.58) !important;
+}
+body header.app-header .app-header__brand-card svg,
+body header.app-header .app-header__brand-card svg * {
+  filter: none !important;
+}
+body header.app-header .app-header__brand-card svg path {
+  fill: #1A1A1A !important;
+}
+
+body header.app-header .app-header__brand-card span,
+body header.app-header .app-header__brand-card .thread-wordmark__text,
+body header.app-header .app-header__brand-card .thread-wordmark {
+  -webkit-text-fill-color: #1A100D !important;
+}
+body header.app-header .app-header__brand-card .app-header__folio {
+  -webkit-text-fill-color: #A8412B !important;
+}
+body header.app-header .app-header__brand-card .app-header__current-label {
+  -webkit-text-fill-color: rgba(26, 16, 13, 0.58) !important;
+}
+
+body header.app-header .app-header__signin {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #F7EFE2 !important;
+  padding-inline: 2px;
+}
+body header.app-header .app-header__signin:hover {
+  color: #E7A574 !important;
+}
+body header.app-header .app-header__cta svg {
+  filter: none !important;
+  color: #1A100D !important;
+}

@@ -1,4 +1,5 @@
 import { useEffect, useState, type ComponentType } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowUpRight,
@@ -91,14 +92,13 @@ export function AppHeader({
       <header className={`app-header sticky top-0 z-50 ${scrolled ? "is-scrolled" : ""}`}>
         <div className="app-header__shell">
           <div className="app-header__inner">
-            <div className="app-header__brand">
+            <div className="app-header__brand-card">
               <BrandLockup size="md" asLink />
-            </div>
-
-            <div className="app-header__current" aria-live="polite">
-              <span className="app-header__folio">{String(currentIndex).padStart(2, "0")}</span>
-              <span className="app-header__current-label">{current?.label ?? "Index"}</span>
-              <span className="app-header__current-rule" aria-hidden="true" />
+              <span className="app-header__brand-divider" aria-hidden="true" />
+              <div className="app-header__current" aria-live="polite">
+                <span className="app-header__folio">{String(currentIndex).padStart(2, "0")}</span>
+                <span className="app-header__current-label">{current?.label ?? "Index"}</span>
+              </div>
             </div>
 
             <div className="app-header__actions">
@@ -130,8 +130,9 @@ export function AppHeader({
         </div>
       </header>
 
-      {indexOpen ? (
-        <div className="app-index" role="dialog" aria-modal="true" aria-label="Threadwise index">
+      {indexOpen
+        ? createPortal(
+            <div className="app-index" role="dialog" aria-modal="true" aria-label="Threadwise index">
           <button type="button" className="app-index__scrim" onClick={() => setIndexOpen(false)} aria-label="Close index" />
           <div className="app-index__panel">
             <div className="app-index__head">
@@ -180,8 +181,10 @@ export function AppHeader({
               </span>
             </div>
           </div>
-        </div>
-      ) : null}
+        </div>,
+            document.body,
+          )
+        : null}
 
       {!marketing ? (
         <nav aria-label="Primary mobile destinations" className="app-mobile-tabs lg:hidden">
