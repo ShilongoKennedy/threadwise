@@ -5,7 +5,6 @@ import {
   BookOpen,
   Compass,
   HelpCircle,
-  Menu,
   Presentation,
   ScanSearch,
   X,
@@ -15,12 +14,12 @@ import { AccountMenu } from "@/components/threadwise/AccountMenu";
 import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
-  { key: "workspace", to: "/workspace", label: "Workspace" },
-  { key: "analyst", to: "/analyst", label: "The analyst" },
-  { key: "seminar", to: "/seminar", label: "Seminar" },
-  { key: "questions", to: "/questions", label: "Questions" },
-  { key: "digest", to: "/digest", label: "Record" },
-  { key: "cases", to: "/cases", label: "Cases" },
+  { key: "workspace", to: "/workspace", label: "Workspace", note: "Your desk" },
+  { key: "analyst", to: "/analyst", label: "The Analyst", note: "Read a move" },
+  { key: "seminar", to: "/seminar", label: "Seminar", note: "Two readings, one crux" },
+  { key: "questions", to: "/questions", label: "Questions", note: "What are you deciding?" },
+  { key: "digest", to: "/digest", label: "Record", note: "What the evidence did" },
+  { key: "cases", to: "/cases", label: "Cases", note: "The files that return" },
 ] as const;
 
 const TABS: Array<{ key: string; to: string; label: string; icon: ComponentType<{ className?: string; strokeWidth?: number }> }> = [
@@ -41,7 +40,7 @@ export function AppHeader({
 }) {
   const [email, setEmail] = useState<string | undefined>();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [indexOpen, setIndexOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -50,6 +49,19 @@ export function AppHeader({
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!indexOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIndexOpen(false);
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [indexOpen]);
 
   useEffect(() => {
     let alive = true;
@@ -70,6 +82,9 @@ export function AppHeader({
     };
   }, []);
 
+  const current = NAV.find((item) => item.key === section);
+  const currentIndex = Math.max(1, NAV.findIndex((item) => item.key === section) + 1);
+
   return (
     <>
       <header className={`app-header sticky top-0 z-50 ${scrolled ? "is-scrolled" : ""}`}>
@@ -79,22 +94,23 @@ export function AppHeader({
               <BrandLockup size="md" asLink />
             </div>
 
-            <nav aria-label="Primary" className="app-header__nav hidden lg:flex">
-              {NAV.map((item, index) => (
-                <Link
-                  key={item.key}
-                  to={item.to}
-                  aria-current={section === item.key ? "page" : undefined}
-                  className={`app-header__link ${section === item.key ? "is-active" : ""}`}
-                >
-                  <span className="app-header__number">{String(index + 1).padStart(2, "0")}</span>
-                  <span>{item.label}</span>
-                  <span className="app-header__knot" aria-hidden="true" />
-                </Link>
-              ))}
-            </nav>
+            <div className="app-header__current" aria-live="polite">
+              <span className="app-header__folio">{String(currentIndex).padStart(2, "0")}</span>
+              <span className="app-header__current-label">{current?.label ?? "Index"}</span>
+              <span className="app-header__current-rule" aria-hidden="true" />
+            </div>
 
             <div className="app-header__actions">
+              <button
+                type="button"
+                onClick={() => setIndexOpen(true)}
+                className="app-header__index"
+                aria-haspopup="dialog"
+                aria-expanded={indexOpen}
+              >
+                <span className="app-header__index-knot" aria-hidden="true" />
+                Index
+              </button>
               {signedIn ? (
                 <AccountMenu email={email} dark />
               ) : signedIn === false ? (
@@ -102,53 +118,58 @@ export function AppHeader({
                   Sign in
                 </Link>
               ) : null}
-
               <Link to="/analyst" data-read-source className="app-header__cta">
                 <span className="hidden sm:inline">Read a source</span>
                 <span className="sm:hidden">Read</span>
                 <ArrowUpRight className="h-3 w-3" />
               </Link>
-
-              <button
-                type="button"
-                aria-label={menuOpen ? "Close menu" : "Open menu"}
-                aria-expanded={menuOpen}
-                aria-controls="app-mobile-nav"
-                onClick={() => setMenuOpen((open) => !open)}
-                className="app-header__menu lg:hidden"
-              >
-                {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-              </button>
             </div>
           </div>
-          <div className="app-header__thread" aria-hidden="true">
-            <span />
-          </div>
-
-          {menuOpen ? (
-            <div id="app-mobile-nav" className="app-header__mobile lg:hidden">
-              <nav aria-label="Mobile primary" className="grid grid-cols-2 gap-x-4 gap-y-1">
-                {[...NAV, { key: "profile", to: "/profile", label: "Profile" }].map((item, index) => (
-                  <Link
-                    key={item.key}
-                    to={item.to}
-                    onClick={() => setMenuOpen(false)}
-                    className={`app-header__mobile-link ${section === item.key ? "is-active" : ""}`}
-                  >
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
-              {signedIn === false ? (
-                <Link to="/login" onClick={() => setMenuOpen(false)} className="app-header__mobile-signin">
-                  Sign in <ArrowUpRight className="h-3 w-3" />
-                </Link>
-              ) : null}
-            </div>
-          ) : null}
+          <div className="app-header__thread" aria-hidden="true"><span /></div>
         </div>
       </header>
+
+      {indexOpen ? (
+        <div className="app-index" role="dialog" aria-modal="true" aria-label="Threadwise index">
+          <button type="button" className="app-index__scrim" onClick={() => setIndexOpen(false)} aria-label="Close index" />
+          <div className="app-index__panel">
+            <div className="app-index__head">
+              <div>
+                <p className="app-index__eyebrow">Threadwise / Index</p>
+                <p className="app-index__title">Six ways into the work.</p>
+              </div>
+              <button type="button" className="app-index__close" onClick={() => setIndexOpen(false)}>
+                <X className="h-4 w-4" /> Close
+              </button>
+            </div>
+            <nav aria-label="Index">
+              <ol className="app-index__list">
+                {NAV.map((item, index) => (
+                  <li key={item.key}>
+                    <Link
+                      to={item.to}
+                      onClick={() => setIndexOpen(false)}
+                      aria-current={section === item.key ? "page" : undefined}
+                      className={`app-index__link ${section === item.key ? "is-active" : ""}`}
+                    >
+                      <span className="app-index__number">{String(index + 1).padStart(2, "0")}</span>
+                      <span className="app-index__copy">
+                        <span className="app-index__label">{item.label}</span>
+                        <span className="app-index__note">{item.note}</span>
+                      </span>
+                      <ArrowUpRight className="app-index__arrow h-4 w-4" />
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+            <div className="app-index__foot">
+              <span>Read carefully · verify before you act</span>
+              <span>{new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {!marketing ? (
         <nav aria-label="Primary mobile destinations" className="app-mobile-tabs lg:hidden">
@@ -156,12 +177,7 @@ export function AppHeader({
             const Icon = tab.icon;
             const active = section === tab.key;
             return (
-              <Link
-                key={tab.key}
-                to={tab.to}
-                aria-current={active ? "page" : undefined}
-                className={active ? "is-active" : ""}
-              >
+              <Link key={tab.key} to={tab.to} aria-current={active ? "page" : undefined} className={active ? "is-active" : ""}>
                 <Icon className="h-4 w-4" strokeWidth={1.6} />
                 <span>{tab.label}</span>
               </Link>
