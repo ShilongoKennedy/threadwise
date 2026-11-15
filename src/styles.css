@@ -3602,3 +3602,74 @@ body header.app-header .app-header__current-label { color: rgba(255,255,255,.74)
   .app-header__cta { display: none !important; }
   .app-header__actions { gap: 10px !important; }
 }
+
+/* Header links: truly white at rest, saturated colours on hover. */
+body header.app-header .app-header__link {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+body header.app-header .app-header__link[data-nav="workspace"] { --nav-hover: #5EEAD4; }
+body header.app-header .app-header__link[data-nav="analyst"] { --nav-hover: #FDBA74; }
+body header.app-header .app-header__link[data-nav="seminar"] { --nav-hover: #A3E635; }
+body header.app-header .app-header__link[data-nav="questions"] { --nav-hover: #FDE047; }
+body header.app-header .app-header__link[data-nav="digest"] { --nav-hover: #F472B6; }
+body header.app-header .app-header__link[data-nav="cases"] { --nav-hover: #86EFAC; }
+body header.app-header .app-header__link:hover,
+body header.app-header .app-header__link:hover span {
+  color: var(--nav-hover) !important;
+  -webkit-text-fill-color: var(--nav-hover) !important;
+}
+body header.app-header .app-header__signin {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+body header.app-header .app-header__signin:hover {
+  color: #F0ABFC !important;
+  -webkit-text-fill-color: #F0ABFC !important;
+}
+body header.app-header .app-header__cta,
+body header.app-header .app-header__cta span {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+body header.app-header .app-header__cta:hover,
+body header.app-header .app-header__cta:hover span {
+  color: #C4B5FD !important;
+  -webkit-text-fill-color: #C4B5FD !important;
+}
+body header.app-header .app-header__cta svg { color: currentColor !important; }
+@media (max-width: 1200px) {
+  body header.app-header .app-header__link { font-size: 10px !important; }
+  .app-header__nav { gap: 18px !important; margin-right: 24px !important; }
+}
+
+/* The one filled action in the header, like the reference's Contact pill. */
+body header.app-header .app-header__cta {
+  border-color: #C4B5FD !important;
+  background: #C4B5FD !important;
+  color: #1A100D !important;
+  -webkit-text-fill-color: #1A100D !important;
+  padding: 0 14px !important;
+  min-height: 34px;
+  border-radius: 7px !important;
+  box-shadow: none !important;
+}
+body header.app-header .app-header__cta span {
+  color: #1A100D !important;
+  -webkit-text-fill-color: #1A100D !important;
+}
+body header.app-header .app-header__cta svg { color: #1A100D !important; }
+body header.app-header .app-header__cta:hover {
+  border-color: #DDD6FE !important;
+  background: #DDD6FE !important;
+  color: #1A100D !important;
+  -webkit-text-fill-color: #1A100D !important;
+}
+body header.app-header .app-header__cta:hover span { color: #1A100D !important; -webkit-text-fill-color: #1A100D !important; }
+body header.app-header .app-header__signin:hover { color: #FDE68A !important; -webkit-text-fill-color: #FDE68A !important; }
