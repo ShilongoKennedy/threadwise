@@ -32,3 +32,39 @@ export function paletteFor(key: string): BlueprintColor[] {
   }
   return colors;
 }
+
+export const FIELD_STOPS = [
+  { at: 0, hex: "#000000" },
+  { at: 0.4, hex: "#0F1420" },
+  { at: 0.7, hex: "#0F1420" },
+  { at: 1, hex: "#FFFBFB" },
+] as const;
+
+export function mixFieldHex(a: string, b: string, t: number) {
+  const parse = (hex: string) => [
+    Number.parseInt(hex.slice(1, 3), 16),
+    Number.parseInt(hex.slice(3, 5), 16),
+    Number.parseInt(hex.slice(5, 7), 16),
+  ];
+  const [ar, ag, ab] = parse(a);
+  const [br, bg, bb] = parse(b);
+  const clamped = Math.max(0, Math.min(1, t));
+  const channel = (from: number, to: number) =>
+    Math.round(from + (to - from) * clamped).toString(16).padStart(2, "0");
+  return `#${channel(ar, br)}${channel(ag, bg)}${channel(ab, bb)}`;
+}
+
+/** Continuous field colour for a page scroll position. */
+export function fieldColorAt(progress: number) {
+  const p = Math.max(0, Math.min(1, progress));
+  for (let index = 0; index < FIELD_STOPS.length - 1; index += 1) {
+    const from = FIELD_STOPS[index];
+    const to = FIELD_STOPS[index + 1];
+    if (p <= to.at) {
+      const raw = (p - from.at) / Math.max(0.0001, to.at - from.at);
+      const eased = raw * raw * (3 - 2 * raw);
+      return mixFieldHex(from.hex, to.hex, eased);
+    }
+  }
+  return FIELD_STOPS[FIELD_STOPS.length - 1].hex;
+}

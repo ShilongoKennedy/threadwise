@@ -8,6 +8,7 @@ import { SeminarLessonView } from "@/components/threadwise/SeminarLessonView";
 import { SeminarLoupe, LoupeSelectionButton, LookCloserButton, useLoupeSelection, type LoupeTarget } from "@/components/threadwise/SeminarLoupe";
 import { supabase } from "@/integrations/supabase/client";
 import { ReadingFocusToggle, ReadingMarker, ReadingProgress } from "@/components/threadwise/BlueprintUI";
+import { fieldColorAt } from "@/lib/threadwise/palette";
 
 export const Route = createFileRoute("/seminar")({
   head: () => ({
@@ -27,7 +28,7 @@ const SAMPLE = `"I am actually in favour of foreign aid as a tool for statecraft
 
 const TONES = [
   {
-    bg: "#0F1420",
+    bg: "#000000",
     ink: "#FFFFFF",
     header: "rgba(255, 255, 255, 0.035)",
     border: "rgba(255, 255, 255, 0.2)",
@@ -132,6 +133,45 @@ function SeminarPage() {
   const [lessonBusy, setLessonBusy] = useState(false);
   const [lessonError, setLessonError] = useState<string | null>(null);
   const [toneIndex, setToneIndex] = useState(0);
+  const fieldRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const root = fieldRef.current;
+    if (!root) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const progress = Math.max(0, Math.min(1, window.scrollY / max));
+      const light = progress > 0.88;
+      const ink = light ? "#111111" : "#FFFFFF";
+      root.style.backgroundColor = fieldColorAt(progress);
+      root.style.color = ink;
+      root.style.setProperty("--seminar-bg", fieldColorAt(progress));
+      root.style.setProperty("--seminar-ink", ink);
+      root.style.setProperty("--seminar-header-ink", ink);
+      root.style.setProperty("--seminar-header-accent", ink);
+      root.style.setProperty("--seminar-header-border", light ? "rgba(17,17,17,0.22)" : "rgba(255,255,255,0.2)");
+      root.style.setProperty("--wave-art", light ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")');
+      root.style.setProperty("--wave-opacity", light ? "0.7" : "0.72");
+      root.dataset.fieldInk = light ? "light" : "dark";
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    const observer = new ResizeObserver(onScroll);
+    observer.observe(document.body);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      observer.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -314,7 +354,9 @@ function SeminarPage() {
 
   return (
     <div
-      className="seminar-color-page min-h-[100dvh] transition-colors duration-700"
+      ref={fieldRef}
+      className="seminar-color-page min-h-[100dvh]"
+      data-field-ink="dark"
       style={{
         backgroundColor: tone.bg,
         color: tone.ink,

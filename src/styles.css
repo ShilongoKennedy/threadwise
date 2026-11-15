@@ -4202,3 +4202,23 @@ body header.app-header .app-header__signin:hover { color: #DDD6FE !important; -w
 .site-blueprint[data-field-ink="light"] .app-header__shell {
   border-bottom-color: rgba(17, 17, 17, 0.12) !important;
 }
+
+/* App pages follow the same scroll exposure as the landing field. */
+.site-blueprint.scroll-field { transition: color 260ms ease !important; }
+.site-blueprint .bp-card,
+.site-blueprint .bp-card * { --site-ink: #FFFFFF; }
+.read-page .read-column,
+.read-page .reading-summary { --site-ink: #FFFFFF; --site-accent: #FFFFFF; }
+
+.seminar-color-page[data-field-ink="light"] header.app-header .app-header__link,
+.seminar-color-page[data-field-ink="light"] header.app-header .app-header__link > span,
+.seminar-color-page[data-field-ink="light"] header.app-header .app-header__signin,
+.seminar-color-page[data-field-ink="light"] header.app-header .app-header__menu {
+  color: #111111 !important;
+  -webkit-text-fill-color: #111111 !important;
+}
+.seminar-color-page[data-field-ink="light"] header.app-header .app-header__link:hover,
+.seminar-color-page[data-field-ink="light"] header.app-header .app-header__link:hover span {
+  color: color-mix(in srgb, var(--nav-hover) 48%, #111111) !important;
+  -webkit-text-fill-color: color-mix(in srgb, var(--nav-hover) 48%, #111111) !important;
+}

@@ -10,18 +10,18 @@ import {
   ClientOnly,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
-import { BLUEPRINT_PALETTE } from "@/lib/threadwise/palette";
+import { BLUEPRINT_PALETTE, fieldColorAt } from "@/lib/threadwise/palette";
 import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
 const CloudSync = lazy(() => import("@/components/threadwise/CloudSync"));
 
 function NotFoundComponent() {
   return (
-    <div className="blueprint-page relative flex min-h-[100dvh] items-center justify-center px-4" style={{ backgroundColor: "#0F1420", color: "#FFFFFF" }}>
+    <div className="blueprint-page relative flex min-h-[100dvh] items-center justify-center px-4" style={{ backgroundColor: "#000000", color: "#FFFFFF" }}>
       <div className="bp-card relative z-10 w-full max-w-[460px] p-7 md:p-8">
         <p className="bp-card__eyebrow">File not found</p>
         <h1 className="mt-4 font-display text-[64px] leading-none">404</h1>
@@ -50,7 +50,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
-    <div className="blueprint-page relative flex min-h-[100dvh] items-center justify-center px-4" style={{ backgroundColor: "#0F1420", color: "#FFFFFF" }}>
+    <div className="blueprint-page relative flex min-h-[100dvh] items-center justify-center px-4" style={{ backgroundColor: "#000000", color: "#FFFFFF" }}>
       <div className="bp-card relative z-10 w-full max-w-[480px] p-7 text-center md:p-8">
         <p className="bp-card__eyebrow">Something interrupted the record</p>
         <h1 className="mt-4 font-display text-[42px] leading-none">This page didn’t load.</h1>
@@ -149,13 +149,54 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 
-function SiteBlueprint({ pathname, children }: { pathname: string; children: ReactNode }) {
-  const lightPage = pathname === "/terms" || pathname === "/privacy";
-  const tone = lightPage ? BLUEPRINT_PALETTE[2] : BLUEPRINT_PALETTE[1];
-  const darkInk = tone.ink === "#111111";
+function SiteBlueprint({ children }: { children: ReactNode }) {
+  const fieldRef = useRef<HTMLDivElement>(null);
+  const tone = BLUEPRINT_PALETTE[0];
+  const darkInk = false;
+
+  useEffect(() => {
+    const root = fieldRef.current;
+    if (!root) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const progress = Math.max(0, Math.min(1, window.scrollY / max));
+      const light = progress > 0.88;
+      const ink = light ? "#111111" : "#FFFFFF";
+      root.style.backgroundColor = fieldColorAt(progress);
+      root.style.color = ink;
+      root.style.setProperty("--site-bg", fieldColorAt(progress));
+      root.style.setProperty("--site-ink", ink);
+      root.style.setProperty("--site-accent", ink);
+      root.style.setProperty("--site-header-ink", ink);
+      root.style.setProperty("--site-header-border", light ? "rgba(17,17,17,0.22)" : "rgba(255,255,255,0.16)");
+      root.style.setProperty("--site-brand-filter", light ? "brightness(0)" : "brightness(0) invert(1)");
+      root.style.setProperty("--wave-art", light ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")');
+      root.style.setProperty("--wave-opacity", light ? "0.7" : "0.72");
+      root.dataset.fieldInk = light ? "light" : "dark";
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    const observer = new ResizeObserver(onScroll);
+    observer.observe(document.body);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      observer.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   return (
     <div
-      className="site-blueprint"
+      ref={fieldRef}
+      className="site-blueprint scroll-field"
       data-field-ink={darkInk ? "light" : "dark"}
       style={{
         "--site-bg": tone.hex,
@@ -182,7 +223,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      {keepsOwnField ? <Outlet /> : <SiteBlueprint pathname={pathname}><Outlet /></SiteBlueprint>}
+      {keepsOwnField ? <Outlet /> : <SiteBlueprint><Outlet /></SiteBlueprint>}
       <Toaster />
       <ClientOnly fallback={null}><Suspense fallback={null}><CloudSync /></Suspense></ClientOnly>
     </QueryClientProvider>
