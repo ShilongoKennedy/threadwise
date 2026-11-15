@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { GlassHeader } from "@/components/threadwise/GlassHeader";
+import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
 import { paletteFor } from "@/lib/threadwise/palette";
@@ -148,7 +148,7 @@ function LandingPage() {
             <GeoGlobe theme="blueprint" layout="right" minimal mobileScale={0.9} />
           </div>
 
-          <GlassHeader tone="dark" section="record" />
+          <AppHeader section="record" marketing />
 
           <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
             <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">

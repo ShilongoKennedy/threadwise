@@ -51,12 +51,17 @@ export function BrandLockup({
       } ${className}`}
     >
       <BrandMark className={`${MARK[size]} shrink-0`} />
-      <span
-        className={`font-display italic tracking-tight ${WORD[size]} ${
-          variant === "stacked" ? "leading-none" : "leading-none pb-[2px]"
-        }`}
-      >
-        threadwise
+      <span className={`thread-wordmark font-display italic tracking-tight ${WORD[size]} ${variant === "stacked" ? "leading-none" : "leading-none pb-[2px]"}`}>
+        <span className="thread-wordmark__text">threadwise</span>
+        <svg className="thread-wordmark__thread" viewBox="0 0 112 18" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            d="M2 12.4 C15 5.3 29 14.2 42 9.6 C51 6.5 56 4.9 61 6.5 C67 8.5 64 13.4 58 12.1 C52.8 11 55.5 5.3 62 6.4 C77 9 93 5.4 110 9.3"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.1"
+            strokeLinecap="round"
+          />
+        </svg>
       </span>
     </span>
   );

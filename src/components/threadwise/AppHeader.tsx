@@ -42,6 +42,14 @@ export function AppHeader({
   const [email, setEmail] = useState<string | undefined>();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -64,50 +72,38 @@ export function AppHeader({
 
   return (
     <>
-      <header className="sticky top-0 z-50 px-3 pt-3 md:px-6 md:pt-5">
-        <div className="pointer-events-auto relative mx-auto w-full max-w-[1240px] rounded-[22px] border border-[#8A745C]/22 bg-[linear-gradient(180deg,rgba(255,250,242,0.7),rgba(250,242,229,0.4))] shadow-[0_16px_46px_rgba(43,33,23,0.09),inset_0_1px_0_rgba(255,255,255,0.78)] backdrop-blur-[30px] backdrop-saturate-[1.2]">
-          <div className="flex h-[56px] items-center justify-between gap-4 px-4 md:h-[60px] md:px-5">
-            <BrandLockup size="md" asLink />
+      <header className={`app-header sticky top-0 z-50 ${scrolled ? "is-scrolled" : ""}`}>
+        <div className="app-header__shell">
+          <div className="app-header__inner">
+            <div className="app-header__brand">
+              <BrandLockup size="md" asLink />
+            </div>
 
-            <nav aria-label="Primary" className="hidden items-center gap-5 lg:flex">
-              {NAV.map((item) => (
+            <nav aria-label="Primary" className="app-header__nav hidden lg:flex">
+              {NAV.map((item, index) => (
                 <Link
                   key={item.key}
                   to={item.to}
                   aria-current={section === item.key ? "page" : undefined}
-                  className={`group relative py-2 font-mono text-[9px] uppercase tracking-[0.15em] transition-colors ${
-                    section === item.key
-                      ? "text-[#1A4BFF]"
-                      : "text-[#1A1A1A]/55 hover:text-[#1A4BFF]"
-                  }`}
+                  className={`app-header__link ${section === item.key ? "is-active" : ""}`}
                 >
-                  {item.label}
-                  <span
-                    className={`absolute inset-x-0 -bottom-[2px] mx-auto h-px bg-[#1A4BFF] transition-transform duration-200 ${
-                      section === item.key ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                    }`}
-                  />
+                  <span className="app-header__number">{String(index + 1).padStart(2, "0")}</span>
+                  <span>{item.label}</span>
+                  <span className="app-header__knot" aria-hidden="true" />
                 </Link>
               ))}
             </nav>
 
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="app-header__actions">
               {signedIn ? (
-                <AccountMenu email={email} dark={section === "seminar"} />
+                <AccountMenu email={email} dark />
               ) : signedIn === false ? (
-                <Link
-                  to="/login"
-                  className="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55 transition-colors hover:text-[#1A4BFF] sm:inline"
-                >
+                <Link to="/login" className="app-header__signin hidden sm:inline">
                   Sign in
                 </Link>
               ) : null}
 
-              <Link
-                to="/analyst"
-                data-read-source
-                className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[#1A1A1A] px-3.5 font-mono text-[9px] font-bold uppercase tracking-[0.13em] text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF]"
-              >
+              <Link to="/analyst" data-read-source className="app-header__cta">
                 <span className="hidden sm:inline">Read a source</span>
                 <span className="sm:hidden">Read</span>
                 <ArrowUpRight className="h-3 w-3" />
@@ -119,40 +115,34 @@ export function AppHeader({
                 aria-expanded={menuOpen}
                 aria-controls="app-mobile-nav"
                 onClick={() => setMenuOpen((open) => !open)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#1A1A1A]/18 text-[#1A1A1A]/65 transition-colors hover:border-[#1A4BFF]/40 hover:text-[#1A4BFF] lg:hidden"
+                className="app-header__menu lg:hidden"
               >
                 {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
               </button>
             </div>
           </div>
+          <div className="app-header__thread" aria-hidden="true">
+            <span />
+          </div>
 
           {menuOpen ? (
-            <div
-              id="app-mobile-nav"
-              className="border-t border-[#8A745C]/15 px-4 pb-4 pt-3 lg:hidden"
-            >
+            <div id="app-mobile-nav" className="app-header__mobile lg:hidden">
               <nav aria-label="Mobile primary" className="grid grid-cols-2 gap-x-4 gap-y-1">
-                {[...NAV, { key: "profile", to: "/profile", label: "Profile" }].map((item) => (
+                {[...NAV, { key: "profile", to: "/profile", label: "Profile" }].map((item, index) => (
                   <Link
                     key={item.key}
                     to={item.to}
                     onClick={() => setMenuOpen(false)}
-                    className={`border-b border-[#1A1A1A]/8 py-2.5 font-mono text-[10px] uppercase tracking-[0.15em] ${
-                      section === item.key ? "text-[#1A4BFF]" : "text-[#1A1A1A]/65"
-                    }`}
+                    className={`app-header__mobile-link ${section === item.key ? "is-active" : ""}`}
                   >
+                    <span>{String(index + 1).padStart(2, "0")}</span>
                     {item.label}
                   </Link>
                 ))}
               </nav>
               {signedIn === false ? (
-                <Link
-                  to="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]"
-                >
-                  Sign in
-                  <ArrowUpRight className="h-3 w-3" />
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="app-header__mobile-signin">
+                  Sign in <ArrowUpRight className="h-3 w-3" />
                 </Link>
               ) : null}
             </div>
@@ -161,10 +151,7 @@ export function AppHeader({
       </header>
 
       {!marketing ? (
-        <nav
-          aria-label="Primary mobile destinations"
-          className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 rounded-[18px] border border-[#8A745C]/20 bg-[linear-gradient(180deg,rgba(255,250,242,0.82),rgba(250,242,229,0.62))] p-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] shadow-[0_18px_50px_rgba(43,33,23,0.14)] backdrop-blur-[26px] lg:hidden"
-        >
+        <nav aria-label="Primary mobile destinations" className="app-mobile-tabs lg:hidden">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const active = section === tab.key;
@@ -173,11 +160,7 @@ export function AppHeader({
                 key={tab.key}
                 to={tab.to}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-[13px] font-mono text-[7px] uppercase tracking-[0.08em] transition-colors ${
-                  active
-                    ? "bg-[#1A4BFF]/8 text-[#1A4BFF]"
-                    : "text-[#1A1A1A]/45 hover:bg-white/40 hover:text-[#1A1A1A]/70"
-                }`}
+                className={active ? "is-active" : ""}
               >
                 <Icon className="h-4 w-4" strokeWidth={1.6} />
                 <span>{tab.label}</span>
