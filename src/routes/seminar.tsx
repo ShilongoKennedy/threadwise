@@ -9,6 +9,7 @@ import { SeminarLoupe, LoupeSelectionButton, LookCloserButton, useLoupeSelection
 import { InkArrow, InkCircle, InkRule, InkTick } from "@/components/threadwise/InkMarks";
 import { supabase } from "@/integrations/supabase/client";
 import { paletteFor } from "@/lib/threadwise/palette";
+import { ReadingFocusToggle, ReadingProgress } from "@/components/threadwise/BlueprintUI";
 
 export const Route = createFileRoute("/seminar")({
   head: () => ({
@@ -282,6 +283,7 @@ function SeminarPage() {
         "--wave-opacity": tone.wave === "dark" ? "0.7" : "0.72",
       } as CSSProperties}
     >
+      <ReadingProgress />
       <div className="seminar-header contents">
         <AppHeader section="seminar" />
       </div>
@@ -297,6 +299,7 @@ function SeminarPage() {
             <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/65">
               Two theories · one crux
             </p>
+            <ReadingFocusToggle className="ml-auto" />
           </div>
 
           <h1 className="mt-3 max-w-[12ch] font-display text-[48px] leading-[0.92] tracking-[-0.03em] md:text-[76px]">

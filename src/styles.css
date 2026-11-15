@@ -2245,3 +2245,29 @@ main {
   .bp-empty { padding: 20px 16px; }
   .bp-empty__title { font-size: clamp(26px, 8vw, 34px); }
 }
+
+
+/* Reading mode: quiet the field, keep the document. */
+html.reading-focus .seminar-color-page::before,
+html.reading-focus .site-blueprint::before,
+html.reading-focus .blueprint-page::before {
+  opacity: 0.1 !important;
+}
+html.reading-focus .bp-scrim {
+  background: radial-gradient(ellipse 82% 72% at 50% 38%, rgba(12, 7, 5, 0.62), transparent 76%);
+}
+.reading-progress {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 80;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+.reading-progress span {
+  display: block;
+  height: 100%;
+  background: #E7A574;
+  transition: width 80ms linear;
+}

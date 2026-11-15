@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
+import { useEffect, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
@@ -141,6 +141,65 @@ export function BPRecordRow({ className, children, ...props }: HTMLAttributes<HT
   return (
     <div className={cn("bp-row", className)} {...props}>
       {children}
+    </div>
+  );
+}
+
+
+export function ReadingFocusToggle({ className }: { className?: string }) {
+  const [focus, setFocus] = useState(false);
+
+  useEffect(() => {
+    const enabled = window.localStorage.getItem("threadwise:reading-focus") === "1";
+    setFocus(enabled);
+    document.documentElement.classList.toggle("reading-focus", enabled);
+  }, []);
+
+  const toggle = () => {
+    const next = !focus;
+    setFocus(next);
+    document.documentElement.classList.toggle("reading-focus", next);
+    window.localStorage.setItem("threadwise:reading-focus", next ? "1" : "0");
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-pressed={focus}
+      className={cn("bp-button bp-button--secondary bp-button--sm", className)}
+    >
+      {focus ? "Exit focus" : "Focus mode"}
+    </button>
+  );
+}
+
+export function ReadingProgress() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      setProgress(Math.min(1, Math.max(0, window.scrollY / max)));
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  return (
+    <div className="reading-progress" aria-hidden="true">
+      <span style={{ width: `${progress * 100}%` }} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/threadwise/AppHeader";
-import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
+import { bpButtonClass, ReadingFocusToggle, ReadingProgress } from "@/components/threadwise/BlueprintUI";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { useEffect, useState } from "react";
 
@@ -110,6 +110,7 @@ function SharedRead() {
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
       <div className="bp-scrim" aria-hidden />
+      <ReadingProgress />
       <AppHeader section="digest" />
 
       <main className="bp-page">
@@ -221,6 +222,7 @@ function SharedRead() {
                 >
                   Practise this read
                 </Link>
+                <ReadingFocusToggle />
                 {publishNote && (
                   <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/55">
                     {publishNote}
@@ -234,7 +236,7 @@ function SharedRead() {
                 <Contents items={contents} />
               </aside>
 
-              <div className="min-w-0 space-y-8">
+              <div className="min-w-0 max-w-[70ch] space-y-8">
 
             {input && (
               <details className="group border-y border-[#1A1A1A]/15 py-2">
@@ -536,16 +538,38 @@ function Block({ n, title, children }: { n: string; title: string; children: Rea
 
 /** The document's contents: collapsible on a phone, fixed beside it on a desk. */
 function Contents({ items }: { items: { n: string; title: string }[] }) {
+  const [active, setActive] = useState(items[0]?.n ?? "");
+
+  useEffect(() => {
+    const sections = items
+      .map((item) => document.getElementById(`s-${item.n}`))
+      .filter((section): section is HTMLElement => Boolean(section));
+    if (!sections.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(entry.target.id.replace("s-", ""));
+        }
+      },
+      { rootMargin: "-18% 0px -62% 0px", threshold: [0, 0.1, 0.5] },
+    );
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, [items]);
+
   const list = (
     <ol className="mt-3 space-y-2">
       {items.map((item) => (
         <li key={item.n}>
           <a
             href={`#s-${item.n}`}
-            className="group flex gap-2.5 font-mono text-[9px] uppercase leading-snug tracking-[0.08em] text-[#1A1A1A]/50 transition-colors hover:text-[#1A4BFF]"
+            aria-current={active === item.n ? "true" : undefined}
+            className={`group flex gap-2.5 rounded-lg px-1.5 py-1 font-mono text-[9px] uppercase leading-snug tracking-[0.08em] transition-colors ${
+              active === item.n ? "bg-white/10 text-white" : "text-white/50 hover:text-white"
+            }`}
           >
-            <span className="shrink-0 text-[#1A4BFF]">{item.n}</span>
-            <span className="border-b border-transparent pb-0.5 group-hover:border-[#1A4BFF]/30">
+            <span className={`shrink-0 ${active === item.n ? "text-[#FFE8D6]" : "text-[#E7A574]/70"}`}>{item.n}</span>
+            <span className="border-b border-transparent pb-0.5 group-hover:border-white/25">
               {item.title}
             </span>
           </a>
