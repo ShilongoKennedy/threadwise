@@ -43,7 +43,8 @@ export const Route = createFileRoute("/")({
 
 const SAMPLE_TOKEN = "mn4qvf4bhu";
 const LANDING_TONES: BlueprintColor[] = [
-  ...paletteFor("/"),
+  { hex: "#000000", label: "Void Black", ink: "#FFFFFF", wave: "light" },
+  ...paletteFor("/").slice(1),
   { hex: "#FFFBFB", label: "Paper White", ink: "#111111", wave: "dark" },
 ];
 
