@@ -2014,3 +2014,14 @@ main {
 .blueprint-page footer a[aria-label="Threadwise — home"] span {
   color: var(--blueprint-ink, #FFFFFF) !important;
 }
+
+/* Background artwork only: flowing particle waves, no colour or layout changes. */
+.seminar-color-page::before,
+.site-blueprint::before,
+.blueprint-page::before {
+  background-image: url("/blueprint-waves.svg") !important;
+  background-size: cover !important;
+  background-position: center bottom !important;
+  background-repeat: no-repeat !important;
+  opacity: 0.72 !important;
+}
