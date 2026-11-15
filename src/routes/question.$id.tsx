@@ -160,9 +160,10 @@ function QuestionPage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <AppHeader section="questions" />
 
-      <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
+      <main className="bp-page bp-page--narrow">
         {state === "loading" && (
           <p className="py-16 font-mono text-[10px] uppercase tracking-[0.24em] text-[#1A1A1A]/55">
             Reading the question…
@@ -170,27 +171,31 @@ function QuestionPage() {
         )}
 
         {state === "anon" && (
-          <div className="border-2 border-dashed border-[#1A1A1A]/25 p-8 text-center">
-            <p className="font-display text-xl">This question belongs to an account.</p>
-            <Link
-              to="/login"
-              className="mt-3 inline-flex border-2 border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]"
-            >
-              Sign in
-            </Link>
-          </div>
+          <BPEmptyState
+            className="mt-8"
+            eyebrow="Standing question"
+            title="This question belongs to an account."
+            body="Sign in to see the evidence filed for and against it, and to add the next finding."
+            action={
+              <Link to="/login" className={bpButtonClass({ variant: "primary" })}>
+                Sign in
+              </Link>
+            }
+          />
         )}
 
         {state === "missing" && (
-          <div className="border-2 border-dashed border-[#1A1A1A]/25 p-8 text-center">
-            <p className="font-display text-xl">That question is not on your record.</p>
-            <Link
-              to="/questions"
-              className="mt-3 inline-block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] underline underline-offset-4"
-            >
-              Back to questions
-            </Link>
-          </div>
+          <BPEmptyState
+            className="mt-8"
+            eyebrow="Not found"
+            title="That question is not on your record."
+            body="It may belong to another account, or it may have been dropped."
+            action={
+              <Link to="/questions" className={bpButtonClass({ variant: "secondary" })}>
+                Back to questions
+              </Link>
+            }
+          />
         )}
 
         {state === "ready" && question && (
@@ -205,14 +210,14 @@ function QuestionPage() {
                   onChange={(event) => setEditDraft(event.target.value)}
                   rows={3}
                   maxLength={300}
-                  className="w-full resize-none border-2 border-[#1A1A1A] bg-white px-3 py-2 font-serif text-[18px] leading-snug outline-none focus:border-[#1A4BFF]"
+                  className="bp-input min-h-[110px] font-display text-[20px] leading-snug"
                 />
                 <div className="mt-2 flex items-center gap-4">
                   <button
                     type="button"
                     onClick={() => void saveEdit()}
                     disabled={editSaving}
-                    className="border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] disabled:opacity-40"
+                    className="bp-button bp-button--primary bp-button--sm"
                   >
                     {editSaving ? "Saving…" : "Save question"}
                   </button>
@@ -223,7 +228,7 @@ function QuestionPage() {
                       setEditDraft(question.question);
                       setError(null);
                     }}
-                    className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 underline underline-offset-4"
+                    className="bp-button bp-button--ghost bp-button--sm"
                   >
                     Cancel
                   </button>
@@ -334,18 +339,19 @@ function QuestionPage() {
               oneSided={findings.length >= 3 && (forCount === 0 || againstCount === 0)}
             />
 
-            <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
-              <div className="bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#FDFBF7]">
-                Add evidence
+            <section className="bp-card mt-8">
+              <div className="bp-card__header">
+                <p className="bp-card__eyebrow">Add evidence</p>
+                <span className="bp-badge">{forCount} for · {againstCount} against</span>
               </div>
-              <div className="px-4 py-3">
+              <div className="bp-card__body">
                 <textarea
                   value={note}
                   onChange={(event) => setNote(event.target.value)}
                   rows={3}
                   maxLength={400}
                   placeholder="The fact, quotation or observation that bears on this question…"
-                  className="w-full resize-none border border-[#1A1A1A]/20 bg-[#FDFBF7] px-3 py-2 font-serif text-[14px] leading-relaxed outline-none focus:border-[#1A4BFF]"
+                  className="bp-input bp-textarea min-h-[110px]"
                 />
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   {(["for", "against"] as const).map((side) => (
@@ -354,13 +360,7 @@ function QuestionPage() {
                       type="button"
                       onClick={() => setStance(side)}
                       aria-pressed={stance === side}
-                      className={`border px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] ${
-                        stance === side
-                          ? side === "for"
-                            ? "border-[#1A4BFF] bg-[#1A4BFF] text-white"
-                            : "border-[#C1121F] bg-[#C1121F] text-white"
-                          : "border-[#1A1A1A]/20 text-[#1A1A1A]/55"
-                      }`}
+                      className={`bp-chip ${stance === side ? "is-active" : ""}`}
                     >
                       {side}
                     </button>
@@ -369,7 +369,7 @@ function QuestionPage() {
                     type="button"
                     onClick={() => void add()}
                     disabled={saving || note.trim().length < 3}
-                    className="ml-auto border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] disabled:opacity-40"
+                    className="bp-button bp-button--primary bp-button--sm ml-auto"
                   >
                     {saving ? "Filing…" : "File evidence"}
                   </button>

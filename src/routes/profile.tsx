@@ -235,7 +235,7 @@ function ProfilePage() {
               />
             ) : (
               <>
-                <section className="mt-8 grid grid-cols-2 border-y-2 border-[#1A1A1A] md:grid-cols-5">
+                <section className="bp-card mt-8 grid grid-cols-2 overflow-hidden md:grid-cols-5">
                   {[
                     { label: "reads", value: profile.reads },
                     { label: "reviewed", value: profile.reviewed },
@@ -245,7 +245,7 @@ function ProfilePage() {
                   ].map((stat, index) => (
                     <div
                       key={stat.label}
-                      className={`px-4 py-4 ${index > 0 ? "border-l border-[#1A1A1A]/12" : ""} ${
+                      className={`px-4 py-4 ${index > 0 ? "border-l border-white/12" : ""} ${
                         index === 2 ? "max-md:border-l-0 max-md:border-t" : ""
                       } ${index === 3 || index === 4 ? "max-md:border-t" : ""} ${
                         index === 4 ? "max-md:col-span-2 max-md:border-l-0" : ""
@@ -260,7 +260,7 @@ function ProfilePage() {
                 </section>
 
                 {drill && (
-                  <section className="mt-8 border-y border-[#1A1A1A]/15 py-4">
+                  <section className="bp-card mt-8 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/15 pb-2">
                       <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">
                         {drill.completedAt ? "This week's drill · done" : "This week's drill"}{" "}
@@ -282,7 +282,7 @@ function ProfilePage() {
                           to="/practice/$token"
                           params={{ token: drill.token }}
                           search={{ kind: drill.kind }}
-                          className="inline-flex border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7]"
+                          className="bp-button bp-button--secondary bp-button--sm"
                         >
                           {drill.completedAt ? "Practice again →" : "Start drill →"}
                         </Link>
@@ -324,8 +324,8 @@ function ProfilePage() {
                   </ul>
                 </section>
 
-                <section className="mt-8 border-2 border-[#1A1A1A] bg-white">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/12 px-4 py-2">
+                <section className="bp-card mt-8">
+                  <div className="bp-card__header">
                     <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em]">
                       Calibration
                     </span>
@@ -392,20 +392,20 @@ function ProfilePage() {
                 </section>
 
                 <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2">
-                  <section className="border-t-2 border-[#1A1A1A] pt-4">
+                  <section className="bp-card p-5">
                     <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]">
                       Questions
                     </h2>
                     <dl className="mt-3 space-y-2 font-serif text-[13.5px]">
-                      <div className="flex justify-between border-b border-[#1A1A1A]/10 pb-1.5">
+                      <div className="flex justify-between border-b border-white/12 pb-1.5">
                         <dt className="text-[#1A1A1A]/60">open</dt>
                         <dd className="font-display text-[16px]">{profile.questions.open}</dd>
                       </div>
-                      <div className="flex justify-between border-b border-[#1A1A1A]/10 pb-1.5">
+                      <div className="flex justify-between border-b border-white/12 pb-1.5">
                         <dt className="text-[#1A1A1A]/60">one-sided</dt>
                         <dd className="font-display text-[16px]">{profile.questions.oneSided}</dd>
                       </div>
-                      <div className="flex justify-between border-b border-[#1A1A1A]/10 pb-1.5">
+                      <div className="flex justify-between border-b border-white/12 pb-1.5">
                         <dt className="text-[#1A1A1A]/60">no evidence</dt>
                         <dd className="font-display text-[16px]">{profile.questions.noEvidence}</dd>
                       </div>
@@ -426,7 +426,7 @@ function ProfilePage() {
                     </Link>
                   </section>
 
-                  <section className="border-t-2 border-[#1A1A1A] pt-4">
+                  <section className="bp-card p-5">
                     <h2 className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]">
                       Sources
                     </h2>
@@ -438,7 +438,7 @@ function ProfilePage() {
                       {profile.sources.top.map((outlet) => (
                         <li
                           key={outlet.name}
-                          className="flex items-baseline justify-between gap-3 border-b border-[#1A1A1A]/10 pb-1 font-serif text-[13px]"
+                          className="flex items-baseline justify-between gap-3 border-b border-white/12 pb-1 font-serif text-[13px]"
                         >
                           <span className="truncate">{outlet.name}</span>
                           <span className="font-mono text-[9px] text-[#1A1A1A]/50">{outlet.count}</span>
@@ -461,7 +461,7 @@ function ProfilePage() {
                     {profile.claimKinds.map((claim) => (
                       <span
                         key={claim.kind}
-                        className="border border-[#1A1A1A]/20 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/65"
+                        className="bp-badge"
                       >
                         {claim.kind} · {claim.count}
                       </span>
@@ -469,7 +469,7 @@ function ProfilePage() {
                     {profile.modes.map((mode) => (
                       <span
                         key={mode.mode}
-                        className="border border-[#1A4BFF]/30 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]"
+                        className="bp-badge"
                       >
                         {mode.mode} · {mode.count}
                       </span>

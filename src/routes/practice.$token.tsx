@@ -3,6 +3,7 @@ import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { BPEmptyState, bpButtonClass } from "@/components/threadwise/BlueprintUI";
 import {
   checkPractice,
   completeWeeklyDrill,
@@ -146,6 +147,7 @@ function PracticePage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <header className="sticky top-0 z-50 px-3 pt-3 md:px-6 md:pt-5">
         <div className="mx-auto flex h-14 w-full max-w-[980px] items-center justify-between gap-3 rounded-[20px] border border-[#8A745C]/22 bg-[linear-gradient(180deg,rgba(255,250,242,0.7),rgba(250,242,229,0.4))] px-3 shadow-[0_16px_46px_rgba(43,33,23,0.09),inset_0_1px_0_rgba(255,255,255,0.78)] backdrop-blur-[30px] md:h-[58px] md:px-4">
           <Link
@@ -162,7 +164,7 @@ function PracticePage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[760px] px-5 pb-24 pt-8">
+      <main className="bp-page bp-page--narrow">
         {state === "loading" && (
           <p className="py-16 font-mono text-[10px] uppercase tracking-[0.24em] text-[#1A1A1A]/55">
             Opening the read…
@@ -170,12 +172,17 @@ function PracticePage() {
         )}
 
         {state === "missing" && (
-          <div className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-4 py-3">
-            <p className="font-serif text-[15px]">That read does not exist, or the link is wrong.</p>
-            <Link to="/analyst" className="mt-2 inline-block font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">
-              Bring a move →
-            </Link>
-          </div>
+          <BPEmptyState
+            className="mt-8"
+            eyebrow="Practice"
+            title="That read does not exist."
+            body="The link may be wrong, or the read may have been removed."
+            action={
+              <Link to="/analyst" className={bpButtonClass({ variant: "primary" })}>
+                Bring a move
+              </Link>
+            }
+          />
         )}
 
         {state === "ready" && report && (
@@ -194,19 +201,15 @@ function PracticePage() {
                   type="button"
                   onClick={() => choose(item.kind)}
                   aria-pressed={kind === item.kind}
-                  className={`border px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] transition-colors ${
-                    kind === item.kind
-                      ? "border-[#1A4BFF] bg-[#1A4BFF] text-white"
-                      : "border-[#1A1A1A]/20 text-[#1A1A1A]/60 hover:border-[#1A1A1A]"
-                  }`}
+                  className={`bp-chip ${kind === item.kind ? "is-active" : ""}`}
                 >
                   {item.label}
                 </button>
               ))}
             </div>
 
-            <section className="mt-4 border-2 border-[#1A1A1A] bg-white">
-              <div className="border-b border-[#1A1A1A]/15 px-4 py-3">
+            <section className="bp-card mt-4">
+              <div className="bp-card__header">
                 <p className="font-serif text-[15px] leading-relaxed">{exercise.prompt}</p>
               </div>
               <textarea
@@ -215,14 +218,14 @@ function PracticePage() {
                 rows={6}
                 maxLength={2000}
                 placeholder="Write it before you look at the read's answer…"
-                className="w-full resize-none bg-transparent px-4 py-3 font-serif text-[15px] leading-relaxed outline-none placeholder:text-[#1A1A1A]/35"
+                className="bp-input min-h-[180px] resize-none rounded-none border-x-0 border-t-0"
               />
-              <div className="flex flex-wrap items-center gap-3 border-t border-[#1A1A1A]/15 px-4 py-3">
+              <div className="bp-card__footer">
                 <button
                   type="button"
                   onClick={() => setRevealed(true)}
                   disabled={answer.trim().length < 20}
-                  className="border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] disabled:opacity-40"
+                  className="bp-button bp-button--primary bp-button--sm"
                 >
                   Compare
                 </button>

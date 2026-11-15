@@ -4,7 +4,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
-import { EmptyState } from "@/components/threadwise/EmptyState";
+import { BPEmptyState, bpButtonClass } from "@/components/threadwise/BlueprintUI";
 import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { supabase } from "@/integrations/supabase/client";
 import type { WeeklyReview } from "@/lib/threadwise/weekly-review";
@@ -60,9 +60,10 @@ function ReviewPage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <AppHeader section="digest" />
 
-      <main className="mx-auto w-full max-w-[900px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
+      <main className="bp-page">
         <PageMasthead
           eyebrow="Weekly review"
           title="The week."
@@ -75,12 +76,17 @@ function ReviewPage() {
         />
 
         {state === "anon" && (
-          <div className="mt-8 border-y border-[#1A1A1A]/15 py-7">
-            <p className="max-w-[26ch] font-display text-[28px] leading-[1.05]">The week belongs to your account.</p>
-            <Link to="/login" className="mt-4 inline-flex border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
-              Sign in →
-            </Link>
-          </div>
+          <BPEmptyState
+            className="mt-8"
+            eyebrow="Weekly review"
+            title="The week belongs to your account."
+            body="Sign in to see what changed in your record, what is still open, and the one thing worth doing next."
+            action={
+              <Link to="/login" className={bpButtonClass({ variant: "primary" })}>
+                Sign in to open the week
+              </Link>
+            }
+          />
         )}
 
         {state === "loading" && (
@@ -99,19 +105,20 @@ function ReviewPage() {
           <>
             {Object.values(review.counts).every((value) => value === 0) &&
             review.openQuestions.length === 0 ? (
-              <EmptyState
+              <BPEmptyState
+                className="mt-8"
+                eyebrow="The week"
                 title="A quiet week."
+                body="Nothing was read, filed or settled in the last seven days. The next move is a source."
                 action={
-                  <Link to="/analyst" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
-                    Read a source →
+                  <Link to="/analyst" className={bpButtonClass({ variant: "primary" })}>
+                    Read a source
                   </Link>
                 }
-              >
-                Nothing was read, filed or settled in the last seven days. The next move is a source.
-              </EmptyState>
+              />
             ) : (
               <>
-                <section className="mt-8 grid grid-cols-2 border-y-2 border-[#1A1A1A] sm:grid-cols-5">
+                <section className="bp-card mt-8 grid grid-cols-2 overflow-hidden sm:grid-cols-5">
                   {[
                     { label: "reads", value: review.counts.reads },
                     { label: "evidence", value: review.counts.evidence },
@@ -121,7 +128,7 @@ function ReviewPage() {
                   ].map((stat, index) => (
                     <div
                       key={stat.label}
-                      className={`px-4 py-3 ${index > 0 ? "border-l border-[#1A1A1A]/12" : ""} ${index === 2 ? "max-sm:border-l-0 max-sm:border-t" : ""} ${index === 3 || index === 4 ? "max-sm:border-t" : ""}`}
+                      className={`px-4 py-3 ${index > 0 ? "border-l border-white/12" : ""} ${index === 2 ? "max-sm:border-l-0 max-sm:border-t" : ""} ${index === 3 || index === 4 ? "max-sm:border-t" : ""}`}
                     >
                       <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
                         {stat.label}
@@ -131,7 +138,7 @@ function ReviewPage() {
                   ))}
                 </section>
 
-                <section className="mt-8 border-y border-[#1A1A1A]/15 py-4">
+                <section className="bp-card mt-8 p-4">
                   <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 pb-2">
                     <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
                       Next move
