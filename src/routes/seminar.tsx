@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { ArrowRight, ArrowUpRight, BookOpen, Check, RotateCcw, Search } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BookOpen, RotateCcw, Search } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import type { Seminar, SeminarTheory } from "@/lib/threadwise/seminar";
 import type { SeminarLesson } from "@/lib/threadwise/seminar-lesson";
@@ -8,7 +8,7 @@ import { SeminarLessonView } from "@/components/threadwise/SeminarLessonView";
 import { SeminarLoupe, LoupeSelectionButton, LookCloserButton, useLoupeSelection, type LoupeTarget } from "@/components/threadwise/SeminarLoupe";
 import { supabase } from "@/integrations/supabase/client";
 import { paletteFor } from "@/lib/threadwise/palette";
-import { ReadingFocusToggle, ReadingProgress } from "@/components/threadwise/BlueprintUI";
+import { ReadingFocusToggle, ReadingMarker, ReadingProgress } from "@/components/threadwise/BlueprintUI";
 
 export const Route = createFileRoute("/seminar")({
   head: () => ({
@@ -483,9 +483,16 @@ function SeminarPage() {
           <SeminarReadingNav />
           <section id="s-question" data-reading-section="s-question" data-loupe-section="The question underneath" data-seminar-tone="1" className="seminar-dark-ink reading-section grid gap-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12">
             <div>
-              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#E7A574]">
-                The question underneath
-              </p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#E7A574]">
+                  The question underneath
+                </p>
+                <LookCloserButton
+                  text={`${seminar.question} ${seminar.restatement}`.slice(0, 680)}
+                  section="The question underneath"
+                  onLookCloser={openLoupe}
+                />
+              </div>
               <p className="mt-2 max-w-[62ch] font-display text-[28px] leading-[1.1] md:text-[38px]">
                 {seminar.question}
               </p>
@@ -506,9 +513,16 @@ function SeminarPage() {
           <section id="s-readings" data-reading-section="s-readings" data-loupe-section="Two readings" data-seminar-tone="2" className="seminar-dark-ink reading-section mt-8">
             <div className="flex items-end justify-between gap-4 pb-1">
               <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the same thing.</h2>
-              <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
-                steelmanned
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
+                  steelmanned
+                </span>
+                <LookCloserButton
+                  text={seminar.theories.map((theory) => `${theory.name}: ${theory.claim}`).join(" · ").slice(0, 680)}
+                  section="Two readings"
+                  onLookCloser={openLoupe}
+                />
+              </div>
             </div>
             <div className="reading-rule mt-2" />
             <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
@@ -579,9 +593,16 @@ function SeminarPage() {
               <section id="s-crux" data-reading-section="s-crux" data-loupe-section="The crux" data-seminar-tone="3" className="seminar-dark-ink reading-section mt-10 overflow-hidden">
                 <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
                   <div className="border-b border-white/15 px-5 py-4 md:border-b-0 md:border-r md:border-white/15 md:px-6 md:py-8">
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#E7A574]">
-                      The crux
-                    </p>
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#E7A574]">
+                        The crux
+                      </p>
+                      <LookCloserButton
+                        text={`${seminar.crux} ${seminar.settle}`.slice(0, 680)}
+                        section="The crux"
+                        onLookCloser={openLoupe}
+                      />
+                    </div>
                     <p className="mt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-white/40">
                       {DISAGREEMENT[seminar.disagreement]}
                     </p>
@@ -643,9 +664,16 @@ function SeminarPage() {
                 ) : (
                   <div className="border-t border-white/15 pt-5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#E7A574]">
-                        Provisional verdict
-                      </p>
+                      <div className="flex items-center gap-3">
+                        <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#E7A574]">
+                          Provisional verdict
+                        </p>
+                        <LookCloserButton
+                          text={`${seminar.verdict.why} ${seminar.verdict.change}`.slice(0, 680)}
+                          section="The provisional verdict"
+                          onLookCloser={openLoupe}
+                        />
+                      </div>
                       <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
                         empirical only · {seminar.verdict.confidence} confidence
                       </p>
@@ -676,9 +704,18 @@ function SeminarPage() {
               <section id="s-lesson" data-reading-section="s-lesson" data-loupe-section="The deeper lesson" data-seminar-tone="5" className="seminar-dark-ink reading-section mt-10">
                 <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
                   <div>
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#E7A574]">
-                      If the argument is clear but the subject is not
-                    </p>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#E7A574]">
+                        If the argument is clear but the subject is not
+                      </p>
+                      {lesson ? (
+                        <LookCloserButton
+                          text={lesson.summary.slice(0, 680)}
+                          section="The deeper lesson"
+                          onLookCloser={openLoupe}
+                        />
+                      ) : null}
+                    </div>
                     <h2 className="mt-2 max-w-[22ch] font-display text-[30px] leading-[1.02] md:text-[38px]">
                       Take the deeper lesson.
                     </h2>
@@ -729,6 +766,7 @@ function SeminarPage() {
                   seminar={seminar}
                   tutorSeed={tutorSeed}
                   onAskTutor={askTutorAbout}
+                  onLookCloser={openLoupe}
                 />
               ) : null}
 
@@ -883,7 +921,7 @@ function TheoryColumn({
                 key={prediction}
                 className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65 transition-colors hover:bg-[#1A4BFF]/[0.035]"
               >
-                <ArrowRight className="mt-0.5 h-3 w-3 shrink-0 text-[#E7A574]" />
+                <ReadingMarker variant="arrow" />
                 <span className="flex-1">{prediction}</span>
                 <LookCloserButton
                   text={prediction}
@@ -905,7 +943,7 @@ function TheoryColumn({
                 key={item}
                 className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-[#1A1A1A]/65 transition-colors hover:bg-[#1A4BFF]/[0.035]"
               >
-                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#E7A574]" />
+                <ReadingMarker variant="check" />
                 <span className="flex-1">{item}</span>
                 <LookCloserButton
                   text={item}

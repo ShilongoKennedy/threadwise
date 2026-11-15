@@ -1,4 +1,5 @@
 import { useEffect, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
+import { ArrowRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
@@ -258,5 +259,14 @@ export function ReadingSection({
       <div className="reading-section__rule" />
       <div className="reading-section__body">{children}</div>
     </section>
+  );
+}
+
+
+export function ReadingMarker({ variant }: { variant: "arrow" | "check" }) {
+  return (
+    <span className={`reading-marker reading-marker--${variant}`} aria-hidden="true">
+      {variant === "check" ? <Check className="h-3 w-3" strokeWidth={2.2} /> : <ArrowRight className="h-3 w-3" strokeWidth={2.2} />}
+    </span>
   );
 }

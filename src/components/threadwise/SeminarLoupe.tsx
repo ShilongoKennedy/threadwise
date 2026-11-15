@@ -145,7 +145,7 @@ export function LookCloserButton({
       aria-label="Look closer at this line"
     >
       <Search className="h-2.5 w-2.5" />
-      closer
+      <span className="hidden sm:inline">closer</span>
     </button>
   );
 }

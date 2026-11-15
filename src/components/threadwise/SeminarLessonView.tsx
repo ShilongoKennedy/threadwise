@@ -1,4 +1,8 @@
-import { BookOpen, Check, Compass } from "lucide-react";
+import { BookOpen, Compass } from "lucide-react";
+import type { ReactNode } from "react";
+import { ReadingMarker } from "@/components/threadwise/BlueprintUI";
+import { LookCloserButton } from "@/components/threadwise/SeminarLoupe";
+import type { LoupeTarget } from "@/components/threadwise/SeminarLoupe";
 import type { Seminar } from "@/lib/threadwise/seminar";
 import type { SeminarLesson } from "@/lib/threadwise/seminar-lesson";
 import { SeminarTutor } from "@/components/threadwise/SeminarTutor";
@@ -14,7 +18,7 @@ const CONTENTS = [
   ["next", "What to explore"],
 ] as const;
 
-function SectionHead({ number, title, kicker }: { number: string; title: string; kicker?: string }) {
+function SectionHead({ number, title, kicker, closer }: { number: string; title: string; kicker?: string; closer?: ReactNode }) {
   return (
     <div>
       <div className="reading-section__head">
@@ -22,6 +26,7 @@ function SectionHead({ number, title, kicker }: { number: string; title: string;
           <span className="reading-section__number">{number}</span>
           <span className="reading-section__eyebrow">{kicker ?? "The deeper lesson"}</span>
         </div>
+        {closer ? <div className="reading-section__aside">{closer}</div> : null}
       </div>
       <h3 className="reading-section__title">{title}</h3>
       <div className="reading-section__rule" />
@@ -29,7 +34,7 @@ function SectionHead({ number, title, kicker }: { number: string; title: string;
   );
 }
 
-export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, onAskTutor }: { lesson: SeminarLesson; text: string; context: string; seminar: Seminar; tutorSeed?: string | null; onAskTutor?: (selected: string) => void }) {
+export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, onAskTutor, onLookCloser }: { lesson: SeminarLesson; text: string; context: string; seminar: Seminar; tutorSeed?: string | null; onAskTutor?: (selected: string) => void; onLookCloser?: (target: LoupeTarget) => void }) {
   const words = JSON.stringify(lesson).split(/\s+/).length;
   const minutes = Math.max(4, Math.round(words / 190));
 
@@ -78,10 +83,10 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
 
         <article className="min-w-0 space-y-12">
           <section id="lesson-terms" data-loupe-section="The terms" className="reading-section scroll-mt-24">
-            <SectionHead number="01" title="The terms that make the question legible." kicker="Start here" />
+            <SectionHead number="01" title="The terms that make the question legible." kicker="Start here" closer={onLookCloser ? <LookCloserButton text={lesson.key_terms.map((term) => `${term.term}: ${term.plain}`).join(" · ").slice(0, 680)} section="The terms" onLookCloser={onLookCloser} /> : null} />
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {lesson.key_terms.map((term) => (
-                <div key={term.term} className="border-t border-[#F7EAD6]/20 pt-4">
+                <div key={term.term} className="lesson-card">
                   <h4 className="font-display text-[19px] leading-tight">{term.term}</h4>
                   <p className="mt-2 font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/72">{term.plain}</p>
                   <p className="mt-2 border-t border-[#1A1A1A]/10 pt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#1A1A1A]/40">
@@ -93,10 +98,10 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
           </section>
 
           <section id="lesson-background" data-loupe-section="The background" className="reading-section scroll-mt-24">
-            <SectionHead number="02" title="The minimum background." kicker="What you need before the argument" />
+            <SectionHead number="02" title="The minimum background." kicker="What you need before the argument" closer={onLookCloser ? <LookCloserButton text={lesson.background.map((block) => `${block.heading}: ${block.body}`).join(" · ").slice(0, 680)} section="The background" onLookCloser={onLookCloser} /> : null} />
             <div className="mt-5 space-y-5">
               {lesson.background.map((block) => (
-                <div key={block.heading} className="border-l border-[#C49A67]/35 pl-4">
+                <div key={block.heading} className="lesson-card">
                   <h4 className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/60">{block.heading}</h4>
                   <p className="mt-2 max-w-[68ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/75">{block.body}</p>
                 </div>
@@ -105,10 +110,10 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
           </section>
 
           <section id="lesson-mechanisms" data-loupe-section="Two mechanisms" className="reading-section scroll-mt-24">
-            <SectionHead number="03" title="Two engines, not two slogans." kicker="How each theory actually works" />
+            <SectionHead number="03" title="Two engines, not two slogans." kicker="How each theory actually works" closer={onLookCloser ? <LookCloserButton text={lesson.mechanisms.map((item) => `${item.heading}: ${item.body}`).join(" · ").slice(0, 680)} section="Two mechanisms" onLookCloser={onLookCloser} /> : null} />
             <div className="mt-5 grid gap-3 md:grid-cols-2">
               {lesson.mechanisms.map((mechanism) => (
-                <div key={mechanism.theory} className="border-l border-[#F7EAD6]/20 pl-4">
+                <div key={mechanism.theory} className="lesson-card">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#E7A574]">Theory {mechanism.theory}</p>
@@ -127,8 +132,8 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
           </section>
 
           <section id="lesson-crux" data-loupe-section="The crux as a test" className="reading-section scroll-mt-24">
-            <SectionHead number="04" title={lesson.crux.heading} kicker="The test that separates them" />
-            <div className="mt-5 border-y border-[#F7EAD6]/20 py-5">
+            <SectionHead number="04" title={lesson.crux.heading} kicker="The test that separates them" closer={onLookCloser ? <LookCloserButton text={`${lesson.crux.explanation} ${lesson.crux.test}`.slice(0, 680)} section="The crux as a test" onLookCloser={onLookCloser} /> : null} />
+            <div className="lesson-card mt-5">
               <p className="max-w-[62ch] font-serif text-[15px] leading-[1.7] text-white/75">{lesson.crux.explanation}</p>
               <div className="mt-5 border-t border-white/15 pt-4">
                 <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#FFE8D6]">Try this on the next piece of evidence</p>
@@ -138,8 +143,8 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
           </section>
 
           <section id="lesson-misreadings" data-loupe-section="Where careful readers slip" className="reading-section scroll-mt-24">
-            <SectionHead number="05" title="Where careful readers still slip." kicker="Common misreadings" />
-            <div className="mt-5 divide-y divide-[#1A1A1A]/12 border-y border-[#1A1A1A]/12">
+            <SectionHead number="05" title="Where careful readers still slip." kicker="Common misreadings" closer={onLookCloser ? <LookCloserButton text={lesson.misconceptions.map((item) => `${item.mistake}: ${item.correction}`).join(" · ").slice(0, 680)} section="Where readers slip" onLookCloser={onLookCloser} /> : null} />
+            <div className="lesson-card mt-5 divide-y divide-white/12">
               {lesson.misconceptions.map((item) => (
                 <div key={item.mistake} className="grid gap-2 py-4 sm:grid-cols-[1fr_1.4fr] sm:gap-6">
                   <p className="font-serif text-[13.5px] leading-snug text-[#C1121F]/75">“{item.mistake}”</p>
@@ -150,8 +155,8 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
           </section>
 
           <section id="lesson-example" data-loupe-section="Worked example" className="reading-section scroll-mt-24">
-            <SectionHead number="06" title={lesson.worked_example.heading} kicker="One concrete walk-through" />
-            <div className="mt-5 border-l-2 border-[#C49A67]/55 pl-5">
+            <SectionHead number="06" title={lesson.worked_example.heading} kicker="One concrete walk-through" closer={onLookCloser ? <LookCloserButton text={`${lesson.worked_example.scenario} ${lesson.worked_example.walkthrough}`.slice(0, 680)} section="Worked example" onLookCloser={onLookCloser} /> : null} />
+            <div className="lesson-card mt-5">
               <p className="font-serif text-[14px] leading-[1.7] text-[#1A1A1A]/60">{lesson.worked_example.scenario}</p>
               <p className="mt-4 max-w-[68ch] font-serif text-[15px] leading-[1.75] text-[#1A1A1A]/80">{lesson.worked_example.walkthrough}</p>
               <p className="mt-4 max-w-[62ch] border-t border-[#1A1A1A]/12 pt-3 font-serif text-[13.5px] leading-relaxed text-[#E7A574]/80">
@@ -161,10 +166,10 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
           </section>
 
           <section id="lesson-check" data-loupe-section="Check yourself" className="reading-section scroll-mt-24">
-            <SectionHead number="07" title="Check yourself." kicker="Answer before opening" />
+            <SectionHead number="07" title="Check yourself." kicker="Answer before opening" closer={onLookCloser ? <LookCloserButton text={lesson.check.map((item) => item.question).join(" · ").slice(0, 680)} section="Check yourself" onLookCloser={onLookCloser} /> : null} />
             <div className="mt-5 space-y-2">
               {lesson.check.map((item, index) => (
-                <details key={item.question} className="group border-b border-[#F7EAD6]/20 py-3">
+                <details key={item.question} className="group border-b border-white/12 py-3 last:border-b-0">
                   <summary className="flex cursor-pointer list-none items-start gap-3 font-serif text-[14px] leading-snug text-[#1A1A1A]/80 marker:content-none">
                     <span className="font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-[#E7A574]">{String(index + 1).padStart(2, "0")}</span>
                     <span className="flex-1">{item.question}</span>
@@ -177,10 +182,10 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
           </section>
 
           <section id="lesson-next" data-loupe-section="What to explore" className="reading-section scroll-mt-24">
-            <SectionHead number="08" title="What to look for next." kicker="Source types, not fake citations" />
+            <SectionHead number="08" title="What to look for next." kicker="Source types, not fake citations" closer={onLookCloser ? <LookCloserButton text={lesson.next_sources.map((source) => `${source.kind}: ${source.why}`).join(" · ").slice(0, 680)} section="What to explore" onLookCloser={onLookCloser} /> : null} />
             <div className="mt-5 grid gap-2 sm:grid-cols-2">
               {lesson.next_sources.map((source) => (
-                <div key={source.kind} className="flex items-start gap-2 border-t border-[#1A1A1A]/15 pt-3">
+                <div key={source.kind} className="lesson-card flex items-start gap-3">
                   <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#E7A574]" />
                   <div>
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-[#1A1A1A]/65">{source.kind}</p>

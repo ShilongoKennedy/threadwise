@@ -2478,3 +2478,29 @@ html.reading-focus .bp-scrim {
 }
 .theory-panel--a .theory-letter-ring { color: #E7A574; }
 .theory-panel--b .theory-letter-ring { color: #AFC3D9; }
+
+
+.reading-marker {
+  display: inline-grid;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.045);
+  color: #E7A574;
+}
+.reading-marker--check {
+  border-color: rgba(231, 165, 116, 0.4);
+  background: rgba(231, 165, 116, 0.08);
+}
+.lesson-card {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(18, 10, 8, 0.26);
+  padding: 18px;
+}
+@media (max-width: 640px) {
+  .lesson-card { padding: 15px; border-radius: 13px; }
+}
