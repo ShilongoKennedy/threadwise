@@ -117,11 +117,6 @@ export function AppHeader({
                 </Link>
               ) : null}
 
-              <Link to="/analyst" data-read-source className="app-header__cta">
-                Read a source
-                <ArrowUpRight className="h-3 w-3" />
-              </Link>
-
               <button
                 type="button"
                 onClick={() => setIndexOpen(true)}
