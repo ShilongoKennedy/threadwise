@@ -226,3 +226,37 @@ export function ReadingCallout({
     </aside>
   );
 }
+
+
+export function ReadingSection({
+  id,
+  number,
+  eyebrow,
+  title,
+  aside,
+  children,
+  className,
+}: {
+  id?: string;
+  number: string;
+  eyebrow: string;
+  title?: string;
+  aside?: ReactNode;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section id={id} className={cn("reading-section", className)}>
+      <div className="reading-section__head">
+        <div className="reading-section__meta">
+          <span className="reading-section__number">{number}</span>
+          <span className="reading-section__eyebrow">{eyebrow}</span>
+        </div>
+        {aside ? <div className="reading-section__aside">{aside}</div> : null}
+      </div>
+      {title ? <h2 className="reading-section__title">{title}</h2> : null}
+      <div className="reading-section__rule" />
+      <div className="reading-section__body">{children}</div>
+    </section>
+  );
+}

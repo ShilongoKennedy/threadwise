@@ -482,7 +482,7 @@ function SeminarPage() {
       {seminar && (
         <main ref={readingRef} className="seminar-reading-surface mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
           <SeminarReadingNav />
-          <section id="s-question" data-reading-section="s-question" data-loupe-section="The question underneath" data-seminar-tone="1" className="seminar-dark-ink grid gap-6 border-y border-[#F7EAD6]/20 py-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12 md:py-8">
+          <section id="s-question" data-reading-section="s-question" data-loupe-section="The question underneath" data-seminar-tone="1" className="seminar-dark-ink reading-section grid gap-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12">
             <div>
               <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
                 The question underneath
@@ -504,7 +504,7 @@ function SeminarPage() {
             </div>
           </section>
 
-          <section id="s-readings" data-reading-section="s-readings" data-loupe-section="Two readings" data-seminar-tone="2" className="seminar-dark-ink mt-8">
+          <section id="s-readings" data-reading-section="s-readings" data-loupe-section="Two readings" data-seminar-tone="2" className="seminar-dark-ink reading-section mt-8">
             <div className="flex items-end justify-between gap-4 pb-1">
               <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the same thing.</h2>
               <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35 sm:inline">
@@ -577,7 +577,7 @@ function SeminarPage() {
             </section>
           ) : (
             <>
-              <section id="s-crux" data-reading-section="s-crux" data-loupe-section="The crux" data-seminar-tone="3" className="seminar-dark-ink mt-10 overflow-hidden border-y border-[#F7EAD6]/20">
+              <section id="s-crux" data-reading-section="s-crux" data-loupe-section="The crux" data-seminar-tone="3" className="seminar-dark-ink reading-section mt-10 overflow-hidden">
                 <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
                   <div className="border-b border-white/15 px-5 py-4 md:border-b-0 md:border-r md:border-white/15 md:px-6 md:py-8">
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#D9F25C]">
@@ -625,7 +625,7 @@ function SeminarPage() {
                 </div>
               </section>
 
-              <section id="s-verdict" data-reading-section="s-verdict" data-loupe-section="The provisional verdict" data-seminar-tone="4" className="seminar-dark-ink mt-6 border-y border-[#F7EAD6]/20 py-5">
+              <section id="s-verdict" data-reading-section="s-verdict" data-loupe-section="The provisional verdict" data-seminar-tone="4" className="seminar-dark-ink reading-section mt-6">
                 {!verdictOpen ? (
                   <div className="flex flex-wrap items-center justify-between gap-3 border-y border-[#1A1A1A]/15 py-5">
                     <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/60">
@@ -674,7 +674,7 @@ function SeminarPage() {
                 )}
               </section>
 
-              <section id="s-lesson" data-reading-section="s-lesson" data-loupe-section="The deeper lesson" data-seminar-tone="5" className="seminar-dark-ink mt-10 border-y border-[#F7EAD6]/20 py-8">
+              <section id="s-lesson" data-reading-section="s-lesson" data-loupe-section="The deeper lesson" data-seminar-tone="5" className="seminar-dark-ink reading-section mt-10">
                 <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
                   <div>
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">

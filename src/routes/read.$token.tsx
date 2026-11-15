@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/threadwise/AppHeader";
-import { bpButtonClass, ReadingCallout, ReadingFocusToggle, ReadingProgress } from "@/components/threadwise/BlueprintUI";
+import { bpButtonClass, ReadingCallout, ReadingFocusToggle, ReadingProgress, ReadingSection } from "@/components/threadwise/BlueprintUI";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { useEffect, useState } from "react";
 
@@ -526,22 +526,9 @@ function DeskReview({
 /** One numbered section of the document, with an anchor the index can hit. */
 function Block({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {
   return (
-    <section
-      id={`s-${n}`}
-      className="scroll-mt-24 border-t border-[#1A1A1A]/15 pt-5 first:border-t-0 first:pt-0"
-    >
-      <div className="grid gap-2 md:grid-cols-[54px_minmax(0,1fr)] md:gap-5">
-        <p className="font-display text-[28px] leading-none text-[#1A4BFF]/75">{n}</p>
-        <div>
-          <h2 className="max-w-[24ch] font-display text-[24px] leading-[1.05] md:text-[30px]">
-            {title}
-          </h2>
-          <div className="mt-3 font-serif text-[16px] leading-[1.75] text-[#1A1A1A]/85 md:text-[17px]">
-            {children}
-          </div>
-        </div>
-      </div>
-    </section>
+    <ReadingSection id={`s-${n}`} number={n} eyebrow="The read" title={title}>
+      {children}
+    </ReadingSection>
   );
 }
 

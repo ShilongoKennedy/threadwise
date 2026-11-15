@@ -2,7 +2,6 @@ import { BookOpen, Check, Compass } from "lucide-react";
 import type { Seminar } from "@/lib/threadwise/seminar";
 import type { SeminarLesson } from "@/lib/threadwise/seminar-lesson";
 import { SeminarTutor } from "@/components/threadwise/SeminarTutor";
-import { InkRule } from "@/components/threadwise/InkMarks";
 
 const CONTENTS = [
   ["terms", "The terms"],
@@ -18,14 +17,14 @@ const CONTENTS = [
 function SectionHead({ number, title, kicker }: { number: string; title: string; kicker?: string }) {
   return (
     <div>
-      <div className="flex items-baseline gap-4">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">{number}</span>
-        <div>
-          <h3 className="font-display text-[28px] leading-none tracking-[-0.02em] md:text-[34px]">{title}</h3>
-          {kicker ? <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">{kicker}</p> : null}
+      <div className="reading-section__head">
+        <div className="reading-section__meta">
+          <span className="reading-section__number">{number}</span>
+          <span className="reading-section__eyebrow">{kicker ?? "The deeper lesson"}</span>
         </div>
       </div>
-      <InkRule className="mt-3" />
+      <h3 className="reading-section__title">{title}</h3>
+      <div className="reading-section__rule" />
     </div>
   );
 }
@@ -39,7 +38,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
       <div className="border-b border-[#F7EAD6]/20 pb-7">
         <div className="relative">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <p className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#9FB2FF]">The deeper lesson</p>
+            <p className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#FFE8D6]">The deeper lesson</p>
             <span className="h-3 w-px bg-white/20" />
             <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-white/40">Built from this seminar</p>
           </div>
@@ -61,14 +60,14 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
         <aside className="hidden md:block">
           <div className="sticky top-24">
             <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">Inside the lesson</p>
-            <ol className="mt-3 space-y-2 border-l border-[#8A745C]/25 pl-3">
+            <ol className="mt-3 space-y-2 border-l border-white/15 pl-3">
               {CONTENTS.map(([id, label], index) => (
                 <li key={id}>
                   <a
                     href={`#lesson-${id}`}
-                    className="group flex items-baseline gap-2 font-mono text-[8px] uppercase tracking-[0.08em] text-[#1A1A1A]/45 transition-colors hover:text-[#1A4BFF]"
+                    className="group flex items-baseline gap-2 font-mono text-[8px] uppercase tracking-[0.08em] text-white/45 transition-colors hover:text-white"
                   >
-                    <span className="text-[#1A4BFF]/70">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="text-[#E7A574]/70">{String(index + 1).padStart(2, "0")}</span>
                     {label}
                   </a>
                 </li>
@@ -78,7 +77,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
         </aside>
 
         <article className="min-w-0 space-y-12">
-          <section id="lesson-terms" data-loupe-section="The terms" className="scroll-mt-24">
+          <section id="lesson-terms" data-loupe-section="The terms" className="reading-section scroll-mt-24">
             <SectionHead number="01" title="The terms that make the question legible." kicker="Start here" />
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {lesson.key_terms.map((term) => (
@@ -93,7 +92,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             </div>
           </section>
 
-          <section id="lesson-background" data-loupe-section="The background" className="scroll-mt-24">
+          <section id="lesson-background" data-loupe-section="The background" className="reading-section scroll-mt-24">
             <SectionHead number="02" title="The minimum background." kicker="What you need before the argument" />
             <div className="mt-5 space-y-5">
               {lesson.background.map((block) => (
@@ -105,17 +104,17 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             </div>
           </section>
 
-          <section id="lesson-mechanisms" data-loupe-section="Two mechanisms" className="scroll-mt-24">
+          <section id="lesson-mechanisms" data-loupe-section="Two mechanisms" className="reading-section scroll-mt-24">
             <SectionHead number="03" title="Two engines, not two slogans." kicker="How each theory actually works" />
             <div className="mt-5 grid gap-3 md:grid-cols-2">
               {lesson.mechanisms.map((mechanism) => (
                 <div key={mechanism.theory} className="border-l border-[#F7EAD6]/20 pl-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">Theory {mechanism.theory}</p>
+                      <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#E7A574]">Theory {mechanism.theory}</p>
                       <h4 className="mt-1 font-display text-[23px] leading-[1.05]">{mechanism.heading}</h4>
                     </div>
-                    <span className="font-display text-[46px] leading-[0.7] text-[#1A4BFF]/30" aria-hidden>{mechanism.theory}</span>
+                    <span className="font-display text-[46px] leading-[0.7] text-[#E7A574]/30" aria-hidden>{mechanism.theory}</span>
                   </div>
                   <p className="mt-4 font-serif text-[14px] leading-[1.65] text-[#1A1A1A]/75">{mechanism.body}</p>
                   <div className="mt-4 space-y-2 border-t border-[#1A1A1A]/12 pt-3">
@@ -127,18 +126,18 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             </div>
           </section>
 
-          <section id="lesson-crux" data-loupe-section="The crux as a test" className="scroll-mt-24">
+          <section id="lesson-crux" data-loupe-section="The crux as a test" className="reading-section scroll-mt-24">
             <SectionHead number="04" title={lesson.crux.heading} kicker="The test that separates them" />
             <div className="mt-5 border-y border-[#F7EAD6]/20 py-5">
               <p className="max-w-[62ch] font-serif text-[15px] leading-[1.7] text-white/75">{lesson.crux.explanation}</p>
               <div className="mt-5 border-t border-white/15 pt-4">
-                <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#9FB2FF]">Try this on the next piece of evidence</p>
+                <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#FFE8D6]">Try this on the next piece of evidence</p>
                 <p className="mt-1 max-w-[62ch] font-serif text-[14px] leading-relaxed text-white/80">{lesson.crux.test}</p>
               </div>
             </div>
           </section>
 
-          <section id="lesson-misreadings" data-loupe-section="Where careful readers slip" className="scroll-mt-24">
+          <section id="lesson-misreadings" data-loupe-section="Where careful readers slip" className="reading-section scroll-mt-24">
             <SectionHead number="05" title="Where careful readers still slip." kicker="Common misreadings" />
             <div className="mt-5 divide-y divide-[#1A1A1A]/12 border-y border-[#1A1A1A]/12">
               {lesson.misconceptions.map((item) => (
@@ -150,24 +149,24 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             </div>
           </section>
 
-          <section id="lesson-example" data-loupe-section="Worked example" className="scroll-mt-24">
+          <section id="lesson-example" data-loupe-section="Worked example" className="reading-section scroll-mt-24">
             <SectionHead number="06" title={lesson.worked_example.heading} kicker="One concrete walk-through" />
             <div className="mt-5 border-l-2 border-[#C49A67]/55 pl-5">
               <p className="font-serif text-[14px] leading-[1.7] text-[#1A1A1A]/60">{lesson.worked_example.scenario}</p>
               <p className="mt-4 max-w-[68ch] font-serif text-[15px] leading-[1.75] text-[#1A1A1A]/80">{lesson.worked_example.walkthrough}</p>
-              <p className="mt-4 max-w-[62ch] border-t border-[#1A1A1A]/12 pt-3 font-serif text-[13.5px] leading-relaxed text-[#1A4BFF]/80">
+              <p className="mt-4 max-w-[62ch] border-t border-[#1A1A1A]/12 pt-3 font-serif text-[13.5px] leading-relaxed text-[#E7A574]/80">
                 {lesson.worked_example.lesson}
               </p>
             </div>
           </section>
 
-          <section id="lesson-check" data-loupe-section="Check yourself" className="scroll-mt-24">
+          <section id="lesson-check" data-loupe-section="Check yourself" className="reading-section scroll-mt-24">
             <SectionHead number="07" title="Check yourself." kicker="Answer before opening" />
             <div className="mt-5 space-y-2">
               {lesson.check.map((item, index) => (
                 <details key={item.question} className="group border-b border-[#F7EAD6]/20 py-3">
                   <summary className="flex cursor-pointer list-none items-start gap-3 font-serif text-[14px] leading-snug text-[#1A1A1A]/80 marker:content-none">
-                    <span className="font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-[#1A4BFF]">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-[#E7A574]">{String(index + 1).padStart(2, "0")}</span>
                     <span className="flex-1">{item.question}</span>
                     <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/35 transition-transform group-open:rotate-45">+</span>
                   </summary>
@@ -177,12 +176,12 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             </div>
           </section>
 
-          <section id="lesson-next" data-loupe-section="What to explore" className="scroll-mt-24">
+          <section id="lesson-next" data-loupe-section="What to explore" className="reading-section scroll-mt-24">
             <SectionHead number="08" title="What to look for next." kicker="Source types, not fake citations" />
             <div className="mt-5 grid gap-2 sm:grid-cols-2">
               {lesson.next_sources.map((source) => (
                 <div key={source.kind} className="flex items-start gap-2 border-t border-[#1A1A1A]/15 pt-3">
-                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1A4BFF]" />
+                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#E7A574]" />
                   <div>
                     <p className="font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-[#1A1A1A]/65">{source.kind}</p>
                     <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-[#1A1A1A]/55">{source.why}</p>
@@ -203,9 +202,9 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-5">
             <p className="inline-flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
-              <Compass className="h-3 w-3 text-[#1A4BFF]" /> The lesson is a map, not a verdict.
+              <Compass className="h-3 w-3 text-[#E7A574]" /> The lesson is a map, not a verdict.
             </p>
-            <a href="#deeper-lesson" className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4">
+            <a href="#deeper-lesson" className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#E7A574] underline underline-offset-4">
               Back to the top ↑
             </a>
           </div>
