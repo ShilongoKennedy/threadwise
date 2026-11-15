@@ -57,6 +57,7 @@ function LoginPage() {
   return (
     <div className="relative min-h-[100dvh] overflow-hidden bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
@@ -89,17 +90,13 @@ function LoginPage() {
             </p>
           </div>
 
-          <div className="tw-glass-panel overflow-hidden">
-            <div className="flex items-center justify-between bg-[#1A1A1A] px-3 py-2">
-              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#FDFBF7]">
-                Sign in
-              </span>
-              <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A4BFF]">
-                one account
-              </span>
+          <div className="bp-card">
+            <div className="bp-card__header">
+              <p className="bp-card__eyebrow">Sign in</p>
+              <span className="bp-badge">One account</span>
             </div>
 
-            <div className="p-5 md:p-6">
+            <div className="bp-card__body">
               <h2 className="font-display text-[24px] leading-tight">Continue with Google.</h2>
               <p className="mt-2 font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/60">
                 No password to remember. Your reads stay private until you publish one.
@@ -115,7 +112,7 @@ function LoginPage() {
                 type="button"
                 onClick={() => void handleGoogleLogin()}
                 disabled={isLoading}
-                className="mt-5 inline-flex w-full items-center justify-center gap-3 rounded-full border border-[#1A1A1A] bg-[#1A1A1A] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:opacity-50"
+                className="bp-button bp-button--primary mt-5 w-full"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

@@ -476,24 +476,22 @@ function AskRecord() {
 
   return (
     <section className="bp-card mt-8">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/15 py-2">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1A1A1A]/55">
-          Ask your record
-        </span>
-        <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A4BFF]">
-          one model call
-        </span>
+      <div className="bp-card__header">
+        <p className="bp-card__eyebrow">Ask your record</p>
+        <span className="bp-badge">One model call</span>
       </div>
 
       {signedIn === false ? (
-        <p className="py-4 font-serif text-[14px] text-[#1A1A1A]/65">
-          <Link to="/login" className="text-[#1A4BFF] underline underline-offset-4">
-            Sign in
-          </Link>{" "}
-          to ask what your own reads, questions and predictions say.
-        </p>
+        <div className="bp-card__body">
+          <p className="font-serif text-[14px] text-white/70">
+            <Link to="/login" className="text-[#FFE8D6] underline underline-offset-4">
+              Sign in
+            </Link>{" "}
+            to ask what your own reads, questions and predictions say.
+          </p>
+        </div>
       ) : (
-        <div className="py-4">
+        <div className="bp-card__body">
           <p className="max-w-[62ch] font-serif text-[14px] leading-relaxed text-[#1A1A1A]/65">
             Ask what your own record says. It answers from your saved reads, questions and predictions
             only; it does not use the web.
@@ -504,14 +502,14 @@ function AskRecord() {
             maxLength={600}
             rows={2}
             placeholder="What does my record say about…?"
-            className="mt-3 w-full resize-none border border-[#1A1A1A]/20 bg-[#FDFBF7] px-3 py-2 font-serif text-[14px] leading-relaxed outline-none focus:border-[#1A4BFF]"
+            className="bp-input mt-3 min-h-[88px] resize-none"
           />
           <div className="mt-2 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={() => void ask()}
               disabled={busy || question.trim().length < 5}
-              className="border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#FDFBF7] disabled:opacity-40"
+              className="bp-button bp-button--secondary bp-button--sm"
             >
               {busy ? "Reading the record…" : "Ask"}
             </button>
@@ -526,7 +524,7 @@ function AskRecord() {
           )}
 
           {answer && (
-            <div className="mt-4 border-t border-[#1A1A1A]/10 pt-3">
+            <div className="mt-4 border-t border-white/12 pt-3">
               <p className="whitespace-pre-line font-serif text-[14px] leading-relaxed text-[#1A1A1A]/80">
                 {answer}
               </p>
@@ -543,7 +541,7 @@ function AskRecord() {
                         <Link
                           to="/read/$token"
                           params={{ token: source.token }}
-                          className="text-[#1A4BFF] underline underline-offset-4"
+                          className="text-[#FFE8D6] underline underline-offset-4"
                         >
                           [{index + 1}] {source.input}
                         </Link>
@@ -599,7 +597,7 @@ function CalibrationSection({
 
   if (!predictions.length) {
     return (
-      <section className="mt-4 border-y border-[#1A1A1A]/15 py-3">
+      <section className="bp-card mt-4 p-4">
         <div className="flex items-center justify-between">
           <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/55">
             Calibration
@@ -617,25 +615,25 @@ function CalibrationSection({
 
   return (
     <section className="bp-card mt-4">
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1A1A1A] px-3 py-1.5">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
+      <div className="bp-card__header">
+        <span className="bp-card__eyebrow">
           Calibration
         </span>
-        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A4BFF]">
+        <span className="bp-badge">
           {stats.settled}/{stats.predictions} settled
           {stats.brier !== null ? ` · Brier ${stats.brier.toFixed(2)}` : ""}
         </span>
       </div>
-      <div className="grid grid-cols-3 divide-x divide-[#1A1A1A]/10 border-b border-[#1A1A1A]/10">
+      <div className="grid grid-cols-3 divide-x divide-white/12 border-b border-white/12">
         {stats.buckets.map((bucket) => (
           <div key={bucket.confidence} className="px-3 py-3">
-            <div className="font-mono text-[8px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
+            <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-white/65">
               {bucket.confidence}
             </div>
             <div className="mt-1 font-display text-[22px] leading-none">
               {bucket.accuracy === null ? "—" : `${Math.round(bucket.accuracy * 100)}%`}
             </div>
-            <div className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+            <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-white/45">
               {bucket.correct}/{bucket.settled} right
             </div>
           </div>
@@ -643,7 +641,7 @@ function CalibrationSection({
       </div>
 
       {open.length > 0 ? (
-        <ul className="divide-y divide-[#1A1A1A]/10">
+        <ul className="divide-y divide-white/12">
           {open.map((watch) => (
             <li key={watch.id} className="px-3 py-2.5">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -657,7 +655,7 @@ function CalibrationSection({
                   type="button"
                   disabled={busy === watch.id}
                   onClick={() => void score(watch.id, "confirmed")}
-                  className="border border-[#1A4BFF] px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] disabled:opacity-40"
+                  className="bp-button bp-button--secondary bp-button--sm"
                 >
                   Confirmed
                 </button>
@@ -665,7 +663,7 @@ function CalibrationSection({
                   type="button"
                   disabled={busy === watch.id}
                   onClick={() => void score(watch.id, "contradicted")}
-                  className="border border-[#C1121F] px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#C1121F] disabled:opacity-40"
+                  className="bp-button bp-button--danger bp-button--sm"
                 >
                   Contradicted
                 </button>
@@ -684,7 +682,7 @@ function CalibrationSection({
           {error}
         </p>
       )}
-      <p className="border-t border-[#1A1A1A]/10 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
+      <p className="border-t border-white/12 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-white/45">
         Brier: lower is better · confidence maps to 80 / 55 / 30%
       </p>
     </section>
