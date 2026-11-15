@@ -7,6 +7,15 @@ const theorySchema = z.object({
   name: z.string().trim().min(2).max(90),
   claim: z.string().trim().min(20).max(400),
   mechanism: z.string().trim().min(40).max(900),
+  mechanism_steps: z
+    .array(
+      z.object({
+        label: z.string().trim().min(2).max(42),
+        detail: z.string().trim().min(8).max(180),
+      }),
+    )
+    .min(3)
+    .max(5),
   predictions: z.array(z.string().trim().min(10).max(260)).min(2).max(4),
   evidence: z.array(z.string().trim().min(10).max(260)).min(1).max(4),
   falsifier: z.string().trim().min(20).max(400),
@@ -41,6 +50,7 @@ RULES
 - Steelman both theories. Each must be the version a serious, informed proponent would defend, not a caricature.
 - Both theories must be genuinely rival explanations of the same outcome. They should not be "good version" vs "bad version", and they should not agree in disguise.
 - Work causally: mechanism, observable predictions, evidence, falsifier, hidden assumption.
+- mechanism_steps must be the causal chain, not a table of contents: 3–5 observable moves from cause to outcome, each with a short label and one clarifying sentence.
 - Do not moralise. Do not say which side is ethically better. If the disagreement is partly normative, label it "mixed" and say that the values question is separate; do not settle it.
 - Do not invent facts. If the evidence is thin, say so in evidence and sources_needed.
 - The crux is one question that actually separates the theories. Not "both have merits".
@@ -58,7 +68,7 @@ ${text.slice(0, 3000)}
 ${context.trim() ? `CONTEXT PROVIDED BY THE READER:\n${context.slice(0, 1000)}\n\n` : ""}
 Open the seminar. Return two rival theories, the crux, what would settle it, and a provisional empirical verdict.`,
     temperature: 0.3,
-    maxOutputTokens: 2600,
+    maxOutputTokens: 3400,
     maxRetries: 1,
   });
 

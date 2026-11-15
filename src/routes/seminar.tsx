@@ -519,7 +519,7 @@ function SeminarPage() {
               </span>
             </p>
 
-            <div className="grid border-y border-[#F7EAD6]/20 md:grid-cols-2 md:divide-x md:divide-[#F7EAD6]/20">
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
               {seminar.theories.map((theory, index) => (
                 <TheoryColumn key={index} theory={theory} index={index} onLookCloser={openLoupe} />
               ))}
@@ -820,7 +820,7 @@ function TheoryColumn({
   return (
     <article
       data-loupe-section={`Theory ${letter}: ${theory.name}`}
-      className={`${tint} group/theory px-5 py-6 md:px-7 md:py-8`}
+      className={`${tint} theory-panel theory-panel--${letter.toLowerCase()} group/theory px-5 pb-6 pt-7 md:px-7 md:pb-8 md:pt-8`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -855,9 +855,21 @@ function TheoryColumn({
           />
         </div>
         <InkRule className="mt-1.5" />
-        <p className="mt-2 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/70">
-          {theory.mechanism}
-        </p>
+        {theory.mechanism_steps?.length ? (
+          <div className="mechanism-flow mt-3">
+            {theory.mechanism_steps.map((step, stepIndex) => (
+              <div key={`${step.label}-${stepIndex}`} className="mechanism-step">
+                <span className="mechanism-step__n">{String(stepIndex + 1).padStart(2, "0")}</span>
+                <span className="mechanism-step__label">{step.label}</span>
+                <span className="mechanism-step__detail">{step.detail}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-2 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/70">
+            {theory.mechanism}
+          </p>
+        )}
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
