@@ -165,7 +165,18 @@ export function AppHeader({
             </nav>
             <div className="app-index__foot">
               <span>Read carefully · verify before you act</span>
-              <span>{new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
+              <span className="flex items-center gap-4">
+                {signedIn === false ? (
+                  <Link to="/login" onClick={() => setIndexOpen(false)} className="app-index__account">
+                    Sign in
+                  </Link>
+                ) : signedIn ? (
+                  <Link to="/profile" onClick={() => setIndexOpen(false)} className="app-index__account">
+                    Profile
+                  </Link>
+                ) : null}
+                {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+              </span>
             </div>
           </div>
         </div>

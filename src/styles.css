@@ -3083,3 +3083,9 @@ h1, h2, h3, .font-display { text-wrap: balance; }
   .app-header__brand .thread-wordmark { font-size: 20px; }
   .app-header__brand svg { width: 24px; height: 24px; }
 }
+
+.app-index__account {
+  color: #E7A574 !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
