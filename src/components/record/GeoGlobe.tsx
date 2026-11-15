@@ -83,8 +83,8 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
   }
 
   // Fine graticule.
-  ctx.lineWidth = blueprint ? 1 : 1;
-  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.38)" : "rgba(112, 101, 88, 0.09)";
+  ctx.lineWidth = blueprint ? 1.5 : 1;
+  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.7)" : "rgba(112, 101, 88, 0.09)";
   for (let lon = -180; lon <= 180; lon += 30) {
     const [x] = project(lon, 0);
     ctx.beginPath();
@@ -133,21 +133,21 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
       if (blueprint) {
         if (!dotPattern) {
           const dot = document.createElement("canvas");
-          dot.width = 7;
-          dot.height = 7;
+          dot.width = 9;
+          dot.height = 9;
           const dotCtx = dot.getContext("2d");
           if (dotCtx) {
-            dotCtx.fillStyle = "rgba(255, 255, 255, 0.82)";
+            dotCtx.fillStyle = "rgba(255, 255, 255, 1)";
             dotCtx.beginPath();
-            dotCtx.arc(3.5, 3.5, 0.8, 0, Math.PI * 2);
+            dotCtx.arc(4.5, 4.5, 2, 0, Math.PI * 2);
             dotCtx.fill();
           }
           dotPattern = ctx.createPattern(dot, "repeat");
         }
         ctx.fillStyle = dotPattern ?? "rgba(255, 255, 255, 0.55)";
         ctx.fill("evenodd");
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
-        ctx.lineWidth = 0.8;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.14)";
+        ctx.lineWidth = 0.6;
         ctx.stroke();
       } else {
         ctx.fillStyle = "#E7D8C3";
@@ -346,7 +346,7 @@ export function GeoGlobe({
       new THREE.LineBasicMaterial({
         color: 0xffffff,
         transparent: true,
-        opacity: 0.9,
+        opacity: 0.95,
         depthTest: false,
         depthWrite: false,
       }),
@@ -364,8 +364,8 @@ export function GeoGlobe({
       new THREE.LineDashedMaterial({
         color: 0xffffff,
         transparent: true,
-        opacity: 0.5,
-        dashSize: 0.018,
+        opacity: 0.68,
+        dashSize: 0.022,
         gapSize: 0.014,
         depthWrite: false,
       }),
@@ -373,52 +373,9 @@ export function GeoGlobe({
     equator.computeLineDistances();
     group.add(equator);
 
-    const orbitPoints: THREE.Vector3[] = [];
-    for (let index = 0; index <= 180; index += 1) {
-      const angle = (index / 180) * Math.PI * 2;
-      orbitPoints.push(new THREE.Vector3(Math.cos(angle) * 1.08, Math.sin(angle) * 1.08, 0));
-    }
-    const orbit = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints(orbitPoints),
-      new THREE.LineDashedMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.3,
-        dashSize: 0.012,
-        gapSize: 0.02,
-        depthWrite: false,
-      }),
-    );
-    orbit.computeLineDistances();
-    orbit.rotation.set(0.92, 0.18, 0.34);
-    group.add(orbit);
 
-    const thickRim = new THREE.Mesh(
-      new THREE.TorusGeometry(1.006, 0.003, 8, 180),
-      new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.9,
-        depthTest: false,
-        depthWrite: false,
-      }),
-    );
-    thickRim.renderOrder = 10;
-    scene.add(thickRim);
 
-    if (isBlueprint) {
-      const rim = new THREE.Mesh(
-        new THREE.SphereGeometry(1.025, 64, 48),
-        new THREE.MeshBasicMaterial({
-          color: 0xffffff,
-          transparent: true,
-          opacity: 0.2,
-          side: THREE.BackSide,
-          depthWrite: false,
-        }),
-      );
-      group.add(rim);
-    } else {
+    if (!isBlueprint) {
       const atmosphere = new THREE.Mesh(
         new THREE.SphereGeometry(1.018, 64, 48),
         new THREE.MeshBasicMaterial({
@@ -494,9 +451,9 @@ export function GeoGlobe({
       const desktop = window.innerWidth >= 768;
       if (desktop) {
         if (layout === "right") {
-          group.position.x = isBlueprint ? 1.38 : 1.55;
+          group.position.x = isBlueprint ? 1.22 : 1.55;
           group.position.y = isBlueprint ? 0.08 : 0.12;
-          group.scale.setScalar(isBlueprint ? 1.3 : 1.22);
+          group.scale.setScalar(isBlueprint ? 0.98 : 1.22);
         } else {
           group.position.x = 0.1;
           group.position.y = 0.34;
@@ -617,9 +574,6 @@ export function GeoGlobe({
       globeRim.position.copy(group.position);
       globeRim.scale.copy(group.scale);
       globeRim.visible = isBlueprint;
-      thickRim.position.copy(group.position);
-      thickRim.scale.copy(group.scale);
-      thickRim.visible = isBlueprint;
       renderer.render(scene, camera);
       updateMarkerLabels();
     };
