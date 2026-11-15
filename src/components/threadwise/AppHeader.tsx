@@ -82,8 +82,9 @@ export function AppHeader({
     };
   }, []);
 
-  const current = NAV.find((item) => item.key === section);
-  const currentIndex = Math.max(1, NAV.findIndex((item) => item.key === section) + 1);
+  const sectionKey = section === "record" ? "digest" : section;
+  const current = NAV.find((item) => item.key === sectionKey);
+  const currentIndex = Math.max(1, NAV.findIndex((item) => item.key === sectionKey) + 1);
 
   return (
     <>
@@ -149,8 +150,8 @@ export function AppHeader({
                     <Link
                       to={item.to}
                       onClick={() => setIndexOpen(false)}
-                      aria-current={section === item.key ? "page" : undefined}
-                      className={`app-index__link ${section === item.key ? "is-active" : ""}`}
+                      aria-current={sectionKey === item.key ? "page" : undefined}
+                      className={`app-index__link ${sectionKey === item.key ? "is-active" : ""}`}
                     >
                       <span className="app-index__number">{String(index + 1).padStart(2, "0")}</span>
                       <span className="app-index__copy">
