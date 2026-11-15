@@ -231,6 +231,8 @@ function SharedRead() {
               </div>
             </header>
 
+            <ReadingSummary report={report} />
+
             <div className="mt-8 grid gap-10 md:grid-cols-[220px_minmax(0,1fr)] md:gap-14">
               <aside className="md:sticky md:top-24 md:self-start">
                 <Contents items={contents} />
@@ -373,50 +375,57 @@ function InquiryBar({ intent }: { intent: NonNullable<Report["intent"]> }) {
 /** The load-bearing claims, separated from the prose that argues them. */
 function ClaimTable({ claims }: { claims: NonNullable<Report["claims"]> }) {
   return (
-    <section className="border-y border-[#1A1A1A]/15">
-      <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1A4BFF]">
-          Claims
-        </span>
-        <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/40">
-          {claims.length} load-bearing
-        </span>
+    <section className="bp-card overflow-hidden">
+      <div className="bp-card__header">
+        <div>
+          <p className="bp-card__eyebrow">Claims to verify</p>
+          <p className="bp-card__title">The load-bearing statements</p>
+        </div>
+        <span className="bp-badge">{claims.length} claims</span>
       </div>
-      <ul>
+      <ul className="divide-y divide-white/12">
         {claims.map((claim, index) => (
-          <li key={`${claim.text.slice(0, 20)}-${index}`} className="border-b border-[#1A1A1A]/10 py-3 last:border-b-0">
+          <li key={`${claim.text.slice(0, 20)}-${index}`} className="px-5 py-4">
             <div className="flex flex-wrap items-center gap-2">
-              <span
-                className={`font-mono text-[8px] font-bold uppercase tracking-[0.14em] ${
-                  claim.kind === "fact"
-                    ? "text-[#1A4BFF]"
-                    : claim.kind === "prediction"
-                      ? "text-[#B26A00]"
-                      : claim.kind === "value"
-                        ? "text-[#C1121F]"
-                        : "text-[#1A1A1A]/60"
-                }`}
-              >
-                {claim.kind}
-              </span>
-              <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
-                {claim.confidence}
+              <span className="bp-badge">{claim.kind}</span>
+              <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/45">
+                {claim.confidence} confidence
               </span>
             </div>
-            <p className="mt-1 font-serif text-[13.5px] leading-snug text-[#1A1A1A]/85">
+            <p className="mt-2 font-serif text-[14.5px] leading-snug text-white/85">
               {claim.text}
             </p>
-            <p className="mt-0.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">
-              {claim.source || "source not stated"}
+            <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-white/45">
+              {claim.source || "Source not stated"}
             </p>
             {claim.falsifier ? (
-              <p className="mt-1 font-serif text-[12px] leading-snug text-[#1A1A1A]/55">
+              <p className="mt-2 border-l border-[#E7A574]/60 pl-3 font-serif text-[12.5px] leading-snug text-white/60">
                 Would be wrong if: {claim.falsifier}
               </p>
             ) : null}
           </li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+function ReadingSummary({ report }: { report: Report }) {
+  return (
+    <section className="reading-summary" aria-label="Reading at a glance">
+      <div>
+        <p className="reading-summary__label">Why now</p>
+        <p className="reading-summary__body">{report.why_now}</p>
+      </div>
+      <div>
+        <p className="reading-summary__label">Confidence</p>
+        <p className="reading-summary__value">{report.confidence}</p>
+        {report.basis ? <p className="reading-summary__note">{report.basis}</p> : null}
+      </div>
+      <div>
+        <p className="reading-summary__label">Evidence to check</p>
+        <p className="reading-summary__body">{report.falsifier}</p>
+      </div>
     </section>
   );
 }

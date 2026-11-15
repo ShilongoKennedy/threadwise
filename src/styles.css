@@ -2372,3 +2372,39 @@ html.reading-focus .bp-scrim {
   .theory-panel { border-radius: 18px; }
   .mechanism-step { flex-basis: calc(50% - 4px); }
 }
+
+.reading-summary {
+  display: grid;
+  gap: 16px;
+  margin-top: 28px;
+  border-block: 1px solid rgba(255, 255, 255, 0.16);
+  padding-block: 18px;
+}
+.reading-summary > div { min-width: 0; }
+.reading-summary__label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: rgba(255, 232, 214, 0.65);
+}
+.reading-summary__value {
+  margin-top: 5px;
+  font-family: var(--font-display);
+  font-size: 21px;
+  line-height: 1.1;
+  color: #FFFFFF;
+  text-transform: capitalize;
+}
+.reading-summary__note,
+.reading-summary__body {
+  margin-top: 4px;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.62);
+}
+@media (min-width: 768px) {
+  .reading-summary { grid-template-columns: 1.1fr 0.8fr 1.7fr; gap: 28px; }
+}
