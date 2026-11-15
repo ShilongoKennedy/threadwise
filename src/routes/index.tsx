@@ -134,7 +134,7 @@ function LandingPage() {
   return (
     <div
       className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans transition-colors duration-700 selection:bg-[#D8CCFF] selection:text-[#1A1A1A]"
-      data-field-ink={darkInk ? "dark" : "light"}
+      data-field-ink={darkInk ? "light" : "dark"}
       style={{
         backgroundColor: tone.hex,
         color: tone.ink,
