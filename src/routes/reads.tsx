@@ -77,7 +77,7 @@ function ReadsPage() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <BPBadge>Published</BPBadge>
-                      <h2 className="mt-3 font-display text-[21px] leading-snug transition-colors group-hover:text-[#FFE8D6]">
+                      <h2 className="mt-3 font-display text-[19px] leading-snug sm:text-[21px] transition-colors group-hover:text-[#FFE8D6]">
                         {read.input}
                       </h2>
                     </div>

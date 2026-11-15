@@ -131,8 +131,8 @@ export function BPEmptyState({
       {eyebrow ? <p className="bp-empty__eyebrow">{eyebrow}</p> : null}
       <h2 className="bp-empty__title">{title}</h2>
       {body ? <p className="bp-empty__body">{body}</p> : null}
-      {children}
       {action ? <div className="bp-empty__action">{action}</div> : null}
+      {children}
     </section>
   );
 }

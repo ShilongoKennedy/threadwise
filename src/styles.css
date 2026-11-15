@@ -2234,3 +2234,14 @@ main {
   height: 2px !important;
   background: #FFE8D6 !important;
 }
+
+
+@media (max-width: 640px) {
+  .bp-empty__action .bp-button,
+  .bp-card__footer .bp-button { width: 100%; }
+  .bp-card__header { align-items: flex-start; }
+  .bp-card__action { align-self: flex-start; }
+  .bp-row { padding: 14px 15px; }
+  .bp-empty { padding: 20px 16px; }
+  .bp-empty__title { font-size: clamp(26px, 8vw, 34px); }
+}
