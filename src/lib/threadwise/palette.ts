@@ -5,10 +5,11 @@ export type BlueprintColor = {
   wave: "light" | "dark";
 };
 
+/** One field family across the site: void, ink, paper. */
 export const BLUEPRINT_PALETTE: readonly BlueprintColor[] = [
-  { hex: "#B3261E", label: "Soft Red", ink: "#FFFFFF", wave: "light" },
-  { hex: "#1F2DEE", label: "Bright Indigo", ink: "#FFFFFF", wave: "light" },
-  { hex: "#6E1B8A", label: "Deep Purple", ink: "#FFFFFF", wave: "light" },
+  { hex: "#000000", label: "Void Black", ink: "#FFFFFF", wave: "light" },
+  { hex: "#0F1420", label: "Midnight Ink", ink: "#FFFFFF", wave: "light" },
+  { hex: "#FFFBFB", label: "Snow", ink: "#111111", wave: "dark" },
 ];
 
 function hash(value: string) {
@@ -20,7 +21,7 @@ function hash(value: string) {
   return result >>> 0;
 }
 
-/** Deterministic per-page shuffle: the same page always gets the same order. */
+/** Kept for deterministic feature pages; the site shell now selects a fixed field. */
 export function paletteFor(key: string): BlueprintColor[] {
   const colors = [...BLUEPRINT_PALETTE];
   let seed = hash(key);

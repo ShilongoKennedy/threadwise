@@ -15,13 +15,13 @@ import { lazy, Suspense, useEffect, useState, type CSSProperties, type ReactNode
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
-import { paletteFor } from "@/lib/threadwise/palette";
+import { BLUEPRINT_PALETTE } from "@/lib/threadwise/palette";
 import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
 const CloudSync = lazy(() => import("@/components/threadwise/CloudSync"));
 
 function NotFoundComponent() {
   return (
-    <div className="blueprint-page relative flex min-h-[100dvh] items-center justify-center px-4" style={{ backgroundColor: "#B3261E", color: "#FFFFFF" }}>
+    <div className="blueprint-page relative flex min-h-[100dvh] items-center justify-center px-4" style={{ backgroundColor: "#0F1420", color: "#FFFFFF" }}>
       <div className="bp-card relative z-10 w-full max-w-[460px] p-7 md:p-8">
         <p className="bp-card__eyebrow">File not found</p>
         <h1 className="mt-4 font-display text-[64px] leading-none">404</h1>
@@ -50,7 +50,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
-    <div className="blueprint-page relative flex min-h-[100dvh] items-center justify-center px-4" style={{ backgroundColor: "#B3261E", color: "#FFFFFF" }}>
+    <div className="blueprint-page relative flex min-h-[100dvh] items-center justify-center px-4" style={{ backgroundColor: "#0F1420", color: "#FFFFFF" }}>
       <div className="bp-card relative z-10 w-full max-w-[480px] p-7 text-center md:p-8">
         <p className="bp-card__eyebrow">Something interrupted the record</p>
         <h1 className="mt-4 font-display text-[42px] leading-none">This page didn’t load.</h1>
@@ -150,44 +150,13 @@ function RootShell({ children }: { children: ReactNode }) {
 
 
 function SiteBlueprint({ pathname, children }: { pathname: string; children: ReactNode }) {
-  const [toneIndex, setToneIndex] = useState(0);
-  const palette = paletteFor(pathname);
-
-  useEffect(() => {
-    setToneIndex(0);
-    const main = document.querySelector("main");
-    if (!main) return;
-    const allSections = Array.from(main.querySelectorAll<HTMLElement>("section"));
-    const sections = allSections.filter((section) => !section.parentElement?.closest("section"));
-    const nodes = sections.length ? sections : [main];
-    const ratios = new Map<Element, number>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          ratios.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
-        }
-        let best = nodes[0];
-        let bestRatio = -1;
-        nodes.forEach((node) => {
-          const ratio = ratios.get(node) ?? 0;
-          if (ratio > bestRatio) {
-            bestRatio = ratio;
-            best = node;
-          }
-        });
-        setToneIndex(Math.max(0, nodes.indexOf(best)) % palette.length);
-      },
-      { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.05, 0.15, 0.3, 0.5, 0.75, 1] },
-    );
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
-  }, [pathname]);
-
-  const tone = palette[toneIndex] ?? palette[0];
+  const lightPage = pathname === "/terms" || pathname === "/privacy";
+  const tone = lightPage ? BLUEPRINT_PALETTE[2] : BLUEPRINT_PALETTE[1];
   const darkInk = tone.ink === "#111111";
   return (
     <div
       className="site-blueprint"
+      data-field-ink={darkInk ? "light" : "dark"}
       style={{
         "--site-bg": tone.hex,
         "--site-ink": tone.ink,

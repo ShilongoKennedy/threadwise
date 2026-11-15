@@ -7,7 +7,6 @@ import type { SeminarLesson } from "@/lib/threadwise/seminar-lesson";
 import { SeminarLessonView } from "@/components/threadwise/SeminarLessonView";
 import { SeminarLoupe, LoupeSelectionButton, LookCloserButton, useLoupeSelection, type LoupeTarget } from "@/components/threadwise/SeminarLoupe";
 import { supabase } from "@/integrations/supabase/client";
-import { paletteFor } from "@/lib/threadwise/palette";
 import { ReadingFocusToggle, ReadingMarker, ReadingProgress } from "@/components/threadwise/BlueprintUI";
 
 export const Route = createFileRoute("/seminar")({
@@ -26,18 +25,17 @@ export const Route = createFileRoute("/seminar")({
 
 const SAMPLE = `"I am actually in favour of foreign aid as a tool for statecraft, because sometimes foreign aid is easier than bombing people. Sometimes you want to bribe a country to get your way."`;
 
-const TONES = paletteFor("/seminar").map((color) => {
-  const darkInk = color.ink === "#111111";
-  return {
-    bg: color.hex,
-    ink: color.ink,
+const TONES = [
+  {
+    bg: "#0F1420",
+    ink: "#FFFFFF",
     header: "rgba(255, 255, 255, 0.035)",
-    border: darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.2)",
-    accent: color.ink,
-    wave: color.wave,
-    brandFilter: darkInk ? "brightness(0)" : "brightness(0) invert(1)",
-  };
-});
+    border: "rgba(255, 255, 255, 0.2)",
+    accent: "#FFFFFF",
+    wave: "light" as const,
+    brandFilter: "brightness(0) invert(1)",
+  },
+];
 
 type SavedSeminar = {
   id: string;

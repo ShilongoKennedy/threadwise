@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { ThreadTitle } from "@/components/threadwise/ThreadTitle";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
-import { paletteFor, type BlueprintColor } from "@/lib/threadwise/palette";
+import { type BlueprintColor } from "@/lib/threadwise/palette";
 import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
 
 export const Route = createFileRoute("/")({
