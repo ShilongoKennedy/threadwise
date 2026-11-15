@@ -107,7 +107,7 @@ function SharedRead() {
     : [];
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="read-page relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
       <div className="bp-scrim" aria-hidden />
       <ReadingProgress />
@@ -233,12 +233,12 @@ function SharedRead() {
 
             <ReadingSummary report={report} />
 
-            <div className="mt-8 grid gap-10 md:grid-cols-[220px_minmax(0,1fr)] md:gap-14">
+            <div className="mt-8 grid gap-10 md:grid-cols-[240px_minmax(0,1fr)] md:gap-14">
               <aside className="md:sticky md:top-24 md:self-start">
                 <Contents items={contents} />
               </aside>
 
-              <div className="min-w-0 max-w-[70ch] space-y-8">
+              <div className="read-column min-w-0 space-y-8">
 
             {input && (
               <details className="group border-y border-[#1A1A1A]/15 py-2">
@@ -560,9 +560,7 @@ function Contents({ items }: { items: { n: string; title: string }[] }) {
           <a
             href={`#s-${item.n}`}
             aria-current={active === item.n ? "true" : undefined}
-            className={`group flex gap-2.5 rounded-lg px-1.5 py-1 font-mono text-[9px] uppercase leading-snug tracking-[0.08em] transition-colors ${
-              active === item.n ? "bg-white/10 text-white" : "text-white/50 hover:text-white"
-            }`}
+            className={`read-contents__link ${active === item.n ? "is-active" : ""}`}
           >
             <span className={`shrink-0 ${active === item.n ? "text-[#E8EEFF]" : "text-[#B9D7FF]/70"}`}>{item.n}</span>
             <span className="border-b border-transparent pb-0.5 group-hover:border-white/25">
@@ -576,14 +574,14 @@ function Contents({ items }: { items: { n: string; title: string }[] }) {
 
   return (
     <>
-      <nav aria-label="Contents" className="hidden border-t border-[#1A1A1A]/15 pt-3 md:block">
+      <nav aria-label="Contents" className="read-contents hidden md:block">
         <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/40">
           Contents
         </p>
         {list}
       </nav>
 
-      <details className="group border-y border-[#1A1A1A]/15 py-2 md:hidden">
+      <details className="read-contents read-contents--mobile group md:hidden">
         <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF] [&::-webkit-details-marker]:hidden">
           <span className="flex items-center gap-2">
             Contents
@@ -633,25 +631,23 @@ function buildBlocks(report: Report) {
       key: "stakes",
       title: "Who gains, who pays",
       body: (
-        <ul className="space-y-3">
+        <div className="read-stakes">
           {report.stakes.map((stake) => (
-            <li key={stake.actor} className="border-l-2 border-[#1A1A1A] pl-3">
-              <p className="font-display text-[16px] leading-tight">{stake.actor}</p>
-              <p className="mt-1 text-[14px] leading-snug text-[#1A1A1A]/80">
-                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A4BFF]">
-                  gains ·{" "}
-                </span>
-                {stake.gains}
-              </p>
-              <p className="mt-0.5 text-[14px] leading-snug text-[#1A1A1A]/60">
-                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#C1121F]">
-                  loses ·{" "}
-                </span>
-                {stake.loses}
-              </p>
-            </li>
+            <article key={stake.actor} className="read-stake">
+              <h3 className="read-stake__actor">{stake.actor}</h3>
+              <div className="read-stake__grid">
+                <div className="read-stake__item read-stake__item--gain">
+                  <p className="read-stake__label">Gains</p>
+                  <p>{stake.gains}</p>
+                </div>
+                <div className="read-stake__item read-stake__item--loss">
+                  <p className="read-stake__label">Loses</p>
+                  <p>{stake.loses}</p>
+                </div>
+              </div>
+            </article>
           ))}
-        </ul>
+        </div>
       ),
     });
   }
@@ -661,23 +657,21 @@ function buildBlocks(report: Report) {
       key: "precedent",
       title: "What it echoes",
       body: (
-        <ul className="space-y-4">
+        <div className="read-echoes">
           {report.precedent.map((item) => (
-            <li key={item.name}>
-              <p className="font-display text-[17px] leading-tight">
-                {item.name}{" "}
-                <span className="font-mono text-[10px] text-[#1A1A1A]/55">{item.when}</span>
-              </p>
-              <p className="mt-1 text-[15px] leading-relaxed">{item.parallel}</p>
-              <p className="mt-1 text-[14px] leading-relaxed text-[#1A1A1A]/60">
-                <span className="font-mono text-[9px] uppercase tracking-[0.14em]">
-                  where it breaks ·{" "}
-                </span>
-                {item.breaks}
-              </p>
-            </li>
+            <article key={item.name} className="read-echo">
+              <div className="read-echo__head">
+                <h3>{item.name}</h3>
+                <span className="read-echo__year">{item.when}</span>
+              </div>
+              <p className="read-echo__body">{item.parallel}</p>
+              <div className="read-echo__break">
+                <p className="read-echo__label">Where it breaks</p>
+                <p>{item.breaks}</p>
+              </div>
+            </article>
           ))}
-        </ul>
+        </div>
       ),
     });
   }
