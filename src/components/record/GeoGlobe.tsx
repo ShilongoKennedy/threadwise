@@ -83,8 +83,8 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
   }
 
   // Fine graticule.
-  ctx.lineWidth = blueprint ? 1.25 : 1;
-  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.72)" : "rgba(112, 101, 88, 0.09)";
+  ctx.lineWidth = blueprint ? 1 : 1;
+  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.38)" : "rgba(112, 101, 88, 0.09)";
   for (let lon = -180; lon <= 180; lon += 30) {
     const [x] = project(lon, 0);
     ctx.beginPath();
@@ -133,21 +133,21 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
       if (blueprint) {
         if (!dotPattern) {
           const dot = document.createElement("canvas");
-          dot.width = 5;
-          dot.height = 5;
+          dot.width = 7;
+          dot.height = 7;
           const dotCtx = dot.getContext("2d");
           if (dotCtx) {
-            dotCtx.fillStyle = "rgba(255, 255, 255, 1)";
+            dotCtx.fillStyle = "rgba(255, 255, 255, 0.82)";
             dotCtx.beginPath();
-            dotCtx.arc(2.5, 2.5, 0.98, 0, Math.PI * 2);
+            dotCtx.arc(3.5, 3.5, 0.8, 0, Math.PI * 2);
             dotCtx.fill();
           }
           dotPattern = ctx.createPattern(dot, "repeat");
         }
         ctx.fillStyle = dotPattern ?? "rgba(255, 255, 255, 0.55)";
         ctx.fill("evenodd");
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.84)";
-        ctx.lineWidth = 1.15;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.lineWidth = 0.8;
         ctx.stroke();
       } else {
         ctx.fillStyle = "#E7D8C3";
@@ -336,18 +336,6 @@ export function GeoGlobe({
     globe.rotation.y = 0;
     group.add(globe);
 
-    const glass = new THREE.Mesh(
-      new THREE.SphereGeometry(1.002, 64, 48),
-      new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.045,
-        depthWrite: false,
-        side: THREE.FrontSide,
-      }),
-    );
-    group.add(glass);
-
     const rimPoints: THREE.Vector3[] = [];
     for (let index = 0; index <= 160; index += 1) {
       const angle = (index / 160) * Math.PI * 2;
@@ -358,7 +346,7 @@ export function GeoGlobe({
       new THREE.LineBasicMaterial({
         color: 0xffffff,
         transparent: true,
-        opacity: 0.95,
+        opacity: 0.9,
         depthTest: false,
         depthWrite: false,
       }),
@@ -366,12 +354,51 @@ export function GeoGlobe({
     globeRim.renderOrder = 9;
     scene.add(globeRim);
 
+    const equatorPoints: THREE.Vector3[] = [];
+    for (let index = 0; index <= 160; index += 1) {
+      const angle = (index / 160) * Math.PI * 2;
+      equatorPoints.push(new THREE.Vector3(Math.cos(angle) * 1.004, 0, Math.sin(angle) * 1.004));
+    }
+    const equator = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints(equatorPoints),
+      new THREE.LineDashedMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.5,
+        dashSize: 0.018,
+        gapSize: 0.014,
+        depthWrite: false,
+      }),
+    );
+    equator.computeLineDistances();
+    group.add(equator);
+
+    const orbitPoints: THREE.Vector3[] = [];
+    for (let index = 0; index <= 180; index += 1) {
+      const angle = (index / 180) * Math.PI * 2;
+      orbitPoints.push(new THREE.Vector3(Math.cos(angle) * 1.08, Math.sin(angle) * 1.08, 0));
+    }
+    const orbit = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints(orbitPoints),
+      new THREE.LineDashedMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.3,
+        dashSize: 0.012,
+        gapSize: 0.02,
+        depthWrite: false,
+      }),
+    );
+    orbit.computeLineDistances();
+    orbit.rotation.set(0.92, 0.18, 0.34);
+    group.add(orbit);
+
     const thickRim = new THREE.Mesh(
-      new THREE.TorusGeometry(1.006, 0.006, 8, 180),
+      new THREE.TorusGeometry(1.006, 0.003, 8, 180),
       new THREE.MeshBasicMaterial({
         color: 0xffffff,
         transparent: true,
-        opacity: 0.95,
+        opacity: 0.9,
         depthTest: false,
         depthWrite: false,
       }),
