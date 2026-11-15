@@ -8,7 +8,6 @@ export type BlueprintColor = {
 export const BLUEPRINT_PALETTE: readonly BlueprintColor[] = [
   { hex: "#B3261E", label: "Soft Red", ink: "#FFFFFF", wave: "light" },
   { hex: "#1F2DEE", label: "Bright Indigo", ink: "#FFFFFF", wave: "light" },
-  { hex: "#FF40D6", label: "Cotton Bloom", ink: "#FFFFFF", wave: "dark" },
   { hex: "#9F0DF3", label: "Purple (X11)", ink: "#FFFFFF", wave: "light" },
 ];
 
