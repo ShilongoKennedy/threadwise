@@ -83,8 +83,8 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
   }
 
   // Fine graticule.
-  ctx.lineWidth = blueprint ? 1.5 : 1;
-  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.7)" : "rgba(112, 101, 88, 0.09)";
+  ctx.lineWidth = blueprint ? 2 : 1;
+  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.9)" : "rgba(112, 101, 88, 0.09)";
   for (let lon = -180; lon <= 180; lon += 30) {
     const [x] = project(lon, 0);
     ctx.beginPath();
@@ -133,21 +133,24 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
       if (blueprint) {
         if (!dotPattern) {
           const dot = document.createElement("canvas");
-          dot.width = 9;
-          dot.height = 9;
+          dot.width = 8;
+          dot.height = 8;
           const dotCtx = dot.getContext("2d");
           if (dotCtx) {
-            dotCtx.fillStyle = "rgba(255, 255, 255, 1)";
+            dotCtx.fillStyle = "#FFFFFF";
             dotCtx.beginPath();
-            dotCtx.arc(4.5, 4.5, 2, 0, Math.PI * 2);
+            dotCtx.arc(4, 4, 2.45, 0, Math.PI * 2);
             dotCtx.fill();
           }
           dotPattern = ctx.createPattern(dot, "repeat");
         }
-        ctx.fillStyle = dotPattern ?? "rgba(255, 255, 255, 0.55)";
+        // A faint white land wash lifts the dot field off the saturated page.
+        ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
         ctx.fill("evenodd");
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.14)";
-        ctx.lineWidth = 0.6;
+        ctx.fillStyle = dotPattern ?? "rgba(255, 255, 255, 0.8)";
+        ctx.fill("evenodd");
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+        ctx.lineWidth = 0.8;
         ctx.stroke();
       } else {
         ctx.fillStyle = "#E7D8C3";
@@ -232,11 +235,11 @@ function GlobeFallback({ theme }: { theme?: "dark" | "light" | "blueprint" }) {
   const blueprint = theme === "blueprint";
   return (
     <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-      <div className={`relative aspect-square w-[78%] rounded-full ${blueprint ? "border border-white/30 bg-transparent shadow-[0_0_80px_rgba(247,234,214,0.08)]" : "bg-[radial-gradient(circle_at_34%_28%,#fffdf8_0%,#f2e8d9_42%,#ddccb8_76%,#c0ac96_100%)] shadow-[inset_-34px_-26px_70px_rgba(100,84,67,0.14),0_34px_70px_rgba(89,72,55,0.1)]"}`}>
-        <div className={`absolute inset-[5%] rounded-full border ${blueprint ? "border-white/25" : "border-[#665544]/20"}`} />
+      <div className={`relative aspect-square w-[78%] rounded-full ${blueprint ? "border border-white/60 bg-transparent shadow-[0_0_110px_rgba(255,255,255,0.16)]" : "bg-[radial-gradient(circle_at_34%_28%,#fffdf8_0%,#f2e8d9_42%,#ddccb8_76%,#c0ac96_100%)] shadow-[inset_-34px_-26px_70px_rgba(100,84,67,0.14),0_34px_70px_rgba(89,72,55,0.1)]"}`}>
+        <div className={`absolute inset-[5%] rounded-full border ${blueprint ? "border-white/45" : "border-[#665544]/20"}`} />
         <div className={`absolute inset-x-[5%] top-1/2 h-px ${blueprint ? "bg-white/25" : "bg-[#665544]/20"}`} />
         <div className={`absolute inset-y-[5%] left-1/2 w-px ${blueprint ? "bg-white/25" : "bg-[#665544]/20"}`} />
-        <div className={`absolute inset-[24%] rounded-full border ${blueprint ? "border-white/20" : "border-[#665544]/15"}`} />
+        <div className={`absolute inset-[24%] rounded-full border ${blueprint ? "border-white/35" : "border-[#665544]/15"}`} />
         <div className="absolute left-[28%] top-[34%] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1A4BFF]" />
         <div className="absolute left-[61%] top-[48%] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1A4BFF]" />
         <div className="absolute left-[63%] top-[52%] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C1121F]" />
@@ -346,7 +349,7 @@ export function GeoGlobe({
       new THREE.LineBasicMaterial({
         color: 0xffffff,
         transparent: true,
-        opacity: 0.95,
+        opacity: 1,
         depthTest: false,
         depthWrite: false,
       }),
@@ -364,7 +367,7 @@ export function GeoGlobe({
       new THREE.LineDashedMaterial({
         color: 0xffffff,
         transparent: true,
-        opacity: 0.68,
+        opacity: 0.86,
         dashSize: 0.022,
         gapSize: 0.014,
         depthWrite: false,
@@ -386,6 +389,19 @@ export function GeoGlobe({
         }),
       );
       group.add(atmosphere);
+    } else {
+      const glow = new THREE.Mesh(
+        new THREE.SphereGeometry(1.035, 64, 48),
+        new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.09,
+          side: THREE.BackSide,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        }),
+      );
+      group.add(glow);
     }
 
     const markerObjects: Array<{ id: string; object: THREE.Object3D }> = [];
@@ -672,7 +688,7 @@ export function GeoGlobe({
               <span
                 className={`absolute left-8 top-1/2 hidden -translate-y-1/2 whitespace-nowrap border px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] shadow-[0_4px_14px_rgba(0,0,0,0.14)] transition-colors md:block ${
                   theme === "blueprint"
-                    ? "border-white/25 bg-[#0A0805]/35 text-white/70 backdrop-blur-sm"
+                    ? "border-white/45 bg-[#0A0805]/35 text-white/70 backdrop-blur-sm"
                     : theme === "light"
                       ? "border-[#1A1A1A]/15 bg-[#FFFCF7] text-[#1A1A1A]/65"
                       : "border-[#2A2118]/20 bg-[#F2E7D5] text-[#1A1410]/75"
