@@ -115,6 +115,7 @@ function LandingPage() {
   }, []);
 
   const tone = LANDING_TONES[toneIndex] ?? LANDING_TONES[0];
+  const darkInk = tone.ink === "#111111";
   const openRead = (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
@@ -130,19 +131,18 @@ function LandingPage() {
     <div
       className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans transition-colors duration-700 selection:bg-[#FFE6A3] selection:text-[#1A1A1A]"
       style={{
-        backgroundColor: "#733225",
-        color: "#FFFFFF",
-        "--blueprint-ink": "#FFFFFF",
-        "--blueprint-accent": "#E7A574",
-        "--section-tint": tone.hex,
-        "--landing-brand-filter": "brightness(0) invert(1)",
-        "--landing-header-border": "rgba(255,255,255,0.18)",
+        backgroundColor: tone.hex,
+        color: tone.ink,
+        "--blueprint-ink": tone.ink,
+        "--blueprint-accent": darkInk ? "#4A3A00" : "#FFE6A3",
+        "--landing-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
+        "--landing-header-border": darkInk ? "rgba(17,17,17,0.22)" : "rgba(255,255,255,0.16)",
       } as CSSProperties}
     >
       <main id="main" className="relative z-10 flex-1">
         <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden">
           <div className="globe-stage absolute inset-0 z-[5]">
-            <GeoGlobe theme="blueprint" layout="right" minimal mobileScale={0.8} />
+            <GeoGlobe theme="blueprint" layout="right" minimal />
           </div>
 
           <GlassHeader tone="dark" section="record" />
@@ -151,27 +151,27 @@ function LandingPage() {
             <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
               <div className="pointer-events-none relative z-20 max-w-[62vw] md:max-w-[560px]">
                 <div className="mb-4 flex items-center gap-3 font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]/75">
-                  <span className="h-px w-8 bg-[#E7A574]/70" />
+                  <span className="h-px w-8 bg-[#1A4BFF]/55" />
                   A field note / IAEA–Iran
                 </div>
                 <h1 className="max-w-[11ch] font-display text-[clamp(48px,6vw,88px)] leading-[0.9] tracking-[-0.045em] text-white">
                   See what the story hides.
                 </h1>
-                <div className="pointer-events-auto mt-8 flex w-full max-w-[360px] flex-col gap-2.5 sm:mt-11 sm:max-w-none sm:flex-row sm:items-center">
+                <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-12">
                   <Link
                     to="/read/$token"
                     params={{ token: SAMPLE_TOKEN }}
-                    className="hero-primary group inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#F2D0B4] bg-[#FFF8F0] px-5 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#4A2016] transition-colors hover:border-[#E7A574] hover:bg-[#FFE8D6] sm:w-auto"
+                    className="group inline-flex items-center gap-2 border-b border-[#C74212]/35 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#11110F]/70 transition-colors hover:border-[#C74212] hover:text-[#C74212]"
                   >
                     Open the IAEA read
-                    <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </Link>
                   <Link
                     to="/analyst"
-                    className="group inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-white/30 bg-white/[0.06] px-5 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-white backdrop-blur-sm transition-colors hover:border-[#E7A574] hover:bg-white/10 sm:w-auto"
+                    className="group inline-flex items-center gap-2 border-b border-[#1A4BFF]/25 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#1A4BFF]/80 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
                   >
                     Bring your own source
-                    <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </Link>
                 </div>
               </div>

@@ -201,18 +201,18 @@ function SiteBlueprint({ pathname, children }: { pathname: string; children: Rea
   }, [pathname]);
 
   const tone = palette[toneIndex] ?? palette[0];
+  const darkInk = tone.ink === "#111111";
   return (
     <div
       className="site-blueprint"
       style={{
-        "--site-bg": "#733225",
-        "--site-tint": tone.hex,
-        "--site-ink": "#FFFFFF",
-        "--site-header-bg": "rgba(255, 255, 255, 0.04)",
-        "--site-header-border": "rgba(255, 255, 255, 0.18)",
-        "--site-header-ink": "#FFFFFF",
-        "--site-brand-filter": "brightness(0) invert(1)",
-        "--site-accent": "#E7A574",
+        "--site-bg": tone.hex,
+        "--site-ink": tone.ink,
+        "--site-header-bg": "rgba(255, 255, 255, 0.035)",
+        "--site-header-border": darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.16)",
+        "--site-header-ink": tone.ink,
+        "--site-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
+        "--site-accent": darkInk ? "#4A3A00" : "#FFE6A3",
       } as CSSProperties}
     >
       {children}
