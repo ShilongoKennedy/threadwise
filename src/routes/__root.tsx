@@ -208,8 +208,8 @@ function SiteBlueprint({ pathname, children }: { pathname: string; children: Rea
       style={{
         "--site-bg": tone.hex,
         "--site-ink": tone.ink,
-        "--wave-art": tone.wave === "dark" ? 'url("/blueprint-waves-dark.svg")' : 'url("/blueprint-waves.svg")',
-        "--wave-opacity": tone.wave === "dark" ? "0.65" : "0.72",
+        "--wave-art": tone.wave === "dark" ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")',
+        "--wave-opacity": tone.wave === "dark" ? "0.7" : "0.72",
         "--site-header-bg": "rgba(255, 255, 255, 0.035)",
         "--site-header-border": darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.16)",
         "--site-header-ink": tone.ink,

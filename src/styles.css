@@ -2025,3 +2025,23 @@ main {
   background-repeat: no-repeat !important;
   opacity: var(--wave-opacity, 0.72) !important;
 }
+
+
+/* Brand lockup must follow the section ink, including the golden field. */
+.blueprint-page header a[aria-label="Threadwise — home"] span,
+.blueprint-page header a[aria-label="Threadwise — home"] * {
+  color: var(--blueprint-ink, #FFFFFF) !important;
+  -webkit-text-fill-color: var(--blueprint-ink, #FFFFFF) !important;
+}
+
+.site-blueprint header.sticky a[aria-label="Threadwise — home"] span,
+.site-blueprint header.sticky a[aria-label="Threadwise — home"] * {
+  color: var(--site-header-ink, #FFFFFF) !important;
+  -webkit-text-fill-color: var(--site-header-ink, #FFFFFF) !important;
+}
+
+.seminar-header header a[aria-label="Threadwise — home"] span,
+.seminar-header header a[aria-label="Threadwise — home"] * {
+  color: var(--seminar-header-ink, #FFFFFF) !important;
+  -webkit-text-fill-color: var(--seminar-header-ink, #FFFFFF) !important;
+}

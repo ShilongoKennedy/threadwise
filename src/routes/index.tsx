@@ -135,8 +135,8 @@ function LandingPage() {
         color: tone.ink,
         "--blueprint-ink": tone.ink,
         "--blueprint-accent": darkInk ? "#4A3A00" : "#FFE6A3",
-        "--wave-art": tone.wave === "dark" ? 'url("/blueprint-waves-dark.svg")' : 'url("/blueprint-waves.svg")',
-        "--wave-opacity": tone.wave === "dark" ? "0.65" : "0.72",
+        "--wave-art": tone.wave === "dark" ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")',
+        "--wave-opacity": tone.wave === "dark" ? "0.7" : "0.72",
         "--landing-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
         "--landing-header-border": darkInk ? "rgba(17,17,17,0.22)" : "rgba(255,255,255,0.16)",
       } as CSSProperties}

@@ -83,8 +83,8 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
   }
 
   // Fine graticule.
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.48)" : "rgba(112, 101, 88, 0.09)";
+  ctx.lineWidth = blueprint ? 1.25 : 1;
+  ctx.strokeStyle = blueprint ? "rgba(255, 255, 255, 0.58)" : "rgba(112, 101, 88, 0.09)";
   for (let lon = -180; lon <= 180; lon += 30) {
     const [x] = project(lon, 0);
     ctx.beginPath();
@@ -133,21 +133,21 @@ function drawGeoTexture(data: unknown, theme: "dark" | "light" | "blueprint" = "
       if (blueprint) {
         if (!dotPattern) {
           const dot = document.createElement("canvas");
-          dot.width = 6;
-          dot.height = 6;
+          dot.width = 5;
+          dot.height = 5;
           const dotCtx = dot.getContext("2d");
           if (dotCtx) {
             dotCtx.fillStyle = "rgba(255, 255, 255, 0.96)";
             dotCtx.beginPath();
-            dotCtx.arc(3, 3, 0.9, 0, Math.PI * 2);
+            dotCtx.arc(2.5, 2.5, 0.98, 0, Math.PI * 2);
             dotCtx.fill();
           }
           dotPattern = ctx.createPattern(dot, "repeat");
         }
         ctx.fillStyle = dotPattern ?? "rgba(255, 255, 255, 0.55)";
         ctx.fill("evenodd");
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.56)";
-        ctx.lineWidth = 1.0;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.lineWidth = 1.15;
         ctx.stroke();
       } else {
         ctx.fillStyle = "#E7D8C3";
@@ -335,6 +335,24 @@ export function GeoGlobe({
     const globe = new THREE.Mesh(new THREE.SphereGeometry(1, 128, 96), globeMaterial);
     globe.rotation.y = 0;
     group.add(globe);
+
+    const rimPoints: THREE.Vector3[] = [];
+    for (let index = 0; index <= 160; index += 1) {
+      const angle = (index / 160) * Math.PI * 2;
+      rimPoints.push(new THREE.Vector3(Math.cos(angle) * 1.008, Math.sin(angle) * 1.008, 0));
+    }
+    const globeRim = new THREE.LineLoop(
+      new THREE.BufferGeometry().setFromPoints(rimPoints),
+      new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.95,
+        depthTest: false,
+        depthWrite: false,
+      }),
+    );
+    globeRim.renderOrder = 9;
+    scene.add(globeRim);
 
     if (isBlueprint) {
       const rim = new THREE.Mesh(
@@ -544,6 +562,9 @@ export function GeoGlobe({
       group.position.y += (targetGroupY - group.position.y) * 0.055;
       group.rotation.y += (targetRotationY - group.rotation.y) * 0.035;
       group.rotation.x += (targetRotationX - group.rotation.x) * 0.035;
+      globeRim.position.copy(group.position);
+      globeRim.scale.copy(group.scale);
+      globeRim.visible = isBlueprint;
       renderer.render(scene, camera);
       updateMarkerLabels();
     };
