@@ -92,12 +92,12 @@ export function AppHeader({
       <header className={`app-header sticky top-0 z-50 ${scrolled ? "is-scrolled" : ""}`}>
         <div className="app-header__shell">
           <div className="app-header__inner">
-            <div className="app-header__brand-card">
+            <div className="app-header__brand">
               <BrandLockup size="md" asLink />
-              <span className="app-header__brand-divider" aria-hidden="true" />
               <div className="app-header__current" aria-live="polite">
                 <span className="app-header__folio">{String(currentIndex).padStart(2, "0")}</span>
                 <span className="app-header__current-label">{current?.label ?? "Index"}</span>
+                <span className="app-header__hang" aria-hidden="true" />
               </div>
             </div>
 
