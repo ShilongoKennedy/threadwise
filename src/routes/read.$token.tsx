@@ -792,18 +792,18 @@ function RedTeam({ report }: { report: Report }) {
             event.preventDefault();
             void spar(position);
           }}
-          className="flex items-center gap-2 border-2 border-[#1A1A1A] px-3 py-2"
+          className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center"
         >
           <input
             value={position}
             onChange={(event) => setPosition(event.target.value)}
             placeholder="I think this reading is wrong because…"
-            className="min-w-0 flex-1 bg-transparent font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/35"
+            className="bp-input min-w-0 flex-1"
           />
           <button
             type="submit"
             disabled={busy || position.trim().length < 20}
-            className="inline-flex min-h-11 shrink-0 items-center px-2 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] disabled:opacity-40"
+            className="bp-button bp-button--secondary bp-button--sm shrink-0"
           >
             {busy ? "Thinking…" : "Argue →"}
           </button>
@@ -856,18 +856,18 @@ function FileFinding({ token, note }: { token: string; note: string }) {
   };
 
   return (
-    <section className="mt-10 border-y border-[#1A1A1A]/15">
-      <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]/55">File a finding</span>
-        <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A4BFF]">
-          questions →
+    <section className="bp-card mt-10">
+      <div className="bp-card__header">
+        <p className="bp-card__eyebrow">File a finding</p>
+        <Link to="/questions" className="bp-button bp-button--ghost bp-button--sm">
+          Questions →
         </Link>
       </div>
-      <div className="space-y-3 px-4 py-4">
+      <div className="bp-card__body space-y-3">
         <select
           value={selected}
           onChange={(event) => setSelected(event.target.value)}
-          className="w-full border-2 border-[#1A1A1A] bg-white px-2 py-2 font-serif text-[14px] outline-none"
+          className="bp-input bp-select"
         >
           {questions.map((question) => (
             <option key={question.id} value={question.id}>
@@ -879,24 +879,24 @@ function FileFinding({ token, note }: { token: string; note: string }) {
           value={text}
           onChange={(event) => setText(event.target.value)}
           rows={3}
-          className="w-full resize-none border-2 border-[#1A1A1A] px-2 py-2 font-serif text-[14px] leading-relaxed outline-none"
+          className="bp-input bp-textarea min-h-[110px]"
         />
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => void file("for")}
-            className="border-2 border-[#1A4BFF] bg-[#1A4BFF] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]"
+            className="bp-button bp-button--primary bp-button--sm"
           >
             This supports it
           </button>
           <button
             type="button"
             onClick={() => void file("against")}
-            className="border-2 border-[#C1121F] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#C1121F]"
+            className="bp-button bp-button--danger bp-button--sm"
           >
             This argues against it
           </button>
-          {done && <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">{done}</span>}
+          {done && <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/55">{done}</span>}
         </div>
       </div>
     </section>
@@ -1176,7 +1176,7 @@ function Proposals({ report, token }: { report: Report; token: string }) {
       <ul className="divide-y divide-[#1A1A1A]/10">
         {items.map((item) => (
           <li key={`${item.question_id}-${item.note.slice(0, 12)}`} className="px-4 py-3">
-            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/55">{item.question}</p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/55">{item.question}</p>
             {item.claim ? (
               <p className="mt-1 border-l-2 border-[#1A4BFF] pl-2 font-serif text-[13px] leading-snug text-[#1A1A1A]/65">
                 “{item.claim}”
@@ -1196,7 +1196,7 @@ function Proposals({ report, token }: { report: Report; token: string }) {
           type="button"
           onClick={() => void fileAll()}
           disabled={filed}
-          className="border-2 border-[#1A4BFF] bg-[#1A4BFF] px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white disabled:opacity-40"
+          className="bp-button bp-button--primary bp-button--sm"
         >
           {filed ? "Filed" : "File all"}
         </button>
