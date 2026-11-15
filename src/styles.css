@@ -4176,3 +4176,6 @@ body header.app-header .app-header__signin:hover { color: #DDD6FE !important; -w
 }
 
 .thread-title { pointer-events: auto; }
+
+/* The landing field is now scroll-interpolated rather than section-switched. */
+.landing-field { transition: color 260ms ease !important; }

@@ -301,6 +301,11 @@ export function GeoGlobe({
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      setFailed(true);
+    };
+    renderer.domElement.addEventListener("webglcontextlost", onContextLost);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.1;
     renderer.domElement.style.width = "100%";
@@ -759,20 +764,32 @@ export function GeoGlobe({
     ro.observe(mount);
 
     let disposed = false;
-    fetch("/geo/countries.geojson")
-      .then((response) => response.json())
-      .then((data) => {
-        if (disposed) return;
-        const texture = new THREE.CanvasTexture(drawGeoTexture(data, theme));
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-        globeMaterial.map = texture;
-        globeMaterial.needsUpdate = true;
-        setReady(true);
-      })
-      .catch(() => {
-        if (!disposed) setReady(true);
-      });
+    const loadGeography = (attempt = 0) => {
+      fetch("/geo/countries.geojson", { cache: "force-cache" })
+        .then((response) => {
+          if (!response.ok) throw new Error(`Geography request failed: ${response.status}`);
+          return response.json();
+        })
+        .then((data) => {
+          if (disposed) return;
+          const texture = new THREE.CanvasTexture(drawGeoTexture(data, theme));
+          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+          globeMaterial.map = texture;
+          globeMaterial.needsUpdate = true;
+          setFailed(false);
+          setReady(true);
+        })
+        .catch(() => {
+          if (disposed) return;
+          if (attempt < 2) {
+            window.setTimeout(() => loadGeography(attempt + 1), 350 * (attempt + 1));
+          } else {
+            setFailed(true);
+          }
+        });
+    };
+    loadGeography();
 
     setReady(false);
     animate();
@@ -787,6 +804,7 @@ export function GeoGlobe({
       window.removeEventListener("pointermove", onDragMove);
       window.removeEventListener("pointerup", stopDragging);
       mount.removeEventListener("wheel", onWheel);
+      renderer.domElement.removeEventListener("webglcontextlost", onContextLost);
       ro.disconnect();
       renderer.dispose();
       scene.traverse((object) => {
@@ -804,7 +822,7 @@ export function GeoGlobe({
   return (
     <div className="relative h-full w-full">
       <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />
-      {failed ? <GlobeFallback theme={theme} /> : null}
+      {failed || !ready ? <GlobeFallback theme={theme} /> : null}
       <div className={`absolute inset-0 transition-opacity duration-700 ${ready || failed ? "opacity-100" : "opacity-0"}`}>
         {minimal ? null : CITIES.map((item) => {
           const isActive = active === item.id || selectedId === item.id;

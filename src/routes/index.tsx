@@ -48,6 +48,41 @@ const LANDING_TONES: BlueprintColor[] = [
   { hex: "#FFFBFB", label: "Paper White", ink: "#111111", wave: "dark" },
 ];
 
+const FIELD_STOPS = [
+  { at: 0, hex: "#000000" },
+  { at: 0.4, hex: "#0F1420" },
+  { at: 0.7, hex: "#0F1420" },
+  { at: 1, hex: "#FFFBFB" },
+] as const;
+
+function mixHex(a: string, b: string, t: number) {
+  const parse = (hex: string) => [
+    Number.parseInt(hex.slice(1, 3), 16),
+    Number.parseInt(hex.slice(3, 5), 16),
+    Number.parseInt(hex.slice(5, 7), 16),
+  ];
+  const [ar, ag, ab] = parse(a);
+  const [br, bg, bb] = parse(b);
+  const clamp = Math.max(0, Math.min(1, t));
+  const channel = (from: number, to: number) => Math.round(from + (to - from) * clamp).toString(16).padStart(2, "0");
+  return `#${channel(ar, br)}${channel(ag, bg)}${channel(ab, bb)}`;
+}
+
+function fieldColorAt(progress: number) {
+  const p = Math.max(0, Math.min(1, progress));
+  for (let index = 0; index < FIELD_STOPS.length - 1; index += 1) {
+    const from = FIELD_STOPS[index];
+    const to = FIELD_STOPS[index + 1];
+    if (p <= to.at) {
+      const raw = (p - from.at) / Math.max(0.0001, to.at - from.at);
+      const eased = raw * raw * (3 - 2 * raw);
+      return mixHex(from.hex, to.hex, eased);
+    }
+  }
+  return FIELD_STOPS[FIELD_STOPS.length - 1].hex;
+}
+
+
 
 const LOOP = [
   {
@@ -81,7 +116,7 @@ const PLACE_INDEX = [
 function LandingPage() {
   const [activePlace, setActivePlace] = useState<string | null>(null);
   const [entering, setEntering] = useState(false);
-  const [toneIndex, setToneIndex] = useState(0);
+  const fieldRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const timerRef = useRef<number | null>(null);
 
@@ -92,37 +127,46 @@ function LandingPage() {
   }, []);
 
   useEffect(() => {
-    const main = document.querySelector("main");
-    if (!main) return;
-    const allSections = Array.from(main.querySelectorAll<HTMLElement>("section"));
-    const sections = allSections.filter((section) => !section.parentElement?.closest("section"));
-    const nodes = sections.length ? sections : [main];
-    const ratios = new Map<Element, number>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          ratios.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
-        }
-        let best = nodes[0];
-        let bestRatio = -1;
-        nodes.forEach((node) => {
-          const ratio = ratios.get(node) ?? 0;
-          if (ratio > bestRatio) {
-            bestRatio = ratio;
-            best = node;
-          }
-        });
-        const index = Math.max(0, nodes.indexOf(best));
-        setToneIndex(index >= 3 ? 2 : index === 0 ? 0 : 1);
-      },
-      { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.05, 0.15, 0.3, 0.5, 0.75, 1] },
-    );
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
+    const root = fieldRef.current;
+    if (!root) return;
+    let frame = 0;
+
+    const updateField = () => {
+      frame = 0;
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const progress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
+      const light = progress > 0.86;
+      const ink = light ? "#111111" : "#FFFFFF";
+      root.style.backgroundColor = fieldColorAt(progress);
+      root.style.color = ink;
+      root.style.setProperty("--blueprint-ink", ink);
+      root.style.setProperty("--blueprint-accent", ink);
+      root.style.setProperty("--landing-brand-filter", light ? "brightness(0)" : "brightness(0) invert(1)");
+      root.style.setProperty("--landing-header-border", light ? "rgba(17,17,17,0.22)" : "rgba(255,255,255,0.16)");
+      root.style.setProperty("--wave-art", light ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")');
+      root.style.setProperty("--wave-opacity", light ? "0.7" : "0.72");
+      root.dataset.fieldInk = light ? "light" : "dark";
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(updateField);
+    };
+    updateField();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    const resize = new ResizeObserver(onScroll);
+    resize.observe(document.body);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      resize.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, []);
 
-  const tone = LANDING_TONES[toneIndex] ?? LANDING_TONES[0];
-  const darkInk = tone.ink === "#111111";
+  const initialTone = LANDING_TONES[0];
+  const darkInk = false;
   const openRead = (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
@@ -136,17 +180,18 @@ function LandingPage() {
   };
   return (
     <div
-      className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans transition-colors duration-700 selection:bg-[#D8CCFF] selection:text-[#1A1A1A]"
+      ref={fieldRef}
+      className="landing-field blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans selection:bg-[#D8CCFF] selection:text-[#1A1A1A]"
       data-field-ink={darkInk ? "light" : "dark"}
       style={{
-        backgroundColor: tone.hex,
-        color: tone.ink,
-        "--blueprint-ink": tone.ink,
-        "--blueprint-accent": tone.ink,
-        "--wave-art": tone.wave === "dark" ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")',
-        "--wave-opacity": tone.wave === "dark" ? "0.7" : "0.72",
-        "--landing-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
-        "--landing-header-border": darkInk ? "rgba(17,17,17,0.22)" : "rgba(255,255,255,0.16)",
+        backgroundColor: initialTone.hex,
+        color: initialTone.ink,
+        "--blueprint-ink": initialTone.ink,
+        "--blueprint-accent": initialTone.ink,
+        "--wave-art": 'url("/blueprint-waves.svg")',
+        "--wave-opacity": "0.72",
+        "--landing-brand-filter": "brightness(0) invert(1)",
+        "--landing-header-border": "rgba(255,255,255,0.16)",
       } as CSSProperties}
     >
       <main id="main" className="relative z-10 flex-1">
