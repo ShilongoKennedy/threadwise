@@ -2852,3 +2852,20 @@ html.reading-focus .bp-scrim {
 
 h1, h2, h3, .font-display { text-wrap: balance; }
 .reading-section__body p, .bp-card__body p { text-wrap: pretty; }
+
+/* Keep inactive header index calm even through the legacy header colour rules. */
+.site-blueprint .app-header .app-header__link > span,
+.blueprint-page .app-header .app-header__link > span,
+.seminar-header .app-header .app-header__link > span {
+  color: inherit !important;
+}
+.site-blueprint .app-header .app-header__mobile-link,
+.blueprint-page .app-header .app-header__mobile-link,
+.seminar-header .app-header .app-header__mobile-link {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+.site-blueprint .app-header .app-header__mobile-link.is-active,
+.blueprint-page .app-header .app-header__mobile-link.is-active,
+.seminar-header .app-header .app-header__mobile-link.is-active {
+  color: #FFFFFF !important;
+}
