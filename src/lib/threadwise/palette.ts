@@ -10,7 +10,6 @@ export const BLUEPRINT_PALETTE: readonly BlueprintColor[] = [
   { hex: "#1F2DEE", label: "Bright Indigo", ink: "#FFFFFF", wave: "light" },
   { hex: "#FF40D6", label: "Cotton Bloom", ink: "#FFFFFF", wave: "dark" },
   { hex: "#9F0DF3", label: "Purple (X11)", ink: "#FFFFFF", wave: "light" },
-  { hex: "#F0D71D", label: "Golden Glow", ink: "#111111", wave: "dark" },
 ];
 
 function hash(value: string) {
@@ -30,10 +29,6 @@ export function paletteFor(key: string): BlueprintColor[] {
     seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
     const swap = seed % (index + 1);
     [colors[index], colors[swap]] = [colors[swap], colors[index]];
-  }
-  // Keep the yellow off the first screen so the opening hero stays crisp white-on-colour.
-  if (colors[0].hex === "#F0D71D") {
-    [colors[0], colors[1]] = [colors[1], colors[0]];
   }
   return colors;
 }
