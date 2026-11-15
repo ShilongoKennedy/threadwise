@@ -362,7 +362,7 @@ export function GeoGlobe({
     }
 
     const markerObjects: Array<{ id: string; object: THREE.Object3D }> = [];
-    for (const item of CITIES) {
+    if (!minimal) for (const item of CITIES) {
       const position = latLonToVector3(item.lat, item.lon, 1.018);
       const anchor = new THREE.Object3D();
       anchor.position.copy(position);
@@ -540,7 +540,7 @@ export function GeoGlobe({
         previousSelected = null;
       }
       const layoutMobile = camera.aspect < 1.08;
-      const targetGroupY = layoutMobile ? (focus ? 0.34 : -0.48) : layout === "right" ? -0.06 : 0.3;
+      const targetGroupY = layoutMobile ? (focus ? 0.34 : isBlueprint ? -0.92 : -0.48) : layout === "right" ? -0.06 : 0.3;
       group.position.y += (targetGroupY - group.position.y) * 0.055;
       group.rotation.y += (targetRotationY - group.rotation.y) * 0.035;
       group.rotation.x += (targetRotationX - group.rotation.x) * 0.035;

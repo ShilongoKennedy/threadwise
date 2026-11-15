@@ -2014,3 +2014,60 @@ main {
 .blueprint-page footer a[aria-label="Threadwise — home"] span {
   color: var(--blueprint-ink, #FFFFFF) !important;
 }
+
+/* Restrained terracotta field: two enormous curved forms, copper light, no particles. */
+.seminar-color-page,
+.site-blueprint,
+.blueprint-page {
+  background-color: #733225 !important;
+}
+
+.seminar-color-page { --curve-tint: var(--seminar-tint, #C77A4B); }
+.site-blueprint { --curve-tint: var(--site-tint, #C77A4B); }
+.blueprint-page { --curve-tint: var(--section-tint, #C77A4B); }
+
+.seminar-color-page::before,
+.site-blueprint::before,
+.blueprint-page::before {
+  background-image:
+    radial-gradient(ellipse 92% 84% at 94% -10%, rgba(217, 144, 90, 0.3) 0%, transparent 58%),
+    radial-gradient(ellipse 74% 82% at 64% 116%, color-mix(in srgb, var(--curve-tint) 13%, transparent) 0%, transparent 64%),
+    radial-gradient(ellipse 92% 104% at -14% 110%, rgba(25, 11, 8, 0.74) 0%, transparent 64%),
+    linear-gradient(118deg, rgba(255, 255, 255, 0.025), transparent 42%) !important;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100% !important;
+  background-position: 0 0 !important;
+  opacity: 1 !important;
+}
+
+.seminar-color-page::after,
+.site-blueprint::after,
+.blueprint-page::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  width: 120vmax;
+  height: 120vmax;
+  right: -54vmax;
+  top: -38vmax;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, #E7A574 22%, transparent);
+  box-shadow: inset 0 0 180px color-mix(in srgb, #E7A574 8%, transparent);
+  transform: rotate(-11deg);
+  pointer-events: none;
+}
+
+/* Landing header stays readable on the terracotta field. */
+.blueprint-page header :is(a, button, span, svg) {
+  color: var(--blueprint-ink, #FFFFFF) !important;
+}
+
+.blueprint-page header a[data-read-source],
+.blueprint-page header a[data-read-source] span {
+  color: #1A1A1A !important;
+}
+
+
+.blueprint-page main a.hero-primary,
+.blueprint-page main a.hero-primary * {
+  color: #4A2016 !important;
+}

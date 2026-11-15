@@ -267,16 +267,16 @@ function SeminarPage() {
     <div
       className="seminar-color-page min-h-[100dvh] transition-colors duration-700"
       style={{
-        backgroundColor: tone.bg,
-        color: tone.ink,
-        "--seminar-bg": tone.bg,
-        "--seminar-ink": tone.ink,
-        "--seminar-grid": "rgba(247, 234, 214, 0.16)",
-        "--seminar-header-bg": tone.header,
-        "--seminar-header-border": tone.border,
-        "--seminar-header-ink": tone.ink,
-        "--seminar-header-accent": tone.accent,
-        "--seminar-brand-filter": tone.brandFilter,
+        backgroundColor: "#733225",
+        color: "#FFFFFF",
+        "--seminar-bg": "#733225",
+        "--seminar-tint": tone.bg,
+        "--seminar-ink": "#FFFFFF",
+        "--seminar-header-bg": "rgba(255, 255, 255, 0.04)",
+        "--seminar-header-border": "rgba(255, 255, 255, 0.18)",
+        "--seminar-header-ink": "#FFFFFF",
+        "--seminar-header-accent": "#E7A574",
+        "--seminar-brand-filter": "brightness(0) invert(1)",
       } as CSSProperties}
     >
       <div className="seminar-header contents">
