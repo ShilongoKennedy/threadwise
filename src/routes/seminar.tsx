@@ -86,8 +86,10 @@ function SeminarReadingNav() {
             key={item.id}
             href={`#${item.id}`}
             aria-current={active === item.id ? "true" : undefined}
-            className={`inline-flex items-center gap-2 rounded-full px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] transition-colors ${
-              active === item.id ? "bg-white/12 text-white" : "text-white/55 hover:bg-white/6 hover:text-white"
+            className={`inline-flex items-center gap-2 border-b-2 px-1 py-2 font-mono text-[9px] uppercase tracking-[0.12em] transition-colors ${
+              active === item.id
+                ? "border-[#E7A574] text-white"
+                : "border-transparent text-white/50 hover:border-white/25 hover:text-white"
             }`}
           >
             <span className={active === item.id ? "text-[#FFE8D6]" : "text-[#FFE8D6]/55"}>{item.n}</span>
