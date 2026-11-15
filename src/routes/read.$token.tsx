@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { useEffect, useState } from "react";
 
@@ -108,9 +109,10 @@ function SharedRead() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <AppHeader section="digest" />
 
-      <main className="mx-auto w-full max-w-[1100px] px-5 pb-24 pt-8 md:px-8 md:pt-12">
+      <main className="bp-page">
         {status === "missing" && (
           <div className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-4 py-3">
             <p className="font-serif text-[15px]">
@@ -178,7 +180,7 @@ function SharedRead() {
                         }
                       })();
                     }}
-                    className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/55 underline underline-offset-4 hover:text-[#1A4BFF]"
+                    className="bp-button bp-button--secondary bp-button--sm"
                   >
                     {published ? "Published · unpublish" : "Publish"}
                   </button>
@@ -207,7 +209,7 @@ function SharedRead() {
                         }
                       })();
                     }}
-                    className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4 disabled:opacity-40"
+                    className="bp-button bp-button--secondary bp-button--sm"
                   >
                     {busy ? "Re-reading…" : "Re-read"}
                   </button>
@@ -215,12 +217,12 @@ function SharedRead() {
                 <Link
                   to="/practice/$token"
                   params={{ token }}
-                  className="inline-flex min-h-11 items-center font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF] underline underline-offset-4"
+                  className="bp-button bp-button--primary bp-button--sm"
                 >
                   Practise this read
                 </Link>
                 {publishNote && (
-                  <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/55">
                     {publishNote}
                   </span>
                 )}
@@ -1198,7 +1200,7 @@ function Proposals({ report, token }: { report: Report; token: string }) {
         >
           {filed ? "Filed" : "File all"}
         </button>
-        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/55">
           or file one by hand below
         </span>
       </div>

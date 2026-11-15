@@ -5,6 +5,7 @@ import { GlassHeader } from "@/components/threadwise/GlassHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
 import { paletteFor } from "@/lib/threadwise/palette";
+import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -159,21 +160,21 @@ function LandingPage() {
                 <h1 className="max-w-[11ch] font-display text-[clamp(48px,6vw,88px)] leading-[0.9] tracking-[-0.045em] text-white">
                   See what the story hides.
                 </h1>
-                <div className="pointer-events-auto mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-12">
+                <div className="pointer-events-auto mt-9 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center md:mt-12">
                   <Link
                     to="/read/$token"
                     params={{ token: SAMPLE_TOKEN }}
-                    className="group inline-flex items-center gap-2 border-b border-[#C74212]/35 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#11110F]/70 transition-colors hover:border-[#C74212] hover:text-[#C74212]"
+                    className={bpButtonClass({ variant: "primary", className: "group w-full sm:w-auto" })}
                   >
                     Open the IAEA read
-                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </Link>
                   <Link
                     to="/analyst"
-                    className="group inline-flex items-center gap-2 border-b border-[#1A4BFF]/25 pb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#1A4BFF]/80 transition-colors hover:border-[#1A4BFF] hover:text-[#1A4BFF]"
+                    className={bpButtonClass({ variant: "secondary", className: "group w-full sm:w-auto" })}
                   >
                     Bring your own source
-                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </Link>
                 </div>
               </div>

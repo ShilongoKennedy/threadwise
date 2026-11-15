@@ -31,7 +31,7 @@ import {
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
-import { EmptyState } from "@/components/threadwise/EmptyState";
+import { BPEmptyState, bpButtonClass } from "@/components/threadwise/BlueprintUI";
 import { CONFIDENCE_FORECAST } from "@/lib/threadwise/calibration";
 
 export const Route = createFileRoute("/profile")({
@@ -178,6 +178,7 @@ function ProfilePage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <AppHeader section="profile" />
 
       <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-10">
@@ -188,16 +189,22 @@ function ProfilePage() {
         />
 
         {state === "anon" && (
-          <EmptyState
+          <BPEmptyState
+            className="mt-8"
+            eyebrow="Your record"
             title="The profile belongs to you, so it needs an account."
+            body="The profile is built from reads, questions, findings and predictions you filed — not from activity elsewhere."
             action={
-              <Link to="/login" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
-                Sign in →
-              </Link>
+              <>
+                <Link to="/login" className={bpButtonClass({ variant: "primary" })}>
+                  Sign in to open your profile
+                </Link>
+                <Link to="/analyst" className={bpButtonClass({ variant: "secondary" })}>
+                  Bring a move first
+                </Link>
+              </>
             }
-          >
-            The profile is built from reads, questions, findings and predictions you filed — not from activity elsewhere.
-          </EmptyState>
+          />
         )}
 
         {state === "loading" && (
@@ -215,16 +222,17 @@ function ProfilePage() {
         {state === "ready" && profile && (
           <>
             {profile.reads === 0 ? (
-              <EmptyState
+              <BPEmptyState
+                className="mt-8"
+                eyebrow="Start the record"
                 title="No reads yet."
+                body="The profile starts once you have read one move, filed one question or scored one prediction."
                 action={
-                  <Link to="/analyst" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
-                    Bring a move →
+                  <Link to="/analyst" className={bpButtonClass({ variant: "primary" })}>
+                    Bring a move
                   </Link>
                 }
-              >
-                The profile starts once you have read one move, filed one question or scored one prediction.
-              </EmptyState>
+              />
             ) : (
               <>
                 <section className="mt-8 grid grid-cols-2 border-y-2 border-[#1A1A1A] md:grid-cols-5">

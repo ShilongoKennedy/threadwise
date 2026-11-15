@@ -312,24 +312,34 @@ function SeminarPage() {
               event.preventDefault();
               void convene();
             }}
-            className="seminar-input-panel mt-8 rounded-[28px] p-4 text-white md:p-6"
+            className="bp-card mt-8 text-white"
           >
-            <label htmlFor="seminar-text" className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/80">
-              The quote or question
-            </label>
-            <textarea
-              id="seminar-text"
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              rows={5}
-              maxLength={3000}
-              placeholder="Paste the sentence you cannot stop thinking about…"
-              className="mt-2 w-full resize-none bg-transparent font-display text-[20px] leading-[1.25] outline-none placeholder:text-white/48 md:text-[28px]"
-            />
-
-            <div className="mt-4 grid gap-3 border-t border-[#F7EAD6]/30 pt-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+            <div className="bp-card__header">
               <div>
-                <label htmlFor="seminar-context" className="font-mono text-[8px] uppercase tracking-[0.14em] text-white/55">
+                <p className="bp-card__eyebrow">The seminar</p>
+                <p className="bp-card__title">What are we putting on the table?</p>
+              </div>
+              <span className="bp-badge">No verdict unless asked</span>
+            </div>
+
+            <div className="bp-card__body">
+              <label htmlFor="seminar-text" className="bp-field__label">
+                The quote or question
+              </label>
+              <textarea
+                id="seminar-text"
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                rows={5}
+                maxLength={3000}
+                placeholder="Paste the sentence you cannot stop thinking about…"
+                className="bp-input mt-2 min-h-[180px] resize-none font-display text-[21px] leading-[1.3] md:text-[26px]"
+              />
+            </div>
+
+            <div className="bp-card__footer">
+              <div className="min-w-0 flex-1">
+                <label htmlFor="seminar-context" className="bp-field__label">
                   Context, if it matters
                 </label>
                 <input
@@ -338,27 +348,27 @@ function SeminarPage() {
                   onChange={(event) => setContext(event.target.value)}
                   maxLength={1000}
                   placeholder="Who said it, where, and what was being argued"
-                  className="mt-1 w-full border-b border-[#F7EAD6]/35 bg-transparent pb-2 font-serif text-[13px] outline-none placeholder:text-white/50 focus:border-[#F1C979]"
+                  className="bp-input mt-2"
                 />
               </div>
               <button
                 type="submit"
                 disabled={busy || text.trim().length < 20}
-                className="inline-flex min-h-12 items-center justify-center gap-2 border-2 border-[#F7EAD6] bg-[#F7EAD6] px-5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A] transition-colors hover:border-[#F1C979] hover:bg-[#F1C979] disabled:cursor-not-allowed disabled:border-[#F7EAD6]/20 disabled:bg-transparent disabled:text-white/50"
+                className="bp-button bp-button--primary w-full md:w-auto"
               >
                 {busy ? "Setting the room…" : "Convene the seminar"}
                 {!busy && <ArrowRight className="h-3.5 w-3.5" />}
               </button>
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-5 pb-4">
               <button
                 type="button"
                 onClick={() => {
                   setText(SAMPLE);
                   setContext("A podcast conversation about foreign aid and statecraft.");
                 }}
-                className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#F1C979] underline underline-offset-4"
+                className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#FFE8D6] underline underline-offset-4 transition-colors hover:text-white"
               >
                 Use the foreign-aid quote
               </button>
