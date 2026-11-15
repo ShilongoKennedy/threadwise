@@ -2,11 +2,18 @@ import { generateObject } from "ai";
 import { z } from "zod";
 import { getModel } from "@/lib/threadwise/ai/ai-providers.server";
 
-const theorySchema = z.object({
+const baseTheorySchema = z.object({
   key: z.enum(["A", "B"]),
   name: z.string().trim().min(2).max(90),
   claim: z.string().trim().min(20).max(400),
   mechanism: z.string().trim().min(40).max(900),
+  predictions: z.array(z.string().trim().min(10).max(260)).min(2).max(4),
+  evidence: z.array(z.string().trim().min(10).max(260)).min(1).max(4),
+  falsifier: z.string().trim().min(20).max(400),
+  assumes: z.string().trim().min(10).max(300),
+});
+
+const theorySchema = baseTheorySchema.extend({
   mechanism_steps: z
     .array(
       z.object({
@@ -16,16 +23,12 @@ const theorySchema = z.object({
     )
     .min(3)
     .max(5),
-  predictions: z.array(z.string().trim().min(10).max(260)).min(2).max(4),
-  evidence: z.array(z.string().trim().min(10).max(260)).min(1).max(4),
-  falsifier: z.string().trim().min(20).max(400),
-  assumes: z.string().trim().min(10).max(300),
 });
 
-export const seminarSchema = z.object({
+export const seminarFallbackSchema = z.object({
   question: z.string().trim().min(10).max(260),
   restatement: z.string().trim().min(40).max(700),
-  theories: z.array(theorySchema).length(2),
+  theories: z.array(baseTheorySchema).length(2),
   crux: z.string().trim().min(30).max(600),
   disagreement: z.enum(["empirical", "definitional", "scope", "mixed"]),
   settle: z.string().trim().min(30).max(600),
@@ -36,6 +39,10 @@ export const seminarSchema = z.object({
     why: z.string().trim().min(40).max(700),
     change: z.string().trim().min(20).max(400),
   }),
+});
+
+export const seminarSchema = seminarFallbackSchema.extend({
+  theories: z.array(theorySchema).length(2),
 });
 
 export type Seminar = z.infer<typeof seminarSchema>;
@@ -57,26 +64,62 @@ RULES
 - settle is a specific observation, comparison or dataset that would move a reasonable reader.
 - The verdict is provisional and empirical only. Use "undecided" when the evidence does not separate them. State what would change it. Never make a moral verdict.`;
 
+function deriveMechanismSteps(mechanism: string) {
+  const sentences = mechanism
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean)
+    .slice(0, 4);
+  return sentences.map((sentence, index) => {
+    const words = sentence.split(/\s+/);
+    return {
+      label: words.slice(0, 3).join(" ").replace(/[.,;:]$/, "") || `Step ${index + 1}`,
+      detail: sentence,
+    };
+  });
+}
+
 export async function openSeminar(text: string, context: string): Promise<Seminar> {
-  const { object } = await generateObject({
-    model: getModel("deepseek"),
-    system: SYSTEM,
-    schema: seminarSchema,
-    prompt: `THE QUOTE OR QUESTION:
+  const prompt = `THE QUOTE OR QUESTION:
 ${text.slice(0, 3000)}
 
-${context.trim() ? `CONTEXT PROVIDED BY THE READER:\n${context.slice(0, 1000)}\n\n` : ""}
-Open the seminar. Return two rival theories, the crux, what would settle it, and a provisional empirical verdict.`,
-    temperature: 0.3,
-    maxOutputTokens: 3400,
-    maxRetries: 1,
-  });
+${context.trim() ? `CONTEXT PROVIDED BY THE READER:
+${context.slice(0, 1000)}
+
+` : ""}
+Open the seminar. Return two rival theories, the crux, what would settle it, and a provisional empirical verdict.`;
+  const request = (schema: typeof seminarSchema | typeof seminarFallbackSchema) =>
+    generateObject({
+      model: getModel("deepseek"),
+      system: SYSTEM,
+      schema,
+      prompt,
+      temperature: 0.3,
+      maxOutputTokens: 6000,
+      maxRetries: 2,
+    });
+
+  let object: z.infer<typeof seminarFallbackSchema>;
+  let usedFallback = false;
+  try {
+    object = (await request(seminarSchema)).object;
+  } catch (error) {
+    // Some providers reject optional struct members. Retry without the step array
+    // so a transient structured-output failure never blocks the whole seminar.
+    console.error("[seminar] structured generation failed, retrying without steps:", error);
+    usedFallback = true;
+    object = (await request(seminarFallbackSchema)).object;
+  }
 
   return {
     ...object,
     theories: object.theories.map((theory, index) => ({
       ...theory,
       key: index === 0 ? "A" : "B",
+      mechanism_steps:
+        !usedFallback && "mechanism_steps" in theory && Array.isArray(theory.mechanism_steps)
+          ? theory.mechanism_steps
+          : deriveMechanismSteps(theory.mechanism),
     })) as Seminar["theories"],
   };
 }
