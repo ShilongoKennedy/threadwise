@@ -4,6 +4,7 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
+import { BPField } from "@/components/threadwise/BlueprintUI";
 import { extractPdfText, extractTextFile } from "@/lib/threadwise/extract-document";
 
 export const Route = createFileRoute("/analyst")({
@@ -288,9 +289,10 @@ function AnalystPage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <AppHeader section="analyst" />
 
-      <main className="mx-auto w-full max-w-[760px] px-5 pb-24 pt-10">
+      <main className="bp-page bp-page--narrow">
         {!report && (
           <>
             <PageMasthead
@@ -300,22 +302,36 @@ function AnalystPage() {
             />
 
             <div
-              className="tw-glass-panel mt-6 overflow-hidden"
+              className="bp-card mt-8"
               onDrop={handleDrop}
               onDragOver={(event) => event.preventDefault()}
             >
-              <textarea
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-                placeholder="Paste the announcement, the tweet, the paragraph… or drop a PDF / link / screenshot"
-                rows={6}
-                maxLength={4000}
-                onPaste={handlePaste}
-                className="w-full resize-none bg-transparent px-4 py-4 font-serif text-[16px] leading-relaxed outline-none placeholder:text-[#1A1A1A]/35"
-              />
-              <div className="border-t border-[#1A1A1A]/15 px-4 py-3">
+              <div className="bp-card__header">
+                <div>
+                  <p className="bp-card__eyebrow">New read</p>
+                  <p className="bp-card__title">What are you bringing?</p>
+                </div>
+                <span className="bp-badge">Private</span>
+              </div>
+              <div className="bp-card__body">
+                <BPField
+                  label="The move"
+                  hint="A link, PDF, screenshot, post or paragraph. Drop it anywhere in this card."
+                >
+                  <textarea
+                    value={input}
+                    onChange={(event) => setInput(event.target.value)}
+                    placeholder="Paste the announcement, the tweet, the paragraph…"
+                    rows={6}
+                    maxLength={4000}
+                    onPaste={handlePaste}
+                    className="bp-input bp-textarea"
+                  />
+                </BPField>
+              </div>
+              <div className="border-t border-white/15 px-5 py-4">
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="mr-1 font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
+                  <span className="mr-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white/65">
                     I&rsquo;m trying to
                   </span>
                   {INTENTS.map((intent) => (
@@ -324,11 +340,7 @@ function AnalystPage() {
                       type="button"
                       aria-pressed={intentMode === intent.value}
                       onClick={() => setIntentMode(intent.value)}
-                      className={`rounded-full border px-2.5 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] transition-colors ${
-                        intentMode === intent.value
-                          ? "border-[#1A4BFF] bg-[#1A4BFF] text-white"
-                          : "border-[#1A1A1A]/20 text-[#1A1A1A]/60 hover:border-[#1A1A1A]"
-                      }`}
+                      className={`bp-chip ${intentMode === intent.value ? "is-active" : ""}`}
                     >
                       {intent.label}
                     </button>
@@ -339,12 +351,12 @@ function AnalystPage() {
                   onChange={(event) => setChangeMind(event.target.value)}
                   maxLength={300}
                   placeholder="What would change your mind? (optional)"
-                  className="mt-2 w-full border-b border-[#1A1A1A]/20 bg-transparent px-1 py-1.5 font-serif text-[13px] outline-none placeholder:text-[#1A1A1A]/35"
+                  className="bp-input mt-3"
                 />
               </div>
 
               {linkOpen && (
-                <div className="flex flex-wrap items-center gap-2 border-t border-[#1A1A1A]/15 px-4 py-2">
+                <div className="flex flex-wrap items-center gap-2 border-t border-white/15 px-5 py-3">
                   <input
                     value={linkUrl}
                     onChange={(event) => setLinkUrl(event.target.value)}
@@ -355,14 +367,14 @@ function AnalystPage() {
                       }
                     }}
                     placeholder="https://…"
-                    className="min-w-0 flex-1 border-b border-[#1A1A1A]/25 bg-transparent px-1 py-1.5 font-serif text-[13px] outline-none placeholder:text-[#1A1A1A]/35"
+                    className="bp-input min-w-0 flex-1"
                     autoFocus
                   />
                   <button
                     type="button"
                     onClick={() => void readLink(linkUrl)}
                     disabled={Boolean(attachmentBusy) || readingBusy || !linkUrl.trim()}
-                    className="rounded-full border border-[#1A4BFF] bg-[#1A4BFF] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white disabled:opacity-40"
+                    className="bp-button bp-button--secondary bp-button--sm"
                   >
                     {attachmentBusy === "link" ? "Reading link…" : "Read link"}
                   </button>
@@ -370,14 +382,14 @@ function AnalystPage() {
               )}
 
               {attachmentNote && (
-                <p className="border-t border-[#1A1A1A]/15 px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">
+                <p className="border-t border-white/15 px-5 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#FFE8D6]">
                   {attachmentNote}
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 px-4 py-3">
+              <div className="bp-card__footer">
                 <div className="flex flex-wrap items-center gap-2">
-                  <label className="cursor-pointer rounded-full border border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]">
+                  <label className="bp-button bp-button--secondary bp-button--sm cursor-pointer">
                     {readingBusy ? "Reading image…" : "Screenshot"}
                     <input
                       type="file"
@@ -391,7 +403,7 @@ function AnalystPage() {
                       }}
                     />
                   </label>
-                  <label className="cursor-pointer rounded-full border border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]">
+                  <label className="bp-button bp-button--secondary bp-button--sm cursor-pointer">
                     {attachmentBusy === "pdf" ? "Reading PDF…" : "PDF"}
                     <input
                       type="file"
@@ -409,11 +421,11 @@ function AnalystPage() {
                     type="button"
                     onClick={() => setLinkOpen((open) => !open)}
                     disabled={Boolean(attachmentBusy) || readingBusy}
-                    className="rounded-full border border-[#1A1A1A] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7] disabled:opacity-40"
+                    className="bp-button bp-button--secondary bp-button--sm"
                   >
                     {attachmentBusy === "link" ? "Reading link…" : "Link"}
                   </button>
-                  <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#1A1A1A]/55">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-white/55">
                     {input.trim().length}/4000 · ~40s · saved to its own page
                   </span>
                 </div>
@@ -421,7 +433,7 @@ function AnalystPage() {
                   type="button"
                   onClick={() => void run(input)}
                   disabled={busy || input.trim().length < 20}
-                  className="inline-flex items-center gap-2 rounded-full border border-[#1A1A1A] bg-[#1A1A1A] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:border-[#1A4BFF] hover:bg-[#1A4BFF] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="bp-button bp-button--primary"
                 >
                   {busy ? "Reading…" : "Read this move"}
                   <ArrowRight className="h-3.5 w-3.5" />

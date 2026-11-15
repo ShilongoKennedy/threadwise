@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
-import { EmptyState } from "@/components/threadwise/EmptyState";
+import { BPBadge, BPEmptyState, bpButtonClass } from "@/components/threadwise/BlueprintUI";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { MinimalHeader } from "@/components/threadwise/MinimalHeader";
@@ -41,10 +41,10 @@ function ReadsPage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <MinimalHeader label="Published reads" />
 
-
-      <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
+      <main className="bp-page bp-page--narrow">
         <PageMasthead
           eyebrow="Published"
           title="What was published."
@@ -56,32 +56,44 @@ function ReadsPage() {
         )}
 
         {state === "empty" && (
-          <EmptyState
+          <BPEmptyState
+            className="mt-8"
+            eyebrow="The record"
             title="Nothing published yet."
+            body="Reads are private by default. Publish one from its own page and it appears here."
             action={
-              <Link to="/analyst" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
-                Write one →
+              <Link to="/analyst" className={bpButtonClass({ variant: "primary" })}>
+                Write the first read
               </Link>
             }
-          >
-            Reads are private by default. Publish one from its own page and it appears here.
-          </EmptyState>
+          />
         )}
 
         {state === "ready" && (
-          <ul className="mt-8 border-t border-[#1A1A1A]/15">
+          <ul className="mt-8 grid gap-3">
             {reads.map((read) => (
-              <li key={read.token} className="border-b border-[#1A1A1A]/15">
-                <Link to="/read/$token" params={{ token: read.token }} className="group block py-5">
-                  <div className="flex items-baseline justify-between gap-4">
-                    <h2 className="font-display text-[19px] leading-snug group-hover:text-[#1A4BFF]">{read.input}</h2>
-                    <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+              <li key={read.token}>
+                <Link to="/read/$token" params={{ token: read.token }} className="bp-row group block">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <BPBadge>Published</BPBadge>
+                      <h2 className="mt-3 font-display text-[21px] leading-snug transition-colors group-hover:text-[#FFE8D6]">
+                        {read.input}
+                      </h2>
+                    </div>
+                    <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-white/55">
                       {new Date(read.at).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
                     </span>
                   </div>
-                  <p className="mt-1.5 line-clamp-3 max-w-[62ch] border-l-2 border-[#C1121F] pl-3 font-serif text-[13.5px] leading-snug text-[#1A1A1A]/65">
+                  <p className="mt-3 line-clamp-3 max-w-[64ch] border-l-2 border-[#E7A574]/60 pl-3 font-serif text-[14px] leading-[1.6] text-white/70">
                     {read.falsifier}
                   </p>
+                  <div className="mt-4 flex items-center justify-between border-t border-white/12 pt-3 font-mono text-[9px] uppercase tracking-[0.12em] text-white/55">
+                    <span>What would prove it wrong</span>
+                    <span className="inline-flex items-center gap-1.5 text-white/80">
+                      Read the record <ArrowUpRight className="h-3 w-3" />
+                    </span>
+                  </div>
                 </Link>
               </li>
             ))}

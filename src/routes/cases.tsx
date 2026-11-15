@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
-import { EmptyState } from "@/components/threadwise/EmptyState";
+import { BPBadge, BPEmptyState, bpButtonClass } from "@/components/threadwise/BlueprintUI";
 
 export const Route = createFileRoute("/cases")({
   head: () => ({
@@ -32,9 +32,10 @@ function CasesPage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <AppHeader section="cases" />
 
-      <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
+      <main className="bp-page bp-page--narrow">
         <PageMasthead
           eyebrow="The cases"
           title="The files that keep coming back."
@@ -43,37 +44,43 @@ function CasesPage() {
         />
 
         {cases.length === 0 && (
-          <EmptyState
+          <BPEmptyState
+            className="mt-8"
+            eyebrow="The record"
             title="No cases yet."
+            body="Each read is filed automatically. Make two reads on the same subject and the case appears."
             action={
-              <Link to="/analyst" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
-                Make a read →
+              <Link to="/analyst" className={bpButtonClass({ variant: "primary" })}>
+                Make a read
               </Link>
             }
-          >
-            Each read is filed automatically. Make two reads on the same subject and the case appears.
-          </EmptyState>
+          />
         )}
 
         {cases.length > 0 && (
-          <ul className="mt-8 border-t border-[#1A1A1A]/15">
+          <ul className="mt-8 grid gap-2.5">
             {cases.map((item) => (
-              <li key={item.subject} className="border-b border-[#1A1A1A]/15">
+              <li key={item.subject}>
                 <Link
                   to="/case/$subject"
                   params={{ subject: item.subject }}
-                  className="group flex items-baseline justify-between gap-4 py-4"
+                  className="bp-row group flex items-center justify-between gap-4"
                 >
-                  <h2 className="font-display text-[20px] leading-snug group-hover:text-[#1A4BFF]">{item.subject}</h2>
-                  <span className="shrink-0 text-right font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/50">
+                  <div className="min-w-0">
+                    <BPBadge>Case file</BPBadge>
+                    <h2 className="mt-2 font-display text-[21px] leading-snug transition-colors group-hover:text-[#FFE8D6]">
+                      {item.subject}
+                    </h2>
+                  </div>
+                  <span className="shrink-0 text-right font-mono text-[10px] uppercase tracking-[0.12em] text-white/55">
                     <span className="block">
                       {new Date(item.latest).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "short",
                       })}
                     </span>
-                    <span className="block text-[#1A1A1A]/35">
-                      {item.reads} {item.reads === 1 ? "read" : "reads"}
+                    <span className="mt-1 block text-white/45">
+                      {item.reads} {item.reads === 1 ? "read" : "reads"} →
                     </span>
                   </span>
                 </Link>

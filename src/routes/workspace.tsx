@@ -5,6 +5,7 @@ import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
+import { BPCard, BPCardBody, BPCardHeader, bpButtonClass } from "@/components/threadwise/BlueprintUI";
 import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
@@ -108,14 +109,34 @@ function WorkspacePage() {
     return (
       <div className="relative flex min-h-[100dvh] flex-col bg-[#FDFBF7] text-[#1A1A1A]">
         <PageBackdrop />
+        <div className="bp-scrim" aria-hidden />
         <AppHeader marketing />
 
-        <main className="mx-auto w-full max-w-[1100px] px-5 pb-16 pt-12 md:px-8">
+        <main className="bp-page">
           <PageMasthead
             eyebrow="Workspace"
             title="The desk is behind an account."
             deck="Sign in to keep reads, questions, predictions and practice in one place."
           />
+          <BPCard className="mt-8 max-w-[620px]">
+            <BPCardHeader eyebrow="One account" title="Open your desk" action={<span className="bp-badge">Secure</span>} />
+            <BPCardBody>
+              <p className="max-w-[48ch] font-serif text-[15px] leading-[1.65] text-white/75">
+                Your reads, questions, predictions and practice live in one place. No feed, no recommendations, no public profile.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-2.5">
+                <Link to="/login" className={bpButtonClass({ variant: "primary" })}>
+                  Sign in to open the desk
+                </Link>
+                <Link to="/analyst" className={bpButtonClass({ variant: "secondary" })}>
+                  Open the analyst
+                </Link>
+              </div>
+              <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.14em] text-white/45">
+                Your first read stays private until you publish it.
+              </p>
+            </BPCardBody>
+          </BPCard>
         </main>
       </div>
     );

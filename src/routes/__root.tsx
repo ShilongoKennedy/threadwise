@@ -16,30 +16,23 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { paletteFor } from "@/lib/threadwise/palette";
+import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
 const CloudSync = lazy(() => import("@/components/threadwise/CloudSync"));
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-[#FDFBF7] px-4 text-[#1A1A1A]">
-      <div className="w-full max-w-[440px] border-2 border-[#1A1A1A] bg-white p-8">
-        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#1A1A1A]/65">
-          File not found
-        </p>
-        <h1 className="mt-3 font-display text-[52px] leading-none">404</h1>
-        <p className="mt-3 font-serif text-[15px] leading-[1.65] text-[#1A1A1A]/80">
+    <div className="blueprint-page relative flex min-h-[100dvh] items-center justify-center px-4" style={{ backgroundColor: "#B3261E", color: "#FFFFFF" }}>
+      <div className="bp-card relative z-10 w-full max-w-[460px] p-7 md:p-8">
+        <p className="bp-card__eyebrow">File not found</p>
+        <h1 className="mt-4 font-display text-[64px] leading-none">404</h1>
+        <p className="mt-4 font-serif text-[15px] leading-[1.65] text-white/75">
           Nothing is filed at this address. It may have been renamed, revoked, or never existed.
         </p>
-        <div className="mt-6 flex flex-wrap gap-2">
-          <Link
-            to="/"
-            className="inline-flex items-center border-2 border-[#1A1A1A] bg-[#1A1A1A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#FDFBF7] transition-colors hover:bg-[#1A4BFF] hover:border-[#1A4BFF]"
-          >
+        <div className="mt-6 flex flex-wrap gap-2.5">
+          <Link to="/" className={bpButtonClass({ variant: "primary" })}>
             Back to Threadwise
           </Link>
-          <Link
-            to="/analyst"
-            className="inline-flex items-center border-2 border-[#1A1A1A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-[#1A1A1A] hover:text-[#FDFBF7]"
-          >
+          <Link to="/analyst" className={bpButtonClass({ variant: "secondary" })}>
             Ask the analyst
           </Link>
         </div>
@@ -57,33 +50,23 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+    <div className="blueprint-page relative flex min-h-[100dvh] items-center justify-center px-4" style={{ backgroundColor: "#B3261E", color: "#FFFFFF" }}>
+      <div className="bp-card relative z-10 w-full max-w-[480px] p-7 text-center md:p-8">
+        <p className="bp-card__eyebrow">Something interrupted the record</p>
+        <h1 className="mt-4 font-display text-[42px] leading-none">This page didn’t load.</h1>
+        <p className="mt-3 font-serif text-[15px] leading-[1.65] text-white/72">
+          Something went wrong on our end. You can try again or head back to the desk.
         </p>
         {import.meta.env.DEV && (
-          <pre className="mt-4 max-h-40 overflow-auto rounded-md border border-accent-ink/30 bg-muted p-3 text-left font-mono text-[12px] leading-relaxed text-foreground">
+          <pre className="mt-4 max-h-40 overflow-auto rounded-md border border-white/15 bg-black/20 p-3 text-left font-mono text-[12px] leading-relaxed text-white/70">
             {detail}
           </pre>
         )}
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
+        <div className="mt-6 flex flex-wrap justify-center gap-2.5">
+          <button onClick={() => { void router.invalidate(); reset(); }} className={bpButtonClass({ variant: "primary" })}>
             Try again
           </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
+          <a href="/" className={bpButtonClass({ variant: "secondary" })}>
             Go home
           </a>
         </div>

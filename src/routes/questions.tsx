@@ -5,7 +5,7 @@ import { BalanceBar } from "@/components/threadwise/BalanceBar";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
-import { EmptyState } from "@/components/threadwise/EmptyState";
+import { BPEmptyState, bpButtonClass } from "@/components/threadwise/BlueprintUI";
 import { isQuestionLike } from "@/lib/threadwise/question-quality";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -80,9 +80,10 @@ function QuestionsPage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <AppHeader section="questions" />
 
-      <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10">
+      <main className="bp-page bp-page--narrow">
         <PageMasthead
           eyebrow="The questions"
           title="What are you trying to decide?"
@@ -90,21 +91,38 @@ function QuestionsPage() {
         />
 
         {state === "anon" && (
-          <EmptyState
+          <BPEmptyState
+            className="mt-8"
+            eyebrow="Your standing questions"
             title="Questions belong to you, so they need an account."
+            body="Keep three or four questions open, then file the evidence each read gives you for or against them. The balance shows you when the answer is already clear."
             action={
-              <Link to="/login" className="inline-flex items-center gap-2 border-b border-[#1A4BFF]/40 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A4BFF]">
-                Sign in →
-              </Link>
+              <>
+                <Link to="/login" className={bpButtonClass({ variant: "primary" })}>
+                  Sign in to open your questions
+                </Link>
+                <Link to="/analyst" className={bpButtonClass({ variant: "secondary" })}>
+                  Read a source first
+                </Link>
+              </>
             }
           >
-            Keep three or four questions open, then file the evidence each read gives you for or against them.
-          </EmptyState>
+            <div className="mt-6 grid gap-2" aria-hidden="true">
+              <div className="bp-row flex items-center justify-between gap-4">
+                <span className="font-display text-[18px] leading-snug">Is Rosatom actually winning in Africa?</span>
+                <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-white/55">12 reads</span>
+              </div>
+              <div className="bp-row flex items-center justify-between gap-4">
+                <span className="font-display text-[18px] leading-snug">Will the board put Iran on the agenda?</span>
+                <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-white/55">balance · 4 reads</span>
+              </div>
+            </div>
+          </BPEmptyState>
         )}
 
         {state === "ready" && (
           <>
-            <div className="mt-6 flex items-center gap-2 border-2 border-[#1A1A1A] bg-white px-3 py-2">
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center">
               <input
                 value={draft}
                 onChange={(event) => {
@@ -115,13 +133,13 @@ function QuestionsPage() {
                   if (event.key === "Enter") void add();
                 }}
                 placeholder="Is Rosatom actually winning in Africa?"
-                className="min-w-0 flex-1 bg-transparent font-serif text-[15px] outline-none placeholder:text-[#1A1A1A]/35"
+                className="bp-input min-w-0 flex-1"
               />
               <button
                 type="button"
                 onClick={() => void add()}
                 disabled={draft.trim().length < 10}
-                className="shrink-0 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF] disabled:opacity-40"
+                className="bp-button bp-button--secondary bp-button--sm shrink-0"
               >
                 Add →
               </button>
@@ -144,7 +162,7 @@ function QuestionsPage() {
                 const forCount = mine.filter((finding) => finding.stance === "for").length;
                 const againstCount = mine.length - forCount;
                 return (
-                  <li key={question.id} className="border-t-2 border-[#1A1A1A] py-5 first:pt-4">
+                  <li key={question.id} className="bp-row mt-3 first:mt-0">
                     <div className="border-b border-[#1A1A1A]/15 pb-2">
                       <div className="flex items-start justify-between gap-3">
                         <h2 className="font-display text-[20px] leading-snug">
