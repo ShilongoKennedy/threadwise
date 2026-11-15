@@ -44,6 +44,12 @@ const ARCS = [
   { from: "tehran", to: "natanz", color: 0xc1121f, opacity: 0.92 },
 ] as const;
 
+const ORBITERS = [
+  { radius: 1.13, inclination: 0.24, roll: 0.08, speed: 0.22, phase: 0.4, color: 0xffffff },
+  { radius: 1.2, inclination: -0.52, roll: -0.28, speed: -0.14, phase: 2.4, color: 0xffffff },
+  { radius: 1.28, inclination: 0.92, roll: 0.18, speed: 0.1, phase: 4.3, color: 0xf3b486 },
+] as const;
+
 type Point = { lat: number; lon: number };
 
 function latLonToVector3(lat: number, lon: number, radius = 1): THREE.Vector3 {
@@ -376,6 +382,130 @@ export function GeoGlobe({
     equator.computeLineDistances();
     group.add(equator);
 
+    // Orbital reading: three quiet satellites with fading trails.
+    const orbitGroup = new THREE.Group();
+    group.add(orbitGroup);
+    const orbitalBodies: Array<{
+      satellite: THREE.Mesh;
+      trail: THREE.Line;
+      trailPositions: Float32Array;
+      radius: number;
+      speed: number;
+      angle: number;
+    }> = [];
+    const TRAIL_COUNT = 26;
+
+    for (const config of ORBITERS) {
+      const plane = new THREE.Group();
+      plane.rotation.x = config.inclination;
+      plane.rotation.z = config.roll;
+
+      const orbitPoints: THREE.Vector3[] = [];
+      for (let index = 0; index <= 180; index += 1) {
+        const angle = (index / 180) * Math.PI * 2;
+        orbitPoints.push(new THREE.Vector3(Math.cos(angle) * config.radius, 0, Math.sin(angle) * config.radius));
+      }
+      const orbitLine = new THREE.LineLoop(
+        new THREE.BufferGeometry().setFromPoints(orbitPoints),
+        new THREE.LineBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.12,
+          depthWrite: false,
+        }),
+      );
+      plane.add(orbitLine);
+
+      const color = new THREE.Color(config.color);
+      const satellite = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.021, 0),
+        new THREE.MeshBasicMaterial({
+          color: config.color,
+          transparent: true,
+          opacity: 1,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        }),
+      );
+      satellite.renderOrder = 8;
+
+      const halo = new THREE.Mesh(
+        new THREE.SphereGeometry(0.068, 12, 12),
+        new THREE.MeshBasicMaterial({
+          color: config.color,
+          transparent: true,
+          opacity: 0.17,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        }),
+      );
+      satellite.add(halo);
+      plane.add(satellite);
+
+      const trailPositions = new Float32Array(TRAIL_COUNT * 3);
+      const trailColors = new Float32Array(TRAIL_COUNT * 3);
+      for (let index = 0; index < TRAIL_COUNT; index += 1) {
+        const fade = 1 - index / TRAIL_COUNT;
+        trailColors[index * 3] = color.r * fade;
+        trailColors[index * 3 + 1] = color.g * fade;
+        trailColors[index * 3 + 2] = color.b * fade;
+      }
+      const trailGeometry = new THREE.BufferGeometry();
+      trailGeometry.setAttribute("position", new THREE.BufferAttribute(trailPositions, 3));
+      trailGeometry.setAttribute("color", new THREE.BufferAttribute(trailColors, 3));
+      const trail = new THREE.Line(
+        trailGeometry,
+        new THREE.LineBasicMaterial({
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.72,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        }),
+      );
+      trail.renderOrder = 7;
+      plane.add(trail);
+
+      orbitGroup.add(plane);
+      orbitalBodies.push({
+        satellite,
+        trail,
+        trailPositions,
+        radius: config.radius,
+        speed: config.speed,
+        angle: config.phase,
+      });
+    }
+
+    // Sparse dust, not a full galaxy.
+    const dustCount = window.innerWidth < 768 ? 260 : 460;
+    const dustPositions = new Float32Array(dustCount * 3);
+    for (let index = 0; index < dustCount; index += 1) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 1.1 + Math.random() * 0.25;
+      dustPositions[index * 3] = Math.cos(angle) * radius;
+      dustPositions[index * 3 + 1] = (Math.random() - 0.5) * 0.045;
+      dustPositions[index * 3 + 2] = Math.sin(angle) * radius;
+    }
+    const dustGeometry = new THREE.BufferGeometry();
+    dustGeometry.setAttribute("position", new THREE.BufferAttribute(dustPositions, 3));
+    const dust = new THREE.Points(
+      dustGeometry,
+      new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.007,
+        transparent: true,
+        opacity: 0.38,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        sizeAttenuation: true,
+      }),
+    );
+    dust.rotation.x = 0.32;
+    dust.rotation.z = 0.14;
+    dust.renderOrder = 5;
+    group.add(dust);
+
 
 
     if (!isBlueprint) {
@@ -490,6 +620,7 @@ export function GeoGlobe({
     const BASE_Y = (-138 * Math.PI) / 180;
     let targetRotationY = BASE_Y;
     let dragging = false;
+    let hovering = false;
     let lastPointerX = 0;
     let lastPointerY = 0;
     let resumeAt = 0;
@@ -528,7 +659,16 @@ export function GeoGlobe({
       resumeAt = Date.now() + 2200;
     };
 
+    const onPointerEnter = () => {
+      hovering = true;
+    };
+    const onPointerLeave = () => {
+      hovering = false;
+    };
+
     mount.addEventListener("pointerdown", onDragStart);
+    mount.addEventListener("pointerenter", onPointerEnter);
+    mount.addEventListener("pointerleave", onPointerLeave);
     window.addEventListener("pointermove", onDragMove, { passive: true });
     window.addEventListener("pointerup", stopDragging);
     mount.addEventListener("wheel", onWheel, { passive: false });
@@ -590,6 +730,23 @@ export function GeoGlobe({
       globeRim.position.copy(group.position);
       globeRim.scale.copy(group.scale);
       globeRim.visible = isBlueprint;
+
+      const orbitMotion = reduceMotion ? 0 : dragging ? 0.22 : hovering ? 0.42 : 1;
+      for (const body of orbitalBodies) {
+        body.angle += delta * body.speed * orbitMotion;
+        const cos = Math.cos(body.angle);
+        const sin = Math.sin(body.angle);
+        body.satellite.position.set(cos * body.radius, 0, sin * body.radius);
+        for (let index = 0; index < TRAIL_COUNT; index += 1) {
+          const trailAngle = body.angle - index * 0.038;
+          body.trailPositions[index * 3] = Math.cos(trailAngle) * body.radius;
+          body.trailPositions[index * 3 + 1] = 0;
+          body.trailPositions[index * 3 + 2] = Math.sin(trailAngle) * body.radius;
+        }
+        const position = body.trail.geometry.getAttribute("position");
+        position.needsUpdate = true;
+      }
+      if (!reduceMotion) dust.rotation.y += delta * 0.014 * orbitMotion;
       renderer.render(scene, camera);
       updateMarkerLabels();
     };
@@ -629,13 +786,15 @@ export function GeoGlobe({
       window.cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", onPointerMove);
       mount.removeEventListener("pointerdown", onDragStart);
+      mount.removeEventListener("pointerenter", onPointerEnter);
+      mount.removeEventListener("pointerleave", onPointerLeave);
       window.removeEventListener("pointermove", onDragMove);
       window.removeEventListener("pointerup", stopDragging);
       mount.removeEventListener("wheel", onWheel);
       ro.disconnect();
       renderer.dispose();
       scene.traverse((object) => {
-        if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+        if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.Points) {
           object.geometry.dispose();
           const material = object.material;
           if (Array.isArray(material)) material.forEach((entry) => entry.dispose());
