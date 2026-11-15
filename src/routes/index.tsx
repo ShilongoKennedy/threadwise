@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { GlassHeader } from "@/components/threadwise/GlassHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
-import { HeroFieldwork } from "@/components/threadwise/HeroFieldwork";
+import { paletteFor } from "@/lib/threadwise/palette";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/")({
 });
 
 const SAMPLE_TOKEN = "mn4qvf4bhu";
-const LANDING_TONES = ["#8F3524", "#8A4A1E", "#4C4C24", "#1F4A46", "#29336B", "#47284F"];
+const LANDING_TONES = paletteFor("/");
 
 
 const LOOP = [
@@ -106,6 +106,8 @@ function LandingPage() {
     };
   }, []);
 
+  const tone = LANDING_TONES[toneIndex] ?? LANDING_TONES[0];
+  const darkInk = tone.ink === "#111111";
   const openRead = (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
@@ -118,9 +120,18 @@ function LandingPage() {
     }, delay);
   };
   return (
-    <div className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans text-white transition-colors duration-700 selection:bg-[#F1C979] selection:text-[#1A1A1A]" style={{ backgroundColor: LANDING_TONES[toneIndex] }}>
+    <div
+      className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans transition-colors duration-700 selection:bg-[#FFE6A3] selection:text-[#1A1A1A]"
+      style={{
+        backgroundColor: tone.hex,
+        color: tone.ink,
+        "--blueprint-ink": tone.ink,
+        "--landing-brand-filter": darkInk ? "none" : "brightness(0) invert(1)",
+        "--landing-header-border": darkInk ? "rgba(17,17,17,0.22)" : "rgba(255,255,255,0.16)",
+      } as CSSProperties}
+    >
       <main id="main" className="relative z-10 flex-1">
-        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden text-white">
+        <section className="eye-page relative min-h-[100dvh] w-full overflow-hidden">
           <div className="globe-stage absolute inset-0 z-[5]">
             <GeoGlobe theme="blueprint" layout="right" minimal />
           </div>

@@ -1729,7 +1729,7 @@ main {
 
 .blueprint-page main :is(h1, h2, h3, p, li, span, a, button),
 .blueprint-page footer :is(h1, h2, h3, p, li, span, a, button) {
-  color: #FFFFFF !important;
+  color: var(--blueprint-ink, #FFFFFF) !important;
 }
 
 .blueprint-page .bg-\[\#1A1A1A\],
@@ -1818,7 +1818,7 @@ main {
 .site-blueprint [class*="bg-[#FAF6EE]"],
 .site-blueprint [class*="bg-[#FBF6EC]"],
 .site-blueprint [class*="bg-white"] {
-  background-color: rgba(10, 8, 5, 0.18) !important;
+  background-color: transparent !important;
 }
 
 .site-blueprint :is(input, textarea, select) {
@@ -1851,7 +1851,7 @@ main {
 
 .site-blueprint header.sticky a[aria-label="Threadwise — home"] svg,
 .site-blueprint header.sticky a[aria-label="Threadwise — home"] svg * {
-  filter: brightness(0) invert(1) !important;
+  filter: var(--site-brand-filter, brightness(0) invert(1)) !important;
 }
 
 .site-blueprint header.sticky nav[aria-label="Primary"] [aria-current="page"] {
@@ -1920,7 +1920,7 @@ main {
 /* One planned background field: no brick grid, just sparse thread dots and quiet column threads. */
 .seminar-color-page { --field-ink: var(--seminar-ink); }
 .site-blueprint { --field-ink: var(--site-ink); }
-.blueprint-page { --field-ink: #FFFFFF; }
+.blueprint-page { --field-ink: var(--blueprint-ink, #FFFFFF); }
 
 .seminar-color-page::before,
 .site-blueprint::before,
@@ -1937,7 +1937,7 @@ main {
 .seminar-header header > div,
 .site-blueprint header.sticky > div {
   background: rgba(255, 255, 255, 0.035) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: var(--site-header-border, rgba(255, 255, 255, 0.16)) !important;
   box-shadow: 0 16px 46px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
   backdrop-filter: blur(28px) saturate(1.1) !important;
   -webkit-backdrop-filter: blur(28px) saturate(1.1) !important;
@@ -1951,10 +1951,35 @@ main {
 .site-blueprint header.sticky a,
 .site-blueprint header.sticky button,
 .site-blueprint header.sticky span {
-  color: #FFFFFF !important;
+  color: var(--site-header-ink, #FFFFFF) !important;
 }
 
 .seminar-header header a[data-read-source] span,
 .site-blueprint header.sticky a[data-read-source] span {
   color: #1A1A1A !important;
+}
+
+
+/* Landing header inherits the current page ink, including the dark-ink golden field. */
+.blueprint-page header :is(a, button, span) {
+  color: var(--blueprint-ink, #FFFFFF) !important;
+}
+
+.blueprint-page header a[data-read-source] span {
+  color: #1A1A1A !important;
+}
+
+.blueprint-page header a[aria-label="Threadwise — home"] svg,
+.blueprint-page header a[aria-label="Threadwise — home"] svg * {
+  filter: var(--landing-brand-filter, brightness(0) invert(1)) !important;
+}
+
+.seminar-header header a[aria-label="Threadwise — home"] svg,
+.seminar-header header a[aria-label="Threadwise — home"] svg * {
+  filter: var(--seminar-brand-filter, brightness(0) invert(1)) !important;
+}
+
+/* Header border follows the current ink so it stays visible on the yellow field. */
+.seminar-header header > div {
+  border-color: var(--seminar-header-border, rgba(255,255,255,.2)) !important;
 }

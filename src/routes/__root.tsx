@@ -15,6 +15,7 @@ import { lazy, Suspense, useEffect, useState, type CSSProperties, type ReactNode
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import { paletteFor } from "@/lib/threadwise/palette";
 const CloudSync = lazy(() => import("@/components/threadwise/CloudSync"));
 
 function NotFoundComponent() {
@@ -164,17 +165,10 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-const SITE_TONES = [
-  { bg: "#8F3524", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
-  { bg: "#8A4A1E", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
-  { bg: "#4C4C24", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
-  { bg: "#1F4A46", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
-  { bg: "#29336B", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
-  { bg: "#47284F", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", accent: "#FFE6A3" },
-] as const;
 
 function SiteBlueprint({ pathname, children }: { pathname: string; children: ReactNode }) {
   const [toneIndex, setToneIndex] = useState(0);
+  const palette = paletteFor(pathname);
 
   useEffect(() => {
     setToneIndex(0);
@@ -182,7 +176,7 @@ function SiteBlueprint({ pathname, children }: { pathname: string; children: Rea
     const update = () => {
       const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       const progress = Math.min(1, Math.max(0, window.scrollY / max));
-      const next = Math.min(SITE_TONES.length - 1, Math.floor(progress * SITE_TONES.length));
+      const next = Math.min(palette.length - 1, Math.floor(progress * palette.length));
       setToneIndex(next);
     };
     const onScroll = () => {
@@ -199,15 +193,19 @@ function SiteBlueprint({ pathname, children }: { pathname: string; children: Rea
     };
   }, [pathname]);
 
-  const tone = SITE_TONES[toneIndex] ?? SITE_TONES[0];
+  const tone = palette[toneIndex] ?? palette[0];
+  const darkInk = tone.ink === "#111111";
   return (
     <div
       className="site-blueprint"
       style={{
-        "--site-bg": tone.bg,
+        "--site-bg": tone.hex,
         "--site-ink": tone.ink,
-        "--site-header-bg": tone.header,
-        "--site-accent": tone.accent,
+        "--site-header-bg": "rgba(255, 255, 255, 0.035)",
+        "--site-header-border": darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.16)",
+        "--site-header-ink": tone.ink,
+        "--site-brand-filter": darkInk ? "none" : "brightness(0) invert(1)",
+        "--site-accent": darkInk ? "#4A3A00" : "#FFE6A3",
       } as CSSProperties}
     >
       {children}

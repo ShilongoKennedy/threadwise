@@ -8,6 +8,7 @@ import { SeminarLessonView } from "@/components/threadwise/SeminarLessonView";
 import { SeminarLoupe, LoupeSelectionButton, LookCloserButton, useLoupeSelection, type LoupeTarget } from "@/components/threadwise/SeminarLoupe";
 import { InkArrow, InkCircle, InkRule, InkTick } from "@/components/threadwise/InkMarks";
 import { supabase } from "@/integrations/supabase/client";
+import { paletteFor } from "@/lib/threadwise/palette";
 
 export const Route = createFileRoute("/seminar")({
   head: () => ({
@@ -25,14 +26,17 @@ export const Route = createFileRoute("/seminar")({
 
 const SAMPLE = `"I am actually in favour of foreign aid as a tool for statecraft, because sometimes foreign aid is easier than bombing people. Sometimes you want to bribe a country to get your way."`;
 
-const TONES = [
-  { bg: "#8F3524", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
-  { bg: "#8A4A1E", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
-  { bg: "#4C4C24", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
-  { bg: "#1F4A46", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
-  { bg: "#29336B", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
-  { bg: "#47284F", ink: "#FFFFFF", header: "rgba(255, 255, 255, 0.06)", border: "rgba(255, 255, 255, 0.2)", accent: "#FFE6A3" },
-];
+const TONES = paletteFor("/seminar").map((color) => {
+  const darkInk = color.ink === "#111111";
+  return {
+    bg: color.hex,
+    ink: color.ink,
+    header: "rgba(255, 255, 255, 0.035)",
+    border: darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.2)",
+    accent: darkInk ? "#4A3A00" : "#FFE6A3",
+    brandFilter: darkInk ? "none" : "brightness(0) invert(1)",
+  };
+});
 
 type SavedSeminar = {
   id: string;
@@ -129,7 +133,7 @@ function SeminarPage() {
     };
   }, [seminar, revealed, verdictOpen, lesson]);
 
-  const tone = TONES[toneIndex] ?? TONES[0];
+  const tone = TONES[toneIndex % TONES.length] ?? TONES[0];
 
   const save = async () => {
     if (!seminar || !userId || saveState === "saving" || savedId) return;
@@ -265,7 +269,6 @@ function SeminarPage() {
       style={{
         backgroundColor: tone.bg,
         color: tone.ink,
-        backgroundImage: "radial-gradient(circle at 86% 0%, rgba(255,255,255,0.12), transparent 34%)",
         "--seminar-bg": tone.bg,
         "--seminar-ink": tone.ink,
         "--seminar-grid": "rgba(247, 234, 214, 0.16)",
@@ -273,6 +276,7 @@ function SeminarPage() {
         "--seminar-header-border": tone.border,
         "--seminar-header-ink": tone.ink,
         "--seminar-header-accent": tone.accent,
+        "--seminar-brand-filter": tone.brandFilter,
       } as CSSProperties}
     >
       <div className="seminar-header contents">
