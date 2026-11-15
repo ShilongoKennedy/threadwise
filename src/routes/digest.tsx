@@ -6,6 +6,7 @@ import { VerdictStamp } from "@/components/threadwise/VerdictStamp";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
+import { BPBadge, BPEmptyState, bpButtonClass } from "@/components/threadwise/BlueprintUI";
 
 export const Route = createFileRoute("/digest")({
   head: () => ({
@@ -155,9 +156,10 @@ function DigestPage() {
   return (
     <div className="relative min-h-[100dvh] bg-[#FDFBF7] text-[#1A1A1A]">
       <PageBackdrop />
+      <div className="bp-scrim" aria-hidden />
       <AppHeader section="digest" />
 
-      <main id="main" className="mx-auto w-full max-w-[1100px] px-4 pb-28 pt-8 md:px-6 md:pb-12 md:pt-12">
+      <main id="main" className="bp-page">
         <PageMasthead
           eyebrow="The record"
           title="The record."
@@ -167,8 +169,8 @@ function DigestPage() {
         <AskRecord />
 
         {reads.length > 0 && (
-          <section className="mt-8 border-y border-[#1A1A1A]/15">
-            <div className="flex items-center justify-between border-b border-[#1A1A1A]/15 py-2">
+          <section className="bp-card mt-8">
+            <div className="bp-card__header">
               <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#1A1A1A]/55">
                 Reads you kept
               </span>
@@ -182,7 +184,7 @@ function DigestPage() {
                   <Link
                     to="/read/$token"
                     params={{ token: read.token }}
-                    className="group flex items-baseline justify-between gap-4 px-3 py-2.5"
+                    className="group flex items-baseline justify-between gap-4 px-5 py-3"
                   >
                     <span className="min-w-0 truncate font-serif text-[14px] text-[#1A1A1A]/85 group-hover:text-[#1A4BFF]">
                       {read.input}
@@ -204,23 +206,28 @@ function DigestPage() {
         )}
 
         {state === "error" && (
-          <p className="mt-10 border-2 border-[#1A1A1A] p-6 text-center font-mono text-[10px] uppercase tracking-[0.16em]">
+          <p className="bp-card mt-10 p-6 text-center font-mono text-[10px] uppercase tracking-[0.16em]">
             The record could not be read. Check the claim_watches table.
           </p>
         )}
 
         {state === "empty" && (
-          <div className="mt-10 border-2 border-dashed border-[#1A1A1A]/25 p-10 text-center">
-            <p className="font-display text-2xl">Nothing filed yet.</p>
-            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#1A1A1A]/65">
-              Keep a signal from a read and it will start keeping score.
-            </p>
-          </div>
+          <BPEmptyState
+            className="mt-8"
+            eyebrow="The record"
+            title="Nothing filed yet."
+            body="Keep a signal from a read and it will start keeping score."
+            action={
+              <Link to="/reads" className={bpButtonClass({ variant: "secondary" })}>
+                Browse reads
+              </Link>
+            }
+          />
         )}
 
         {state === "ready" && current && (
           <>
-            <section className="mt-8 grid grid-cols-2 border-2 border-[#1A1A1A] md:grid-cols-4">
+            <section className="bp-card mt-8 grid grid-cols-2 overflow-hidden md:grid-cols-4">
               {[
                 { label: "filed", value: totals.filed },
                 { label: "settled", value: settled },
@@ -229,7 +236,7 @@ function DigestPage() {
               ].map((stat, index) => (
                 <div
                   key={stat.label}
-                  className={`px-4 py-4 ${index > 0 ? "border-l border-[#1A1A1A]/12" : ""} ${index === 2 ? "max-md:border-l-0 max-md:border-t" : ""} ${index === 3 ? "max-md:border-t" : ""}`}
+                  className={`px-4 py-4 ${index > 0 ? "border-l border-white/12" : ""} ${index === 2 ? "max-md:border-l-0 max-md:border-t" : ""} ${index === 3 ? "max-md:border-t" : ""}`}
                 >
                   <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
                     {stat.label}
@@ -252,7 +259,7 @@ function DigestPage() {
               }
             />
 
-            <section className="mt-4 flex flex-wrap items-end justify-between gap-3 border-2 border-[#1A1A1A] px-4 py-3">
+            <section className="bp-card mt-4 flex flex-wrap items-end justify-between gap-3 p-4">
               <div>
                 <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
                   reporting called it
@@ -270,7 +277,7 @@ function DigestPage() {
               </p>
             </section>
 
-            <section className="mt-4 flex flex-wrap items-center justify-between gap-3 border-2 border-[#1A1A1A] px-4 py-3">
+            <section className="bp-card mt-4 flex flex-wrap items-center justify-between gap-3 p-4">
               <div className="flex items-center gap-3">
                 <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#1A1A1A]/65">
                   Form
@@ -301,7 +308,7 @@ function DigestPage() {
             </section>
 
             <section className="mt-10">
-              <div className="flex items-end justify-between border-b-2 border-[#1A1A1A] pb-2">
+              <div className="flex items-end justify-between border-b border-white/20 pb-2">
                 <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">
                   By week
                 </h2>
@@ -318,7 +325,7 @@ function DigestPage() {
                         type="button"
                         onClick={() => setSelected(week.key)}
                         aria-pressed={active}
-                        className={`flex w-full items-center gap-3 border-b border-[#1A1A1A]/12 px-1 py-2.5 text-left transition-colors hover:bg-[#1A1A1A]/[0.035] ${active ? "bg-[#1A4BFF]/[0.05]" : ""}`}
+                        className={`flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-left transition-colors hover:bg-white/[0.06] ${active ? "border-white/20 bg-white/[0.08]" : ""}`}
                       >
                         <span className="w-[150px] shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/65">
                           {span(week.start)}
@@ -346,7 +353,7 @@ function DigestPage() {
             </section>
 
             <section className="mt-10">
-              <div className="flex items-end justify-between border-b-2 border-[#1A1A1A] pb-2">
+              <div className="flex items-end justify-between border-b border-white/20 pb-2">
                 <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">
                   {span(current.start)}
                 </h2>
@@ -366,7 +373,7 @@ function DigestPage() {
                     return (
                       <li
                         key={watch.id}
-                        className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-[#1A1A1A]/12 px-1 py-2.5"
+                        className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-white/12 px-1 py-2.5"
                       >
                         {pending ? (
                           <span
@@ -468,7 +475,7 @@ function AskRecord() {
   };
 
   return (
-    <section className="mt-8 border-y border-[#1A1A1A]/15">
+    <section className="bp-card mt-8">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1A1A1A]/15 py-2">
         <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1A1A1A]/55">
           Ask your record
@@ -609,7 +616,7 @@ function CalibrationSection({
   }
 
   return (
-    <section className="mt-4 border-2 border-[#1A1A1A] bg-white">
+    <section className="bp-card mt-4">
       <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1A1A1A] px-3 py-1.5">
         <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#FDFBF7]">
           Calibration
