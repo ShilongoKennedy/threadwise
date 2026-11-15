@@ -33,7 +33,7 @@ const TONES = paletteFor("/seminar").map((color) => {
     ink: color.ink,
     header: "rgba(255, 255, 255, 0.035)",
     border: darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.2)",
-    accent: darkInk ? "#4A3A00" : "#D8CCFF",
+    accent: color.ink,
     wave: color.wave,
     brandFilter: darkInk ? "brightness(0)" : "brightness(0) invert(1)",
   };
@@ -92,7 +92,7 @@ function SeminarReadingNav() {
                 : "border-transparent text-white/50 hover:border-white/25 hover:text-white"
             }`}
           >
-            <span className={active === item.id ? "text-[#E8EEFF]" : "text-[#E8EEFF]/55"}>{item.n}</span>
+            <span className={active === item.id ? "text-white" : "text-white/55"}>{item.n}</span>
             {item.label}
           </a>
         ))}
@@ -341,7 +341,7 @@ function SeminarPage() {
 
         <div className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-12 pt-12 md:px-8 md:pb-16 md:pt-16">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#D8CCFF]">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-white">
               The seminar
             </p>
             <span className="h-3 w-px bg-white/20" />
@@ -420,7 +420,7 @@ function SeminarPage() {
                   setText(SAMPLE);
                   setContext("A podcast conversation about foreign aid and statecraft.");
                 }}
-                className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#E8EEFF] underline underline-offset-4 transition-colors hover:text-white"
+                className="font-mono text-[9px] uppercase tracking-[0.12em] text-white underline underline-offset-4 transition-colors hover:text-white"
               >
                 Use the foreign-aid quote
               </button>
@@ -458,7 +458,7 @@ function SeminarPage() {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <span className="min-w-0">
-                    <span className="block truncate font-serif text-[14px] leading-snug text-[#1A1A1A]/80 group-hover:text-[#B9D7FF]">
+                    <span className="block truncate font-serif text-[14px] leading-snug text-[#1A1A1A]/80 group-hover:text-white">
                       {item.question}
                     </span>
                     <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
@@ -469,7 +469,7 @@ function SeminarPage() {
                       })}
                     </span>
                   </span>
-                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#B9D7FF]">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white">
                     reopen →
                   </span>
                 </button>
@@ -485,7 +485,7 @@ function SeminarPage() {
           <section id="s-question" data-reading-section="s-question" data-loupe-section="The question underneath" data-seminar-tone="1" className="seminar-dark-ink reading-section grid gap-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12">
             <div>
               <div className="flex items-center justify-between gap-3">
-                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#B9D7FF]">
+                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-white">
                   The question underneath
                 </p>
                 <LookCloserButton
@@ -528,7 +528,7 @@ function SeminarPage() {
             <div className="reading-rule mt-2" />
             <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">
               Arguments to test, not sourced findings.
-              <span className="inline-flex items-center gap-1 text-[#B9D7FF]/65">
+              <span className="inline-flex items-center gap-1 text-white/65">
                 <Search className="h-2.5 w-2.5" /> select a line, or hover “closer”
               </span>
             </p>
@@ -595,7 +595,7 @@ function SeminarPage() {
                 <div className="grid md:grid-cols-[190px_minmax(0,1fr)]">
                   <div className="border-b border-white/15 px-5 py-4 md:border-b-0 md:border-r md:border-white/15 md:px-6 md:py-8">
                     <div className="flex items-center justify-between gap-3">
-                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#B9D7FF]">
+                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white">
                         The crux
                       </p>
                       <LookCloserButton
@@ -610,7 +610,7 @@ function SeminarPage() {
                     {stand && (
                       <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.12em] text-white/70">
                         You stood with{" "}
-                        <span className="text-[#B9D7FF]">
+                        <span className="text-white">
                           {stand === "undecided" ? "neither yet" : `theory ${stand}`}
                         </span>
                       </p>
@@ -666,7 +666,7 @@ function SeminarPage() {
                   <div className="border-t border-white/15 pt-5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
-                        <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#B9D7FF]">
+                        <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-white">
                           Provisional verdict
                         </p>
                         <LookCloserButton
@@ -689,7 +689,7 @@ function SeminarPage() {
                         {seminar.verdict.why}
                       </p>
                       <p className="mt-3 border-l-2 border-[#1A4BFF] pl-3 font-serif text-[13px] leading-relaxed text-[#1A1A1A]/60">
-                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#B9D7FF]">
+                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-white">
                           What would change it ·{" "}
                         </span>
                         {seminar.verdict.change}
@@ -706,7 +706,7 @@ function SeminarPage() {
                 <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:p-6">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#B9D7FF]">
+                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-white">
                         If the argument is clear but the subject is not
                       </p>
                       {lesson ? (

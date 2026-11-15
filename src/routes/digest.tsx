@@ -484,7 +484,7 @@ function AskRecord() {
       {signedIn === false ? (
         <div className="bp-card__body">
           <p className="font-serif text-[14px] text-white/70">
-            <Link to="/login" className="text-[#E8EEFF] underline underline-offset-4">
+            <Link to="/login" className="text-white underline underline-offset-4">
               Sign in
             </Link>{" "}
             to ask what your own reads, questions and predictions say.
@@ -541,7 +541,7 @@ function AskRecord() {
                         <Link
                           to="/read/$token"
                           params={{ token: source.token }}
-                          className="text-[#E8EEFF] underline underline-offset-4"
+                          className="text-white underline underline-offset-4"
                         >
                           [{index + 1}] {source.input}
                         </Link>

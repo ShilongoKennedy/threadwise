@@ -68,7 +68,7 @@ function CasesPage() {
                 >
                   <div className="min-w-0">
                     <BPBadge>Case file</BPBadge>
-                    <h2 className="mt-2 font-display text-[19px] leading-snug sm:text-[21px] transition-colors group-hover:text-[#E8EEFF]">
+                    <h2 className="mt-2 font-display text-[19px] leading-snug sm:text-[21px] transition-colors group-hover:text-white">
                       {item.subject}
                     </h2>
                   </div>

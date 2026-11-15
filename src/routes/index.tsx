@@ -139,7 +139,7 @@ function LandingPage() {
         backgroundColor: tone.hex,
         color: tone.ink,
         "--blueprint-ink": tone.ink,
-        "--blueprint-accent": darkInk ? "#1A4BFF" : "#D8CCFF",
+        "--blueprint-accent": tone.ink,
         "--wave-art": tone.wave === "dark" ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")',
         "--wave-opacity": tone.wave === "dark" ? "0.7" : "0.72",
         "--landing-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
@@ -209,7 +209,7 @@ function LandingPage() {
                 </Link>
                 <Link
                   to="/profile"
-                  className="group inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/55 underline underline-offset-4 transition-colors hover:text-[#1A4BFF]"
+                  className="group inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/55 underline underline-offset-4 transition-colors hover:underline"
                 >
                   See the thinking profile
                   <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -348,7 +348,7 @@ function LandingPage() {
                 <Link
                   to="/read/$token"
                   params={{ token: SAMPLE_TOKEN }}
-                  className="group flex items-center justify-between border-b border-[#1A1A1A]/15 py-4 font-serif text-[18px] text-[#1A1A1A]/80 transition-colors hover:text-[#1A4BFF]"
+                  className="group flex items-center justify-between border-b border-[#1A1A1A]/15 py-4 font-serif text-[18px] text-[#1A1A1A]/80 transition-colors hover:underline"
                 >
                   Open the IAEA read
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
@@ -386,7 +386,7 @@ function LandingPage() {
                 ].map((item) => (
                   <Link key={item.to} to={item.to} className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
                     <span className="text-[8px] text-[#1A1A1A]/25">{item.n}</span>
-                    <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">
+                    <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:underline">
                       {item.label}
                     </span>
                   </Link>
@@ -397,7 +397,7 @@ function LandingPage() {
                 <p className="mb-3 text-[#1A1A1A]/40">The record</p>
                 <Link to="/cases" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
                   <span className="text-[8px] text-[#1A1A1A]/25">05</span>
-                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Cases</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:underline">Cases</span>
                 </Link>
                 <Link
                   to="/read/$token"
@@ -405,11 +405,11 @@ function LandingPage() {
                   className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70"
                 >
                   <span className="text-[8px] text-[#1A1A1A]/25">06</span>
-                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">The IAEA read</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:underline">The IAEA read</span>
                 </Link>
                 <a href="#loop" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
                   <span className="text-[8px] text-[#1A1A1A]/25">07</span>
-                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">How it works</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:underline">How it works</span>
                 </a>
               </div>
 
@@ -417,11 +417,11 @@ function LandingPage() {
                 <p className="mb-3 text-[#1A1A1A]/40">Elsewhere</p>
                 <Link to="/terms" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
                   <span className="text-[8px] text-[#1A1A1A]/25">08</span>
-                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Terms</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:underline">Terms</span>
                 </Link>
                 <Link to="/privacy" className="group mt-2 flex items-baseline gap-2 text-[#1A1A1A]/70">
                   <span className="text-[8px] text-[#1A1A1A]/25">09</span>
-                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:text-[#1A4BFF]">Privacy</span>
+                  <span className="border-b border-transparent pb-0.5 transition-colors group-hover:border-[#1A4BFF]/40 group-hover:underline">Privacy</span>
                 </Link>
               </div>
             </div>
