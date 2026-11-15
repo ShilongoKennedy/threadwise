@@ -96,6 +96,9 @@ function SharedRead() {
   const blocks = report ? buildBlocks(report) : [];
   const sourceNumber = String(blocks.length + 1).padStart(2, "0");
   const title = input.trim().split("\n")[0]?.slice(0, 90) || "A read";
+  const readingMinutes = report
+    ? Math.max(3, Math.round(JSON.stringify(report).split(/\s+/).length / 220))
+    : 0;
   const contents = report
     ? [
         ...blocks.map((block, index) => ({
@@ -144,13 +147,15 @@ function SharedRead() {
                 {report.subject?.trim() || title}
               </h1>
               {at && (
-                <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-[#1A1A1A]/45">
+                <p className="read-dateline">
                   as of{" "}
                   {new Date(at).toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "short",
                     year: "numeric",
                   })}
+                  <span aria-hidden="true"> · </span>
+                  {readingMinutes} min read
                 </p>
               )}
 
@@ -231,11 +236,11 @@ function SharedRead() {
               </div>
             </header>
 
-            <ReadingSummary report={report} />
+            <ReadingSummary report={report} token={token} />
 
             <div className="mt-8 grid gap-10 md:grid-cols-[240px_minmax(0,1fr)] md:gap-14">
               <aside className="md:sticky md:top-24 md:self-start">
-                <Contents items={contents} />
+                <Contents items={contents} token={token} />
               </aside>
 
               <div className="read-column min-w-0 space-y-8">
@@ -410,22 +415,49 @@ function ClaimTable({ claims }: { claims: NonNullable<Report["claims"]> }) {
   );
 }
 
-function ReadingSummary({ report }: { report: Report }) {
+function ReadingSummary({ report, token }: { report: Report; token: string }) {
+  const [marked, setMarked] = useState(false);
+  const markKey = `threadwise-read-verify-${token}`;
+  const confidence = report.confidence.toLowerCase();
+  const confidenceLevel = confidence === "high" ? 3 : confidence === "medium" ? 2 : 1;
+
+  useEffect(() => {
+    setMarked(window.localStorage.getItem(markKey) === "1");
+  }, [markKey]);
+
+  const toggleMark = () => {
+    const next = !marked;
+    setMarked(next);
+    window.localStorage.setItem(markKey, next ? "1" : "0");
+  };
+
   return (
-    <section className="reading-summary" aria-label="Reading at a glance">
-      <div>
-        <p className="reading-summary__label">Why now</p>
-        <p className="reading-summary__body">{report.why_now}</p>
-      </div>
-      <div>
-        <p className="reading-summary__label">Confidence</p>
-        <p className="reading-summary__value">{report.confidence}</p>
-        {report.basis ? <p className="reading-summary__note">{report.basis}</p> : null}
-      </div>
-      <div>
-        <p className="reading-summary__label">Evidence to check</p>
-        <p className="reading-summary__body">{report.falsifier}</p>
-      </div>
+    <section className="read-summary" aria-label="Reading at a glance">
+      <article className="read-summary__panel read-summary__panel--why">
+        <p className="read-summary__head"><span>01</span> Why now</p>
+        <p className="read-summary__copy">{report.why_now}</p>
+      </article>
+      <article className="read-summary__panel read-summary__panel--confidence">
+        <p className="read-summary__head"><span>02</span> Confidence</p>
+        <div className="read-confidence" aria-label={`${report.confidence} confidence`}>
+          {[1, 2, 3].map((level) => (
+            <span key={level} className={level <= confidenceLevel ? "is-filled" : ""} />
+          ))}
+        </div>
+        <div className="read-confidence__scale" aria-hidden="true">
+          <span>Low</span><span>Medium</span><span>High</span>
+        </div>
+        <p className="read-summary__value">{report.confidence}</p>
+        <p className="read-summary__note">{report.basis || "The read's own confidence in the evidence."}</p>
+      </article>
+      <article className="read-summary__panel read-summary__panel--evidence">
+        <p className="read-summary__head"><span>03</span> Evidence to check</p>
+        <p className="read-summary__copy">{report.falsifier}</p>
+        <button type="button" onClick={toggleMark} className={`read-summary__mark ${marked ? "is-marked" : ""}`}>
+          <span aria-hidden="true">{marked ? "✓" : "+"}</span>
+          {marked ? "Marked to verify" : "Keep this to verify"}
+        </button>
+      </article>
     </section>
   );
 }
@@ -533,8 +565,30 @@ function Block({ n, title, children }: { n: string; title: string; children: Rea
 }
 
 /** The document's contents: collapsible on a phone, fixed beside it on a desk. */
-function Contents({ items }: { items: { n: string; title: string }[] }) {
+function Contents({ items, token }: { items: { n: string; title: string }[]; token: string }) {
   const [active, setActive] = useState(items[0]?.n ?? "");
+  const [read, setRead] = useState<Set<string>>(new Set());
+  const storageKey = `threadwise-read-sections-${token}`;
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(storageKey) ?? "[]") as unknown;
+      if (Array.isArray(stored)) setRead(new Set(stored.filter((item): item is string => typeof item === "string")));
+    } catch {
+      setRead(new Set());
+    }
+  }, [storageKey]);
+
+  const toggleRead = (n: string) => {
+    setRead((current) => {
+      const next = new Set(current);
+      if (next.has(n)) next.delete(n);
+      else next.add(n);
+      window.localStorage.setItem(storageKey, JSON.stringify([...next]));
+      return next;
+    });
+  };
+  const readCount = items.filter((item) => read.has(item.n)).length;
 
   useEffect(() => {
     const sections = items
@@ -556,16 +610,23 @@ function Contents({ items }: { items: { n: string; title: string }[] }) {
   const list = (
     <ol className="mt-3 space-y-2">
       {items.map((item) => (
-        <li key={item.n}>
+        <li key={item.n} className="read-contents__row">
+          <button
+            type="button"
+            onClick={() => toggleRead(item.n)}
+            aria-label={`${read.has(item.n) ? "Unmark" : "Mark"} ${item.title} as read`}
+            aria-pressed={read.has(item.n)}
+            className={`read-contents__check ${read.has(item.n) ? "is-read" : ""}`}
+          >
+            {read.has(item.n) ? "✓" : ""}
+          </button>
           <a
             href={`#s-${item.n}`}
             aria-current={active === item.n ? "true" : undefined}
             className={`read-contents__link ${active === item.n ? "is-active" : ""}`}
           >
-            <span className={`shrink-0 ${active === item.n ? "text-[#E8EEFF]" : "text-[#B9D7FF]/70"}`}>{item.n}</span>
-            <span className="border-b border-transparent pb-0.5 group-hover:border-white/25">
-              {item.title}
-            </span>
+            <span className="shrink-0">{item.n}</span>
+            <span>{item.title}</span>
           </a>
         </li>
       ))}
@@ -578,6 +639,10 @@ function Contents({ items }: { items: { n: string; title: string }[] }) {
         <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/40">
           Contents
         </p>
+        <div className="read-contents__progress">
+          <span>{readCount} / {items.length} read</span>
+          <span className="read-contents__bar"><span style={{ width: `${items.length ? (readCount / items.length) * 100 : 0}%` }} /></span>
+        </div>
         {list}
       </nav>
 
@@ -589,6 +654,10 @@ function Contents({ items }: { items: { n: string; title: string }[] }) {
           </span>
           <span className="text-[#1A1A1A]/40">{items.length} sections</span>
         </summary>
+        <div className="read-contents__progress">
+          <span>{readCount} / {items.length} read</span>
+          <span className="read-contents__bar"><span style={{ width: `${items.length ? (readCount / items.length) * 100 : 0}%` }} /></span>
+        </div>
         {list}
       </details>
     </>
