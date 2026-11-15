@@ -399,7 +399,7 @@ function ClaimTable({ claims }: { claims: NonNullable<Report["claims"]> }) {
               {claim.source || "Source not stated"}
             </p>
             {claim.falsifier ? (
-              <p className="mt-2 border-l border-[#E7A574]/60 pl-3 font-serif text-[12.5px] leading-snug text-white/60">
+              <p className="mt-2 border-l border-[#B9D7FF]/60 pl-3 font-serif text-[12.5px] leading-snug text-white/60">
                 Would be wrong if: {claim.falsifier}
               </p>
             ) : null}
@@ -564,7 +564,7 @@ function Contents({ items }: { items: { n: string; title: string }[] }) {
               active === item.n ? "bg-white/10 text-white" : "text-white/50 hover:text-white"
             }`}
           >
-            <span className={`shrink-0 ${active === item.n ? "text-[#FFE8D6]" : "text-[#E7A574]/70"}`}>{item.n}</span>
+            <span className={`shrink-0 ${active === item.n ? "text-[#E8EEFF]" : "text-[#B9D7FF]/70"}`}>{item.n}</span>
             <span className="border-b border-transparent pb-0.5 group-hover:border-white/25">
               {item.title}
             </span>

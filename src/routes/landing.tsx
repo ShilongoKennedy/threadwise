@@ -119,10 +119,6 @@ function LandingExperimentPage() {
           <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
             <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
               <div className="pointer-events-none relative z-20 max-w-[62vw] md:max-w-[560px]">
-                <div className="mb-4 flex items-center gap-3 font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]/75">
-                  <span className="h-px w-8 bg-[#1A4BFF]/55" />
-                  A field note / IAEA–Iran
-                </div>
                 <SignatureHeadline
                   text="See what the story hides."
                   flourish={false}

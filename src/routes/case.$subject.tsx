@@ -39,7 +39,7 @@ function CasePage() {
       <AppHeader section="cases" />
 
       <main className="bp-page bp-page--narrow">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#E7A574]">Case file</p>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#B9D7FF]">Case file</p>
         <h1 className="mt-3 font-display text-[34px] leading-none md:text-[46px]">{subject}</h1>
 
         {reads.length === 0 ? (
@@ -104,7 +104,7 @@ function CasePage() {
                         <p className="max-w-[64ch] font-serif text-[14px] leading-snug text-[#1A1A1A]/85">
                           {claim.text}
                         </p>
-                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#E7A574]">
+                        <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#B9D7FF]">
                           {claim.kind} · {claim.latestConfidence}
                         </span>
                       </div>
@@ -125,7 +125,7 @@ function CasePage() {
                             key={read.token}
                             to="/read/$token"
                             params={{ token: read.token }}
-                            className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#E7A574] underline underline-offset-4"
+                            className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#B9D7FF] underline underline-offset-4"
                           >
                             {date(read.at)}
                           </Link>
@@ -172,7 +172,7 @@ function CasePage() {
                   {read.mode ? ` · ${read.mode}` : ""}
                 </p>
                 <Link to="/read/$token" params={{ token: read.token }} className="group mt-1 block">
-                  <h2 className="font-display text-[18px] leading-snug group-hover:text-[#E7A574]">{read.input}</h2>
+                  <h2 className="font-display text-[18px] leading-snug group-hover:text-[#B9D7FF]">{read.input}</h2>
                   <p className="mt-1.5 line-clamp-3 max-w-[62ch] border-l-2 border-[#C1121F] pl-3 font-serif text-[13px] leading-snug text-[#1A1A1A]/65">
                     {read.falsifier}
                   </p>

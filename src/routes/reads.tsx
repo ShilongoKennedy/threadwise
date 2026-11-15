@@ -77,7 +77,7 @@ function ReadsPage() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <BPBadge>Published</BPBadge>
-                      <h2 className="mt-3 font-display text-[19px] leading-snug sm:text-[21px] transition-colors group-hover:text-[#FFE8D6]">
+                      <h2 className="mt-3 font-display text-[19px] leading-snug sm:text-[21px] transition-colors group-hover:text-[#E8EEFF]">
                         {read.input}
                       </h2>
                     </div>
@@ -85,7 +85,7 @@ function ReadsPage() {
                       {new Date(read.at).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
                     </span>
                   </div>
-                  <p className="mt-3 line-clamp-3 max-w-[64ch] border-l-2 border-[#E7A574]/60 pl-3 font-serif text-[14px] leading-[1.6] text-white/70">
+                  <p className="mt-3 line-clamp-3 max-w-[64ch] border-l-2 border-[#B9D7FF]/60 pl-3 font-serif text-[14px] leading-[1.6] text-white/70">
                     {read.falsifier}
                   </p>
                   <div className="mt-4 flex items-center justify-between border-t border-white/12 pt-3 font-mono text-[9px] uppercase tracking-[0.12em] text-white/55">

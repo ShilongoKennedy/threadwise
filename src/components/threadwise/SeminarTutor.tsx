@@ -164,7 +164,7 @@ export function SeminarTutor({
             type="submit"
             disabled={busy || question.trim().length < 5}
             aria-label="Ask the tutor"
-            className="seminar-dark-cta inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F7EAD6] text-[#1A1A1A] transition-colors hover:bg-[#F1C979] disabled:cursor-not-allowed disabled:opacity-35"
+            className="seminar-dark-cta inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F7EAD6] text-[#1A1A1A] transition-colors hover:bg-[#D8CCFF] disabled:cursor-not-allowed disabled:opacity-35"
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
           </button>

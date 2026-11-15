@@ -19,7 +19,7 @@ export function GlassHeader({ section = "record", tone = "light" }: { section?: 
 
   return (
     <div className="pointer-events-none fixed inset-x-0 top-4 z-50 px-4 md:top-5 md:px-6">
-      <header className={`pointer-events-auto relative mx-auto w-full max-w-[1240px] rounded-[22px] border backdrop-blur-[22px] ${dark ? "border-white/15 bg-[rgba(255,255,255,0.035)] shadow-[0_16px_50px_rgba(0,0,0,0.12)]" : "border-[#8A745C]/22 bg-[linear-gradient(180deg,rgba(255,250,242,0.62),rgba(250,242,229,0.24))] shadow-[0_18px_50px_rgba(43,33,23,0.09),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-[34px] backdrop-saturate-[1.25]"}`}>
+      <header className={`pointer-events-auto relative mx-auto w-full max-w-[1240px] rounded-[22px] border backdrop-blur-[22px] ${dark ? "border-white/15 bg-[rgba(255,255,255,0.035)] shadow-[0_16px_50px_rgba(0,0,0,0.12)]" : "border-[#6F718F]/22 bg-[linear-gradient(180deg,rgba(255,250,242,0.62),rgba(250,242,229,0.24))] shadow-[0_18px_50px_rgba(43,33,23,0.09),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-[34px] backdrop-saturate-[1.25]"}`}>
         <div className="flex h-[58px] items-center justify-between gap-4 px-4 md:h-[62px] md:px-5">
           <div className={`brand-emboss shrink-0 ${dark ? "[filter:brightness(0)_invert(1)] opacity-90" : ""}`}>
             <BrandLockup size="md" asLink />
@@ -54,7 +54,7 @@ export function GlassHeader({ section = "record", tone = "light" }: { section?: 
             </Link>
             <Link
               to="/analyst"
-              className={`hidden items-center gap-1.5 rounded-full px-3.5 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.13em] transition-colors sm:inline-flex ${dark ? "bg-white text-[#1A1A1A] hover:bg-[#FFE6A3]" : "bg-[#1A1A1A] text-[#FDFBF7] hover:bg-[#1A4BFF]"}`}
+              className={`hidden items-center gap-1.5 rounded-full px-3.5 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.13em] transition-colors sm:inline-flex ${dark ? "bg-white text-[#1A1A1A] hover:bg-[#D8CCFF]" : "bg-[#1A1A1A] text-[#FDFBF7] hover:bg-[#1A4BFF]"}`}
             >
               Read a Source
               <ArrowUpRight className="h-3 w-3" />
@@ -75,7 +75,7 @@ export function GlassHeader({ section = "record", tone = "light" }: { section?: 
         {open ? (
           <div
             id="glass-mobile-nav"
-            className={`border-t px-4 pb-4 pt-3 lg:hidden ${dark ? "border-[#C9A77D]/15" : "border-[#8A745C]/15"}`}
+            className={`border-t px-4 pb-4 pt-3 lg:hidden ${dark ? "border-[#8E91B8]/15" : "border-[#6F718F]/15"}`}
           >
             <nav aria-label="Mobile primary" className="grid grid-cols-2 gap-x-4 gap-y-1">
               {NAV.map((item) => (

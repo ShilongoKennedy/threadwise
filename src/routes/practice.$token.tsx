@@ -149,7 +149,7 @@ function PracticePage() {
       <PageBackdrop />
       <div className="bp-scrim" aria-hidden />
       <header className="sticky top-0 z-50 px-3 pt-3 md:px-6 md:pt-5">
-        <div className="mx-auto flex h-14 w-full max-w-[980px] items-center justify-between gap-3 rounded-[20px] border border-[#8A745C]/22 bg-[linear-gradient(180deg,rgba(255,250,242,0.7),rgba(250,242,229,0.4))] px-3 shadow-[0_16px_46px_rgba(43,33,23,0.09),inset_0_1px_0_rgba(255,255,255,0.78)] backdrop-blur-[30px] md:h-[58px] md:px-4">
+        <div className="mx-auto flex h-14 w-full max-w-[980px] items-center justify-between gap-3 rounded-[20px] border border-[#6F718F]/22 bg-[linear-gradient(180deg,rgba(255,250,242,0.7),rgba(250,242,229,0.4))] px-3 shadow-[0_16px_46px_rgba(43,33,23,0.09),inset_0_1px_0_rgba(255,255,255,0.78)] backdrop-blur-[30px] md:h-[58px] md:px-4">
           <Link
             to="/read/$token"
             params={{ token }}

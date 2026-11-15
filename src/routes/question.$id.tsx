@@ -316,7 +316,7 @@ function QuestionPage() {
                                 <Link
                                   to="/read/$token"
                                   params={{ token: finding.read_token }}
-                                  className="text-[#FFE8D6] underline underline-offset-4"
+                                  className="text-[#E8EEFF] underline underline-offset-4"
                                 >
                                   read
                                 </Link>

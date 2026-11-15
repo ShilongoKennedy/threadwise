@@ -382,7 +382,7 @@ function AnalystPage() {
               )}
 
               {attachmentNote && (
-                <p className="border-t border-white/15 px-5 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#FFE8D6]">
+                <p className="border-t border-white/15 px-5 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#E8EEFF]">
                   {attachmentNote}
                 </p>
               )}

@@ -130,12 +130,12 @@ function LandingPage() {
   };
   return (
     <div
-      className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans transition-colors duration-700 selection:bg-[#FFE6A3] selection:text-[#1A1A1A]"
+      className="blueprint-page relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans transition-colors duration-700 selection:bg-[#D8CCFF] selection:text-[#1A1A1A]"
       style={{
         backgroundColor: tone.hex,
         color: tone.ink,
         "--blueprint-ink": tone.ink,
-        "--blueprint-accent": darkInk ? "#4A3A00" : "#FFE6A3",
+        "--blueprint-accent": darkInk ? "#4A3A00" : "#D8CCFF",
         "--wave-art": tone.wave === "dark" ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")',
         "--wave-opacity": tone.wave === "dark" ? "0.7" : "0.72",
         "--landing-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
@@ -153,10 +153,6 @@ function LandingPage() {
           <div className="pointer-events-none relative z-20 mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-between px-5 pb-20 pt-8 md:px-8 md:pb-24 md:pt-10">
             <div className="flex flex-1 items-start pt-[16vh] md:pt-[13vh]">
               <div className="pointer-events-none relative z-20 max-w-[90vw] md:max-w-[560px]">
-                <div className="mb-4 flex items-center gap-3 font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]/75">
-                  <span className="h-px w-8 bg-[#1A4BFF]/55" />
-                  A field note / IAEA–Iran
-                </div>
                 <h1 className="max-w-[11ch] font-display text-[clamp(48px,6vw,88px)] leading-[0.9] tracking-[-0.045em] text-white">
                   See what the story hides.
                 </h1>

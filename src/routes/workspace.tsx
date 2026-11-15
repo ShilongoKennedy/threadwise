@@ -156,7 +156,7 @@ function WorkspacePage() {
     return (
       <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-[#FDFBF7] px-5">
         <p className="font-serif text-[16px] text-[#1A1A1A]/70">The desk could not be opened just now.</p>
-        <Link to="/analyst" className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-[#E7A574] underline underline-offset-4">
+        <Link to="/analyst" className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-[#B9D7FF] underline underline-offset-4">
           Open the analyst
         </Link>
       </div>
@@ -183,7 +183,7 @@ function WorkspacePage() {
       <main className="bp-page">
         <section>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E7A574]">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#B9D7FF]">
               Workspace
             </p>
             <span className="h-3 w-px bg-[#1A1A1A]/20" />
@@ -205,7 +205,7 @@ function WorkspacePage() {
           className="bp-card mt-8"
         >
           <div className="bp-card__header">
-            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#E7A574]">
+            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#B9D7FF]">
               Start with a source
             </span>
             <span className="hidden font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 sm:inline">
@@ -265,7 +265,7 @@ function WorkspacePage() {
             <section>
               <div className="flex items-end justify-between gap-3 border-b border-white/20 pb-2">
                 <h2 className="font-display text-[26px] leading-none">Open questions.</h2>
-                <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#E7A574] underline underline-offset-4">
+                <Link to="/questions" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#B9D7FF] underline underline-offset-4">
                   all questions
                 </Link>
               </div>
@@ -286,7 +286,7 @@ function WorkspacePage() {
                           params={{ id: question.id }}
                           className="group block pt-3.5"
                         >
-                          <span className="font-serif text-[14.5px] leading-snug text-[#1A1A1A]/85 group-hover:text-[#E7A574]">
+                          <span className="font-serif text-[14.5px] leading-snug text-[#1A1A1A]/85 group-hover:text-[#B9D7FF]">
                             {question.question}
                           </span>
                         </Link>
@@ -312,7 +312,7 @@ function WorkspacePage() {
             <section>
               <div className="flex items-end justify-between gap-3 border-b border-white/20 pb-2">
                 <h2 className="font-display text-[26px] leading-none">Recent reads.</h2>
-                <Link to="/cases" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#E7A574] underline underline-offset-4">
+                <Link to="/cases" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#B9D7FF] underline underline-offset-4">
                   by case
                 </Link>
               </div>
@@ -329,7 +329,7 @@ function WorkspacePage() {
                         params={{ token: read.token }}
                         className="group grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-4 py-3.5"
                       >
-                        <span className="line-clamp-2 min-w-0 font-serif text-[14px] leading-snug text-[#1A1A1A]/80 group-hover:text-[#E7A574]">
+                        <span className="line-clamp-2 min-w-0 font-serif text-[14px] leading-snug text-[#1A1A1A]/80 group-hover:text-[#B9D7FF]">
                           {read.input}
                         </span>
                         <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/45">
@@ -345,13 +345,13 @@ function WorkspacePage() {
 
           <aside className="min-w-0 space-y-8">
             <section className="bp-card">
-              <div className="border-b border-[#1A1A1A]/12 px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#E7A574]">
+              <div className="border-b border-[#1A1A1A]/12 px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#B9D7FF]">
                 What the record says
               </div>
               <ul className="divide-y divide-[#1A1A1A]/10">
                 {profile.signals.slice(0, 3).map((signal) => (
                   <li key={signal.title} className="px-3 py-3">
-                    <p className={`font-mono text-[9px] font-bold uppercase tracking-[0.12em] ${signal.tone === "warn" ? "text-[#C1121F]" : "text-[#E7A574]"}`}>
+                    <p className={`font-mono text-[9px] font-bold uppercase tracking-[0.12em] ${signal.tone === "warn" ? "text-[#C1121F]" : "text-[#B9D7FF]"}`}>
                       {signal.tone === "warn" ? "warning" : "note"}
                     </p>
                     <p className="mt-1 font-serif text-[13px] leading-snug text-[#1A1A1A]/80">
@@ -366,7 +366,7 @@ function WorkspacePage() {
                 ))}
               </ul>
               <div className="flex items-center justify-between border-t border-[#1A1A1A]/12 px-3 py-2">
-                <Link to="/profile" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#E7A574] underline underline-offset-4">
+                <Link to="/profile" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#B9D7FF] underline underline-offset-4">
                   thinking profile
                 </Link>
                 <Link to="/digest" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45 underline underline-offset-4">
@@ -382,7 +382,7 @@ function WorkspacePage() {
                 </p>
                 <Link
                   to="/review"
-                  className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#E7A574] underline underline-offset-4"
+                  className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#B9D7FF] underline underline-offset-4"
                 >
                   review →
                 </Link>
@@ -393,14 +393,14 @@ function WorkspacePage() {
               </p>
               <Link
                 to="/profile"
-                className="mt-3 inline-flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#E7A574] underline underline-offset-4"
+                className="mt-3 inline-flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#B9D7FF] underline underline-offset-4"
               >
                 Open the drill <ArrowRight className="h-3 w-3" />
               </Link>
             </section>
 
             <section className="border-t-2 border-[#1A1A1A] pt-4">
-              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#E7A574]">
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#B9D7FF]">
                 Ask your record
               </p>
               <p className="mt-2 font-serif text-[14px] leading-relaxed text-[#1A1A1A]/70">
@@ -408,7 +408,7 @@ function WorkspacePage() {
               </p>
               <Link
                 to="/digest"
-                className="mt-3 inline-flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#E7A574] underline underline-offset-4"
+                className="mt-3 inline-flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#B9D7FF] underline underline-offset-4"
               >
                 Open the record <ArrowRight className="h-3 w-3" />
               </Link>

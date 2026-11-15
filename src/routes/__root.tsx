@@ -197,7 +197,7 @@ function SiteBlueprint({ pathname, children }: { pathname: string; children: Rea
         "--site-header-border": darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.16)",
         "--site-header-ink": tone.ink,
         "--site-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
-        "--site-accent": darkInk ? "#4A3A00" : "#FFE6A3",
+        "--site-accent": darkInk ? "#4A3A00" : "#D8CCFF",
       } as CSSProperties}
     >
       {children}

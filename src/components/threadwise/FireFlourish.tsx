@@ -61,12 +61,12 @@ export function FireFlourish() {
 
     const drawLine = (time: number) => {
       const gradient = ctx.createLinearGradient(0, 0, width, 0);
-      gradient.addColorStop(0, "rgba(111,28,8,0.25)");
-      gradient.addColorStop(0.16, "#C93E12");
-      gradient.addColorStop(0.43, "#F06A18");
-      gradient.addColorStop(0.62, "#FFB84E");
-      gradient.addColorStop(0.8, "#F06A18");
-      gradient.addColorStop(1, "rgba(111,28,8,0.25)");
+      gradient.addColorStop(0, "rgba(58,40,110,0.25)");
+      gradient.addColorStop(0.16, "#7C6BB0");
+      gradient.addColorStop(0.43, "#A78BFA");
+      gradient.addColorStop(0.62, "#C4B5FD");
+      gradient.addColorStop(0.8, "#A78BFA");
+      gradient.addColorStop(1, "rgba(58,40,110,0.25)");
 
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
@@ -118,13 +118,13 @@ export function FireFlourish() {
         const half = 2.4 + (index % 3) * 0.8;
         const lean = Math.sin(time * 0.0018 + index * 1.4) * 3.2;
         const gradient = ctx.createLinearGradient(0, base, 0, base - flameHeight);
-        gradient.addColorStop(0, "rgba(201,62,18,0.08)");
-        gradient.addColorStop(0.24, "rgba(240,106,24,0.7)");
-        gradient.addColorStop(0.58, "rgba(255,184,78,0.86)");
-        gradient.addColorStop(0.86, "rgba(255,226,168,0.52)");
+        gradient.addColorStop(0, "rgba(92,68,160,0.08)");
+        gradient.addColorStop(0.24, "rgba(167,139,250,0.7)");
+        gradient.addColorStop(0.58, "rgba(196,181,253,0.86)");
+        gradient.addColorStop(0.86, "rgba(238,233,255,0.52)");
         gradient.addColorStop(1, "rgba(255,226,168,0)");
         ctx.fillStyle = gradient;
-        ctx.shadowColor = "rgba(240,106,24,0.5)";
+        ctx.shadowColor = "rgba(167,139,250,0.5)";
         ctx.shadowBlur = 8;
         ctx.beginPath();
         ctx.moveTo(x - half, base);
@@ -146,16 +146,16 @@ export function FireFlourish() {
         const y = particle.y;
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
         if (particle.warm > 0.62) {
-          gradient.addColorStop(0, `rgba(255,239,190,${alpha * 0.9})`);
-          gradient.addColorStop(0.3, `rgba(255,184,78,${alpha * 0.72})`);
-          gradient.addColorStop(1, "rgba(201,62,18,0)");
+          gradient.addColorStop(0, `rgba(245,242,255,${alpha * 0.9})`);
+          gradient.addColorStop(0.3, `rgba(196,181,253,${alpha * 0.72})`);
+          gradient.addColorStop(1, "rgba(92,68,160,0)");
         } else if (particle.warm > 0.28) {
-          gradient.addColorStop(0, `rgba(255,174,79,${alpha * 0.8})`);
-          gradient.addColorStop(0.45, `rgba(240,106,24,${alpha * 0.55})`);
-          gradient.addColorStop(1, "rgba(160,44,12,0)");
+          gradient.addColorStop(0, `rgba(196,181,253,${alpha * 0.8})`);
+          gradient.addColorStop(0.45, `rgba(167,139,250,${alpha * 0.55})`);
+          gradient.addColorStop(1, "rgba(76,54,130,0)");
         } else {
-          gradient.addColorStop(0, `rgba(214,78,26,${alpha * 0.55})`);
-          gradient.addColorStop(1, "rgba(111,28,8,0)");
+          gradient.addColorStop(0, `rgba(140,110,220,${alpha * 0.55})`);
+          gradient.addColorStop(1, "rgba(58,40,110,0)");
         }
         ctx.fillStyle = gradient;
         ctx.beginPath();

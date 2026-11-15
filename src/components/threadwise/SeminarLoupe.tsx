@@ -117,7 +117,7 @@ export function LoupeSelectionButton({
       style={{ left: candidate.left, top: candidate.top }}
       aria-label="Look closer at the selected passage"
     >
-      <span className="grid h-5 w-5 place-items-center rounded-full bg-[#F1C979] text-[#1A1A1A]">
+      <span className="grid h-5 w-5 place-items-center rounded-full bg-[#D8CCFF] text-[#1A1A1A]">
         <Search className="h-3 w-3" strokeWidth={2.2} />
       </span>
       <span className="font-mono text-[8px] font-bold uppercase tracking-[0.12em]">Look closer</span>
@@ -141,7 +141,7 @@ export function LookCloserButton({
       type="button"
       onMouseDown={(event) => event.preventDefault()}
       onClick={() => onLookCloser({ selected: text, paragraph: text, section })}
-      className={`reading-closer inline-flex shrink-0 items-center gap-1 rounded-full border border-white/18 bg-white/5 px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.08em] text-white/65 transition-colors hover:border-[#E7A574]/60 hover:bg-[#E7A574]/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E7A574] ${className}`}
+      className={`reading-closer inline-flex shrink-0 items-center gap-1 rounded-full border border-white/18 bg-white/5 px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.08em] text-white/65 transition-colors hover:border-[#B9D7FF]/60 hover:bg-[#B9D7FF]/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B9D7FF] ${className}`}
       aria-label="Look closer at this line"
     >
       <Search className="h-2.5 w-2.5" />
@@ -295,7 +295,7 @@ export function SeminarLoupe({
                 <p className="mt-1.5 font-serif text-[14.5px] leading-[1.65] text-[#1A1A1A]/72">{loupe.here}</p>
               </div>
               {loupe.watch_for ? (
-                <div className="border-l-2 border-[#C49A67] pl-3">
+                <div className="border-l-2 border-[#AFC3D9] pl-3">
                   <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#8A6A43]">Watch for</p>
                   <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-[#1A1A1A]/60">{loupe.watch_for}</p>
                 </div>

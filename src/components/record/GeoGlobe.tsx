@@ -47,7 +47,7 @@ const ARCS = [
 const ORBITERS = [
   { radius: 1.13, inclination: 0.24, roll: 0.08, speed: 0.22, phase: 0.4, color: 0xffffff },
   { radius: 1.2, inclination: -0.52, roll: -0.28, speed: -0.14, phase: 2.4, color: 0xffffff },
-  { radius: 1.28, inclination: 0.92, roll: 0.18, speed: 0.1, phase: 4.3, color: 0xf3b486 },
+  { radius: 1.28, inclination: 0.92, roll: 0.18, speed: 0.1, phase: 4.3, color: 0xc4b5fd },
 ] as const;
 
 type Point = { lat: number; lon: number };
@@ -386,60 +386,54 @@ export function GeoGlobe({
     const orbitGroup = new THREE.Group();
     group.add(orbitGroup);
     const orbitalBodies: Array<{
-      satellite: THREE.Mesh;
+      satellite: THREE.Group;
       trail: THREE.Line;
       trailPositions: Float32Array;
       radius: number;
       speed: number;
       angle: number;
     }> = [];
-    const TRAIL_COUNT = 26;
+    const TRAIL_COUNT = 14;
 
     for (const config of ORBITERS) {
       const plane = new THREE.Group();
       plane.rotation.x = config.inclination;
       plane.rotation.z = config.roll;
 
-      const orbitPoints: THREE.Vector3[] = [];
-      for (let index = 0; index <= 180; index += 1) {
-        const angle = (index / 180) * Math.PI * 2;
-        orbitPoints.push(new THREE.Vector3(Math.cos(angle) * config.radius, 0, Math.sin(angle) * config.radius));
-      }
-      const orbitLine = new THREE.LineLoop(
-        new THREE.BufferGeometry().setFromPoints(orbitPoints),
-        new THREE.LineBasicMaterial({
-          color: 0xffffff,
-          transparent: true,
-          opacity: 0.12,
-          depthWrite: false,
-        }),
-      );
-      plane.add(orbitLine);
-
       const color = new THREE.Color(config.color);
-      const satellite = new THREE.Mesh(
-        new THREE.OctahedronGeometry(0.021, 0),
-        new THREE.MeshBasicMaterial({
-          color: config.color,
-          transparent: true,
-          opacity: 1,
-          depthWrite: false,
-          blending: THREE.AdditiveBlending,
-        }),
-      );
-      satellite.renderOrder = 8;
+      const satellite = new THREE.Group();
 
-      const halo = new THREE.Mesh(
-        new THREE.SphereGeometry(0.068, 12, 12),
-        new THREE.MeshBasicMaterial({
-          color: config.color,
-          transparent: true,
-          opacity: 0.17,
-          depthWrite: false,
-          blending: THREE.AdditiveBlending,
-        }),
-      );
-      satellite.add(halo);
+      const bodyMaterial = new THREE.MeshBasicMaterial({
+        color: config.color,
+        transparent: true,
+        opacity: 1,
+        depthWrite: false,
+      });
+      const panelMaterial = new THREE.MeshBasicMaterial({
+        color: 0x7dd3fc,
+        transparent: true,
+        opacity: 0.92,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      });
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.032, 0.028), bodyMaterial);
+      const nose = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.018, 0.02), bodyMaterial);
+      nose.position.x = 0.034;
+      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.002, 0.05, 6), bodyMaterial);
+      mast.position.y = 0.038;
+      const dish = new THREE.Mesh(new THREE.CircleGeometry(0.014, 12), bodyMaterial);
+      dish.position.y = 0.064;
+      dish.rotation.x = -Math.PI / 2;
+      for (const side of [-1, 1]) {
+        for (let cell = 0; cell < 3; cell += 1) {
+          const panel = new THREE.Mesh(new THREE.BoxGeometry(0.021, 0.003, 0.036), panelMaterial);
+          panel.position.set(side * (0.046 + cell * 0.024), 0, 0);
+          satellite.add(panel);
+        }
+      }
+      satellite.add(body, nose, mast, dish);
+      satellite.scale.setScalar(1.15);
+      satellite.renderOrder = 8;
       plane.add(satellite);
 
       const trailPositions = new Float32Array(TRAIL_COUNT * 3);
@@ -737,8 +731,10 @@ export function GeoGlobe({
         const cos = Math.cos(body.angle);
         const sin = Math.sin(body.angle);
         body.satellite.position.set(cos * body.radius, 0, sin * body.radius);
+        body.satellite.lookAt(camera.position);
+        body.satellite.rotateZ(0.14);
         for (let index = 0; index < TRAIL_COUNT; index += 1) {
-          const trailAngle = body.angle - index * 0.038;
+          const trailAngle = body.angle - index * 0.014;
           body.trailPositions[index * 3] = Math.cos(trailAngle) * body.radius;
           body.trailPositions[index * 3 + 1] = 0;
           body.trailPositions[index * 3 + 2] = Math.sin(trailAngle) * body.radius;
