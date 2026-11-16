@@ -88,10 +88,10 @@ function SeminarReadingNav() {
             className={`inline-flex items-center gap-2 border-b-2 px-1 py-2 font-mono text-[9px] uppercase tracking-[0.12em] transition-colors ${
               active === item.id
                 ? "border-[#B9D7FF] text-white"
-                : "border-transparent text-white/50 hover:border-white/25 hover:text-white"
+                : "border-transparent text-white/72 hover:border-white/25 hover:text-white"
             }`}
           >
-            <span className={active === item.id ? "text-white" : "text-white/55"}>{item.n}</span>
+            <span className={active === item.id ? "text-white" : "text-white/76"}>{item.n}</span>
             {item.label}
           </a>
         ))}
@@ -383,7 +383,7 @@ function SeminarPage() {
               The seminar
             </p>
             <span className="h-3 w-px bg-white/20" />
-            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/65">
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/86">
               Two theories · one crux
             </p>
             <ReadingFocusToggle className="ml-auto" />
@@ -392,7 +392,7 @@ function SeminarPage() {
           <h1 className="mt-3 max-w-[12ch] font-display text-[48px] leading-[0.92] tracking-[-0.03em] md:text-[76px]">
             Put it on the table.
           </h1>
-          <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-white/75">
+          <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-white/92">
             Bring a quote or a question you cannot settle. The seminar builds the strongest
             version of two rival explanations, then shows the exact point where they part.
           </p>
@@ -462,7 +462,7 @@ function SeminarPage() {
               >
                 Use the foreign-aid quote
               </button>
-              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/45">
+              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/68">
                 {text.length}/3000 · no verdict unless asked
               </span>
             </div>
@@ -480,7 +480,7 @@ function SeminarPage() {
         <section data-seminar-tone="5" className="seminar-dark-ink bp-card mx-auto mt-8 w-full max-w-[1100px] px-5 py-6 md:px-7">
           <div className="flex items-end justify-between gap-4 border-b border-white/15 pb-3">
             <h2 className="font-display text-[26px] leading-none">The archive.</h2>
-            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-white/35">
+            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-white/58">
               {saved.length} saved
             </span>
           </div>
@@ -492,14 +492,14 @@ function SeminarPage() {
                   onClick={() => openSaved(item)}
                   className="group grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-baseline gap-3 py-3 text-left"
                 >
-                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/30">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/52">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <span className="min-w-0">
-                    <span className="block truncate font-serif text-[14px] leading-snug text-white/80 group-hover:text-white">
+                    <span className="block truncate font-serif text-[14px] leading-snug text-white/94 group-hover:text-white">
                       {item.question}
                     </span>
-                    <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-white/35">
+                    <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-white/58">
                       {item.stand ? `stood with ${item.stand}` : "held the tension"} ·{" "}
                       {new Date(item.created_at).toLocaleDateString("en-GB", {
                         day: "2-digit",
@@ -535,15 +535,15 @@ function SeminarPage() {
               <p className="mt-2 max-w-[62ch] font-display text-[28px] leading-[1.1] md:text-[38px]">
                 {seminar.question}
               </p>
-              <p className="mt-3 max-w-[62ch] font-serif text-[16px] leading-relaxed text-white/80">
+              <p className="mt-3 max-w-[62ch] font-serif text-[16px] leading-relaxed text-white/94">
                 {seminar.restatement}
               </p>
             </div>
             <div className="border-t border-white/15 pt-3 md:border-l md:border-t-0 md:pl-5 md:pt-0">
-              <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-white/40">
+              <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-white/64">
                 You brought
               </p>
-              <p className="mt-1 line-clamp-4 font-serif text-[12px] italic leading-relaxed text-white/70">
+              <p className="mt-1 line-clamp-4 font-serif text-[12px] italic leading-relaxed text-white/88">
                 “{text}”
               </p>
             </div>
@@ -553,7 +553,7 @@ function SeminarPage() {
             <div className="flex items-end justify-between gap-4 pb-1">
               <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the same thing.</h2>
               <div className="flex items-center gap-3">
-                <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-white/35 sm:inline">
+                <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-white/58 sm:inline">
                   steelmanned
                 </span>
                 <LookCloserButton
@@ -564,9 +564,9 @@ function SeminarPage() {
               </div>
             </div>
             <div className="reading-rule mt-2" />
-            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-white/35">
+            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-white/58">
               Arguments to test, not sourced findings.
-              <span className="inline-flex items-center gap-1 text-white/65">
+              <span className="inline-flex items-center gap-1 text-white/86">
                 <Search className="h-2.5 w-2.5" /> select a line, or hover “closer”
               </span>
             </p>
@@ -582,13 +582,13 @@ function SeminarPage() {
             <section data-seminar-tone="2" className="seminar-dark-ink reading-section mt-10">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em]">Before the crux</p>
-                <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/35">
+                <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/58">
                   choose before reading on
                 </p>
               </div>
               <div className="pt-3">
                 <h2 className="max-w-[20ch] font-display text-[30px] leading-[1.02] md:text-[36px]">Which reading survives the evidence?</h2>
-                <p className="mt-2 max-w-[56ch] font-serif text-[14px] leading-relaxed text-white/60">
+                <p className="mt-2 max-w-[56ch] font-serif text-[14px] leading-relaxed text-white/84">
                   This is not a vote on what is good. It is a bet on which causal account explains more
                   of what happened.
                 </p>
@@ -621,7 +621,7 @@ function SeminarPage() {
                     setStand(null);
                     setRevealed(true);
                   }}
-                  className="mt-4 font-mono text-[8px] uppercase tracking-[0.12em] text-white/35 underline underline-offset-4"
+                  className="mt-4 font-mono text-[8px] uppercase tracking-[0.12em] text-white/58 underline underline-offset-4"
                 >
                   Reveal the crux without choosing
                 </button>
@@ -642,11 +642,11 @@ function SeminarPage() {
                         onLookCloser={openLoupe}
                       />
                     </div>
-                    <p className="mt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-white/40">
+                    <p className="mt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-white/64">
                       {DISAGREEMENT[seminar.disagreement]}
                     </p>
                     {stand && (
-                      <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.12em] text-white/70">
+                      <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.12em] text-white/88">
                         You stood with{" "}
                         <span className="text-white">
                           {stand === "undecided" ? "neither yet" : `theory ${stand}`}
@@ -659,21 +659,21 @@ function SeminarPage() {
                       {seminar.crux}
                     </p>
                     <div className="mt-6 border-t border-white/15 pt-4">
-                      <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">
+                      <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/64">
                         What would settle it
                       </p>
-                      <p className="mt-1 max-w-[62ch] font-serif text-[14px] leading-relaxed text-white/75">
+                      <p className="mt-1 max-w-[62ch] font-serif text-[14px] leading-relaxed text-white/92">
                         {seminar.settle}
                       </p>
                     </div>
                     {seminar.sources_needed.length > 0 && (
                       <div className="mt-4">
-                        <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">
+                        <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/64">
                           Look for
                         </p>
                         <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
                           {seminar.sources_needed.map((source) => (
-                            <li key={source} className="font-mono text-[9px] uppercase tracking-[0.08em] text-white/55">
+                            <li key={source} className="font-mono text-[9px] uppercase tracking-[0.08em] text-white/76">
                               → {source}
                             </li>
                           ))}
@@ -687,7 +687,7 @@ function SeminarPage() {
               <section id="s-verdict" data-reading-section="s-verdict" data-loupe-section="The provisional verdict" data-seminar-tone="4" className="seminar-dark-ink reading-section mt-6">
                 {!verdictOpen ? (
                   <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-5">
-                    <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-white/60">
+                    <p className="max-w-[54ch] font-serif text-[14px] leading-relaxed text-white/84">
                       The tension is the point. If you want the evidence weighed, ask for a
                       provisional — not moral — verdict.
                     </p>
@@ -713,7 +713,7 @@ function SeminarPage() {
                           onLookCloser={openLoupe}
                         />
                       </div>
-                      <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/35">
+                      <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/58">
                         empirical only · {seminar.verdict.confidence} confidence
                       </p>
                     </div>
@@ -723,16 +723,16 @@ function SeminarPage() {
                           ? "The evidence does not separate them yet."
                           : `The evidence currently leans toward theory ${seminar.verdict.lean}.`}
                       </p>
-                      <p className="mt-3 max-w-[64ch] font-serif text-[14px] leading-relaxed text-white/65">
+                      <p className="mt-3 max-w-[64ch] font-serif text-[14px] leading-relaxed text-white/86">
                         {seminar.verdict.why}
                       </p>
-                      <p className="mt-3 border-l-2 border-[#1A4BFF] pl-3 font-serif text-[13px] leading-relaxed text-white/60">
+                      <p className="mt-3 border-l-2 border-[#1A4BFF] pl-3 font-serif text-[13px] leading-relaxed text-white/84">
                         <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-white">
                           What would change it ·{" "}
                         </span>
                         {seminar.verdict.change}
                       </p>
-                      <p className="mt-4 font-mono text-[8px] uppercase tracking-[0.1em] text-white/30">
+                      <p className="mt-4 font-mono text-[8px] uppercase tracking-[0.1em] text-white/52">
                         This is a judgement about explanation, not about what is right.
                       </p>
                     </div>
@@ -758,7 +758,7 @@ function SeminarPage() {
                     <h2 className="mt-2 max-w-[22ch] font-display text-[30px] leading-[1.02] md:text-[38px]">
                       Take the deeper lesson.
                     </h2>
-                    <p className="mt-2 max-w-[58ch] font-serif text-[14px] leading-[1.65] text-white/62">
+                    <p className="mt-2 max-w-[58ch] font-serif text-[14px] leading-[1.65] text-white/84">
                       The terms, the background, both mechanisms, the crux as a test, the mistakes to
                       avoid, and a worked example — taught from the question you brought.
                     </p>
@@ -773,7 +773,7 @@ function SeminarPage() {
                     {lessonBusy ? <BookOpen className="h-3.5 w-3.5 animate-pulse" /> : <ArrowRight className="h-3.5 w-3.5" />}
                   </button>
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#F7EAD6]/20 px-5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-white/50 md:px-6">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#F7EAD6]/20 px-5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-white/72 md:px-6">
                   <span>One deeper model pass · built from this seminar</span>
                   <span>~5–7 min read</span>
                 </div>
@@ -811,7 +811,7 @@ function SeminarPage() {
 
               <div className="seminar-dark-ink mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[#F7EAD6]/20 pt-4">
                 <div>
-                  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white/45">
+                  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white/68">
                     Put this on the record
                   </p>
                   {userId ? (
@@ -848,7 +848,7 @@ function SeminarPage() {
                 >
                   <RotateCcw className="h-3 w-3" /> New seminar
                 </button>
-                <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/30">
+                <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/52">
                   Hold the tension · verify before you act
                 </p>
               </div>
@@ -900,7 +900,7 @@ function TheoryColumn({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="theory-label font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-white/40">
+          <p className="theory-label font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-white/64">
             Theory {letter}
           </p>
           <h3 className="mt-1 max-w-[16ch] font-display text-[28px] leading-[1.02]">{theory.name}</h3>
@@ -914,13 +914,13 @@ function TheoryColumn({
 
       <div className="reading-rule mt-5" />
       <div className="group/line group mt-3 flex items-start gap-2">
-        <p className="font-serif text-[15.5px] leading-relaxed text-white/80">{theory.claim}</p>
+        <p className="font-serif text-[15.5px] leading-relaxed text-white/94">{theory.claim}</p>
         <LookCloserButton text={theory.claim} section={`Theory ${letter} · claim`} onLookCloser={onLookCloser} />
       </div>
 
       <div className="mt-4">
         <div className="flex items-center justify-between gap-2">
-          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/64">
             The mechanism
           </p>
           <LookCloserButton
@@ -942,7 +942,7 @@ function TheoryColumn({
             ))}
           </div>
         ) : (
-          <p className="mt-2 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-white/70">
+          <p className="mt-2 max-w-[62ch] font-serif text-[13.5px] leading-relaxed text-white/88">
             {theory.mechanism}
           </p>
         )}
@@ -950,7 +950,7 @@ function TheoryColumn({
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div>
-          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/64">
             It predicts
           </p>
           <div className="reading-rule mt-1.5" />
@@ -958,7 +958,7 @@ function TheoryColumn({
             {theory.predictions.map((prediction) => (
               <li
                 key={prediction}
-                className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-white/65 transition-colors hover:bg-[#1A4BFF]/[0.035]"
+                className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-white/86 transition-colors hover:bg-[#1A4BFF]/[0.035]"
               >
                 <ReadingMarker variant="arrow" />
                 <span className="flex-1">{prediction}</span>
@@ -972,7 +972,7 @@ function TheoryColumn({
           </ul>
         </div>
         <div>
-          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/64">
             Evidence to check
           </p>
           <div className="reading-rule mt-1.5" />
@@ -980,7 +980,7 @@ function TheoryColumn({
             {theory.evidence.map((item) => (
               <li
                 key={item}
-                className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-white/65 transition-colors hover:bg-[#1A4BFF]/[0.035]"
+                className="group flex items-start gap-2 rounded-sm px-0.5 py-0.5 font-serif text-[12.5px] leading-snug text-white/86 transition-colors hover:bg-[#1A4BFF]/[0.035]"
               >
                 <ReadingMarker variant="check" />
                 <span className="flex-1">{item}</span>
@@ -997,17 +997,17 @@ function TheoryColumn({
 
       <div className="group mt-4 border-l-2 border-white/30 pl-3 transition-colors hover:border-[#1A4BFF]/50">
         <div className="flex items-center justify-between gap-2">
-          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/64">
             It would be wrong if
           </p>
           <LookCloserButton text={theory.falsifier} section={`Theory ${letter} · falsifier`} onLookCloser={onLookCloser} />
         </div>
-        <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-white/65">
+        <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-white/86">
           {theory.falsifier}
         </p>
       </div>
 
-      <p className="mt-4 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-white/35">
+      <p className="mt-4 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-white/58">
         Assumes · {theory.assumes}
       </p>
     </article>

@@ -4293,3 +4293,14 @@ body header.app-header .app-header__link[aria-current="page"]::after { backgroun
 /* Headings remain white, even if they contain a link. */
 .site-blueprint main :is(h1, h2, h3, h4) { color: #FFFFFF !important; }
 .site-blueprint main :is(h1, h2, h3, h4) a { color: inherit !important; }
+
+/* Reading ink must read as white, not grey. */
+.read-page .reading-section__body { color: rgba(255, 255, 255, 0.92); }
+.read-page .read-summary__copy { color: rgba(255, 255, 255, 0.9); }
+.read-page .read-stake__item { color: rgba(255, 255, 255, 0.9); }
+.read-page .read-echo__body { color: rgba(255, 255, 255, 0.92); }
+.read-page .read-echo__break p:last-child { color: rgba(255, 255, 255, 0.78); }
+.read-page .read-contents__link { color: rgba(255, 255, 255, 0.84); }
+.read-page .read-summary__note { color: rgba(255, 255, 255, 0.7); }
+.seminar-dark-ink .theory-panel :is(p, li) { color: rgba(255, 255, 255, 0.9); }
+.seminar-dark-ink .mechanism-step__detail { color: rgba(255, 255, 255, 0.82); }
