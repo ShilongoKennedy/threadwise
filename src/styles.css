@@ -1628,13 +1628,6 @@ main {
   color: var(--seminar-ink);
 }
 
-.seminar-dark-ink :is(h1, h2, h3, h4, p, li, span, button, a, summary, svg, div, blockquote) {
-  color: inherit !important;
-}
-
-.seminar-dark-ink * {
-  border-color: color-mix(in srgb, var(--seminar-ink) 22%, transparent) !important;
-}
 
 .seminar-header header > div {
   background: var(--seminar-header-bg) !important;
@@ -4279,3 +4272,18 @@ body header.app-header .app-header__link[aria-current="page"]::after { backgroun
 .theory-panel--b { --theory-accent: var(--accent-lilac, #C4B5FD); }
 .theory-panel--a .theory-letter-ring { color: var(--accent-lime, #C8FF3D) !important; }
 .theory-panel--b .theory-letter-ring { color: var(--accent-lilac, #C4B5FD) !important; }
+
+/* Generated Seminar content must inherit the accent system, not a blanket white. */
+
+.seminar-dark-ink .theory-panel::before { background: var(--theory-accent, #C8FF3D) !important; }
+.seminar-dark-ink .theory-label { color: var(--accent-lime, #C8FF3D) !important; }
+.seminar-dark-ink .theory-panel--b .theory-label { color: var(--accent-lilac, #C4B5FD) !important; }
+.seminar-dark-ink .reading-section__number,
+.seminar-dark-ink .reading-section__eyebrow { color: var(--accent-lime, #C8FF3D) !important; }
+.seminar-dark-ink .mechanism-step__n { color: var(--theory-accent, #C8FF3D) !important; }
+.seminar-dark-ink .lesson-theory-label { font-family: var(--font-mono); font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; }
+.seminar-dark-ink .lesson-theory-label--a { color: var(--accent-lime, #C8FF3D) !important; }
+.seminar-dark-ink .lesson-theory-label--b { color: var(--accent-lilac, #C4B5FD) !important; }
+.seminar-dark-ink .lesson-card { border-top-color: rgba(200, 255, 61, 0.32) !important; }
+.seminar-dark-ink .reading-closer { border-color: rgba(200, 255, 61, 0.4) !important; color: var(--accent-lime, #C8FF3D) !important; }
+.seminar-dark-ink .reading-closer:hover { border-color: var(--accent-lime, #C8FF3D) !important; background: rgba(200, 255, 61, 0.08) !important; }

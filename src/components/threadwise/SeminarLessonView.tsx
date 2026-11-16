@@ -64,7 +64,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
       <div className="mt-8 grid gap-10 md:grid-cols-[170px_minmax(0,1fr)] md:gap-12">
         <aside className="hidden md:block">
           <div className="sticky top-24">
-            <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/40">Inside the lesson</p>
+            <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/40">Inside the lesson</p>
             <ol className="mt-3 space-y-2 border-l border-white/15 pl-3">
               {CONTENTS.map(([id, label], index) => (
                 <li key={id}>
@@ -88,8 +88,8 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
               {lesson.key_terms.map((term) => (
                 <div key={term.term} className="lesson-card">
                   <h4 className="font-display text-[19px] leading-tight">{term.term}</h4>
-                  <p className="mt-2 font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/72">{term.plain}</p>
-                  <p className="mt-2 border-t border-[#1A1A1A]/10 pt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-[#1A1A1A]/40">
+                  <p className="mt-2 font-serif text-[13.5px] leading-relaxed text-white/72">{term.plain}</p>
+                  <p className="mt-2 border-t border-white/10 pt-2 font-mono text-[8px] uppercase leading-relaxed tracking-[0.1em] text-white/40">
                     Why it matters · {term.why_it_matters}
                   </p>
                 </div>
@@ -102,8 +102,8 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             <div className="mt-5 space-y-5">
               {lesson.background.map((block) => (
                 <div key={block.heading} className="lesson-card">
-                  <h4 className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/60">{block.heading}</h4>
-                  <p className="mt-2 max-w-[68ch] font-serif text-[15px] leading-[1.7] text-[#1A1A1A]/75">{block.body}</p>
+                  <h4 className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white/60">{block.heading}</h4>
+                  <p className="mt-2 max-w-[68ch] font-serif text-[15px] leading-[1.7] text-white/75">{block.body}</p>
                 </div>
               ))}
             </div>
@@ -116,15 +116,15 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
                 <div key={mechanism.theory} className="lesson-card">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white">Theory {mechanism.theory}</p>
+                      <p className={`lesson-theory-label ${mechanism.theory === "A" ? "lesson-theory-label--a" : "lesson-theory-label--b"}`}>Theory {mechanism.theory}</p>
                       <h4 className="mt-1 font-display text-[23px] leading-[1.05]">{mechanism.heading}</h4>
                     </div>
                     <span className="font-display text-[46px] leading-[0.7] text-white/30" aria-hidden>{mechanism.theory}</span>
                   </div>
-                  <p className="mt-4 font-serif text-[14px] leading-[1.65] text-[#1A1A1A]/75">{mechanism.body}</p>
-                  <div className="mt-4 space-y-2 border-t border-[#1A1A1A]/12 pt-3">
-                    <p className="font-serif text-[12.5px] leading-snug text-[#1A1A1A]/60"><span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">Best at · </span>{mechanism.strength}</p>
-                    <p className="font-serif text-[12.5px] leading-snug text-[#1A1A1A]/60"><span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]/65">Weakest at · </span>{mechanism.weakness}</p>
+                  <p className="mt-4 font-serif text-[14px] leading-[1.65] text-white/75">{mechanism.body}</p>
+                  <div className="mt-4 space-y-2 border-t border-white/12 pt-3">
+                    <p className="font-serif text-[12.5px] leading-snug text-white/60"><span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/35">Best at · </span>{mechanism.strength}</p>
+                    <p className="font-serif text-[12.5px] leading-snug text-white/60"><span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]/65">Weakest at · </span>{mechanism.weakness}</p>
                   </div>
                 </div>
               ))}
@@ -148,7 +148,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
               {lesson.misconceptions.map((item) => (
                 <div key={item.mistake} className="grid gap-2 py-4 sm:grid-cols-[1fr_1.4fr] sm:gap-6">
                   <p className="font-serif text-[13.5px] leading-snug text-[#C1121F]/75">“{item.mistake}”</p>
-                  <p className="font-serif text-[14px] leading-relaxed text-[#1A1A1A]/70">{item.correction}</p>
+                  <p className="font-serif text-[14px] leading-relaxed text-white/70">{item.correction}</p>
                 </div>
               ))}
             </div>
@@ -157,9 +157,9 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
           <section id="lesson-example" data-loupe-section="Worked example" className="reading-section scroll-mt-24">
             <SectionHead number="06" title={lesson.worked_example.heading} kicker="One concrete walk-through" closer={onLookCloser ? <LookCloserButton text={`${lesson.worked_example.scenario} ${lesson.worked_example.walkthrough}`.slice(0, 680)} section="Worked example" onLookCloser={onLookCloser} /> : null} />
             <div className="lesson-card mt-5">
-              <p className="font-serif text-[14px] leading-[1.7] text-[#1A1A1A]/60">{lesson.worked_example.scenario}</p>
-              <p className="mt-4 max-w-[68ch] font-serif text-[15px] leading-[1.75] text-[#1A1A1A]/80">{lesson.worked_example.walkthrough}</p>
-              <p className="mt-4 max-w-[62ch] border-t border-[#1A1A1A]/12 pt-3 font-serif text-[13.5px] leading-relaxed text-white/80">
+              <p className="font-serif text-[14px] leading-[1.7] text-white/60">{lesson.worked_example.scenario}</p>
+              <p className="mt-4 max-w-[68ch] font-serif text-[15px] leading-[1.75] text-white/80">{lesson.worked_example.walkthrough}</p>
+              <p className="mt-4 max-w-[62ch] border-t border-white/12 pt-3 font-serif text-[13.5px] leading-relaxed text-white/80">
                 {lesson.worked_example.lesson}
               </p>
             </div>
@@ -170,12 +170,12 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             <div className="mt-5 space-y-2">
               {lesson.check.map((item, index) => (
                 <details key={item.question} className="group border-b border-white/12 py-3 last:border-b-0">
-                  <summary className="flex cursor-pointer list-none items-start gap-3 font-serif text-[14px] leading-snug text-[#1A1A1A]/80 marker:content-none">
+                  <summary className="flex cursor-pointer list-none items-start gap-3 font-serif text-[14px] leading-snug text-white/80 marker:content-none">
                     <span className="font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-white">{String(index + 1).padStart(2, "0")}</span>
                     <span className="flex-1">{item.question}</span>
-                    <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/35 transition-transform group-open:rotate-45">+</span>
+                    <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-white/35 transition-transform group-open:rotate-45">+</span>
                   </summary>
-                  <p className="mt-3 border-t border-[#1A1A1A]/10 pt-3 pl-6 font-serif text-[13.5px] leading-relaxed text-[#1A1A1A]/65">{item.answer}</p>
+                  <p className="mt-3 border-t border-white/10 pt-3 pl-6 font-serif text-[13.5px] leading-relaxed text-white/65">{item.answer}</p>
                 </details>
               ))}
             </div>
@@ -188,8 +188,8 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
                 <div key={source.kind} className="lesson-card flex items-start gap-3">
                   <ReadingMarker variant="check" />
                   <div>
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-[#1A1A1A]/65">{source.kind}</p>
-                    <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-[#1A1A1A]/55">{source.why}</p>
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-white/65">{source.kind}</p>
+                    <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-white/55">{source.why}</p>
                   </div>
                 </div>
               ))}
@@ -205,8 +205,8 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             onSeedConsumed={() => undefined}
           />
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1A1A1A]/15 pt-5">
-            <p className="inline-flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#1A1A1A]/35">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-5">
+            <p className="inline-flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.12em] text-white/35">
               <Compass className="h-3 w-3 text-white" /> The lesson is a map, not a verdict.
             </p>
             <a href="#deeper-lesson" className="font-mono text-[8px] uppercase tracking-[0.12em] text-white underline underline-offset-4">
