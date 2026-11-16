@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalystRouteImport } from './routes/analyst'
+import { Route as AnatomyRouteImport } from './routes/anatomy'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DigestRouteImport } from './routes/digest'
 import { Route as LandingRouteImport } from './routes/landing'
@@ -28,6 +29,7 @@ import { Route as ApiAnalystFindingsRouteImport } from './routes/api/analyst-fin
 import { Route as ApiAnalystRecentRouteImport } from './routes/api/analyst-recent'
 import { Route as ApiAnalystRedteamRouteImport } from './routes/api/analyst-redteam'
 import { Route as ApiAnalystWatchRouteImport } from './routes/api/analyst-watch'
+import { Route as ApiAnatomyRouteImport } from './routes/api/anatomy'
 import { Route as ApiAskRecordRouteImport } from './routes/api/ask-record'
 import { Route as ApiCasesRouteImport } from './routes/api/cases'
 import { Route as ApiCheckWatchRouteImport } from './routes/api/check-watch'
@@ -63,6 +65,11 @@ const IndexRoute = IndexRouteImport.update({
 const AnalystRoute = AnalystRouteImport.update({
   id: '/analyst',
   path: '/analyst',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnatomyRoute = AnatomyRouteImport.update({
+  id: '/anatomy',
+  path: '/anatomy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CasesRoute = CasesRouteImport.update({
@@ -148,6 +155,11 @@ const ApiAnalystRedteamRoute = ApiAnalystRedteamRouteImport.update({
 const ApiAnalystWatchRoute = ApiAnalystWatchRouteImport.update({
   id: '/api/analyst-watch',
   path: '/api/analyst-watch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAnatomyRoute = ApiAnatomyRouteImport.update({
+  id: '/api/anatomy',
+  path: '/api/anatomy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAskRecordRoute = ApiAskRecordRouteImport.update({
@@ -284,6 +296,7 @@ const ApiReadTokenRoute = ApiReadTokenRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
+  '/anatomy': typeof AnatomyRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/landing': typeof LandingRoute
@@ -301,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
+  '/api/anatomy': typeof ApiAnatomyRoute
   '/api/ask-record': typeof ApiAskRecordRoute
   '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
@@ -331,6 +345,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
+  '/anatomy': typeof AnatomyRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/landing': typeof LandingRoute
@@ -348,6 +363,7 @@ export interface FileRoutesByTo {
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
+  '/api/anatomy': typeof ApiAnatomyRoute
   '/api/ask-record': typeof ApiAskRecordRoute
   '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
@@ -379,6 +395,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analyst': typeof AnalystRoute
+  '/anatomy': typeof AnatomyRoute
   '/cases': typeof CasesRoute
   '/digest': typeof DigestRoute
   '/landing': typeof LandingRoute
@@ -396,6 +413,7 @@ export interface FileRoutesById {
   '/api/analyst-recent': typeof ApiAnalystRecentRoute
   '/api/analyst-redteam': typeof ApiAnalystRedteamRoute
   '/api/analyst-watch': typeof ApiAnalystWatchRoute
+  '/api/anatomy': typeof ApiAnatomyRoute
   '/api/ask-record': typeof ApiAskRecordRoute
   '/api/cases': typeof ApiCasesRoute
   '/api/check-watch': typeof ApiCheckWatchRoute
@@ -428,6 +446,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/analyst'
+    | '/anatomy'
     | '/cases'
     | '/digest'
     | '/landing'
@@ -445,6 +464,7 @@ export interface FileRouteTypes {
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
+    | '/api/anatomy'
     | '/api/ask-record'
     | '/api/cases'
     | '/api/check-watch'
@@ -475,6 +495,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/analyst'
+    | '/anatomy'
     | '/cases'
     | '/digest'
     | '/landing'
@@ -492,6 +513,7 @@ export interface FileRouteTypes {
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
+    | '/api/anatomy'
     | '/api/ask-record'
     | '/api/cases'
     | '/api/check-watch'
@@ -522,6 +544,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/analyst'
+    | '/anatomy'
     | '/cases'
     | '/digest'
     | '/landing'
@@ -539,6 +562,7 @@ export interface FileRouteTypes {
     | '/api/analyst-recent'
     | '/api/analyst-redteam'
     | '/api/analyst-watch'
+    | '/api/anatomy'
     | '/api/ask-record'
     | '/api/cases'
     | '/api/check-watch'
@@ -570,6 +594,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalystRoute: typeof AnalystRoute
+  AnatomyRoute: typeof AnatomyRoute
   CasesRoute: typeof CasesRoute
   DigestRoute: typeof DigestRoute
   LandingRoute: typeof LandingRoute
@@ -587,6 +612,7 @@ export interface RootRouteChildren {
   ApiAnalystRecentRoute: typeof ApiAnalystRecentRoute
   ApiAnalystRedteamRoute: typeof ApiAnalystRedteamRoute
   ApiAnalystWatchRoute: typeof ApiAnalystWatchRoute
+  ApiAnatomyRoute: typeof ApiAnatomyRoute
   ApiAskRecordRoute: typeof ApiAskRecordRoute
   ApiCasesRoute: typeof ApiCasesRoute
   ApiCheckWatchRoute: typeof ApiCheckWatchRoute
@@ -629,6 +655,13 @@ declare module '@tanstack/react-router' {
       path: '/analyst'
       fullPath: '/analyst'
       preLoaderRoute: typeof AnalystRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/anatomy': {
+      id: '/anatomy'
+      path: '/anatomy'
+      fullPath: '/anatomy'
+      preLoaderRoute: typeof AnatomyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cases': {
@@ -748,6 +781,13 @@ declare module '@tanstack/react-router' {
       path: '/api/analyst-watch'
       fullPath: '/api/analyst-watch'
       preLoaderRoute: typeof ApiAnalystWatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/anatomy': {
+      id: '/api/anatomy'
+      path: '/api/anatomy'
+      fullPath: '/api/anatomy'
+      preLoaderRoute: typeof ApiAnatomyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/ask-record': {
@@ -938,6 +978,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalystRoute: AnalystRoute,
+  AnatomyRoute: AnatomyRoute,
   CasesRoute: CasesRoute,
   DigestRoute: DigestRoute,
   LandingRoute: LandingRoute,
@@ -955,6 +996,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAnalystRecentRoute: ApiAnalystRecentRoute,
   ApiAnalystRedteamRoute: ApiAnalystRedteamRoute,
   ApiAnalystWatchRoute: ApiAnalystWatchRoute,
+  ApiAnatomyRoute: ApiAnatomyRoute,
   ApiAskRecordRoute: ApiAskRecordRoute,
   ApiCasesRoute: ApiCasesRoute,
   ApiCheckWatchRoute: ApiCheckWatchRoute,

@@ -4,8 +4,7 @@ import { Link } from "@tanstack/react-router";
 import {
   ArrowUpRight,
   BookOpen,
-  Compass,
-  HelpCircle,
+  BrainCircuit,
   Menu,
   Presentation,
   ScanSearch,
@@ -16,19 +15,16 @@ import { AccountMenu } from "@/components/threadwise/AccountMenu";
 import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
-  { key: "workspace", to: "/workspace", label: "Workspace", note: "Your desk" },
-  { key: "analyst", to: "/analyst", label: "The Analyst", note: "Read a move" },
+  { key: "analyst", to: "/analyst", label: "The Analyst", note: "Read a source" },
   { key: "seminar", to: "/seminar", label: "Seminar", note: "Two readings, one crux" },
-  { key: "questions", to: "/questions", label: "Questions", note: "What are you deciding?" },
-  { key: "digest", to: "/digest", label: "Record", note: "What the evidence did" },
-  { key: "cases", to: "/cases", label: "Cases", note: "The files that return" },
+  { key: "anatomy", to: "/anatomy", label: "The Anatomy", note: "Where evidence stops" },
+  { key: "digest", to: "/digest", label: "Record", note: "What you kept" },
 ] as const;
 
 const TABS: Array<{ key: string; to: string; label: string; icon: ComponentType<{ className?: string; strokeWidth?: number }> }> = [
-  { key: "workspace", to: "/workspace", label: "Workspace", icon: Compass },
-  { key: "questions", to: "/questions", label: "Questions", icon: HelpCircle },
-  { key: "analyst", to: "/analyst", label: "Read", icon: ScanSearch },
+  { key: "analyst", to: "/analyst", label: "Analyst", icon: ScanSearch },
   { key: "seminar", to: "/seminar", label: "Seminar", icon: Presentation },
+  { key: "anatomy", to: "/anatomy", label: "Anatomy", icon: BrainCircuit },
   { key: "digest", to: "/digest", label: "Record", icon: BookOpen },
 ];
 
