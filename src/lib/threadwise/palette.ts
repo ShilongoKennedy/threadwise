@@ -34,7 +34,8 @@ export function paletteFor(key: string): BlueprintColor[] {
 
 export const FIELD_STOPS = [
   { at: 0, hex: "#000000" },
-  { at: 0.72, hex: "#000000" },
+  { at: 0.48, hex: "#000000" },
+  { at: 0.52, hex: "#0F1420" },
   { at: 1, hex: "#0F1420" },
 ] as const;
 
