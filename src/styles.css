@@ -4332,3 +4332,24 @@ body header.app-header .app-header__link[aria-current="page"]::after { backgroun
 }
 
 .seminar-dark-ink :is(summary, dt) { color: rgba(255, 255, 255, 0.68) !important; }
+
+/* The Loupe must sit inside the viewport, not under its right edge. */
+@media (min-width: 768px) {
+  .tw-loupe-panel {
+    left: auto !important;
+    right: 24px !important;
+    width: min(400px, calc(100vw - 48px)) !important;
+    max-height: calc(100dvh - 7rem) !important;
+  }
+}
+.tw-loupe-panel { overflow-x: hidden; }
+.loupe-blueprint {
+  background:
+    radial-gradient(ellipse 100% 60% at 100% 0%, rgba(200, 255, 61, 0.04), transparent 60%),
+    linear-gradient(135deg, #080c14, #03060b) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+.loupe-blueprint :is(p, li, blockquote) { color: #FFFFFF !important; }
+.loupe-blueprint :is(p, li) { font-weight: 400; }
+.seminar-reading-surface ::selection { background: rgba(200, 255, 61, 0.22); color: #FFFFFF; }
+.tw-loupe-trigger { background: #03060b !important; border-color: rgba(200, 255, 61, 0.35) !important; color: #FFFFFF !important; }

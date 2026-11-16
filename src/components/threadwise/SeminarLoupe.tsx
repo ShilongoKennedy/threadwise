@@ -113,7 +113,7 @@ export function LoupeSelectionButton({
       data-loupe-trigger
       onMouseDown={(event) => event.preventDefault()}
       onClick={onOpen}
-      className="tw-loupe-trigger fixed z-[80] inline-flex h-9 -translate-x-1/2 items-center gap-2 rounded-full border border-[#F7EAD6]/30 bg-[#0A0805]/90 px-2.5 pr-3 text-[#F7EAD6] shadow-[0_8px_24px_-10px_rgba(0,0,0,0.8)] backdrop-blur-md"
+      className="tw-loupe-trigger fixed z-[80] inline-flex h-9 -translate-x-1/2 items-center gap-2 rounded-full border border-[#F7EAD6]/30 bg-[#0A0805]/90 px-2.5 pr-3 text-white shadow-[0_8px_24px_-10px_rgba(0,0,0,0.8)] backdrop-blur-md"
       style={{ left: candidate.left, top: candidate.top }}
       aria-label="Look closer at the selected passage"
     >
@@ -229,18 +229,18 @@ export function SeminarLoupe({
         role="dialog"
         aria-modal="false"
         aria-label="Loupe note"
-        className="seminar-dark-ink loupe-blueprint tw-loupe-panel fixed inset-x-3 top-20 z-[80] max-h-[calc(100dvh-6rem)] overflow-y-auto rounded-[24px] border border-[#F7EAD6]/25 text-[#F7EAD6] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] md:inset-x-auto md:right-6 md:top-24 md:max-h-[calc(100dvh-8rem)] md:w-[400px]"
+        className="seminar-dark-ink loupe-blueprint tw-loupe-panel fixed inset-x-3 top-20 z-[80] max-h-[calc(100dvh-6rem)] overflow-y-auto rounded-[24px] border border-white/20 text-white shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] md:inset-x-auto md:right-6 md:top-24 md:max-h-[calc(100dvh-8rem)] md:w-[400px]"
       >
         <div className="relative border-b border-[#1A1A1A]/15 px-5 pb-4 pt-5">
-          <span className="absolute left-0 top-5 h-16 w-1 bg-[#1A4BFF]" aria-hidden />
+          <span className="absolute left-0 top-5 h-16 w-1 bg-[#C8FF3D]" aria-hidden />
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-2.5">
-              <span className="grid h-9 w-9 place-items-center rounded-full border border-[#1A4BFF]/30 bg-[#1A4BFF]/[0.07] text-[#1A4BFF]">
+              <span className="grid h-9 w-9 place-items-center rounded-full border border-[#C4B5FD]/40 bg-[#C8FF3D]/[0.07] text-[#C8FF3D]">
                 <Search className="h-4 w-4" strokeWidth={1.8} />
               </span>
               <div>
-                <p className="font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#1A4BFF]">The Loupe</p>
-                <p className="mt-0.5 font-mono text-[7px] uppercase tracking-[0.1em] text-[#1A1A1A]/35">Close read · {target.section}</p>
+                <p className="font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#C8FF3D]">The Loupe</p>
+                <p className="mt-0.5 font-mono text-[7px] uppercase tracking-[0.1em] text-white/55">Close read · {target.section}</p>
               </div>
             </div>
             <button
@@ -248,12 +248,12 @@ export function SeminarLoupe({
               type="button"
               onClick={onClose}
               aria-label="Close the Loupe"
-              className="grid h-7 w-7 place-items-center rounded-full text-[#1A1A1A]/40 transition-colors hover:bg-[#1A1A1A]/5 hover:text-[#1A1A1A]"
+              className="grid h-7 w-7 place-items-center rounded-full text-white/55 transition-colors hover:bg-white/10 hover:text-white"
             >
               <X className="h-3.5 w-3.5" />
             </button>
           </div>
-          <blockquote className="mt-5 border-l border-[#1A4BFF]/30 pl-3 font-serif text-[14px] italic leading-relaxed text-[#1A1A1A]/65">
+          <blockquote className="mt-5 border-l border-[#C4B5FD]/40 pl-3 font-serif text-[14px] italic leading-relaxed text-white/82">
             “{target.selected.length > 280 ? `${target.selected.slice(0, 277)}…` : target.selected}”
           </blockquote>
         </div>
@@ -261,7 +261,7 @@ export function SeminarLoupe({
         <div className="px-5 py-5" aria-live="polite">
           {state === "loading" ? (
             <div className="space-y-3">
-              <p className="flex items-center gap-2 font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">
+              <p className="flex items-center gap-2 font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#C8FF3D]">
                 <Loader2 className="h-3 w-3 animate-spin" /> Focusing the lens
               </p>
               <div className="h-2.5 w-11/12 animate-pulse rounded-full bg-[#F7EAD6]/18" />
@@ -276,7 +276,7 @@ export function SeminarLoupe({
               <button
                 type="button"
                 onClick={() => setAttempt((value) => value + 1)}
-                className="mt-3 font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-[#1A4BFF] underline underline-offset-4"
+                className="mt-3 font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-[#C8FF3D] underline underline-offset-4"
               >
                 Try again
               </button>
@@ -285,27 +285,27 @@ export function SeminarLoupe({
 
           {state === "ready" && loupe ? (
             <div className="space-y-5">
-              <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/35">{KIND_LABEL[loupe.kind]}</p>
+              <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white/55">{KIND_LABEL[loupe.kind]}</p>
               <div>
-                <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">Plain terms</p>
-                <p className="mt-1.5 font-serif text-[14.5px] leading-[1.65] text-[#1A1A1A]/82">{loupe.plain}</p>
+                <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#C8FF3D]">Plain terms</p>
+                <p className="mt-1.5 font-serif text-[14.5px] leading-[1.65] text-white/90">{loupe.plain}</p>
               </div>
-              <div className="border-t border-[#1A1A1A]/12 pt-4">
-                <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#1A4BFF]">In the argument</p>
-                <p className="mt-1.5 font-serif text-[14.5px] leading-[1.65] text-[#1A1A1A]/72">{loupe.here}</p>
+              <div className="border-t border-white/12 pt-4">
+                <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#C8FF3D]">In the argument</p>
+                <p className="mt-1.5 font-serif text-[14.5px] leading-[1.65] text-white/80">{loupe.here}</p>
               </div>
               {loupe.watch_for ? (
-                <div className="border-l-2 border-[#AFC3D9] pl-3">
-                  <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#8A6A43]">Watch for</p>
-                  <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-[#1A1A1A]/60">{loupe.watch_for}</p>
+                <div className="border-l-2 border-[#C4B5FD] pl-3">
+                  <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#C4B5FD]">Watch for</p>
+                  <p className="mt-1 font-serif text-[12.5px] leading-relaxed text-white/72">{loupe.watch_for}</p>
                 </div>
               ) : null}
             </div>
           ) : null}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#1A1A1A]/12 px-5 py-3">
-          <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#1A1A1A]/30">A reading aid, not a source</p>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/12 px-5 py-3">
+          <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-white/42">A reading aid, not a source</p>
           <div className="flex items-center gap-3">
             {lesson && onAskTutor ? (
               <button
@@ -314,12 +314,12 @@ export function SeminarLoupe({
                   onAskTutor(target.selected);
                   onClose();
                 }}
-                className="inline-flex items-center gap-1 font-mono text-[8px] font-bold uppercase tracking-[0.1em] text-[#1A4BFF] hover:underline hover:underline-offset-4"
+                className="inline-flex items-center gap-1 font-mono text-[8px] font-bold uppercase tracking-[0.1em] text-[#C8FF3D] hover:underline hover:underline-offset-4"
               >
                 Ask the tutor <ArrowUpRight className="h-3 w-3" />
               </button>
             ) : null}
-            <button type="button" onClick={onClose} className="font-mono text-[8px] font-bold uppercase tracking-[0.1em] text-[#1A1A1A]/45 hover:text-[#1A1A1A]">
+            <button type="button" onClick={onClose} className="font-mono text-[8px] font-bold uppercase tracking-[0.1em] text-white/60 hover:text-white">
               Back to reading
             </button>
           </div>
