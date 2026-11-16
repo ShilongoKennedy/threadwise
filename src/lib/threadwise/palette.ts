@@ -9,7 +9,6 @@ export type BlueprintColor = {
 export const BLUEPRINT_PALETTE: readonly BlueprintColor[] = [
   { hex: "#000000", label: "Void Black", ink: "#FFFFFF", wave: "light" },
   { hex: "#0F1420", label: "Midnight Ink", ink: "#FFFFFF", wave: "light" },
-  { hex: "#FFFBFB", label: "Snow", ink: "#111111", wave: "dark" },
 ];
 
 function hash(value: string) {
@@ -35,9 +34,8 @@ export function paletteFor(key: string): BlueprintColor[] {
 
 export const FIELD_STOPS = [
   { at: 0, hex: "#000000" },
-  { at: 0.4, hex: "#0F1420" },
-  { at: 0.7, hex: "#0F1420" },
-  { at: 1, hex: "#FFFBFB" },
+  { at: 0.5, hex: "#0F1420" },
+  { at: 1, hex: "#0F1420" },
 ] as const;
 
 export function mixFieldHex(a: string, b: string, t: number) {

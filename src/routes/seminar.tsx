@@ -143,18 +143,16 @@ function SeminarPage() {
       frame = 0;
       const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       const progress = Math.max(0, Math.min(1, window.scrollY / max));
-      const light = progress > 0.88;
-      const ink = light ? "#111111" : "#FFFFFF";
       root.style.backgroundColor = fieldColorAt(progress);
-      root.style.color = ink;
+      root.style.color = "#FFFFFF";
       root.style.setProperty("--seminar-bg", fieldColorAt(progress));
-      root.style.setProperty("--seminar-ink", ink);
-      root.style.setProperty("--seminar-header-ink", ink);
-      root.style.setProperty("--seminar-header-accent", ink);
-      root.style.setProperty("--seminar-header-border", light ? "rgba(17,17,17,0.22)" : "rgba(255,255,255,0.2)");
-      root.style.setProperty("--wave-art", light ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")');
-      root.style.setProperty("--wave-opacity", light ? "0.7" : "0.72");
-      root.dataset.fieldInk = light ? "light" : "dark";
+      root.style.setProperty("--seminar-ink", "#FFFFFF");
+      root.style.setProperty("--seminar-header-ink", "#FFFFFF");
+      root.style.setProperty("--seminar-header-accent", "#FFFFFF");
+      root.style.setProperty("--seminar-header-border", "rgba(255,255,255,0.2)");
+      root.style.setProperty("--wave-art", 'url("/blueprint-waves.svg")');
+      root.style.setProperty("--wave-opacity", "0.72");
+      root.dataset.fieldInk = "dark";
     };
     const onScroll = () => {
       if (frame) return;

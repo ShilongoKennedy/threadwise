@@ -4222,3 +4222,10 @@ body header.app-header .app-header__signin:hover { color: #DDD6FE !important; -w
   color: color-mix(in srgb, var(--nav-hover) 48%, #111111) !important;
   -webkit-text-fill-color: color-mix(in srgb, var(--nav-hover) 48%, #111111) !important;
 }
+
+/* No blue link ink on the reading sheet. */
+.read-page .read-column a[class*="text-[#1A4BFF]"],
+.read-page .read-column a[class*="text-[#1A4BFF]"] span {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}

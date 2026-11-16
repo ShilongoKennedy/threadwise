@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/threadwise/AppHeader";
 import { BrandLockup } from "@/components/threadwise/BrandLockup";
 import { ThreadTitle } from "@/components/threadwise/ThreadTitle";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
-import { type BlueprintColor } from "@/lib/threadwise/palette";
+import { fieldColorAt, type BlueprintColor } from "@/lib/threadwise/palette";
 import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
 
 export const Route = createFileRoute("/")({
@@ -45,42 +45,7 @@ const SAMPLE_TOKEN = "mn4qvf4bhu";
 const LANDING_TONES: BlueprintColor[] = [
   { hex: "#000000", label: "Void Black", ink: "#FFFFFF", wave: "light" },
   { hex: "#0F1420", label: "Midnight Ink", ink: "#FFFFFF", wave: "light" },
-  { hex: "#FFFBFB", label: "Paper White", ink: "#111111", wave: "dark" },
 ];
-
-const FIELD_STOPS = [
-  { at: 0, hex: "#000000" },
-  { at: 0.4, hex: "#0F1420" },
-  { at: 0.7, hex: "#0F1420" },
-  { at: 1, hex: "#FFFBFB" },
-] as const;
-
-function mixHex(a: string, b: string, t: number) {
-  const parse = (hex: string) => [
-    Number.parseInt(hex.slice(1, 3), 16),
-    Number.parseInt(hex.slice(3, 5), 16),
-    Number.parseInt(hex.slice(5, 7), 16),
-  ];
-  const [ar, ag, ab] = parse(a);
-  const [br, bg, bb] = parse(b);
-  const clamp = Math.max(0, Math.min(1, t));
-  const channel = (from: number, to: number) => Math.round(from + (to - from) * clamp).toString(16).padStart(2, "0");
-  return `#${channel(ar, br)}${channel(ag, bg)}${channel(ab, bb)}`;
-}
-
-function fieldColorAt(progress: number) {
-  const p = Math.max(0, Math.min(1, progress));
-  for (let index = 0; index < FIELD_STOPS.length - 1; index += 1) {
-    const from = FIELD_STOPS[index];
-    const to = FIELD_STOPS[index + 1];
-    if (p <= to.at) {
-      const raw = (p - from.at) / Math.max(0.0001, to.at - from.at);
-      const eased = raw * raw * (3 - 2 * raw);
-      return mixHex(from.hex, to.hex, eased);
-    }
-  }
-  return FIELD_STOPS[FIELD_STOPS.length - 1].hex;
-}
 
 
 
@@ -135,17 +100,15 @@ function LandingPage() {
       frame = 0;
       const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       const progress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
-      const light = progress > 0.86;
-      const ink = light ? "#111111" : "#FFFFFF";
       root.style.backgroundColor = fieldColorAt(progress);
-      root.style.color = ink;
-      root.style.setProperty("--blueprint-ink", ink);
-      root.style.setProperty("--blueprint-accent", ink);
-      root.style.setProperty("--landing-brand-filter", light ? "brightness(0)" : "brightness(0) invert(1)");
-      root.style.setProperty("--landing-header-border", light ? "rgba(17,17,17,0.22)" : "rgba(255,255,255,0.16)");
-      root.style.setProperty("--wave-art", light ? 'url("/blueprint-waves-bright.svg")' : 'url("/blueprint-waves.svg")');
-      root.style.setProperty("--wave-opacity", light ? "0.7" : "0.72");
-      root.dataset.fieldInk = light ? "light" : "dark";
+      root.style.color = "#FFFFFF";
+      root.style.setProperty("--blueprint-ink", "#FFFFFF");
+      root.style.setProperty("--blueprint-accent", "#FFFFFF");
+      root.style.setProperty("--landing-brand-filter", "brightness(0) invert(1)");
+      root.style.setProperty("--landing-header-border", "rgba(255,255,255,0.16)");
+      root.style.setProperty("--wave-art", 'url("/blueprint-waves.svg")');
+      root.style.setProperty("--wave-opacity", "0.72");
+      root.dataset.fieldInk = "dark";
     };
 
     const onScroll = () => {
