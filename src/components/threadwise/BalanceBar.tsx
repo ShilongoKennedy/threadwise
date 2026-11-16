@@ -24,7 +24,7 @@ export function BalanceBar({
           <>
             {forCount > 0 && (
               <span
-                className="absolute inset-y-0 left-0 bg-[#1A4BFF]"
+                className="absolute inset-y-0 left-0 bg-[#C8FF3D]"
                 style={{ width: `${forWidth}%` }}
               />
             )}

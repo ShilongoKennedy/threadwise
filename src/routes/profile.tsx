@@ -369,7 +369,7 @@ function ProfilePage() {
                               </div>
                               <div className="relative mt-1 h-2 bg-[#1A1A1A]/10">
                                 <span
-                                  className="absolute inset-y-0 left-0 bg-[#1A4BFF]"
+                                  className="absolute inset-y-0 left-0 bg-[#C8FF3D]"
                                   style={{ width: `${accuracy}%` }}
                                 />
                                 <span
@@ -505,7 +505,7 @@ function ProfilePage() {
                             </span>
                           </div>
                           <div className="mt-1 h-1 bg-[#1A1A1A]/10">
-                            <div className="h-full bg-[#1A4BFF]" style={{ width: `${item.averagePct}%` }} />
+                            <div className="h-full bg-[#C8FF3D]" style={{ width: `${item.averagePct}%` }} />
                           </div>
                         </li>
                       ))}

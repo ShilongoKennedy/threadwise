@@ -209,7 +209,7 @@ function QuestionsPage() {
                     <div className="grid grid-cols-1 divide-y divide-[#1A1A1A]/10 md:grid-cols-2 md:divide-x md:divide-y-0">
                       {(["for", "against"] as const).map((side) => (
                         <div key={side} className="py-3 md:pl-4 md:first:pl-0">
-                          <p className={`font-mono text-[9px] font-bold uppercase tracking-[0.18em] ${side === "for" ? "text-[#1A4BFF]" : "text-[#C1121F]"}`}>
+                          <p className={`font-mono text-[9px] font-bold uppercase tracking-[0.18em] ${side === "for" ? "text-[#C8FF3D]" : "text-[#C4B5FD]"}`}>
                             {side}
                           </p>
                           <ul className="mt-2 space-y-2">

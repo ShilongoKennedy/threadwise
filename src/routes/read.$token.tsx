@@ -258,7 +258,7 @@ function SharedRead() {
             )}
 
             {again && (
-              <div className="border-2 border-[#1A4BFF] bg-[#1A4BFF]/5 px-3 py-2">
+              <div className="border-2 border-[#1A4BFF] bg-[#C8FF3D]/5 px-3 py-2">
                 <p className="font-serif text-[14px]">
                   A fresh read has been written from the same move.{" "}
                   {again.token ? (
@@ -280,7 +280,7 @@ function SharedRead() {
                 <ul className="mt-1 space-y-1">
                   {changedSince(report, again.report).map((change) => (
                     <li key={change} className="flex gap-2 font-serif text-[13.5px] leading-snug text-[#1A1A1A]/85">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-[#1A4BFF]" />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-[#C8FF3D]" />
                       {change}
                     </li>
                   ))}

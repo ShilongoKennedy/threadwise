@@ -124,7 +124,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
                   <p className="mt-4 font-serif text-[14px] leading-[1.65] text-white/75">{mechanism.body}</p>
                   <div className="mt-4 space-y-2 border-t border-white/12 pt-3">
                     <p className="font-serif text-[12.5px] leading-snug text-white/60"><span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/35">Best at · </span>{mechanism.strength}</p>
-                    <p className="font-serif text-[12.5px] leading-snug text-white/60"><span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#C1121F]/65">Weakest at · </span>{mechanism.weakness}</p>
+                    <p className="font-serif text-[12.5px] leading-snug text-white/60"><span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#C4B5FD]/75">Weakest at · </span>{mechanism.weakness}</p>
                   </div>
                 </div>
               ))}
@@ -147,7 +147,7 @@ export function SeminarLessonView({ lesson, text, context, seminar, tutorSeed, o
             <div className="lesson-card mt-5 divide-y divide-white/12">
               {lesson.misconceptions.map((item) => (
                 <div key={item.mistake} className="grid gap-2 py-4 sm:grid-cols-[1fr_1.4fr] sm:gap-6">
-                  <p className="font-serif text-[13.5px] leading-snug text-[#C1121F]/75">“{item.mistake}”</p>
+                  <p className="font-serif text-[13.5px] leading-snug text-[#C4B5FD]/80">“{item.mistake}”</p>
                   <p className="font-serif text-[14px] leading-relaxed text-white/70">{item.correction}</p>
                 </div>
               ))}

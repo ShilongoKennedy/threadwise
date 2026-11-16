@@ -1786,12 +1786,6 @@ main {
   color: var(--blueprint-accent, #D8CCFF) !important;
 }
 
-.blueprint-page main [class*="text-[#1A4BFF]"],
-.blueprint-page footer [class*="text-[#1A4BFF]"],
-.blueprint-page main [class*="text-[#C1121F]"],
-.blueprint-page footer [class*="text-[#C1121F]"] {
-  color: var(--blueprint-accent, #D8CCFF) !important;
-}
 
 .blueprint-page main [class*="border-[#1A4BFF]"] {
   border-color: color-mix(in srgb, var(--blueprint-ink, #FFFFFF) 30%, transparent) !important;
@@ -2028,11 +2022,6 @@ main {
 
 
 /* Accent labels must survive the golden background. */
-.site-blueprint main [class*="text-[#1A4BFF]"],
-.site-blueprint main [class*="text-[#C1121F]"],
-.site-blueprint main [class*="text-[#6F718F]"] {
-  color: var(--site-accent, #D8CCFF) !important;
-}
 
 .blueprint-page header,
 .blueprint-page header :is(a, button, span, svg) {
@@ -4287,3 +4276,20 @@ body header.app-header .app-header__link[aria-current="page"]::after { backgroun
 .seminar-dark-ink .lesson-card { border-top-color: rgba(200, 255, 61, 0.32) !important; }
 .seminar-dark-ink .reading-closer { border-color: rgba(200, 255, 61, 0.4) !important; color: var(--accent-lime, #C8FF3D) !important; }
 .seminar-dark-ink .reading-closer:hover { border-color: var(--accent-lime, #C8FF3D) !important; background: rgba(200, 255, 61, 0.08) !important; }
+
+/* Colour is a signal, not a text theme. Exact accent labels only. */
+.site-blueprint [class~="text-[#1A4BFF]"],
+.blueprint-page [class~="text-[#1A4BFF]"] {
+  color: var(--accent-lime, #C8FF3D) !important;
+  -webkit-text-fill-color: var(--accent-lime, #C8FF3D) !important;
+}
+.site-blueprint [class*="hover:text-[#1A4BFF]"]:hover,
+.blueprint-page [class*="hover:text-[#1A4BFF]"]:hover,
+.site-blueprint [class*="group-hover:text-[#1A4BFF]"]:hover,
+.blueprint-page [class*="group-hover:text-[#1A4BFF]"]:hover {
+  color: var(--accent-lime, #C8FF3D) !important;
+  -webkit-text-fill-color: var(--accent-lime, #C8FF3D) !important;
+}
+/* Headings remain white, even if they contain a link. */
+.site-blueprint main :is(h1, h2, h3, h4) { color: #FFFFFF !important; }
+.site-blueprint main :is(h1, h2, h3, h4) a { color: inherit !important; }
