@@ -4304,3 +4304,31 @@ body header.app-header .app-header__link[aria-current="page"]::after { backgroun
 .read-page .read-summary__note { color: rgba(255, 255, 255, 0.7); }
 .seminar-dark-ink .theory-panel :is(p, li) { color: rgba(255, 255, 255, 0.9); }
 .seminar-dark-ink .mechanism-step__detail { color: rgba(255, 255, 255, 0.82); }
+
+/* Two ink roles: lilac for titles, pure white for the argument. */
+:root { --heading-tint: #D8CCFF; }
+
+.thread-title,
+.thread-title__word-text { color: #FFFFFF !important; }
+
+.blueprint-page main :is(h1, h2, h3, h4),
+.blueprint-page .reading-section__title,
+.site-blueprint main :is(h1, h2, h3, h4),
+.site-blueprint .reading-section__title,
+.seminar-dark-ink :is(h1, h2, h3, h4),
+.seminar-dark-ink .reading-section__title {
+  color: var(--heading-tint, #D8CCFF) !important;
+}
+
+/* The article's body is white, not a grey scale. */
+.seminar-dark-ink :is(p, li),
+.read-page .read-column :is(p, li) {
+  color: #FFFFFF !important;
+}
+
+/* Secondary metadata still steps back. */
+.read-page :is(.read-summary__note, .read-contents__link, .read-echo__break p:last-child) {
+  color: rgba(255, 255, 255, 0.68) !important;
+}
+
+.seminar-dark-ink :is(summary, dt) { color: rgba(255, 255, 255, 0.68) !important; }
