@@ -166,7 +166,7 @@ function SiteBlueprint({ children }: { children: ReactNode }) {
       root.style.color = "#FFFFFF";
       root.style.setProperty("--site-bg", fieldColorAt(progress));
       root.style.setProperty("--site-ink", "#FFFFFF");
-      root.style.setProperty("--site-accent", "#FFFFFF");
+      root.style.setProperty("--site-accent", "#C8FF3D");
       root.style.setProperty("--site-header-ink", "#FFFFFF");
       root.style.setProperty("--site-header-border", "rgba(255,255,255,0.16)");
       root.style.setProperty("--site-brand-filter", "brightness(0) invert(1)");
@@ -205,7 +205,7 @@ function SiteBlueprint({ children }: { children: ReactNode }) {
         "--site-header-border": darkInk ? "rgba(17, 17, 17, 0.22)" : "rgba(255, 255, 255, 0.16)",
         "--site-header-ink": tone.ink,
         "--site-brand-filter": darkInk ? "brightness(0)" : "brightness(0) invert(1)",
-        "--site-accent": tone.ink,
+        "--site-accent": "#C8FF3D",
       } as CSSProperties}
     >
       {children}

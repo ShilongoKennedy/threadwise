@@ -103,7 +103,7 @@ function LandingPage() {
       root.style.backgroundColor = fieldColorAt(progress);
       root.style.color = "#FFFFFF";
       root.style.setProperty("--blueprint-ink", "#FFFFFF");
-      root.style.setProperty("--blueprint-accent", "#FFFFFF");
+      root.style.setProperty("--blueprint-accent", "#C8FF3D");
       root.style.setProperty("--landing-brand-filter", "brightness(0) invert(1)");
       root.style.setProperty("--landing-header-border", "rgba(255,255,255,0.16)");
       root.style.setProperty("--wave-art", 'url("/blueprint-waves.svg")');
@@ -150,7 +150,7 @@ function LandingPage() {
         backgroundColor: initialTone.hex,
         color: initialTone.ink,
         "--blueprint-ink": initialTone.ink,
-        "--blueprint-accent": initialTone.ink,
+        "--blueprint-accent": "#C8FF3D",
         "--wave-art": 'url("/blueprint-waves.svg")',
         "--wave-opacity": "0.72",
         "--landing-brand-filter": "brightness(0) invert(1)",

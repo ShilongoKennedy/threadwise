@@ -200,7 +200,13 @@ export function ThreadTitle({ className = "" }: { className?: string }) {
             }}
             className={`thread-title__word-text ${active ? "is-unravelling" : ""}`}
           >
-            {word}
+            {word === "hides." ? (
+              <>
+                hides<span className="thread-title__period">.</span>
+              </>
+            ) : (
+              word
+            )}
           </span>
           {index < TITLE.split(" ").length - 1 ? " " : null}
         </span>

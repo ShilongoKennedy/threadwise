@@ -32,7 +32,7 @@ const TONES = [
     ink: "#FFFFFF",
     header: "rgba(255, 255, 255, 0.035)",
     border: "rgba(255, 255, 255, 0.2)",
-    accent: "#FFFFFF",
+    accent: "#C8FF3D",
     wave: "light" as const,
     brandFilter: "brightness(0) invert(1)",
   },
@@ -148,7 +148,7 @@ function SeminarPage() {
       root.style.setProperty("--seminar-bg", fieldColorAt(progress));
       root.style.setProperty("--seminar-ink", "#FFFFFF");
       root.style.setProperty("--seminar-header-ink", "#FFFFFF");
-      root.style.setProperty("--seminar-header-accent", "#FFFFFF");
+      root.style.setProperty("--seminar-header-accent", "#C8FF3D");
       root.style.setProperty("--seminar-header-border", "rgba(255,255,255,0.2)");
       root.style.setProperty("--wave-art", 'url("/blueprint-waves.svg")');
       root.style.setProperty("--wave-opacity", "0.72");
