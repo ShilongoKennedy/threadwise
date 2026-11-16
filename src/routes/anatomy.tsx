@@ -174,7 +174,6 @@ function AnatomyView({ report, onReset }: { report: AnatomyReport; onReset: () =
                   className={`anatomy-rung status-${rung.status}`}
                 >
                   <span className="anatomy-rung__number">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="anatomy-rung__node" aria-hidden="true" />
                   <span className="anatomy-rung__copy">
                     <span className="anatomy-rung__top">
                       <span className="anatomy-rung__label">{rung.label}</span>
