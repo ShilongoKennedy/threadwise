@@ -32,7 +32,7 @@ const RECORD = [
 function LandingLab() {
   return (
     <div className="landing-lab min-h-[100dvh]">
-      <AppHeader section="record" marketing />
+      <AppHeader section="home" marketing />
       <main className="landing-paper">
         <div className="landing-paper__content">
           <section className="landing-hero">

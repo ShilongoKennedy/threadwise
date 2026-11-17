@@ -6410,3 +6410,34 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
   color: #171310 !important;
   -webkit-text-fill-color: #171310 !important;
 }
+
+/* Paper objects: subtle ruled stock, a margin and a little lift. */
+.landing-card {
+  background-image:
+    linear-gradient(to right, transparent 0 18px, rgba(179, 38, 30, 0.13) 18px 19px, transparent 19px),
+    repeating-linear-gradient(to bottom, transparent 0 25px, rgba(87, 72, 40, 0.075) 25px 26px),
+    linear-gradient(#FFFDF7, #FFFDF7) !important;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.landing-card:hover {
+  transform: translateY(-4px) rotate(0deg) !important;
+  box-shadow: 0 28px 54px rgba(0, 0, 0, 0.42) !important;
+}
+.landing-close__actions::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 22px;
+  width: 1px;
+  background: rgba(179, 38, 30, 0.18);
+  pointer-events: none;
+}
+.landing-close__actions { transition: transform 180ms ease, box-shadow 180ms ease; }
+.landing-close__actions:hover {
+  transform: rotate(0deg) translateY(-3px);
+  box-shadow: 0 30px 58px rgba(0, 0, 0, 0.44);
+}
+.landing-specimen { transition: transform 180ms ease, box-shadow 180ms ease; }
+.landing-specimen:hover { transform: rotate(0deg) translateY(-3px); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5) !important; }
+.landing-lab .landing-paper .landing-button.landing-button--dark :is(span, svg) { color: #171310 !important; }
