@@ -1,76 +1,98 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/lab/landing")({
   head: () => ({
     meta: [
-      { title: "A working note — Threadwise lab" },
+      { title: "The darkroom — Threadwise lab" },
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: WorkingNote,
+  component: Darkroom,
 });
 
-function WorkingNote() {
+function Darkroom() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const move = (event: PointerEvent) => {
+      const rect = stage.getBoundingClientRect();
+      stage.style.setProperty("--light-x", `${event.clientX - rect.left}px`);
+      stage.style.setProperty("--light-y", `${event.clientY - rect.top}px`);
+    };
+    stage.addEventListener("pointermove", move);
+    return () => stage.removeEventListener("pointermove", move);
+  }, []);
+
   return (
-    <div className="letter-lab">
-      <header className="letter-nav">
-        <Link to="/" className="letter-brand">threadwise</Link>
+    <div className={`darkroom ${revealed ? "is-revealed" : ""}`} ref={stageRef}>
+      <header className="darkroom-nav">
+        <Link to="/" className="darkroom-brand">
+          <span aria-hidden="true" />
+          THREADWISE
+        </Link>
         <nav aria-label="Tools">
           <Link to="/analyst">The Analyst</Link>
           <Link to="/seminar">Seminar</Link>
           <Link to="/anatomy">The Anatomy</Link>
         </nav>
-        <span className="letter-date">a working note · 18.11.26</span>
+        <Link to="/analyst" className="darkroom-enter">Enter the desk ↗</Link>
       </header>
 
-      <main className="letter-main">
-        <article className="letter-note">
-          <p className="letter-kicker">A working note / on reading</p>
-          <h1>A note from<br />the desk.</h1>
-          <p className="letter-salutation">Dear reader,</p>
-          <p className="letter-body">
-            I built Threadwise because I kept mistaking a confident paragraph for evidence. A story
-            can be vivid, urgent and beautifully written, and still leave the important thing out.
-          </p>
-          <p className="letter-body">
-            So this is a small reading desk, not an answer machine. Bring a source. Work out what it
-            says, what it leaves out, and what would change your mind. Then keep the questions
-            somewhere you can find them again.
-          </p>
-          <p className="letter-body">
-            It will not tell you what to think. It will show you where the thinking is thin.
-          </p>
-          <p className="letter-ps">
-            <em>P.S.</em> If a sentence sounds certain, ask what it is standing on.
-          </p>
-          <div className="letter-actions">
-            <Link to="/analyst" className="letter-cta">Start with one source <span aria-hidden="true">↗</span></Link>
-            <Link to="/read/$token" params={{ token: "mn4qvf4bhu" }} className="letter-link">or read the IAEA sample first <span aria-hidden="true">↗</span></Link>
-          </div>
-          <p className="letter-sign">— threadwise</p>
-        </article>
+      <main className="darkroom-main">
+        <div className="darkroom-ghost" aria-hidden="true">
+          <span>Look closer.</span>
+          <span>01 / the read</span>
+        </div>
 
-        <aside className="letter-band" aria-label="A note for the reader">
-          <span className="letter-band__index">01 / the habit</span>
-          <div className="letter-band__words">
-            <span>Read</span>
-            <span>one</span>
-            <span>thing</span>
-            <span>properly.</span>
+        <div className="darkroom-reveal">
+          <div className="darkroom-copy">
+            <p className="darkroom-kicker">Threadwise / a reading desk</p>
+            <h1>The story is<br /><em>not</em> the evidence.</h1>
+            <p className="darkroom-lede">
+              A claim arrives with a mood, a deadline and a headline. The evidence arrives later, if
+              it arrives at all. Threadwise is a place to keep the two apart.
+            </p>
+
+            <div className="darkroom-specimen">
+              <p className="darkroom-specimen__label">The read / specimen</p>
+              <p>
+                “A confidential IAEA report has raised <mark>concerns</mark> about Iran’s enrichment
+                programme. No figure or finding from the report has been quoted.”
+              </p>
+              <span className="darkroom-margin">
+                <b>↳</b> a word that sounds like a finding without being one.
+              </span>
+            </div>
+
+            <div className="darkroom-actions">
+              <Link to="/analyst" className="darkroom-cta">Bring a source <span aria-hidden="true">↗</span></Link>
+              <Link to="/read/$token" params={{ token: "mn4qvf4bhu" }} className="darkroom-link">Read the IAEA sample ↗</Link>
+            </div>
           </div>
-          <div className="letter-band__foot">
-            <span>no infinite scroll</span>
-            <span>no verdict before the evidence</span>
-          </div>
-          <span className="letter-band__seal" aria-hidden="true">✓</span>
-        </aside>
+        </div>
+
+        <div className="darkroom-lamp" aria-hidden="true" />
+
+        <div className="darkroom-hint">
+          <span>Move the light to read.</span>
+          <button type="button" onClick={() => setRevealed((value) => !value)}>
+            {revealed ? "Back to the dark" : "Show everything"}
+          </button>
+        </div>
+
+        <Link to="/analyst" className="darkroom-quick">Put a source on the desk <span aria-hidden="true">↗</span></Link>
+
+        <span className="darkroom-coord darkroom-coord--a">48.2N / 16.4E</span>
+        <span className="darkroom-coord darkroom-coord--b">look / again</span>
       </main>
 
-      <footer className="letter-index">
-        <Link to="/analyst"><b>01</b><span>The Analyst</span><em>read a source</em></Link>
-        <Link to="/seminar"><b>02</b><span>Seminar</span><em>compare explanations</em></Link>
-        <Link to="/anatomy"><b>03</b><span>The Anatomy</span><em>find the break</em></Link>
-        <span className="letter-index__end">read carefully · verify before you act</span>
+      <footer className="darkroom-foot">
+        <span>Threadwise / evidence first. Verdict later.</span>
+        <span>read carefully · verify before you act</span>
       </footer>
     </div>
   );
