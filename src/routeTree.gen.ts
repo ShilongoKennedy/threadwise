@@ -53,10 +53,6 @@ import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as ApiWeeklyReviewRouteImport } from './routes/api/weekly-review'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
-import { Route as LabHero3dRouteImport } from './routes/lab.hero3d'
-import { Route as LabLandingRouteImport } from './routes/lab.landing'
-import { Route as LabPaperRouteImport } from './routes/lab.paper'
-import { Route as LabReadingTestRouteImport } from './routes/lab.reading-test'
 import { Route as PracticeTokenRouteImport } from './routes/practice.$token'
 import { Route as QuestionIdRouteImport } from './routes/question.$id'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
@@ -283,26 +279,6 @@ const CaseSubjectRoute = CaseSubjectRouteImport.update({
   path: '/case/$subject',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LabHero3dRoute = LabHero3dRouteImport.update({
-  id: '/lab/hero3d',
-  path: '/lab/hero3d',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabLandingRoute = LabLandingRouteImport.update({
-  id: '/lab/landing',
-  path: '/lab/landing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabPaperRoute = LabPaperRouteImport.update({
-  id: '/lab/paper',
-  path: '/lab/paper',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabReadingTestRoute = LabReadingTestRouteImport.update({
-  id: '/lab/reading-test',
-  path: '/lab/reading-test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PracticeTokenRoute = PracticeTokenRouteImport.update({
   id: '/practice/$token',
   path: '/practice/$token',
@@ -374,10 +350,6 @@ export interface FileRoutesByFullPath {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
-  '/lab/hero3d': typeof LabHero3dRoute
-  '/lab/landing': typeof LabLandingRoute
-  '/lab/paper': typeof LabPaperRoute
-  '/lab/reading-test': typeof LabReadingTestRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -429,10 +401,6 @@ export interface FileRoutesByTo {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
-  '/lab/hero3d': typeof LabHero3dRoute
-  '/lab/landing': typeof LabLandingRoute
-  '/lab/paper': typeof LabPaperRoute
-  '/lab/reading-test': typeof LabReadingTestRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -485,10 +453,6 @@ export interface FileRoutesById {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
-  '/lab/hero3d': typeof LabHero3dRoute
-  '/lab/landing': typeof LabLandingRoute
-  '/lab/paper': typeof LabPaperRoute
-  '/lab/reading-test': typeof LabReadingTestRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -542,10 +506,6 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
-    | '/lab/hero3d'
-    | '/lab/landing'
-    | '/lab/paper'
-    | '/lab/reading-test'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -597,10 +557,6 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
-    | '/lab/hero3d'
-    | '/lab/landing'
-    | '/lab/paper'
-    | '/lab/reading-test'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -652,10 +608,6 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
-    | '/lab/hero3d'
-    | '/lab/landing'
-    | '/lab/paper'
-    | '/lab/reading-test'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -708,10 +660,6 @@ export interface RootRouteChildren {
   ApiWeeklyReviewRoute: typeof ApiWeeklyReviewRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CaseSubjectRoute: typeof CaseSubjectRoute
-  LabHero3dRoute: typeof LabHero3dRoute
-  LabLandingRoute: typeof LabLandingRoute
-  LabPaperRoute: typeof LabPaperRoute
-  LabReadingTestRoute: typeof LabReadingTestRoute
   PracticeTokenRoute: typeof PracticeTokenRoute
   QuestionIdRoute: typeof QuestionIdRoute
   ReadTokenRoute: typeof ReadTokenRoute
@@ -1029,34 +977,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CaseSubjectRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lab/hero3d': {
-      id: '/lab/hero3d'
-      path: '/lab/hero3d'
-      fullPath: '/lab/hero3d'
-      preLoaderRoute: typeof LabHero3dRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab/landing': {
-      id: '/lab/landing'
-      path: '/lab/landing'
-      fullPath: '/lab/landing'
-      preLoaderRoute: typeof LabLandingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab/paper': {
-      id: '/lab/paper'
-      path: '/lab/paper'
-      fullPath: '/lab/paper'
-      preLoaderRoute: typeof LabPaperRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab/reading-test': {
-      id: '/lab/reading-test'
-      path: '/lab/reading-test'
-      fullPath: '/lab/reading-test'
-      preLoaderRoute: typeof LabReadingTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/practice/$token': {
       id: '/practice/$token'
       path: '/practice/$token'
@@ -1140,10 +1060,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWeeklyReviewRoute: ApiWeeklyReviewRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CaseSubjectRoute: CaseSubjectRoute,
-  LabHero3dRoute: LabHero3dRoute,
-  LabLandingRoute: LabLandingRoute,
-  LabPaperRoute: LabPaperRoute,
-  LabReadingTestRoute: LabReadingTestRoute,
   PracticeTokenRoute: PracticeTokenRoute,
   QuestionIdRoute: QuestionIdRoute,
   ReadTokenRoute: ReadTokenRoute,
