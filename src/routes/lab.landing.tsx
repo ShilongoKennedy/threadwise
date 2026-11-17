@@ -1,232 +1,141 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/lab/landing")({
   head: () => ({
     meta: [
-      { title: "The Threadwise Dispatch — lab" },
+      { title: "The reading room — Threadwise lab" },
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: Broadsheet,
+  component: HeroLab,
 });
 
-const SAMPLE_TOKEN = "mn4qvf4bhu";
-
-function HalftoneGlobe() {
+function StillLife() {
   return (
-    <svg viewBox="0 0 420 300" role="img" aria-label="Halftone globe showing Vienna, Tehran and Natanz">
+    <svg className="hero-still" viewBox="0 0 1600 760" aria-hidden="true">
       <defs>
-        <pattern id="news-dots" width="5.4" height="5.4" patternUnits="userSpaceOnUse">
-          <circle cx="2.7" cy="2.7" r="1.45" fill="#5B4A8E" />
-        </pattern>
-        <clipPath id="news-globe-clip">
-          <circle cx="210" cy="148" r="103" />
-        </clipPath>
+        <linearGradient id="chair-light" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#F2ECDD" />
+          <stop offset="1" stopColor="#D9D0BC" />
+        </linearGradient>
+        <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#D9FF65" />
+          <stop offset="1" stopColor="#A8E51D" />
+        </linearGradient>
+        <radialGradient id="globe-ocean" cx="35%" cy="30%" r="75%">
+          <stop offset="0" stopColor="#E5DCFF" />
+          <stop offset="1" stopColor="#B9A8F2" />
+        </radialGradient>
+        <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="9" />
+        </filter>
       </defs>
-      <rect width="420" height="300" fill="#f1eee5" />
-      <g clipPath="url(#news-globe-clip)">
-        <rect x="100" y="40" width="220" height="220" fill="url(#news-dots)" />
-        <g fill="none" stroke="#ece9df" strokeWidth="4">
-          <ellipse cx="210" cy="148" rx="103" ry="30" />
-          <ellipse cx="210" cy="148" rx="75" ry="98" />
-          <ellipse cx="210" cy="148" rx="38" ry="101" />
-          <path d="M107 148 H313" />
-          <path d="M118 103 H302" />
-          <path d="M118 193 H302" />
-        </g>
+
+      <ellipse cx="995" cy="647" rx="310" ry="42" fill="#1E1A5A" opacity="0.32" filter="url(#soft)" />
+      <ellipse cx="330" cy="649" rx="210" ry="28" fill="#1E1A5A" opacity="0.28" filter="url(#soft)" />
+      <ellipse cx="1348" cy="666" rx="120" ry="17" fill="#1E1A5A" opacity="0.25" filter="url(#soft)" />
+
+      <g id="archive-boxes">
+        <rect x="88" y="430" width="178" height="112" fill="#171821" />
+        <rect x="105" y="349" width="164" height="99" fill="#20212B" />
+        <rect x="96" y="395" width="181" height="20" fill="#2E2F3B" />
+        <rect x="119" y="462" width="94" height="48" fill="#E9E2D2" />
+        <path fill="none" d="M128 477h74M128 486h61M128 495h69" stroke="#26232F" strokeWidth="2" opacity="0.6" />
+        <path fill="none" d="M134 369h90M134 380h64" stroke="#E9E2D2" strokeWidth="2" opacity="0.7" />
+        <path d="M90 542h290l-12 22H74z" fill="#CEC6B5" />
       </g>
-      <circle cx="210" cy="148" r="103" fill="none" stroke="#5B4A8E" strokeWidth="2" />
-      <g fill="#5B4A8E" stroke="#ece9df" strokeWidth="2">
-        <circle cx="202" cy="102" r="5" />
-        <circle cx="236" cy="139" r="5" />
-        <circle cx="218" cy="172" r="5" />
+
+      <g id="table-globe">
+        <path d="M252 431h74l18 205h-41l-11-161-13 161h-44z" fill="#CFC5B1" />
+        <ellipse cx="291" cy="431" rx="122" ry="25" fill="#E9E2D2" />
+        <ellipse cx="291" cy="425" rx="122" ry="25" fill="#F3EEDF" />
+        <path fill="none" d="M194 424c30-14 115-19 194-1" stroke="#C3B9A4" strokeWidth="3" opacity="0.7" />
+        <path fill="none" d="M291 397v-42" stroke="#252136" strokeWidth="7" />
+        <path d="M260 352c16-11 44-11 62 0l-5 12h-52z" fill="#252136" />
+        <circle cx="291" cy="317" r="67" fill="url(#globe-ocean)" stroke="#2A2444" strokeWidth="2" />
+        <ellipse cx="291" cy="317" rx="67" ry="22" fill="none" stroke="#2A2444" strokeWidth="2" opacity="0.75" />
+        <ellipse cx="291" cy="317" rx="38" ry="65" fill="none" stroke="#2A2444" strokeWidth="2" opacity="0.75" />
+        <path fill="none" d="M224 317h134M239 283h104M239 351h104" stroke="#2A2444" strokeWidth="2" opacity="0.65" />
+        <path d="M258 287c22-10 42 2 44 18 2 17-14 23-16 39-2 15 6 24 18 31-23 11-44-1-48-20-4-16 8-27 2-41-4-11-5-20 0-27z" fill="#2A2444" opacity="0.78" />
+        <circle cx="318" cy="347" r="4" fill="#C8FF3D" />
       </g>
-      <g fill="#5B4A8E" fontFamily="DM Mono, monospace" fontSize="8" letterSpacing="1">
-        <text x="275" y="90">VIENNA</text>
-        <text x="284" y="138">TEHRAN</text>
-        <text x="260" y="190">NATANZ</text>
+
+      <g id="papers">
+        <path d="M601 632l163-19 25 52-171 22z" fill="#EDE8DA" stroke="#C6BCA8" strokeWidth="1.4" />
+        <path fill="none" d="M620 641l128-15M626 651l120-14M631 661l108-13" stroke="#7A7366" strokeWidth="2" opacity="0.55" />
+        <path d="M710 599l122-8 15 39-129 9z" fill="#F4F0E4" stroke="#C6BCA8" strokeWidth="1.2" />
+        <path fill="none" d="M727 611l81-5M730 620l73-4" stroke="#7A7366" strokeWidth="2" opacity="0.45" />
+      </g>
+
+      <g id="chair">
+        <path fill="none" d="M842 595l-13 78M1120 595l16 78" stroke="#343041" strokeWidth="10" strokeLinecap="round" />
+        <rect x="850" y="430" width="286" height="120" rx="22" fill="url(#chair-light)" />
+        <path d="M862 448c-43-63-7-166 105-166h32c112 0 148 103 105 166l-28 50H890z" fill="url(#chair-light)" />
+        <path d="M892 435c-25-48-2-126 80-126h31c82 0 105 78 80 126z" fill="#E4DCCB" />
+        <path d="M870 466c-28 2-40 22-33 45l18 57h33l-10-94zM1118 466c28 2 40 22 33 45l-18 57h-33l10-94z" fill="#DDD4C1" />
+        <path fill="none" d="M895 530h192" stroke="#C3B9A4" strokeWidth="3" />
+        <path fill="none" d="M900 480c29-15 57-18 90-18s61 3 90 18" stroke="#CFC5B1" strokeWidth="2" opacity="0.7" />
+        <path d="M930 446c14-27 47-40 81-40s67 13 81 40" fill="none" stroke="#C8FF3D" strokeWidth="4" strokeDasharray="1 12" strokeLinecap="round" />
+      </g>
+
+      <g id="lamp">
+        <ellipse cx="1348" cy="650" rx="74" ry="14" fill="#252136" />
+        <path fill="none" d="M1348 638V278" stroke="#252136" strokeWidth="7" />
+        <path d="M1348 294c-39-11-68-46-72-89l140-18c-2 45-26 89-68 107z" fill="url(#shade)" />
+        <path fill="none" d="M1276 205c35-14 92-21 140-18" stroke="#252136" strokeWidth="3" opacity="0.5" />
+        <circle cx="1348" cy="250" r="11" fill="#F5F1E2" />
+        <path fill="none" d="M1290 208c20 21 82 28 130 5" stroke="#F5F1E2" strokeWidth="2" opacity="0.4" />
       </g>
     </svg>
   );
 }
 
-function Broadsheet() {
+function HeroLab() {
   return (
-    <div className="dispatch-stage">
-      <div className="dispatch-paper">
-        <header className="dispatch-top">
-          <nav aria-label="Primary">
-            <Link to="/analyst">The Analyst</Link>
-            <Link to="/seminar">Seminar</Link>
-            <Link to="/anatomy">The Anatomy</Link>
-            <Link to="/digest">Record</Link>
-          </nav>
-          <span>Demonstration edition</span>
-          <Link to="/login">Sign in</Link>
-        </header>
+    <div className="hero-lab">
+      <header className="hero-nav">
+        <Link to="/" className="hero-nav__brand">
+          <span className="hero-nav__mark" aria-hidden="true">✦</span>
+          THREADWISE
+        </Link>
+        <nav aria-label="Tools">
+          <Link to="/analyst">The Analyst</Link>
+          <Link to="/seminar">Seminar</Link>
+          <Link to="/anatomy">The Anatomy</Link>
+        </nav>
+        <Link to="/analyst" className="hero-nav__index">index <span>—</span></Link>
+      </header>
 
-        <header className="dispatch-masthead">
-          <div className="dispatch-masthead__meta">
-            <span>Vol. I · No. 1</span>
-            <span>Wednesday, 18 November 2026</span>
-            <span>Price: one careful read</span>
-          </div>
-          <h1>The Threadwise Dispatch</h1>
-          <p>“Read the evidence, not just the framing.”</p>
-        </header>
+      <main className="hero-main">
+        <div className="hero-grain" aria-hidden="true" />
+        <div className="hero-floor" aria-hidden="true" />
+        <div className="hero-objects"><StillLife /></div>
 
-        <div className="dispatch-rule dispatch-rule--double" />
-
-        <section className="dispatch-lead">
-          <article>
-            <p className="dispatch-kicker">The read / Iran</p>
-            <h2>A report no one<br />can read.</h2>
-            <p className="dispatch-deck">
-              A confidential IAEA briefing has raised concerns about Iran’s enrichment programme.
-              The document itself remains out of sight — and that gap is the story.
-            </p>
-            <p className="dispatch-byline">From the Reading Desk · Vienna · 10 November 2026</p>
-            <div className="dispatch-body dispatch-body--columns">
-              <p className="dispatch-dropcap">
-                A confidential IAEA report circulated to member states has raised concerns about
-                Iran’s enrichment programme, according to officials familiar with the matter. The
-                report has not been published. No figure, site or finding from it has been quoted.
-              </p>
-              <p>
-                Officials describe the briefing as a warning about capability and intent. The White
-                House says there is no immediate threat to the homeland. Both statements can be true
-                at once. Neither is a substitute for the document.
-              </p>
-              <p>
-                The timing has turned the briefing into a public act. It lands inside a week of
-                diplomatic pressure, after a public reward for information and new sanctions. The
-                question is not only what the report says, but who is meant to hear it.
-              </p>
-              <p>
-                The word “concerns” carries the weight of the story. It is not a measurement, a
-                finding or a named capability. It is a judgement about what the Agency does not know
-                — and about what governments are prepared to do with that uncertainty.
-              </p>
-            </div>
-            <blockquote className="dispatch-pull">
-              “A report about a report is not yet evidence of a new capability.”
-            </blockquote>
-          </article>
-
-          <aside className="dispatch-leadside">
-            <figure className="dispatch-photo">
-              <HalftoneGlobe />
-              <figcaption>
-                <span>Wirephoto / the record</span>
-                <span>Vienna · Tehran · Natanz</span>
-              </figcaption>
-            </figure>
-
-            <div className="dispatch-box">
-              <p className="dispatch-box__label">The crux</p>
-              <p className="dispatch-box__title">Was the timing a message?</p>
-              <p>
-                If the briefing was coordinated with a political decision, the release is part of
-                the pressure campaign. If it was routine, the leak is the story.
-              </p>
-            </div>
-
-            <div className="dispatch-box dispatch-box--dark">
-              <p className="dispatch-box__label">What to watch</p>
-              <p className="dispatch-box__title">A document, not a briefing.</p>
-              <p>
-                Whether the Board puts Iran on the formal agenda, and whether a published finding
-                follows the anonymous one.
-              </p>
-              <Link to="/read/$token" params={{ token: SAMPLE_TOKEN }}>
-                Read the full report <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </aside>
-        </section>
-
-        <div className="dispatch-rule" />
-
-        <section className="dispatch-lower">
-          <article>
-            <p className="dispatch-kicker">The move</p>
-            <h3>The briefing is the message.</h3>
-            <p>
-              A confidential assessment becomes consequential the moment officials describe it in
-              public. The timing is not a detail; it is part of the argument. The leaker, the
-              briefers and the officials who confirm the briefing are all shaping what the public
-              can do with it.
-            </p>
-            <p>
-              That does not make the concern invented. It makes the concern mediated. A serious
-              claim can arrive through a political channel and still be serious.
-            </p>
-          </article>
-          <article>
-            <p className="dispatch-kicker">The language</p>
-            <h3>What “concerns” leaves out.</h3>
-            <p>
-              A concern can describe a capability, an intention, a gap in access or a political
-              judgement. The sentence does not tell us which. Without that distinction, readers
-              supply the missing certainty themselves.
-            </p>
-            <p>
-              The strongest correction is not “nothing happened.” It is “we do not yet know what
-              happened, and here is what would tell us.”
-            </p>
-          </article>
-          <article>
-            <p className="dispatch-kicker">The test</p>
-            <h3>What would change the reading.</h3>
-            <ul>
-              <li>A published document, not a briefing.</li>
-              <li>A named site and a measurable finding.</li>
-              <li>A named decision-maker and an order.</li>
-              <li>A clear move from options to an operational plan.</li>
-            </ul>
-            <p>
-              Until one of those appears, the claim is about a report. It is not yet a finding.
-            </p>
-          </article>
-        </section>
-
-        <div className="dispatch-rule dispatch-rule--ornament">
-          <span>◆</span>
+        <div className="hero-title-wrap">
+          <p className="hero-kicker">A reading desk for sources you do not trust yet.</p>
+          <h1 className="hero-title">
+            <span className="hero-title__bold">THREAD</span>
+            <span className="hero-title__serif">wise</span>
+            <span className="hero-title__dot" aria-hidden="true" />
+          </h1>
+          <p className="hero-sub">Read the evidence. Keep the questions.</p>
         </div>
 
-        <section className="dispatch-bottom">
-          <div className="dispatch-questions">
-            <p className="dispatch-kicker">The margin / three questions</p>
-            <h3>Before the Board meets.</h3>
-            <ol>
-              <li><span>01</span> Is the briefing a decision, a warning, or an option?</li>
-              <li><span>02</span> Who receives the message — Tehran, the Board, or the public?</li>
-              <li><span>03</span> What would the Agency need to see to change its language?</li>
-            </ol>
-          </div>
-
-          <aside className="dispatch-ad">
-            <p className="dispatch-ad__top">The Reading Desk</p>
-            <h3>Read the source.<br />Keep the questions.</h3>
-            <p>
-              Bring a link, a PDF or a screenshot. Leave with the framing, the evidence and the
-              questions the source cannot answer.
-            </p>
-            <div className="dispatch-ad__actions">
-              <Link to="/analyst">Bring a source <ArrowUpRight className="h-3.5 w-3.5" /></Link>
-              <Link to="/read/$token" params={{ token: SAMPLE_TOKEN }}>Open the IAEA read <ArrowUpRight className="h-3.5 w-3.5" /></Link>
+        <div className="hero-bottom">
+          <div className="hero-manifesto">
+            <p><span>›</span> a reading room. not a summary machine.</p>
+            <p><span>›</span> three instruments. one standard of evidence.</p>
+            <p><span>›</span> start with the source you have open in another tab.</p>
+            <div className="hero-links">
+              <Link to="/analyst">Bring a source <ArrowRight className="h-3 w-3" /></Link>
+              <Link to="/read/$token" params={{ token: "mn4qvf4bhu" }}>Open the IAEA read <ArrowRight className="h-3 w-3" /></Link>
             </div>
-            <p className="dispatch-ad__small">Threadwise · free while in beta · sign in with Google</p>
-          </aside>
-        </section>
-
-        <footer className="dispatch-foot">
-          <span>The Threadwise Dispatch · demonstration edition</span>
-          <span>Built from the IAEA sample read · not a live news report</span>
-          <span>Page 1</span>
-        </footer>
-      </div>
+          </div>
+          <div className="hero-scroll"><span>scroll</span><i /></div>
+          <div className="hero-date">18 / 11 / 2026</div>
+        </div>
+      </main>
     </div>
   );
 }
