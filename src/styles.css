@@ -5275,3 +5275,158 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
 
 
 
+
+/* Lab home: a quiet Earth and a draggable timeline. */
+.cosmic-home {
+  min-height: 100dvh;
+  background: #FFFFFF;
+  color: #111111;
+}
+.cosmic-main {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(38px, 7vh, 74px) 20px 34px;
+}
+.cosmic-globe-wrap {
+  position: relative;
+  width: min(330px, 74vw);
+  aspect-ratio: 1;
+  margin-top: 4vh;
+}
+.cosmic-globe {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+.cosmic-globe canvas { display: block; width: 100% !important; height: 100% !important; }
+.cosmic-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 96%;
+  height: 96%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(106, 161, 255, 0.12), transparent 67%);
+  pointer-events: none;
+}
+.cosmic-shadow {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: -5%;
+  width: 47%;
+  height: 11px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(95, 107, 122, 0.2), transparent 70%);
+  filter: blur(2px);
+}
+.cosmic-loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: #7c848e;
+  white-space: nowrap;
+}
+.cosmic-caption { margin-top: 17px; text-align: center; }
+.cosmic-caption h1 {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #111 !important;
+}
+.cosmic-caption p {
+  margin-top: 8px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.4;
+  color: #777d84 !important;
+}
+.cosmic-caption p span { margin-left: 5px; color: #9ba0a5 !important; }
+.cosmic-timeline {
+  position: relative;
+  width: min(480px, 84vw);
+  margin-top: clamp(42px, 8vh, 86px);
+  padding-top: 2px;
+  outline: none;
+}
+.cosmic-ticks {
+  display: flex;
+  height: 24px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2px;
+}
+.cosmic-ticks span {
+  width: 1px;
+  min-height: 5px;
+  background: #c8c9c7;
+  flex: 0 0 1px;
+}
+.cosmic-ticks span.is-major { background: #9b9d9d; }
+.cosmic-thumb {
+  position: absolute;
+  z-index: 2;
+  top: -3px;
+  width: 1px;
+  height: 37px;
+  background: #111;
+  transform: translateX(-0.5px);
+  pointer-events: none;
+}
+.cosmic-range {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: -8px;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.cosmic-range::-webkit-slider-thumb { width: 22px; height: 44px; -webkit-appearance: none; appearance: none; cursor: ew-resize; }
+.cosmic-range::-moz-range-thumb { width: 22px; height: 44px; border: 0; cursor: ew-resize; }
+.cosmic-timeline:has(.cosmic-range:focus-visible) {
+  outline: 1px solid rgba(17, 17, 17, 0.45);
+  outline-offset: 10px;
+}
+.cosmic-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.3;
+  color: #8b8f92 !important;
+}
+.cosmic-labels span { color: inherit !important; }
+.cosmic-labels span:last-child { color: #333 !important; }
+.cosmic-return {
+  margin-top: auto;
+  padding-top: 12vh;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.3;
+  color: #777d84 !important;
+}
+.cosmic-return:hover { color: #111 !important; text-decoration: underline; text-underline-offset: 4px; }
+
+@media (max-width: 620px) {
+  .cosmic-main { padding-top: 44px; }
+  .cosmic-globe-wrap { width: min(280px, 76vw); margin-top: 2vh; }
+  .cosmic-caption h1 { font-size: 17px; }
+  .cosmic-caption p { font-size: 13px; }
+  .cosmic-timeline { width: 84vw; margin-top: 54px; }
+  .cosmic-labels { font-size: 11px; }
+  .cosmic-return { font-size: 14px; padding-top: 10vh; }
+}
