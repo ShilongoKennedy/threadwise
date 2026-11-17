@@ -53,6 +53,7 @@ import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as ApiWeeklyReviewRouteImport } from './routes/api/weekly-review'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
+import { Route as LabLandingRouteImport } from './routes/lab.landing'
 import { Route as LabPaperRouteImport } from './routes/lab.paper'
 import { Route as PracticeTokenRouteImport } from './routes/practice.$token'
 import { Route as QuestionIdRouteImport } from './routes/question.$id'
@@ -280,6 +281,11 @@ const CaseSubjectRoute = CaseSubjectRouteImport.update({
   path: '/case/$subject',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabLandingRoute = LabLandingRouteImport.update({
+  id: '/lab/landing',
+  path: '/lab/landing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabPaperRoute = LabPaperRouteImport.update({
   id: '/lab/paper',
   path: '/lab/paper',
@@ -356,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
+  '/lab/landing': typeof LabLandingRoute
   '/lab/paper': typeof LabPaperRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
@@ -408,6 +415,7 @@ export interface FileRoutesByTo {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
+  '/lab/landing': typeof LabLandingRoute
   '/lab/paper': typeof LabPaperRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
@@ -461,6 +469,7 @@ export interface FileRoutesById {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
+  '/lab/landing': typeof LabLandingRoute
   '/lab/paper': typeof LabPaperRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
@@ -515,6 +524,7 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
+    | '/lab/landing'
     | '/lab/paper'
     | '/practice/$token'
     | '/question/$id'
@@ -567,6 +577,7 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
+    | '/lab/landing'
     | '/lab/paper'
     | '/practice/$token'
     | '/question/$id'
@@ -619,6 +630,7 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
+    | '/lab/landing'
     | '/lab/paper'
     | '/practice/$token'
     | '/question/$id'
@@ -672,6 +684,7 @@ export interface RootRouteChildren {
   ApiWeeklyReviewRoute: typeof ApiWeeklyReviewRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CaseSubjectRoute: typeof CaseSubjectRoute
+  LabLandingRoute: typeof LabLandingRoute
   LabPaperRoute: typeof LabPaperRoute
   PracticeTokenRoute: typeof PracticeTokenRoute
   QuestionIdRoute: typeof QuestionIdRoute
@@ -990,6 +1003,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CaseSubjectRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab/landing': {
+      id: '/lab/landing'
+      path: '/lab/landing'
+      fullPath: '/lab/landing'
+      preLoaderRoute: typeof LabLandingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab/paper': {
       id: '/lab/paper'
       path: '/lab/paper'
@@ -1080,6 +1100,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWeeklyReviewRoute: ApiWeeklyReviewRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CaseSubjectRoute: CaseSubjectRoute,
+  LabLandingRoute: LabLandingRoute,
   LabPaperRoute: LabPaperRoute,
   PracticeTokenRoute: PracticeTokenRoute,
   QuestionIdRoute: QuestionIdRoute,
