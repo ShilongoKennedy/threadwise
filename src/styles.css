@@ -7590,3 +7590,324 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
   .room-hero::before { right: -38%; top: 80px; width: 420px; height: 420px; }
   .room-hero::after { display: none; }
 }
+
+/* Lab landing: the page is the reading. */
+.markup-lab {
+  min-height: 100dvh;
+  background:
+    linear-gradient(90deg, transparent 0 calc(50% - 620px), rgba(255, 255, 255, 0.035) calc(50% - 620px) calc(50% - 619px), transparent calc(50% - 619px)),
+    #03050A;
+  color: #fff;
+}
+.markup-main { width: 100%; max-width: 1240px; margin-inline: auto; padding: 24px 20px 70px; }
+.markup-kicker {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #C8FF3D !important;
+}
+.markup-hero { border-bottom: 1px solid rgba(255, 255, 255, 0.16); padding-bottom: 30px; }
+.markup-hero__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+.markup-hero h1 {
+  margin-top: 23px;
+  max-width: 17ch;
+  font-family: var(--font-display);
+  font-size: clamp(54px, 7.4vw, 108px);
+  font-weight: 500;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  color: #FFFFFF !important;
+}
+.markup-hero h1 em,
+.markup-close h2 em { font-style: normal; color: #C4B5FD !important; }
+.markup-hero__foot {
+  display: grid;
+  gap: 22px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.markup-hero__foot > p {
+  max-width: 48ch;
+  font-family: var(--font-serif);
+  font-size: 15.5px;
+  line-height: 1.68;
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+.markup-actions { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; }
+.markup-button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  padding: 0 13px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #FFFFFF !important;
+}
+.markup-button:hover { border-color: #C8FF3D; color: #C8FF3D !important; }
+.markup-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #C4B5FD !important;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.markup-link:hover { color: #FFFFFF !important; }
+
+/* Annotated spread */
+.markup-spread {
+  display: grid;
+  gap: 24px;
+  padding-top: 28px;
+}
+.markup-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: rgba(255, 255, 255, 0.38) !important;
+}
+.markup-rail p { color: #C8FF3D !important; }
+.markup-rail span { color: inherit !important; }
+.markup-rail__line { display: none; }
+.markup-doc {
+  min-width: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  padding-top: 13px;
+}
+.markup-doc__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.42) !important;
+}
+.markup-doc h2 {
+  margin-top: 14px;
+  max-width: 17ch;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4.4vw, 58px);
+  font-weight: 500;
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  color: #FFFFFF !important;
+}
+.markup-doc__byline {
+  margin-top: 10px;
+  max-width: 48ch;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  line-height: 1.55;
+  color: #C4B5FD !important;
+}
+.markup-doc > p:not(.markup-doc__byline) {
+  margin-top: 20px;
+  max-width: 57ch;
+  font-family: var(--font-serif);
+  font-size: clamp(17px, 1.5vw, 20px);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+.markup-mark {
+  display: inline;
+  border: 0;
+  border-bottom: 1px solid rgba(200, 255, 61, 0.5);
+  background: rgba(200, 255, 61, 0.09);
+  padding: 0 2px;
+  font: inherit;
+  text-align: left;
+  color: #FFFFFF !important;
+  cursor: pointer;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+.markup-mark sup {
+  margin-left: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.42em;
+  color: #C8FF3D !important;
+  vertical-align: super;
+}
+.markup-mark:hover,
+.markup-mark.is-active {
+  background: rgba(200, 255, 61, 0.22);
+  border-bottom-color: #C8FF3D;
+}
+.markup-doc__foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  padding-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.36) !important;
+}
+.markup-doc__foot span { color: inherit !important; }
+.markup-doc__foot a { display: inline-flex; align-items: center; gap: 5px; color: #C4B5FD !important; }
+
+.markup-margin { border-top: 1px solid rgba(255, 255, 255, 0.14); padding-top: 12px; }
+.markup-margin__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.38) !important;
+}
+.markup-note {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 11px 0;
+  opacity: 0.44;
+  transition: opacity 140ms ease;
+}
+.markup-note.is-active { opacity: 1; }
+.markup-note > button {
+  display: flex;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #C4B5FD !important;
+}
+.markup-note > button span:first-child { color: #C8FF3D !important; }
+.markup-note h3 {
+  margin-top: 6px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.02;
+  color: #FFFFFF !important;
+}
+.markup-note p {
+  margin-top: 5px;
+  font-family: var(--font-serif);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.58) !important;
+}
+.markup-note.is-active p { color: rgba(255, 255, 255, 0.76) !important; }
+
+/* Standard */
+.markup-principles { margin-top: 52px; border-top: 1px solid rgba(255, 255, 255, 0.16); padding-top: 20px; }
+.markup-principles__head h2 {
+  margin-top: 8px;
+  max-width: 12ch;
+  font-family: var(--font-display);
+  font-size: clamp(38px, 4.6vw, 62px);
+  font-weight: 500;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  color: #FFFFFF !important;
+}
+.markup-principles ol { display: grid; gap: 0; margin-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.15); }
+.markup-principles li { border-bottom: 1px solid rgba(255, 255, 255, 0.12); padding: 13px 0; }
+.markup-principles li > span { font-family: var(--font-mono); font-size: 8px; color: #C8FF3D !important; }
+.markup-principles h3 { margin-top: 4px; font-family: var(--font-display); font-size: 23px; font-weight: 500; line-height: 1.02; color: #FFFFFF !important; }
+.markup-principles li p { margin-top: 4px; max-width: 44ch; font-family: var(--font-serif); font-size: 13px; line-height: 1.5; color: rgba(255, 255, 255, 0.54) !important; }
+
+/* Close */
+.markup-close { display: grid; gap: 22px; margin-top: 52px; border-top: 1px solid rgba(255, 255, 255, 0.16); padding-top: 20px; }
+.markup-close h2 {
+  max-width: 13ch;
+  font-family: var(--font-display);
+  font-size: clamp(48px, 6.4vw, 94px);
+  font-weight: 500;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  color: #FFFFFF !important;
+}
+.markup-close > div > p {
+  max-width: 44ch;
+  font-family: var(--font-serif);
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+.markup-close .markup-actions { margin-top: 17px; }
+.markup-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 50px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255, 255, 255, 0.32) !important;
+}
+.markup-foot span { color: inherit !important; }
+.markup-wordmark { font-family: 'Dancing Script', 'Newsreader', cursive !important; font-size: 25px !important; text-transform: none; letter-spacing: 0; color: #FFFFFF !important; }
+
+@media (min-width: 900px) {
+  .markup-hero__foot { grid-template-columns: 1fr auto; align-items: end; }
+  .markup-spread { grid-template-columns: 100px minmax(0, 1fr) 310px; gap: 32px; }
+  .markup-rail { display: block; border-right: 1px solid rgba(255, 255, 255, 0.14); padding-right: 14px; }
+  .markup-rail p { margin-bottom: 10px; }
+  .markup-rail span { display: block; margin-top: 5px; }
+  .markup-rail__line { display: block; width: 1px; height: 54px; margin: 22px 0 15px; background: #C4B5FD; opacity: 0.6; }
+  .markup-margin { border-top: 0; border-left: 1px solid rgba(255, 255, 255, 0.14); padding: 0 0 0 18px; }
+  .markup-close { grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: end; }
+  .markup-principles ol { grid-template-columns: repeat(3, 1fr); }
+  .markup-principles li { padding: 14px 18px; border-right: 1px solid rgba(255, 255, 255, 0.12); }
+  .markup-principles li:last-child { border-right: 0; }
+}
+@media (max-width: 899px) {
+  .markup-main { padding: 20px 16px 50px; }
+  .markup-hero h1 { font-size: clamp(48px, 12vw, 72px); }
+  .markup-spread { gap: 28px; }
+  .markup-rail { border-bottom: 1px solid rgba(255, 255, 255, 0.14); padding-bottom: 10px; }
+}
+
+@media (min-width: 900px) {
+  .markup-close {
+    grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+    grid-template-areas:
+      "kicker kicker"
+      "title copy";
+    align-items: end;
+  }
+  .markup-close > .markup-kicker { grid-area: kicker; }
+  .markup-close > h2 { grid-area: title; align-self: end; }
+  .markup-close > div { grid-area: copy; align-self: end; }
+}
