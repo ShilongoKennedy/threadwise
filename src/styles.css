@@ -4866,6 +4866,18 @@ body .anatomy-action :is(span, svg) {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.42) !important;
 }
+.paper-contents__foot a {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.62) !important;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.paper-contents__foot a:hover { color: var(--accent-lime, #C8FF3D) !important; }
 
 .paper-sheet {
   position: relative;
@@ -4873,13 +4885,25 @@ body .anatomy-action :is(span, svg) {
   border-radius: 4px;
   background-color: #F7F1E5;
   background-image:
-    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.7), transparent 34%),
-    repeating-linear-gradient(to bottom, transparent 0 31px, rgba(58, 82, 108, 0.15) 31px 32px);
+    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.72), transparent 34%),
+    radial-gradient(circle at 78% 64%, rgba(166, 142, 105, 0.055), transparent 34%),
+    radial-gradient(circle at 30% 88%, rgba(166, 142, 105, 0.045), transparent 28%),
+    repeating-linear-gradient(to bottom, transparent 0 33px, rgba(58, 82, 108, 0.15) 33px 34px);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.55) inset,
     0 30px 80px -24px rgba(0, 0, 0, 0.72),
     0 8px 22px rgba(0, 0, 0, 0.24);
   color: #241B13 !important;
+}
+.paper-sheet::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 5px -5px -8px 4px;
+  border-radius: 4px;
+  background: #E8DFD1;
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.3);
+  transform: rotate(0.35deg);
 }
 .paper-sheet::after {
   content: "";
@@ -4894,6 +4918,7 @@ body .anatomy-action :is(span, svg) {
 .paper-sheet__content {
   position: relative;
   z-index: 2;
+  max-width: 900px;
   padding: 54px 68px 52px 92px;
 }
 .paper-head { position: relative; padding-bottom: 22px; }
@@ -4933,11 +4958,11 @@ body .anatomy-action :is(span, svg) {
 .paper-sheet h2 em { font-style: normal; font-size: 0.72em; color: #7A5A1E !important; }
 .paper-sheet p, .paper-sheet li {
   font-family: var(--font-serif);
-  font-size: 16px;
+  font-size: 17px;
   line-height: 2;
   color: #2B2118 !important;
 }
-.paper-sheet p { margin-top: 7px; max-width: 72ch; }
+.paper-sheet p { margin-top: 7px; max-width: 68ch; }
 .paper-sheet ul { margin-top: 6px; display: grid; gap: 0; padding-left: 18px; list-style: disc; }
 .paper-sheet li { padding-left: 3px; }
 .paper-sheet mark {
@@ -5018,7 +5043,7 @@ body .anatomy-action :is(span, svg) {
   position: relative;
   display: block;
   width: 32px;
-  height: 12px;
+  height: 8px;
 }
 .paper-spiral span::before {
   content: "";

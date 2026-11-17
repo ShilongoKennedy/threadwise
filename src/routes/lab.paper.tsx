@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowUpRight, BookOpen, Check } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
@@ -64,12 +64,13 @@ function PaperLab() {
           <div className="paper-contents__foot">
             <p>Paper prototype</p>
             <span>11 sections · one sheet</span>
+            <Link to="/seminar">← Live Seminar</Link>
           </div>
         </aside>
 
         <article className="paper-sheet">
           <div className="paper-spiral" aria-hidden="true">
-            {Array.from({ length: 17 }).map((_, index) => <span key={index} />)}
+            {Array.from({ length: 80 }).map((_, index) => <span key={index} />)}
           </div>
           <div className="paper-sheet__content">
             <header className="paper-head">
