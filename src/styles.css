@@ -5325,3 +5325,287 @@ body .anatomy-action :is(span, svg) {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
+/* ============================================================
+   PAPER SURFACE — a reading skin over the existing analysis.
+   The DOM, prompts, schemas and feature components are unchanged.
+   ============================================================ */
+.app-header__surface {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  padding: 0 10px;
+  color: rgba(255, 255, 255, 0.72) !important;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: border-color 140ms ease, color 140ms ease, background-color 140ms ease;
+}
+.app-header__surface:hover,
+.app-header__surface.is-paper {
+  border-color: var(--accent-lime, #C8FF3D);
+  color: var(--accent-lime, #C8FF3D) !important;
+}
+@media (max-width: 640px) {
+  .app-header__surface span { display: none; }
+  .app-header__surface { width: 32px; padding: 0; justify-content: center; }
+}
+
+html[data-surface="paper"] body { background: #03060b !important; }
+html[data-surface="paper"] .read-page {
+  background: #03060b !important;
+  color: #241B13 !important;
+}
+html[data-surface="paper"] .read-page .bp-page,
+html[data-surface="paper"] .seminar-reading-surface,
+html[data-surface="paper"] .anatomy-report {
+  position: relative;
+  border-radius: 4px;
+  background-color: #F7F1E5 !important;
+  background-image:
+    radial-gradient(circle at 16% 4%, rgba(255, 255, 255, 0.7), transparent 30%),
+    radial-gradient(circle at 82% 72%, rgba(166, 142, 105, 0.055), transparent 34%),
+    repeating-linear-gradient(to bottom, transparent 0 33px, rgba(58, 82, 108, 0.12) 33px 34px) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 30px 80px -28px rgba(0, 0, 0, 0.78),
+    0 8px 22px rgba(0, 0, 0, 0.24);
+  color: #241B13 !important;
+  padding-left: 84px !important;
+  padding-right: 56px !important;
+}
+html[data-surface="paper"] .read-page .bp-page::before,
+html[data-surface="paper"] .seminar-reading-surface::before,
+html[data-surface="paper"] .anatomy-report::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  left: 9px;
+  top: 24px;
+  bottom: 24px;
+  width: 46px;
+  pointer-events: none;
+  background: url("/paper-binding.svg") repeat-y;
+}
+html[data-surface="paper"] .read-page .bp-page::after,
+html[data-surface="paper"] .seminar-reading-surface::after,
+html[data-surface="paper"] .anatomy-report::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 62px;
+  width: 1px;
+  pointer-events: none;
+  background: rgba(179, 38, 30, 0.27);
+}
+html[data-surface="paper"] .read-page .bp-page > *,
+html[data-surface="paper"] .seminar-reading-surface > *,
+html[data-surface="paper"] .anatomy-report > * {
+  position: relative;
+  z-index: 4;
+}
+
+/* Ink: content first, then deliberate accents. */
+html[data-surface="paper"] .read-page .bp-page :is(h1, h2, h3, h4, h5, h6, p, li, span, strong, em, small, dt, dd, blockquote, summary, label, figcaption),
+html[data-surface="paper"] .seminar-reading-surface :is(h1, h2, h3, h4, h5, h6, p, li, span, strong, em, small, dt, dd, blockquote, summary, label, figcaption),
+html[data-surface="paper"] .anatomy-report :is(h1, h2, h3, h4, h5, h6, p, li, span, strong, em, small, dt, dd, blockquote, summary, label, figcaption) {
+  color: #241B13 !important;
+  -webkit-text-fill-color: #241B13 !important;
+}
+html[data-surface="paper"] .read-page .bp-page :is(a, button),
+html[data-surface="paper"] .seminar-reading-surface :is(a, button),
+html[data-surface="paper"] .anatomy-report :is(a, button) {
+  color: #241B13 !important;
+  -webkit-text-fill-color: #241B13 !important;
+}
+html[data-surface="paper"] .read-page .bp-page *,
+html[data-surface="paper"] .seminar-reading-surface *,
+html[data-surface="paper"] .anatomy-report * {
+  border-color: rgba(36, 27, 19, 0.2) !important;
+}
+
+/* Accents become pen and ink on paper. */
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(
+  .reading-section__eyebrow,
+  .reading-section__number,
+  .theory-label,
+  .mechanism-step__number,
+  .lesson-theory-label,
+  .read-contents__link.is-active,
+  .text-\[\#C8FF3D\]
+) {
+  color: #8A5A00 !important;
+  -webkit-text-fill-color: #8A5A00 !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(
+  .text-\[\#C4B5FD\],
+  .read-stake__item--loss .read-stake__label
+) {
+  color: #6B4F9E !important;
+  -webkit-text-fill-color: #6B4F9E !important;
+}
+
+/* Cards should be paper, not panels. */
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(
+  .bp-card,
+  .theory-panel,
+  .theory-column,
+  .mechanism-card,
+  .reading-section,
+  .seminar-dark-ink,
+  .read-summary,
+  .read-summary__card,
+  .read-stake,
+  .read-echo,
+  .read-callout,
+  .read-source,
+  .lesson-card
+) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(
+  .bp-card,
+  .theory-panel,
+  .theory-column,
+  .mechanism-card,
+  .lesson-card
+) {
+  border: 1px solid rgba(36, 27, 19, 0.18) !important;
+  border-radius: 2px;
+}
+
+/* Controls keep their affordances but use dark ink. */
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(
+  .bp-button--secondary,
+  .bp-button--ghost,
+  .reading-closer
+) {
+  background: transparent !important;
+  border-color: rgba(36, 27, 19, 0.3) !important;
+  color: #241B13 !important;
+  -webkit-text-fill-color: #241B13 !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(
+  .bp-button--secondary,
+  .bp-button--ghost,
+  .reading-closer
+):hover {
+  background: rgba(255, 225, 103, 0.36) !important;
+  border-color: rgba(36, 27, 19, 0.58) !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(
+  .bp-button--primary,
+  .seminar-dark-cta
+) {
+  background: #241B13 !important;
+  border-color: #241B13 !important;
+  color: #F7F1E5 !important;
+  -webkit-text-fill-color: #F7F1E5 !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(
+  .bp-button--primary,
+  .seminar-dark-cta
+) :is(span, svg) {
+  color: #F7F1E5 !important;
+  -webkit-text-fill-color: #F7F1E5 !important;
+}
+
+/* Tutor bubbles and dark utility chips. */
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) .bg-\[\#1A1A1A\] {
+  background: #241B13 !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) .bg-\[\#1A1A1A\] :is(p, span) {
+  color: #F7F1E5 !important;
+  -webkit-text-fill-color: #F7F1E5 !important;
+}
+
+/* Loupe becomes a paper slip, not a dark app panel. */
+html[data-surface="paper"] .tw-loupe-panel {
+  background: #FFF3B9 !important;
+  border-color: rgba(123, 91, 43, 0.3) !important;
+  color: #241B13 !important;
+}
+html[data-surface="paper"] .tw-loupe-panel :is(h1, h2, h3, p, span, blockquote, button, a) {
+  color: #241B13 !important;
+  -webkit-text-fill-color: #241B13 !important;
+}
+html[data-surface="paper"] .tw-loupe-panel :is(p, blockquote) { color: #2A2117 !important; }
+html[data-surface="paper"] .tw-loupe-panel .border-\[\#C1121F\] { border-color: rgba(163, 59, 46, 0.5) !important; }
+
+/* Paper needs more breathing room where the old dark grids were tight. */
+html[data-surface="paper"] .seminar-reading-surface { margin-block: 24px !important; }
+html[data-surface="paper"] .read-page .bp-page { margin-block: 24px !important; }
+html[data-surface="paper"] .anatomy-report { margin-block: 24px !important; }
+
+@media (max-width: 760px) {
+  html[data-surface="paper"] .read-page .bp-page,
+  html[data-surface="paper"] .seminar-reading-surface,
+  html[data-surface="paper"] .anatomy-report {
+    padding-left: 42px !important;
+    padding-right: 18px !important;
+    border-radius: 2px;
+  }
+  html[data-surface="paper"] .read-page .bp-page::before,
+  html[data-surface="paper"] .seminar-reading-surface::before,
+  html[data-surface="paper"] .anatomy-report::before {
+    left: 0;
+    width: 34px;
+    background-size: 34px 42px;
+  }
+  html[data-surface="paper"] .read-page .bp-page::after,
+  html[data-surface="paper"] .seminar-reading-surface::after,
+  html[data-surface="paper"] .anatomy-report::after {
+    left: 31px;
+  }
+}
+
+/* Read-page cards were the remaining dark panels. */
+html[data-surface="paper"] .read-page :is(.read-column, .read-summary__panel, .read-summary__card) {
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html[data-surface="paper"] .read-page .read-summary__panel {
+  border: 1px solid rgba(36, 27, 19, 0.2) !important;
+  border-radius: 3px;
+  border-top-width: 2px !important;
+}
+html[data-surface="paper"] .read-page .read-summary__panel--why { border-top-color: #8A5A00 !important; }
+html[data-surface="paper"] .read-page .read-summary__panel--confidence { border-top-color: #6B4F9E !important; }
+html[data-surface="paper"] .read-page .read-summary__panel--evidence { border-top-color: #241B13 !important; }
+html[data-surface="paper"] .read-page .read-summary__panel:hover {
+  background: rgba(255, 239, 181, 0.24) !important;
+  border-color: rgba(36, 27, 19, 0.38) !important;
+}
+html[data-surface="paper"] .read-page .read-summary__copy,
+html[data-surface="paper"] .read-page .read-summary__value { color: #241B13 !important; }
+html[data-surface="paper"] .read-page .read-column { border: 0 !important; border-radius: 0 !important; padding: 0 !important; }
+
+/* Paper forms: dark ink on translucent paper, never grey-on-cream. */
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(input, textarea, select) {
+  background: rgba(255, 255, 255, 0.38) !important;
+  border: 1px solid rgba(36, 27, 19, 0.28) !important;
+  color: #241B13 !important;
+  -webkit-text-fill-color: #241B13 !important;
+  box-shadow: none !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(input, textarea, select)::placeholder {
+  color: rgba(36, 27, 19, 0.48) !important;
+  -webkit-text-fill-color: rgba(36, 27, 19, 0.48) !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(input, textarea, select):focus {
+  background: rgba(255, 255, 255, 0.62) !important;
+  border-color: rgba(36, 27, 19, 0.62) !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .anatomy-report, .read-page .bp-page) :is(button, .bp-button):disabled {
+  opacity: 0.48 !important;
+}
