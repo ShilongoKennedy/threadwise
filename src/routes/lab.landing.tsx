@@ -3,74 +3,74 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/lab/landing")({
   head: () => ({
     meta: [
-      { title: "A note to self — Threadwise lab" },
+      { title: "A working note — Threadwise lab" },
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: NoteLanding,
+  component: WorkingNote,
 });
 
-function NoteLanding() {
+function WorkingNote() {
   return (
-    <div className="note-lab">
-      <header className="note-nav">
-        <Link to="/" className="note-brand">
-          <span className="note-brand__thread" aria-hidden="true" />
-          threadwise
-        </Link>
+    <div className="letter-lab">
+      <header className="letter-nav">
+        <Link to="/" className="letter-brand">threadwise</Link>
         <nav aria-label="Tools">
           <Link to="/analyst">The Analyst</Link>
           <Link to="/seminar">Seminar</Link>
           <Link to="/anatomy">The Anatomy</Link>
         </nav>
-        <span className="note-nav__aside">a reading desk</span>
+        <span className="letter-date">a working note · 18.11.26</span>
       </header>
 
-      <main className="note-main">
-        <section className="note-copy">
-          <p className="note-kicker">For the source you keep meaning to check.</p>
-          <h1>
-            You don’t have to <span className="note-underline">believe</span><br />
-            everything you read.
-          </h1>
-          <p className="note-lede">
-            Start with one source. Work out what it says, what it leaves out, and what would change
-            your mind. That’s it. No infinite scroll.
+      <main className="letter-main">
+        <article className="letter-note">
+          <p className="letter-kicker">A working note / on reading</p>
+          <h1>A note from<br />the desk.</h1>
+          <p className="letter-salutation">Dear reader,</p>
+          <p className="letter-body">
+            I built Threadwise because I kept mistaking a confident paragraph for evidence. A story
+            can be vivid, urgent and beautifully written, and still leave the important thing out.
           </p>
-          <div className="note-actions">
-            <Link to="/analyst" className="note-cta">Put a source on the desk <span aria-hidden="true">↗</span></Link>
-            <Link to="/read/$token" params={{ token: "mn4qvf4bhu" }} className="note-link">or read the IAEA one first <span aria-hidden="true">↗</span></Link>
+          <p className="letter-body">
+            So this is a small reading desk, not an answer machine. Bring a source. Work out what it
+            says, what it leaves out, and what would change your mind. Then keep the questions
+            somewhere you can find them again.
+          </p>
+          <p className="letter-body">
+            It will not tell you what to think. It will show you where the thinking is thin.
+          </p>
+          <p className="letter-ps">
+            <em>P.S.</em> If a sentence sounds certain, ask what it is standing on.
+          </p>
+          <div className="letter-actions">
+            <Link to="/analyst" className="letter-cta">Start with one source <span aria-hidden="true">↗</span></Link>
+            <Link to="/read/$token" params={{ token: "mn4qvf4bhu" }} className="letter-link">or read the IAEA sample first <span aria-hidden="true">↗</span></Link>
           </div>
-          <p className="note-small">Free while in beta · bring a link, a PDF, or a screenshot.</p>
-        </section>
+          <p className="letter-sign">— threadwise</p>
+        </article>
 
-        <aside className="note-collage" aria-label="A note about reading">
-          <div className="note-sheet">
-            <span className="note-tape" aria-hidden="true" />
-            <p className="note-hand">a note to self</p>
-            <p className="note-strike"><s>read everything</s></p>
-            <p className="note-sheet__line">read one thing properly.</p>
-            <div className="note-rule" />
-            <ol className="note-list">
-              <li>what the story says</li>
-              <li>what it leaves out</li>
-              <li>what would change it</li>
-            </ol>
-            <span className="note-stamp" aria-hidden="true">READ<br />SLOWLY</span>
+        <aside className="letter-band" aria-label="A note for the reader">
+          <span className="letter-band__index">01 / the habit</span>
+          <div className="letter-band__words">
+            <span>Read</span>
+            <span>one</span>
+            <span>thing</span>
+            <span>properly.</span>
           </div>
-
-          <div className="note-blue">
-            <p>“The point is not to have an opinion. The point is to know what the evidence supports.”</p>
-            <span>— the desk</span>
+          <div className="letter-band__foot">
+            <span>no infinite scroll</span>
+            <span>no verdict before the evidence</span>
           </div>
-
-          <span className="note-margin">the rest is noise.</span>
+          <span className="letter-band__seal" aria-hidden="true">✓</span>
         </aside>
       </main>
 
-      <footer className="note-foot">
-        <span>threadwise / made for reading, not scrolling</span>
-        <span>read carefully · verify before you act</span>
+      <footer className="letter-index">
+        <Link to="/analyst"><b>01</b><span>The Analyst</span><em>read a source</em></Link>
+        <Link to="/seminar"><b>02</b><span>Seminar</span><em>compare explanations</em></Link>
+        <Link to="/anatomy"><b>03</b><span>The Anatomy</span><em>find the break</em></Link>
+        <span className="letter-index__end">read carefully · verify before you act</span>
       </footer>
     </div>
   );
