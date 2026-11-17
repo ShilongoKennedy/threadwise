@@ -7911,3 +7911,201 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
   .markup-close > h2 { grid-area: title; align-self: end; }
   .markup-close > div { grid-area: copy; align-self: end; }
 }
+
+/* Stage 01: the blank newspaper. No content on the sheet yet. */
+.newsprint-stage {
+  min-height: 100dvh;
+  padding: clamp(10px, 1.4vw, 22px);
+  background: #05070b;
+}
+.newsprint-sheet {
+  position: relative;
+  min-height: calc(100dvh - clamp(20px, 2.8vw, 44px));
+  overflow: hidden;
+  border-radius: 1px;
+  background-color: #EFEFE9;
+  background-image:
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.7), transparent 32%),
+    radial-gradient(circle at 82% 8%, rgba(255, 255, 255, 0.38), transparent 26%),
+    repeating-linear-gradient(to bottom, transparent 0 21px, rgba(25, 29, 36, 0.026) 21px 22px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.88) inset,
+    0 36px 90px rgba(0, 0, 0, 0.65),
+    0 3px 10px rgba(0, 0, 0, 0.3);
+  color: #171b21;
+}
+.newsprint-sheet::before {
+  content: "";
+  position: absolute;
+  z-index: 8;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+.newsprint-sheet::after {
+  content: "";
+  position: absolute;
+  z-index: 7;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    0 0 70px rgba(38, 33, 24, 0.12) inset,
+    0 0 1px 1px rgba(25, 29, 36, 0.08) inset;
+}
+.newsprint-masthead {
+  position: absolute;
+  z-index: 2;
+  left: 4.5%;
+  right: 4.5%;
+  top: 3.8%;
+  height: 8.5%;
+  border-top: 1px solid rgba(25, 29, 36, 0.32);
+  border-bottom: 3px double rgba(25, 29, 36, 0.3);
+}
+.newsprint-masthead__rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9px;
+  border-bottom: 1px solid rgba(25, 29, 36, 0.18);
+}
+.newsprint-columns {
+  position: absolute;
+  z-index: 1;
+  top: 15.8%;
+  bottom: 7.4%;
+  left: 4.5%;
+  right: 4.5%;
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0 calc(16.666% - 1px),
+    rgba(25, 29, 36, 0.16) calc(16.666% - 1px) 16.666%
+  );
+}
+.newsprint-columns::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 21px,
+    rgba(25, 29, 36, 0.055) 21px 22px
+  );
+  opacity: 0.8;
+}
+.newsprint-columns::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 31%;
+  height: 1px;
+  background: rgba(25, 29, 36, 0.2);
+}
+.newsprint-fold {
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  right: 0;
+  top: 51.4%;
+  height: 28px;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(81, 73, 58, 0.08) 35%,
+    rgba(255, 255, 255, 0.46) 51%,
+    rgba(81, 73, 58, 0.06) 68%,
+    transparent
+  );
+}
+.newsprint-gutter {
+  position: absolute;
+  z-index: 3;
+  top: 15.8%;
+  bottom: 7.4%;
+  left: 50%;
+  width: 18px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(81, 73, 58, 0.07) 40%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(81, 73, 58, 0.06) 62%,
+    transparent
+  );
+}
+.newsprint-halftone {
+  position: absolute;
+  z-index: 2;
+  top: 4%;
+  right: 4.5%;
+  width: 190px;
+  height: 105px;
+  opacity: 0.22;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(25, 29, 36, 0.8) 0.8px, transparent 1px);
+  background-size: 5px 5px;
+  -webkit-mask-image: linear-gradient(105deg, transparent 8%, #000 70%);
+  mask-image: linear-gradient(105deg, transparent 8%, #000 70%);
+  mix-blend-mode: multiply;
+}
+.newsprint-crop {
+  position: absolute;
+  z-index: 9;
+  width: 17px;
+  height: 17px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+.newsprint-crop::before,
+.newsprint-crop::after {
+  content: "";
+  position: absolute;
+  background: #171b21;
+}
+.newsprint-crop::before { width: 17px; height: 1px; top: 8px; left: 0; }
+.newsprint-crop::after { height: 17px; width: 1px; top: 0; left: 8px; }
+.newsprint-crop--tl { left: 17px; top: 16px; }
+.newsprint-crop--tr { right: 17px; top: 16px; }
+.newsprint-crop--bl { left: 17px; bottom: 16px; }
+.newsprint-crop--br { right: 17px; bottom: 16px; }
+.newsprint-folio {
+  position: absolute;
+  z-index: 2;
+  left: 4.5%;
+  right: 4.5%;
+  bottom: 3.5%;
+  height: 12px;
+  border-top: 1px solid rgba(25, 29, 36, 0.22);
+}
+.newsprint-folio::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 5.5%;
+  height: 1px;
+  background: rgba(25, 29, 36, 0.22);
+}
+.newsprint-folio::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 4px;
+  width: 5.5%;
+  height: 1px;
+  background: rgba(25, 29, 36, 0.22);
+}
+@media (max-width: 760px) {
+  .newsprint-stage { padding: 6px; }
+  .newsprint-sheet { min-height: calc(100dvh - 12px); }
+  .newsprint-columns { background-image: repeating-linear-gradient(to right, transparent 0 calc(50% - 1px), rgba(25, 29, 36, 0.16) calc(50% - 1px) 50%); }
+  .newsprint-gutter, .newsprint-halftone { display: none; }
+  .newsprint-masthead { top: 2.5%; height: 7%; }
+}
