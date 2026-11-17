@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { BrandLockup } from "@/components/threadwise/BrandLockup";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/lab/home")({
   head: () => ({
@@ -156,10 +158,26 @@ function EarthScene({ progress }: { progress: number }) {
 
 function CosmicHome() {
   const [progress, setProgress] = useState(1);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const ticks = Array.from({ length: 74 });
+
+  useEffect(() => {
+    let alive = true;
+    void supabase.auth.getSession().then(({ data }) => {
+      if (alive) setSignedIn(Boolean(data.session));
+    });
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => setSignedIn(Boolean(session)));
+    return () => {
+      alive = false;
+      data.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <div className="cosmic-home">
+      <header className="cosmic-brand">
+        <BrandLockup size="md" asLink />
+      </header>
       <main className="cosmic-main">
         <div className="cosmic-globe-wrap">
           <span className="cosmic-glow" aria-hidden="true" />
@@ -169,7 +187,7 @@ function CosmicHome() {
 
         <div className="cosmic-caption">
           <h1>Today</h1>
-          <p>Earth <span>8 billion people</span></p>
+          <p>Earth</p>
         </div>
 
         <div className="cosmic-timeline">
@@ -190,12 +208,26 @@ function CosmicHome() {
             className="cosmic-range"
           />
           <div className="cosmic-labels">
-            <span>13.8B years ago</span>
+            <span>Drag to spin</span>
             <span>Today</span>
           </div>
         </div>
 
-        <Link to="/" className="cosmic-return">Return home</Link>
+        <div className="cosmic-bottom">
+          <nav className="cosmic-pages" aria-label="Threadwise pages">
+            <Link to="/analyst">The Analyst</Link>
+            <Link to="/seminar">Seminar</Link>
+            <Link to="/anatomy">The Anatomy</Link>
+            <Link to="/digest">Record</Link>
+          </nav>
+          <footer className="cosmic-foot">
+            {signedIn ? (
+              <Link to="/profile">Profile</Link>
+            ) : (
+              <Link to="/login">Sign in</Link>
+            )}
+          </footer>
+        </div>
       </main>
     </div>
   );
