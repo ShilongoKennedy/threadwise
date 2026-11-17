@@ -25,7 +25,7 @@ export const Route = createFileRoute("/api/paper-recommendations")({
             .map((quote) => quote.trim())
             .filter((quote) => {
               const words = quote.split(/\s+/).length;
-              return words >= 3 && words <= 10 && quote.length <= 90 && !/[.!?]$/.test(quote);
+              return words >= 1 && words <= 28 && quote.length <= 220;
             })
             .slice(0, 5);
           return json({ ok: true, quotes: clean }, 200);

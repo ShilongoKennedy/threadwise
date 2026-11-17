@@ -126,7 +126,7 @@ export function PaperAnnotations() {
       const next: Array<{ range: Range; text: string; context: string }> = [];
       for (const phrase of phrases) {
         const words = phrase.text.split(/\s+/).length;
-        if (words < 3 || words > 10 || phrase.text.length > 90 || /[.!?]$/.test(phrase.text)) continue;
+        if (words < 1 || words > 28 || phrase.text.length > 220) continue;
         const range = findRange(surface, phrase.text);
         if (!range) continue;
         recommendedHighlight.current.add(range);

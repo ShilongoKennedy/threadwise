@@ -3,22 +3,33 @@ import { z } from "zod";
 import { getModel } from "@/lib/threadwise/ai/ai-providers.server";
 
 export const paperRecommendationsSchema = z.object({
-  quotes: z.array(z.string().trim().min(4).max(90)).min(2).max(5),
+  quotes: z.array(z.string().trim().min(1).max(220)).min(2).max(6),
 });
 
 export type PaperRecommendations = z.infer<typeof paperRecommendationsSchema>;
 
-const SYSTEM = `You choose recommended phrases inside a reading surface.
+const SYSTEM = `You are choosing highlights for a curious reader inside a serious reading surface.
 
-Return 3 to 5 SHORT exact phrases from the supplied text.
+The highlight is not decoration. Choose the passages a reader might want explained, defined or explored further.
 
-Rules:
-- Each phrase must be 3 to 10 words and at most 90 characters. Do not return a complete sentence and do not include a final period.
-- Never return a whole paragraph.
-- Prefer the phrase that carries the analytical move: a causal claim, a confidence qualification, a definition, a falsifier, a mechanism, or a crux test.
-- The phrase must appear verbatim in the text, including punctuation and capitalisation.
-- Do not choose headings, navigation, labels, buttons or generic introductions.
-- A short clause is better than a whole sentence. Never return a whole sentence.`;
+Prioritise:
+- unusual, technical or specialist vocabulary
+- terms of art and jargon
+- named concepts and contested definitions
+- a compact phrase that compresses an inference
+- a causal claim with a hidden assumption
+- a sentence where the exact wording matters
+
+Reject:
+- everyday words a reader already knows
+- headings, navigation, labels, buttons and generic introductions
+- transitions and filler
+- a whole sentence merely because it is long
+
+A quote may be one word ("ascribed"), a 2–5 word term ("ontological security"), or a short sentence. Choose a whole sentence only when the sentence itself is a definition, a claim, or a piece of reasoning worth pausing on.
+
+Return 3 to 6 pieces. Each must be an exact contiguous quotation from the text, character for character. Do not paraphrase. Do not include a final period unless it is part of a quoted sentence that genuinely earns the highlight.`;
+
 
 export async function openPaperRecommendations(text: string): Promise<string[]> {
   const { object } = await generateObject({
