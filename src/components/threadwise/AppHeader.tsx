@@ -6,7 +6,6 @@ import {
   BookOpen,
   BrainCircuit,
   Menu,
-  NotebookPen,
   Presentation,
   ScanSearch,
   X,
@@ -41,21 +40,6 @@ export function AppHeader({
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [indexOpen, setIndexOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [surface, setSurface] = useState<"blueprint" | "paper">("blueprint");
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem("threadwise.surface");
-    const next = saved === "paper" ? "paper" : "blueprint";
-    setSurface(next);
-    document.documentElement.dataset.surface = next;
-  }, []);
-
-  const toggleSurface = () => {
-    const next = surface === "paper" ? "blueprint" : "paper";
-    setSurface(next);
-    document.documentElement.dataset.surface = next;
-    window.localStorage.setItem("threadwise.surface", next);
-  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -121,18 +105,6 @@ export function AppHeader({
             </nav>
 
             <div className="app-header__actions">
-              {!marketing ? (
-                <button
-                  type="button"
-                  onClick={toggleSurface}
-                  className={`app-header__surface ${surface === "paper" ? "is-paper" : ""}`}
-                  aria-pressed={surface === "paper"}
-                  title={surface === "paper" ? "Switch to blueprint surface" : "Switch to paper surface"}
-                >
-                  <NotebookPen className="h-3.5 w-3.5" />
-                  <span>{surface === "paper" ? "Blueprint" : "Paper"}</span>
-                </button>
-              ) : null}
               {signedIn ? (
                 <AccountMenu email={email} dark />
               ) : signedIn === false ? (

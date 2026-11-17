@@ -5785,3 +5785,33 @@ html[data-surface="paper"] .tw-loupe-trigger { display: none !important; }
   }
   .live-paper-tools { bottom: 74px; left: 12px; }
 }
+
+/* Handwritten paper titles, while body copy stays Newsreader. */
+html[data-surface="paper"] :is(.seminar-reading-surface, .read-page .bp-page, .anatomy-report) :is(
+  h1,
+  h2,
+  h3,
+  .reading-section__title,
+  .font-display,
+  .read-summary__value
+) {
+  font-family: 'Dancing Script', 'Newsreader', cursive !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.05 !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .read-page .bp-page, .anatomy-report) h1 {
+  font-size: clamp(38px, 5vw, 64px) !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .read-page .bp-page, .anatomy-report) h2 {
+  font-size: clamp(30px, 3.5vw, 44px) !important;
+}
+html[data-surface="paper"] :is(.seminar-reading-surface, .read-page .bp-page, .anatomy-report) h3 {
+  font-size: clamp(25px, 2.8vw, 34px) !important;
+}
+
+::highlight(tw-live-recommended) {
+  background-color: rgba(255, 225, 103, 0.72);
+  color: #241B13;
+}
+html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important; }

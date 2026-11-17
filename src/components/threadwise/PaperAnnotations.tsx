@@ -19,6 +19,7 @@ type NoteState = {
   text: string;
   left: number;
   top: number;
+  kind: "manual" | "recommended";
   data: NoteData | null;
   loading: boolean;
   error?: string;
@@ -44,7 +45,9 @@ function notePosition(x: number, y: number) {
 export function PaperAnnotations() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const surfaceRanges = useRef<ManualRange[]>([]);
+  const recommendedRanges = useRef<Array<{ range: Range; text: string; context: string; data?: NoteData }>>([]);
   const registryHighlight = useRef<{ add: (range: Range) => void } | null>(null);
+  const recommendedHighlight = useRef<{ add: (range: Range) => void } | null>(null);
   const cache = useRef<Map<string, NoteData>>(new Map());
   const requestRef = useRef(0);
   const [supported, setSupported] = useState(false);
@@ -52,7 +55,7 @@ export function PaperAnnotations() {
   const [note, setNote] = useState<NoteState | null>(null);
   const [count, setCount] = useState(0);
 
-  const clearAll = () => {
+  const clearManual = () => {
     const registry = (CSS as unknown as { highlights?: Map<string, unknown> }).highlights;
     const HighlightCtor = (window as unknown as { Highlight?: new () => { add: (range: Range) => void } }).Highlight;
     if (registry && HighlightCtor) {
@@ -65,16 +68,27 @@ export function PaperAnnotations() {
     setNote(null);
   };
 
+  const clearAll = () => {
+    clearManual();
+    recommendedRanges.current = [];
+    const registry = (CSS as unknown as { highlights?: Map<string, unknown> }).highlights;
+    if (registry) registry.delete("tw-live-recommended");
+  };
+
   useEffect(() => {
     const HighlightCtor = (window as unknown as { Highlight?: new () => { add: (range: Range) => void } }).Highlight;
     const registry = (CSS as unknown as { highlights?: Map<string, unknown> }).highlights;
     if (!HighlightCtor || !registry) return;
     registryHighlight.current = new HighlightCtor();
+    recommendedHighlight.current = new HighlightCtor();
     registry.set(HIGHLIGHT_NAME, registryHighlight.current);
+    registry.set("tw-live-recommended", recommendedHighlight.current);
     setSupported(true);
     return () => {
       registry.delete(HIGHLIGHT_NAME);
+      registry.delete("tw-live-recommended");
       registryHighlight.current = null;
+      recommendedHighlight.current = null;
     };
   }, []);
 
@@ -82,6 +96,83 @@ export function PaperAnnotations() {
     // A route or surface change invalidates the stored DOM ranges.
     clearAll();
     cache.current.clear();
+  }, [pathname]);
+
+  useEffect(() => {
+    let disposed = false;
+    let timer = 0;
+    let lastText = "";
+
+    const findRange = (root: HTMLElement, quote: string): Range | null => {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node) {
+        const content = node.textContent ?? "";
+        const index = content.indexOf(quote);
+        if (index >= 0) {
+          const range = document.createRange();
+          range.setStart(node, index);
+          range.setEnd(node, index + quote.length);
+          return range;
+        }
+        node = walker.nextNode();
+      }
+      return null;
+    };
+
+    const applyLocalRecommendations = (surface: HTMLElement) => {
+      if (!recommendedHighlight.current) return;
+      const cues = ["because", "evidence", "would settle", "falsif", "therefore", "but ", "however", "suggests", "claim", "assumption", "confidence", "uncertain", "counter", "not established", "mechanism", "decision", "interest", "proof", "wager"];
+      const seen = new Set<Element>();
+      const picks: Array<{ text: string; context: string; range: Range; score: number }> = [];
+      const walker = document.createTreeWalker(surface, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node) {
+        const parent = node.parentElement;
+        const raw = (node.textContent ?? "").replace(/\s+/g, " ").trim();
+        if (parent && raw.length >= 55 && raw.length <= 280 && !parent.closest("button, a, nav, label, .tw-loupe-panel, .live-paper-note")) {
+          const tag = parent.closest("p, li, blockquote");
+          if (tag && !seen.has(tag)) {
+            const sentence = raw.match(/.{40,220}?[.!?](?:\s|$)/)?.[0]?.trim() ?? raw;
+            const context = (tag.textContent ?? "").replace(/\s+/g, " ").trim();
+            const lower = sentence.toLowerCase();
+            const score = cues.reduce((sum, cue) => sum + (lower.includes(cue) ? 1 : 0), 0) + Math.min(3, Math.floor(context.length / 180));
+            if (sentence.length >= 45 && sentence.length <= 240) {
+              const range = findRange(surface, sentence);
+              if (range) {
+                seen.add(tag);
+                picks.push({ text: sentence, context, range, score });
+              }
+            }
+          }
+        }
+        node = walker.nextNode();
+      }
+      const chosen = picks.sort((a, b) => b.score - a.score).slice(0, 4);
+      recommendedRanges.current = chosen.map(({ range, text, context }) => ({ range, text, context }));
+      for (const item of chosen) recommendedHighlight.current.add(item.range);
+      (CSS as unknown as { highlights?: Map<string, unknown> }).highlights?.set("tw-live-recommended", recommendedHighlight.current);
+    };
+
+    const schedule = () => {
+      if (disposed) return;
+      const surface = document.querySelector<HTMLElement>(SURFACE_SELECTOR);
+      if (!surface) return;
+      const text = (surface.innerText || "").replace(/\s+/g, " ").trim();
+      if (text.length < 300 || text === lastText) return;
+      lastText = text;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => applyLocalRecommendations(surface), 1100);
+    };
+
+    const observer = new MutationObserver(schedule);
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    schedule();
+    return () => {
+      disposed = true;
+      window.clearTimeout(timer);
+      observer.disconnect();
+    };
   }, [pathname]);
 
   useEffect(() => {
@@ -125,15 +216,15 @@ export function PaperAnnotations() {
     };
   }, [supported]);
 
-  const generateNote = async (text: string, context: string, x: number, y: number) => {
+  const generateNote = async (text: string, context: string, x: number, y: number, kind: "manual" | "recommended" = "manual") => {
     const cached = cache.current.get(text);
     if (cached) {
-      setNote({ text, ...notePosition(x, y), data: cached, loading: false });
+      setNote({ text, ...notePosition(x, y), kind, data: cached, loading: false });
       return;
     }
     const request = requestRef.current + 1;
     requestRef.current = request;
-    setNote({ text, ...notePosition(x, y), data: null, loading: true });
+    setNote({ text, ...notePosition(x, y), kind, data: null, loading: true });
     try {
       const response = await fetch("/api/paper-note", {
         method: "POST",
@@ -190,6 +281,18 @@ export function PaperAnnotations() {
       if (!target.closest(SURFACE_SELECTOR)) return;
       const x = event.clientX;
       const y = event.clientY;
+      const recommended = recommendedRanges.current.find(({ range }) =>
+        Array.from(range.getClientRects()).some((rect) => x >= rect.left - 1 && x <= rect.right + 1 && y >= rect.top - 1 && y <= rect.bottom + 1),
+      );
+      if (recommended) {
+        event.preventDefault();
+        if (recommended.data) {
+          setNote({ text: recommended.text, ...notePosition(x, y), kind: "recommended", data: recommended.data, loading: false });
+        } else {
+          void generateNote(recommended.text, recommended.context, x, y, "recommended");
+        }
+        return;
+      }
       const hit = surfaceRanges.current.find(({ range }) =>
         Array.from(range.getClientRects()).some((rect) => x >= rect.left - 1 && x <= rect.right + 1 && y >= rect.top - 1 && y <= rect.bottom + 1),
       );
@@ -231,7 +334,7 @@ export function PaperAnnotations() {
       {count > 0 && isPaper() ? (
         <div className="live-paper-tools">
           <span>{count} {count === 1 ? "highlight" : "highlights"}</span>
-          <button type="button" onClick={clearAll} aria-label="Clear my paper highlights">
+          <button type="button" onClick={clearManual} aria-label="Clear my paper highlights">
             <Trash2 className="h-3 w-3" /> Clear
           </button>
         </div>
@@ -242,7 +345,7 @@ export function PaperAnnotations() {
             <aside className="live-paper-note" style={{ left: note.left, top: note.top }} role="dialog" aria-label="Your paper highlight note">
               <span className="live-paper-note__tape" aria-hidden="true" />
               <header>
-                <p>Your highlight</p>
+                <p>{note.kind === "recommended" ? "Recommended passage" : "Your highlight"}</p>
                 <button type="button" onClick={() => setNote(null)} aria-label="Close note">
                   <X className="h-3.5 w-3.5" />
                 </button>
