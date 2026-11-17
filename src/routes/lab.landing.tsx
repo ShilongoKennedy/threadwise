@@ -1,98 +1,133 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/lab/landing")({
   head: () => ({
     meta: [
-      { title: "The darkroom — Threadwise lab" },
+      { title: "Case 001 — Threadwise lab" },
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: Darkroom,
+  component: CaseFile,
 });
 
-function Darkroom() {
-  const stageRef = useRef<HTMLDivElement>(null);
-  const [revealed, setRevealed] = useState(false);
+const EVIDENCE = [
+  {
+    n: "01",
+    label: "The claim",
+    short: "A report raises concerns.",
+    note: "A claim attributed to officials is not the same as a finding in the document.",
+  },
+  {
+    n: "02",
+    label: "The gap",
+    short: "No figure. No finding. No document.",
+    note: "The report is confidential and unpublished. That is a fact about the record, not proof of what it says.",
+  },
+  {
+    n: "03",
+    label: "The inference",
+    short: "The timing means intent.",
+    note: "Moving from when a briefing happened to why it happened is an interpretation of motive.",
+  },
+  {
+    n: "04",
+    label: "The test",
+    short: "Publish the document.",
+    note: "A named finding, a measured figure or a published document would change the reading.",
+  },
+] as const;
 
-  useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
-    const move = (event: PointerEvent) => {
-      const rect = stage.getBoundingClientRect();
-      stage.style.setProperty("--light-x", `${event.clientX - rect.left}px`);
-      stage.style.setProperty("--light-y", `${event.clientY - rect.top}px`);
-    };
-    stage.addEventListener("pointermove", move);
-    return () => stage.removeEventListener("pointermove", move);
-  }, []);
+function CaseFile() {
+  const [active, setActive] = useState(0);
+  const evidence = EVIDENCE[active];
 
   return (
-    <div className={`darkroom ${revealed ? "is-revealed" : ""}`} ref={stageRef}>
-      <header className="darkroom-nav">
-        <Link to="/" className="darkroom-brand">
-          <span aria-hidden="true" />
-          THREADWISE
-        </Link>
+    <div className="case-lab">
+      <header className="case-nav">
+        <Link to="/" className="case-brand"><span aria-hidden="true" />THREADWISE</Link>
+        <span className="case-nav__file">Field bureau / case 001 / 18.11.26</span>
         <nav aria-label="Tools">
           <Link to="/analyst">The Analyst</Link>
           <Link to="/seminar">Seminar</Link>
           <Link to="/anatomy">The Anatomy</Link>
         </nav>
-        <Link to="/analyst" className="darkroom-enter">Enter the desk ↗</Link>
       </header>
 
-      <main className="darkroom-main">
-        <div className="darkroom-ghost" aria-hidden="true">
-          <span>Look closer.</span>
-          <span>01 / the read</span>
-        </div>
-
-        <div className="darkroom-reveal">
-          <div className="darkroom-copy">
-            <p className="darkroom-kicker">Threadwise / a reading desk</p>
-            <h1>The story is<br /><em>not</em> the evidence.</h1>
-            <p className="darkroom-lede">
-              A claim arrives with a mood, a deadline and a headline. The evidence arrives later, if
-              it arrives at all. Threadwise is a place to keep the two apart.
+      <main className="case-main">
+        <section className="case-folder">
+          <span className="case-folder__tab">CONFIDENTIAL / READING FILE</span>
+          <span className="case-clip" aria-hidden="true" />
+          <article className="case-sheet">
+            <div className="case-sheet__meta">
+              <span>Bureau / Vienna</span>
+              <span>Case 001</span>
+              <span>Status: open</span>
+            </div>
+            <p className="case-kicker">The IAEA briefing / a document we cannot see</p>
+            <h1>A report no one<br />can read.</h1>
+            <p className="case-dek">
+              A confidential briefing has raised concerns about Iran’s enrichment programme. The
+              document itself remains out of sight. That gap is the story.
             </p>
-
-            <div className="darkroom-specimen">
-              <p className="darkroom-specimen__label">The read / specimen</p>
+            <div className="case-body">
               <p>
-                “A confidential IAEA report has raised <mark>concerns</mark> about Iran’s enrichment
-                programme. No figure or finding from the report has been quoted.”
+                A confidential IAEA report circulated to member states has raised concerns about
+                Iran’s enrichment programme, according to officials familiar with the matter.
               </p>
-              <span className="darkroom-margin">
-                <b>↳</b> a word that sounds like a finding without being one.
-              </span>
+              <p>
+                The report has not been published. No figure, site or finding from it has been
+                quoted. The White House says there is no immediate threat.
+              </p>
+              <p>
+                The timing has turned the briefing into a public signal. What the Agency actually
+                knows — and what it only suspects — remains behind the seal.
+              </p>
             </div>
+            <blockquote>“A report about a report is not yet evidence of a new capability.”</blockquote>
+            <div className="case-sheet__foot">
+              <span>Source: confidential · not independently reviewed</span>
+              <span>File 001 / page 1</span>
+            </div>
+            <span className="case-stamp" aria-hidden="true">UNVERIFIED</span>
+          </article>
+        </section>
 
-            <div className="darkroom-actions">
-              <Link to="/analyst" className="darkroom-cta">Bring a source <span aria-hidden="true">↗</span></Link>
-              <Link to="/read/$token" params={{ token: "mn4qvf4bhu" }} className="darkroom-link">Read the IAEA sample ↗</Link>
-            </div>
+        <aside className="case-board">
+          <div className="case-board__head">
+            <p>Evidence board</p>
+            <span>04 items / 01 thread</span>
           </div>
-        </div>
-
-        <div className="darkroom-lamp" aria-hidden="true" />
-
-        <div className="darkroom-hint">
-          <span>Move the light to read.</span>
-          <button type="button" onClick={() => setRevealed((value) => !value)}>
-            {revealed ? "Back to the dark" : "Show everything"}
-          </button>
-        </div>
-
-        <Link to="/analyst" className="darkroom-quick">Put a source on the desk <span aria-hidden="true">↗</span></Link>
-
-        <span className="darkroom-coord darkroom-coord--a">48.2N / 16.4E</span>
-        <span className="darkroom-coord darkroom-coord--b">look / again</span>
+          <div className="case-evidence">
+            {EVIDENCE.map((item, index) => (
+              <button
+                key={item.n}
+                type="button"
+                onClick={() => setActive(index)}
+                className={`case-evidence__item ${active === index ? "is-active" : ""}`}
+              >
+                <span className="case-pin" aria-hidden="true" />
+                <span className="case-evidence__n">{item.n}</span>
+                <span className="case-evidence__label">{item.label}</span>
+                <span className="case-evidence__short">{item.short}</span>
+              </button>
+            ))}
+          </div>
+          <div className="case-note">
+            <p className="case-note__label">The note / {evidence.n}</p>
+            <p>{evidence.note}</p>
+          </div>
+          <div className="case-board__foot">
+            <span className="case-thread-label">follow the thread →</span>
+            <Link to="/analyst">Start your own case <span aria-hidden="true">↗</span></Link>
+          </div>
+        </aside>
       </main>
 
-      <footer className="darkroom-foot">
-        <span>Threadwise / evidence first. Verdict later.</span>
-        <span>read carefully · verify before you act</span>
+      <footer className="case-foot">
+        <span>Threadwise / a reading desk</span>
+        <span>Read the claim. Keep the gap.</span>
+        <span>Case 001 / open</span>
       </footer>
     </div>
   );
