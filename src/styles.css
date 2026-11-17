@@ -5135,6 +5135,9 @@ body .anatomy-action :is(span, svg) {
   z-index: 120;
   width: 352px;
   max-width: calc(100vw - 28px);
+  max-height: calc(100dvh - 28px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border: 1px solid rgba(123, 91, 43, 0.24);
   background:
     repeating-linear-gradient(to bottom, transparent 0 25px, rgba(87, 72, 40, 0.09) 25px 26px),
@@ -5279,4 +5282,46 @@ body .anatomy-action :is(span, svg) {
   text-decoration-color: rgba(107, 79, 158, 0.5);
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
+}
+
+.paper-sheet,
+.paper-sheet__content {
+  cursor: url("/cursors/fountain-pen.svg") 1 1, auto;
+}
+.paper-sheet__content :is(button, a) { cursor: pointer; }
+.paper-contents__clear {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #C4B5FD !important;
+  text-align: left;
+}
+.paper-contents__clear:hover { color: #FFFFFF !important; }
+.paper-margin-note__loading {
+  display: flex;
+  gap: 5px;
+  margin-top: 20px;
+}
+.paper-margin-note__loading span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #8B3D2E;
+  animation: paper-note-pulse 900ms infinite ease-in-out;
+}
+.paper-margin-note__loading span:nth-child(2) { animation-delay: 120ms; }
+.paper-margin-note__loading span:nth-child(3) { animation-delay: 240ms; }
+@keyframes paper-note-pulse { 0%, 100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
+.paper-margin-note__error {
+  color: #A33B2E !important;
+  font-family: var(--font-mono) !important;
+  font-size: 9px !important;
+  line-height: 1.5 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }

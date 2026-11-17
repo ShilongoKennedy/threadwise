@@ -20,6 +20,16 @@ type MarginEntry = {
   watch: string;
 };
 
+type MarginNoteState = {
+  phrase: string;
+  left: number;
+  top: number;
+  kind: "recommended" | "manual";
+  data?: MarginEntry;
+  loading?: boolean;
+  error?: string;
+};
+
 const MARGIN_NOTES: Record<string, MarginEntry> = {
   "planning and scenario work": {
     term: "Planning ≠ operation",
@@ -90,8 +100,10 @@ const CONTENTS = [
 function PaperLab() {
   const [read, setRead] = useState<Set<string>>(new Set(["the-event", "the-disagreement", "the-spin", "the-reality"]));
   const [checked, setChecked] = useState<Set<number>>(new Set());
-  const [note, setNote] = useState<{ phrase: string; left: number; top: number } | null>(null);
+  const [note, setNote] = useState<MarginNoteState | null>(null);
   const sheetContentRef = useRef<HTMLDivElement>(null);
+  const manualRangesRef = useRef<Array<{ range: Range; text: string; context: string }>>([]);
+  const noteRequestRef = useRef(0);
   const manualHighlightRef = useRef<{ add: (range: Range) => void; size?: number } | null>(null);
   const [manualCount, setManualCount] = useState(0);
   const [manualSupported, setManualSupported] = useState(false);
@@ -106,7 +118,47 @@ function PaperLab() {
     const width = Math.min(360, window.innerWidth - 28);
     const left = Math.min(window.innerWidth - width - 14, Math.max(14, rect.right + 12));
     const top = Math.max(76, Math.min(window.innerHeight - 330, rect.top - 10));
-    setNote({ phrase, left, top });
+    setNote({ phrase, left, top, kind: "recommended", data: MARGIN_NOTES[phrase] });
+  };
+
+  const openManualNote = async (hit: { range: Range; text: string; context: string }, x: number, y: number) => {
+    if (note?.kind === "manual" && note.phrase === hit.text) {
+      setNote(null);
+      return;
+    }
+    const width = Math.min(360, window.innerWidth - 28);
+    const left = Math.min(window.innerWidth - width - 14, Math.max(14, x + 18));
+    const top = Math.max(76, Math.min(window.innerHeight - 330, y - 24));
+    const requestId = noteRequestRef.current + 1;
+    noteRequestRef.current = requestId;
+    setNote({ phrase: hit.text, left, top, kind: "manual", loading: true });
+    try {
+      const response = await fetch("/api/paper-note", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: hit.text, context: hit.context }),
+      });
+      const body = (await response.json()) as { note?: MarginEntry; error?: string };
+      if (noteRequestRef.current !== requestId) return;
+      if (!response.ok || !body.note) throw new Error(body.error ?? "The note could not be written.");
+      setNote((current) => current && current.kind === "manual" ? { ...current, data: body.note, loading: false } : current);
+    } catch (caught) {
+      if (noteRequestRef.current !== requestId) return;
+      setNote((current) => current && current.kind === "manual" ? { ...current, loading: false, error: caught instanceof Error ? caught.message : "The note could not be written." } : current);
+    }
+  };
+
+  const handlePaperClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (target.closest("button, a")) return;
+    const x = event.clientX;
+    const y = event.clientY;
+    const hit = manualRangesRef.current.find(({ range }) =>
+      Array.from(range.getClientRects()).some((rect) => x >= rect.left - 1 && x <= rect.right + 1 && y >= rect.top - 1 && y <= rect.bottom + 1),
+    );
+    if (!hit) return;
+    event.preventDefault();
+    void openManualNote(hit, x, y);
   };
 
   useEffect(() => {
@@ -184,7 +236,13 @@ function PaperLab() {
     if (!selection || selection.rangeCount === 0 || selection.isCollapsed || !root || !highlight) return;
     const range = selection.getRangeAt(0);
     if (!root.contains(range.commonAncestorContainer)) return;
-    highlight.add(range.cloneRange());
+    const clone = range.cloneRange();
+    const start = range.startContainer.nodeType === Node.ELEMENT_NODE
+      ? (range.startContainer as Element)
+      : range.startContainer.parentElement;
+    const context = start?.closest("p, li, blockquote")?.textContent?.replace(/\s+/g, " ").trim() ?? "";
+    highlight.add(clone);
+    manualRangesRef.current.push({ range: clone, text: range.toString().replace(/\s+/g, " ").trim(), context });
     setManualCount((count) => count + 1);
     selection.removeAllRanges();
     setSelectionAction(null);
@@ -196,7 +254,9 @@ function PaperLab() {
     if (!HighlightCtor || !registry) return;
     manualHighlightRef.current = new HighlightCtor();
     registry.set("tw-manual", manualHighlightRef.current);
+    manualRangesRef.current = [];
     setManualCount(0);
+    setNote(null);
   };
 
   const toggleRead = (id: string) => {
@@ -232,6 +292,11 @@ function PaperLab() {
           <div className="paper-contents__foot">
             <p>Paper prototype</p>
             <span>11 sections · one sheet</span>
+            {manualSupported && manualCount > 0 ? (
+              <button type="button" onClick={clearManualHighlights} className="paper-contents__clear">
+                <Trash2 className="h-2.5 w-2.5" /> Clear {manualCount === 1 ? "my highlight" : `${manualCount} highlights`}
+              </button>
+            ) : null}
             <Link to="/seminar">← Live Seminar</Link>
           </div>
         </aside>
@@ -240,21 +305,11 @@ function PaperLab() {
           <div className="paper-spiral" aria-hidden="true">
             {Array.from({ length: 80 }).map((_, index) => <span key={index} />)}
           </div>
-          <div className="paper-sheet__content" ref={sheetContentRef}>
+          <div className="paper-sheet__content" ref={sheetContentRef} onClick={handlePaperClick}>
             <header className="paper-head">
               <p className="paper-kicker">The read · field note 001</p>
               <h1>Analysis: US intel on Iran — a dirty bomb plot?</h1>
               <p className="paper-draft">Draft — 17 Nov 2026</p>
-              <p className="paper-hint">Click a yellow phrase for a margin note. Select any text to highlight it yourself.</p>
-              <div className="paper-legend">
-                <span><i className="paper-legend__ai" /> Recommended</span>
-                <span><i className="paper-legend__manual" /> Yours{manualCount > 0 ? ` · ${manualCount}` : ""}</span>
-                {manualSupported && manualCount > 0 ? (
-                  <button type="button" onClick={clearManualHighlights}>
-                    <Trash2 className="h-2.5 w-2.5" /> Clear mine
-                  </button>
-                ) : null}
-              </div>
             </header>
 
             <section id="the-event">
@@ -372,17 +427,27 @@ function PaperLab() {
         <aside className="paper-margin-note" style={{ left: note.left, top: note.top }} role="dialog" aria-label={`Margin note: ${note.phrase}`}>
           <span className="paper-margin-note__tape" aria-hidden="true" />
           <div className="paper-margin-note__head">
-            <p>Margin note</p>
+            <p>{note.kind === "manual" ? "Your highlight" : "Margin note"}</p>
             <button type="button" onClick={() => setNote(null)} aria-label="Close margin note">
               <X className="h-3.5 w-3.5" />
             </button>
           </div>
-          <h3>{MARGIN_NOTES[note.phrase]?.term ?? note.phrase}</h3>
-          <p className="paper-margin-note__plain">{MARGIN_NOTES[note.phrase]?.plain}</p>
-          <p className="paper-margin-note__label">Deeper</p>
-          <p>{MARGIN_NOTES[note.phrase]?.deeper}</p>
-          <p className="paper-margin-note__label paper-margin-note__label--watch">Watch for</p>
-          <p>{MARGIN_NOTES[note.phrase]?.watch}</p>
+          <h3>{note.data?.term ?? (note.loading ? "Reading this passage…" : "Your highlight")}</h3>
+          {note.loading ? (
+            <div className="paper-margin-note__loading" aria-live="polite">
+              <span /><span /><span />
+            </div>
+          ) : null}
+          {note.data ? (
+            <>
+              <p className="paper-margin-note__plain">{note.data.plain}</p>
+              <p className="paper-margin-note__label">Deeper</p>
+              <p>{note.data.deeper}</p>
+              <p className="paper-margin-note__label paper-margin-note__label--watch">Watch for</p>
+              <p>{note.data.watch}</p>
+            </>
+          ) : null}
+          {note.error ? <p className="paper-margin-note__error">{note.error}</p> : null}
           <p className="paper-margin-note__foot">A reading note, not a verdict.</p>
         </aside>
       ) : null}

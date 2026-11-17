@@ -38,6 +38,7 @@ import { Route as ApiDrillRouteImport } from './routes/api/drill'
 import { Route as ApiExtractRouteImport } from './routes/api/extract'
 import { Route as ApiModelHealthRouteImport } from './routes/api/model-health'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
+import { Route as ApiPaperNoteRouteImport } from './routes/api/paper-note'
 import { Route as ApiPracticeRouteImport } from './routes/api/practice'
 import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
 import { Route as ApiQuestionGapRouteImport } from './routes/api/question-gap'
@@ -203,6 +204,11 @@ const ApiNewsBriefRoute = ApiNewsBriefRouteImport.update({
   path: '/api/news-brief',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPaperNoteRoute = ApiPaperNoteRouteImport.update({
+  id: '/api/paper-note',
+  path: '/api/paper-note',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPracticeRoute = ApiPracticeRouteImport.update({
   id: '/api/practice',
   path: '/api/practice',
@@ -329,6 +335,7 @@ export interface FileRoutesByFullPath {
   '/api/extract': typeof ApiExtractRoute
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/paper-note': typeof ApiPaperNoteRoute
   '/api/practice': typeof ApiPracticeRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
@@ -379,6 +386,7 @@ export interface FileRoutesByTo {
   '/api/extract': typeof ApiExtractRoute
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/paper-note': typeof ApiPaperNoteRoute
   '/api/practice': typeof ApiPracticeRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
@@ -430,6 +438,7 @@ export interface FileRoutesById {
   '/api/extract': typeof ApiExtractRoute
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
+  '/api/paper-note': typeof ApiPaperNoteRoute
   '/api/practice': typeof ApiPracticeRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
@@ -482,6 +491,7 @@ export interface FileRouteTypes {
     | '/api/extract'
     | '/api/model-health'
     | '/api/news-brief'
+    | '/api/paper-note'
     | '/api/practice'
     | '/api/publish-read'
     | '/api/question-gap'
@@ -532,6 +542,7 @@ export interface FileRouteTypes {
     | '/api/extract'
     | '/api/model-health'
     | '/api/news-brief'
+    | '/api/paper-note'
     | '/api/practice'
     | '/api/publish-read'
     | '/api/question-gap'
@@ -582,6 +593,7 @@ export interface FileRouteTypes {
     | '/api/extract'
     | '/api/model-health'
     | '/api/news-brief'
+    | '/api/paper-note'
     | '/api/practice'
     | '/api/publish-read'
     | '/api/question-gap'
@@ -633,6 +645,7 @@ export interface RootRouteChildren {
   ApiExtractRoute: typeof ApiExtractRoute
   ApiModelHealthRoute: typeof ApiModelHealthRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
+  ApiPaperNoteRoute: typeof ApiPaperNoteRoute
   ApiPracticeRoute: typeof ApiPracticeRoute
   ApiPublishReadRoute: typeof ApiPublishReadRoute
   ApiQuestionGapRoute: typeof ApiQuestionGapRoute
@@ -859,6 +872,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiNewsBriefRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/paper-note': {
+      id: '/api/paper-note'
+      path: '/api/paper-note'
+      fullPath: '/api/paper-note'
+      preLoaderRoute: typeof ApiPaperNoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/practice': {
       id: '/api/practice'
       path: '/api/practice'
@@ -1025,6 +1045,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiExtractRoute: ApiExtractRoute,
   ApiModelHealthRoute: ApiModelHealthRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
+  ApiPaperNoteRoute: ApiPaperNoteRoute,
   ApiPracticeRoute: ApiPracticeRoute,
   ApiPublishReadRoute: ApiPublishReadRoute,
   ApiQuestionGapRoute: ApiQuestionGapRoute,
