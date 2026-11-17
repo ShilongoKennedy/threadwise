@@ -213,22 +213,60 @@ function CosmicHome() {
           </div>
         </div>
 
-        <div className="cosmic-bottom">
-          <nav className="cosmic-pages" aria-label="Threadwise pages">
-            <Link to="/analyst">The Analyst</Link>
-            <Link to="/seminar">Seminar</Link>
-            <Link to="/anatomy">The Anatomy</Link>
-            <Link to="/digest">Record</Link>
-          </nav>
-          <footer className="cosmic-foot">
-            {signedIn ? (
-              <Link to="/profile">Profile</Link>
-            ) : (
-              <Link to="/login">Sign in</Link>
-            )}
-          </footer>
-        </div>
+        <a href="#desk" className="cosmic-scroll">Scroll to the desk <span aria-hidden="true">↓</span></a>
       </main>
+
+      <section id="desk" className="cosmic-section cosmic-intro">
+        <p className="cosmic-eyebrow">The desk</p>
+        <h2>Read the evidence.<br /><em>Not just the story.</em></h2>
+        <p>
+          Threadwise is a quiet place to work out what a source actually says. Bring a link, a PDF
+          or a screenshot. Leave with the frame, the gap, and the question worth keeping open.
+        </p>
+      </section>
+
+      <section className="cosmic-section cosmic-tools">
+        <p className="cosmic-eyebrow">Three instruments</p>
+        <h2>One source at a time.</h2>
+        <nav className="cosmic-tool-list" aria-label="The three tools">
+          <Link to="/analyst"><span>01</span><strong>The Analyst</strong><em>What is this source doing?</em><b aria-hidden="true">↗</b></Link>
+          <Link to="/seminar"><span>02</span><strong>Seminar</strong><em>Which explanation is stronger?</em><b aria-hidden="true">↗</b></Link>
+          <Link to="/anatomy"><span>03</span><strong>The Anatomy</strong><em>How is this belief built?</em><b aria-hidden="true">↗</b></Link>
+        </nav>
+      </section>
+
+      <section className="cosmic-section cosmic-method">
+        <p className="cosmic-eyebrow">The method</p>
+        <h2>Keep the question open.</h2>
+        <div className="cosmic-steps">
+          <div><span>01</span><h3>Read the move.</h3><p>Separate what happened from how the story tells it.</p></div>
+          <div><span>02</span><h3>Keep the question.</h3><p>A claim can be serious without being settled.</p></div>
+          <div><span>03</span><h3>Leave a test.</h3><p>Write down what would change your mind.</p></div>
+        </div>
+      </section>
+
+      <section className="cosmic-section cosmic-closing">
+        <p className="cosmic-eyebrow">The last page</p>
+        <h2>Read one thing<br /><em>properly.</em></h2>
+        <p>Ten minutes with a source you already distrust will teach you more than a month of summaries.</p>
+        <div className="cosmic-actions">
+          <Link to="/analyst" className="cosmic-button">Bring a source <span aria-hidden="true">↗</span></Link>
+          <Link to="/read/$token" params={{ token: "mn4qvf4bhu" }} className="cosmic-textlink">Open the IAEA sample <span aria-hidden="true">↗</span></Link>
+        </div>
+      </section>
+
+      <footer className="cosmic-sitefoot">
+        <nav aria-label="Threadwise pages">
+          <Link to="/analyst">The Analyst</Link>
+          <Link to="/seminar">Seminar</Link>
+          <Link to="/anatomy">The Anatomy</Link>
+          <Link to="/digest">Record</Link>
+        </nav>
+        <div>
+          {signedIn ? <Link to="/profile">Profile</Link> : <Link to="/login">Sign in</Link>}
+          <span>Threadwise / read carefully</span>
+        </div>
+      </footer>
     </div>
   );
 }

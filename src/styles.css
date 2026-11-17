@@ -5474,3 +5474,133 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
   .cosmic-bottom { padding-top: 8vh; }
   .cosmic-pages { gap: 9px 16px; font-size: 13px; }
 }
+
+/* Minimal landing sections below the Earth. */
+.cosmic-scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 7vh;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: #9a9d9f !important;
+}
+.cosmic-scroll span { font-size: 15px; line-height: 1; }
+.cosmic-scroll:hover { color: #111 !important; }
+
+.cosmic-section {
+  width: min(880px, 88vw);
+  margin-inline: auto;
+  border-top: 1px solid #e7e6e1;
+  padding: clamp(70px, 10vh, 118px) 0;
+}
+.cosmic-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #9a9c9e !important;
+}
+.cosmic-section h2 {
+  margin-top: 15px;
+  max-width: 15ch;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.1vw, 68px);
+  font-weight: 500;
+  line-height: 0.93;
+  letter-spacing: -0.045em;
+  color: #111 !important;
+}
+.cosmic-section h2 em { font-style: italic; font-weight: 300; color: #777d84 !important; }
+.cosmic-intro > p:last-child {
+  margin-top: 24px;
+  max-width: 53ch;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.7;
+  color: #707579 !important;
+}
+
+.cosmic-tool-list { margin-top: 38px; border-top: 1px solid #e0dfda; }
+.cosmic-tool-list a {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 5px 13px;
+  align-items: baseline;
+  border-bottom: 1px solid #e0dfda;
+  padding: 17px 2px;
+  color: #111 !important;
+}
+.cosmic-tool-list span { grid-row: span 2; font-family: var(--font-mono); font-size: 8px; color: #9a9c9e !important; }
+.cosmic-tool-list strong { font-family: var(--font-display); font-size: 27px; font-weight: 500; line-height: 1; color: #111 !important; }
+.cosmic-tool-list em { grid-column: 2; font-family: var(--font-serif); font-size: 13px; font-style: normal; color: #85898c !important; }
+.cosmic-tool-list b { grid-column: 3; grid-row: 1 / span 2; align-self: center; font-family: var(--font-sans); font-size: 18px; font-weight: 400; color: #85898c !important; transition: transform 140ms ease; }
+.cosmic-tool-list a:hover strong { color: #315a78 !important; }
+.cosmic-tool-list a:hover b { transform: translate(2px, -2px); color: #315a78 !important; }
+
+.cosmic-steps { display: grid; gap: 0; margin-top: 37px; border-top: 1px solid #e0dfda; }
+.cosmic-steps > div { border-bottom: 1px solid #e0dfda; padding: 15px 0 16px; }
+.cosmic-steps span { font-family: var(--font-mono); font-size: 7px; color: #9a9c9e !important; }
+.cosmic-steps h3 { margin-top: 4px; font-family: var(--font-display); font-size: 24px; font-weight: 500; line-height: 1; color: #111 !important; }
+.cosmic-steps p { margin-top: 5px; max-width: 39ch; font-family: var(--font-serif); font-size: 12.5px; line-height: 1.45; color: #85898c !important; }
+
+.cosmic-closing { text-align: center; }
+.cosmic-closing .cosmic-eyebrow { display: block; }
+.cosmic-closing h2 { margin-inline: auto; max-width: 11ch; font-size: clamp(51px, 7.3vw, 96px); }
+.cosmic-closing > p:not(.cosmic-eyebrow) { margin: 21px auto 0; max-width: 44ch; font-family: var(--font-serif); font-size: 15px; line-height: 1.65; color: #777d84 !important; }
+.cosmic-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 13px 21px; margin-top: 26px; }
+.cosmic-button {
+  display: inline-flex;
+  min-height: 43px;
+  align-items: center;
+  gap: 7px;
+  background: #111;
+  padding: 0 16px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: #fff !important;
+}
+.cosmic-button:hover { background: #315a78; }
+.cosmic-textlink { border-bottom: 1px solid #c6c7c3; padding-bottom: 3px; font-family: var(--font-sans); font-size: 12px; color: #777d84 !important; }
+.cosmic-textlink:hover { color: #111 !important; border-color: #111; }
+
+.cosmic-sitefoot {
+  display: flex;
+  width: min(880px, 88vw);
+  margin-inline: auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 28px;
+  border-top: 1px solid #e7e6e1;
+  padding: 22px 0 30px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+}
+.cosmic-sitefoot nav { display: flex; flex-wrap: wrap; gap: 10px 20px; }
+.cosmic-sitefoot nav a { color: #777d84 !important; }
+.cosmic-sitefoot nav a:hover { color: #111 !important; text-decoration: underline; text-underline-offset: 4px; }
+.cosmic-sitefoot > div { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; color: #a0a2a3 !important; }
+.cosmic-sitefoot > div a { color: #777d84 !important; }
+.cosmic-sitefoot > div a:hover { color: #111 !important; text-decoration: underline; text-underline-offset: 4px; }
+.cosmic-sitefoot > div span { font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.08em; color: #b0b1b1 !important; }
+
+@media (min-width: 720px) {
+  .cosmic-steps { grid-template-columns: repeat(3, 1fr); column-gap: 28px; }
+  .cosmic-steps > div { border-bottom: 0; border-right: 1px solid #e0dfda; padding-right: 24px; }
+  .cosmic-steps > div:last-child { border-right: 0; padding-right: 0; }
+}
+@media (max-width: 620px) {
+  .cosmic-section { width: 88vw; padding-block: 54px; }
+  .cosmic-section h2 { font-size: clamp(39px, 11vw, 54px); }
+  .cosmic-intro > p:last-child { font-size: 14px; }
+  .cosmic-tool-list { margin-top: 28px; }
+  .cosmic-tool-list strong { font-size: 23px; }
+  .cosmic-tool-list em { font-size: 12px; }
+  .cosmic-tool-list a { grid-template-columns: 25px minmax(0, 1fr) auto; }
+  .cosmic-closing h2 { font-size: clamp(46px, 13vw, 62px); }
+  .cosmic-scroll { padding-top: 5vh; }
+  .cosmic-sitefoot { width: 88vw; padding-block: 19px 24px; }
+  .cosmic-sitefoot > div { width: 100%; justify-content: space-between; }
+}
