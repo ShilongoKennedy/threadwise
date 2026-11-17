@@ -5604,3 +5604,66 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
   .cosmic-sitefoot { width: 88vw; padding-block: 19px 24px; }
   .cosmic-sitefoot > div { width: 100%; justify-content: space-between; }
 }
+
+/* One quiet 3D object per landing section. */
+.cosmic-section-head {
+  display: grid;
+  gap: 26px;
+  align-items: center;
+}
+.cosmic-section-copy { min-width: 0; }
+.cosmic-section-head--reverse .cosmic-object { order: -1; }
+.cosmic-object {
+  position: relative;
+  width: min(235px, 62vw);
+  aspect-ratio: 1;
+  justify-self: center;
+}
+.cosmic-object canvas { display: block; width: 100% !important; height: 100% !important; }
+.cosmic-object::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: 7%;
+  width: 44%;
+  height: 8px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(76, 91, 103, 0.16), transparent 70%);
+  filter: blur(2px);
+}
+.cosmic-object__fallback {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: #a0a2a3;
+  white-space: nowrap;
+}
+.cosmic-intro .cosmic-section-copy > p:last-child {
+  margin-top: 24px;
+  max-width: 48ch;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.7;
+  color: #707579 !important;
+}
+.cosmic-tools .cosmic-section-head { margin-bottom: 30px; }
+.cosmic-method .cosmic-section-head { margin-bottom: 24px; }
+.cosmic-closing .cosmic-object { width: min(205px, 56vw); margin: 0 auto 16px; }
+.cosmic-closing .cosmic-object::after { bottom: 4%; }
+
+@media (min-width: 720px) {
+  .cosmic-section-head { grid-template-columns: minmax(0, 1fr) 245px; gap: 44px; }
+  .cosmic-section-head--reverse { grid-template-columns: 245px minmax(0, 1fr); }
+  .cosmic-object { width: 235px; }
+}
+@media (max-width: 719px) {
+  .cosmic-section-head { gap: 15px; }
+  .cosmic-section-head .cosmic-object { width: min(200px, 58vw); }
+  .cosmic-intro .cosmic-section-copy > p:last-child { font-size: 14px; margin-top: 18px; }
+  .cosmic-section-head--reverse .cosmic-object { order: 0; }
+}
