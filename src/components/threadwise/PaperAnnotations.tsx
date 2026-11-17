@@ -102,6 +102,7 @@ export function PaperAnnotations() {
     let disposed = false;
     let timer = 0;
     let lastText = "";
+    let request = 0;
 
     const findRange = (root: HTMLElement, quote: string): Range | null => {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -120,38 +121,36 @@ export function PaperAnnotations() {
       return null;
     };
 
-    const applyLocalRecommendations = (surface: HTMLElement) => {
+    const applyPhrases = (surface: HTMLElement, phrases: Array<{ text: string; context: string }>) => {
       if (!recommendedHighlight.current) return;
-      const cues = ["because", "evidence", "would settle", "falsif", "therefore", "but ", "however", "suggests", "claim", "assumption", "confidence", "uncertain", "counter", "not established", "mechanism", "decision", "interest", "proof", "wager"];
-      const seen = new Set<Element>();
-      const picks: Array<{ text: string; context: string; range: Range; score: number }> = [];
-      const walker = document.createTreeWalker(surface, NodeFilter.SHOW_TEXT);
-      let node = walker.nextNode();
-      while (node) {
-        const parent = node.parentElement;
-        const raw = (node.textContent ?? "").replace(/\s+/g, " ").trim();
-        if (parent && raw.length >= 55 && raw.length <= 280 && !parent.closest("button, a, nav, label, .tw-loupe-panel, .live-paper-note")) {
-          const tag = parent.closest("p, li, blockquote");
-          if (tag && !seen.has(tag)) {
-            const sentence = raw.match(/.{40,220}?[.!?](?:\s|$)/)?.[0]?.trim() ?? raw;
-            const context = (tag.textContent ?? "").replace(/\s+/g, " ").trim();
-            const lower = sentence.toLowerCase();
-            const score = cues.reduce((sum, cue) => sum + (lower.includes(cue) ? 1 : 0), 0) + Math.min(3, Math.floor(context.length / 180));
-            if (sentence.length >= 45 && sentence.length <= 240) {
-              const range = findRange(surface, sentence);
-              if (range) {
-                seen.add(tag);
-                picks.push({ text: sentence, context, range, score });
-              }
-            }
-          }
-        }
-        node = walker.nextNode();
+      const next: Array<{ range: Range; text: string; context: string }> = [];
+      for (const phrase of phrases) {
+        const words = phrase.text.split(/\s+/).length;
+        if (words < 3 || words > 10 || phrase.text.length > 90 || /[.!?]$/.test(phrase.text)) continue;
+        const range = findRange(surface, phrase.text);
+        if (!range) continue;
+        recommendedHighlight.current.add(range);
+        const parent = elementOf(range.startContainer)?.closest("p, li, blockquote");
+        const context = (parent?.textContent ?? phrase.context).replace(/\s+/g, " ").trim();
+        next.push({ ...phrase, context, range });
       }
-      const chosen = picks.sort((a, b) => b.score - a.score).slice(0, 4);
-      recommendedRanges.current = chosen.map(({ range, text, context }) => ({ range, text, context }));
-      for (const item of chosen) recommendedHighlight.current.add(item.range);
+      recommendedRanges.current = next;
       (CSS as unknown as { highlights?: Map<string, unknown> }).highlights?.set("tw-live-recommended", recommendedHighlight.current);
+    };
+
+    const applyFallback = (surface: HTMLElement) => {
+      const phrases: Array<{ text: string; context: string }> = [];
+      for (const el of Array.from(surface.querySelectorAll("strong, em")).slice(0, 8)) {
+        if (el.closest("button, a, nav, label, .tw-loupe-panel, .live-paper-note")) continue;
+        const text = (el.textContent ?? "").replace(/\s+/g, " ").trim();
+        const words = text.split(/\s+/).length;
+        if (words >= 2 && words <= 12 && text.length <= 100) {
+          const context = el.closest("p, li, blockquote")?.textContent?.replace(/\s+/g, " ").trim() ?? text;
+          phrases.push({ text, context });
+        }
+        if (phrases.length >= 3) break;
+      }
+      if (phrases.length) applyPhrases(surface, phrases);
     };
 
     const schedule = () => {
@@ -162,7 +161,30 @@ export function PaperAnnotations() {
       if (text.length < 300 || text === lastText) return;
       lastText = text;
       window.clearTimeout(timer);
-      timer = window.setTimeout(() => applyLocalRecommendations(surface), 1100);
+      timer = window.setTimeout(async () => {
+        const thisRequest = ++request;
+        try {
+          const response = await fetch("/api/paper-recommendations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: text.slice(0, 7000) }),
+          });
+          const body = (await response.json()) as { quotes?: string[] };
+          if (disposed || request !== thisRequest) return;
+          if (!response.ok || !body.quotes?.length) {
+            applyFallback(surface);
+            return;
+          }
+          const phrases = body.quotes.map((quote) => {
+            const context = surface.innerText.includes(quote) ? quote : quote;
+            return { text: quote, context };
+          });
+          applyPhrases(surface, phrases);
+          if (!recommendedRanges.current.length) applyFallback(surface);
+        } catch {
+          if (!disposed) applyFallback(surface);
+        }
+      }, 1300);
     };
 
     const observer = new MutationObserver(schedule);
