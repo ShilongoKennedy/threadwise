@@ -6236,3 +6236,177 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
   color: #F7F1E5 !important;
   -webkit-text-fill-color: #F7F1E5 !important;
 }
+
+/* The landing is dark. Paper appears only in selected objects. */
+.landing-lab { background: #03060b !important; }
+.landing-paper {
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 36px 20px 72px !important;
+}
+.landing-paper::after { display: none !important; }
+.landing-paper__content { max-width: 1120px; margin-inline: auto; }
+.landing-lab .landing-paper :is(h1, h2, h3, p, span, a, strong, em, figcaption) {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+.landing-lab .landing-paper .landing-kicker {
+  color: #C8FF3D !important;
+  -webkit-text-fill-color: #C8FF3D !important;
+}
+.landing-hero { border-bottom-color: rgba(255, 255, 255, 0.16) !important; }
+.landing-thread-title {
+  margin-top: 14px;
+  max-width: 11ch !important;
+  font-family: var(--font-display) !important;
+  font-size: clamp(54px, 6.4vw, 92px) !important;
+  font-weight: 500 !important;
+  line-height: 0.9 !important;
+  letter-spacing: -0.045em !important;
+  color: #FFFFFF !important;
+}
+.landing-lab .landing-paper .landing-lede {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+.landing-button {
+  border-color: rgba(255, 255, 255, 0.26) !important;
+  background: transparent !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+.landing-button--dark {
+  border-color: #F7F1E5 !important;
+  background: #F7F1E5 !important;
+  color: #171310 !important;
+  -webkit-text-fill-color: #171310 !important;
+}
+.landing-lab .landing-paper .landing-button--dark :is(span, svg) {
+  color: #171310 !important;
+  -webkit-text-fill-color: #171310 !important;
+}
+.landing-button:hover { border-color: #C8FF3D !important; background: rgba(200, 255, 61, 0.08) !important; }
+.landing-micro { color: rgba(255, 255, 255, 0.45) !important; }
+
+/* Paper object 1: the specimen photograph. */
+.landing-specimen {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: #FFFDF7 !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45) !important;
+}
+.landing-specimen figcaption { color: rgba(36, 27, 19, 0.52) !important; }
+.landing-specimen figcaption span { color: inherit !important; }
+
+/* Method stays part of the dark landing. */
+.landing-method, .landing-record, .landing-close { border-top-color: rgba(255, 255, 255, 0.16) !important; }
+.landing-section-head h2, .landing-close h2 {
+  font-family: var(--font-display) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 0.95 !important;
+  color: #FFFFFF !important;
+}
+.landing-section-head > p:last-child,
+.landing-close > div:first-child > p:not(.landing-kicker) {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+.landing-steps { border-top-color: rgba(255, 255, 255, 0.16) !important; }
+.landing-steps li { border-bottom-color: rgba(255, 255, 255, 0.12) !important; }
+.landing-steps h3 { font-family: var(--font-display) !important; color: #FFFFFF !important; }
+.landing-steps p { color: rgba(255, 255, 255, 0.62) !important; }
+.landing-step-number { color: #C8FF3D !important; font-family: var(--font-mono) !important; font-size: 11px !important; }
+.landing-record__foot { border-top-color: rgba(255, 255, 255, 0.16) !important; color: rgba(255, 255, 255, 0.42) !important; }
+.landing-record__foot a { color: #C4B5FD !important; }
+.landing-record__foot > span { color: inherit !important; }
+
+/* Paper object 2: the record cards. */
+.landing-card {
+  background: #FFFDF7 !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.35) !important;
+}
+.landing-card :is(.landing-card__top, .landing-card__meta) { color: #8A5A00 !important; }
+.landing-card--red :is(.landing-card__top, .landing-card__meta) { color: #A33B2E !important; }
+.landing-card p { color: #211810 !important; -webkit-text-fill-color: #211810 !important; }
+.landing-card .landing-tape { background: rgba(235, 223, 187, 0.78) !important; }
+
+/* Paper object 3: the closing note. */
+.landing-close__actions {
+  position: relative;
+  align-self: end;
+  border: 1px solid rgba(36, 27, 19, 0.22);
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 25px, rgba(87, 72, 40, 0.08) 25px 26px),
+    #FFF3B9 !important;
+  padding: 22px 18px 16px;
+  color: #241B13 !important;
+  box-shadow: 0 24px 46px rgba(0, 0, 0, 0.38);
+  transform: rotate(0.7deg);
+}
+.landing-close__actions :is(p, span, a) { color: #241B13 !important; -webkit-text-fill-color: #241B13 !important; }
+.landing-close__actions .landing-kicker { color: #8A5A00 !important; -webkit-text-fill-color: #8A5A00 !important; }
+.landing-cta { background: #241B13 !important; border-color: #241B13 !important; }
+.landing-close__actions .landing-cta span { color: #F7F1E5 !important; -webkit-text-fill-color: #F7F1E5 !important; }
+.landing-text-link { border-bottom-color: rgba(36, 27, 19, 0.22) !important; }
+.landing-close__actions .landing-micro { color: rgba(36, 27, 19, 0.5) !important; }
+
+.landing-foot { border-top-color: rgba(255, 255, 255, 0.16) !important; }
+.landing-wordmark { color: #FFFFFF !important; font-family: 'Dancing Script', 'Newsreader', cursive !important; }
+.landing-foot > div:first-child > p:last-child { color: rgba(255, 255, 255, 0.5) !important; }
+.landing-foot__links a { color: #C4B5FD !important; }
+.landing-foot__note { color: rgba(255, 255, 255, 0.34) !important; }
+
+@media (max-width: 760px) {
+  .landing-paper { padding: 24px 16px 40px !important; }
+  .landing-paper::after { display: none !important; }
+  .landing-thread-title { font-size: clamp(46px, 13vw, 68px) !important; }
+  .landing-close__actions { transform: none; }
+}
+
+/* Dark landing, paper only on the specimen, record cards and closing note. */
+.site-blueprint main.landing-paper {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+.landing-lab .landing-paper .landing-card :is(p, span, .landing-card__top, .landing-card__meta) {
+  color: #241B13 !important;
+  -webkit-text-fill-color: #241B13 !important;
+}
+.landing-lab .landing-paper .landing-card .landing-card__top { color: #8A5A00 !important; -webkit-text-fill-color: #8A5A00 !important; }
+.landing-lab .landing-paper .landing-card--red .landing-card__top { color: #A33B2E !important; -webkit-text-fill-color: #A33B2E !important; }
+.landing-lab .landing-paper .landing-card .landing-card__meta { color: rgba(36, 27, 19, 0.52) !important; -webkit-text-fill-color: rgba(36, 27, 19, 0.52) !important; }
+.landing-lab .landing-paper .landing-card--red .landing-card__meta { color: #A33B2E !important; -webkit-text-fill-color: #A33B2E !important; }
+.landing-lab .landing-paper .landing-specimen figcaption :is(span, p) {
+  color: rgba(36, 27, 19, 0.52) !important;
+  -webkit-text-fill-color: rgba(36, 27, 19, 0.52) !important;
+}
+.landing-lab .landing-paper .landing-close__actions :is(p, span, a) {
+  color: #241B13 !important;
+  -webkit-text-fill-color: #241B13 !important;
+}
+.landing-lab .landing-paper .landing-close__actions .landing-kicker {
+  color: #8A5A00 !important;
+  -webkit-text-fill-color: #8A5A00 !important;
+}
+.landing-lab .landing-paper .landing-close__actions .landing-cta span {
+  color: #F7F1E5 !important;
+  -webkit-text-fill-color: #F7F1E5 !important;
+}
+.landing-lab .landing-paper .landing-close__actions .landing-micro {
+  color: rgba(36, 27, 19, 0.5) !important;
+  -webkit-text-fill-color: rgba(36, 27, 19, 0.5) !important;
+}
+
+.landing-lab .landing-paper .landing-button.landing-button--dark {
+  background: #F7F1E5 !important;
+  border-color: #F7F1E5 !important;
+  color: #171310 !important;
+  -webkit-text-fill-color: #171310 !important;
+}
+.landing-lab .landing-paper .landing-button.landing-button--dark :is(span, svg) {
+  color: #171310 !important;
+  -webkit-text-fill-color: #171310 !important;
+}

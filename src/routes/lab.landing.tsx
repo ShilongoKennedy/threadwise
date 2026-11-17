@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
+import { ThreadTitle } from "@/components/threadwise/ThreadTitle";
 
 export const Route = createFileRoute("/lab/landing")({
   head: () => ({
@@ -33,15 +34,11 @@ function LandingLab() {
     <div className="landing-lab min-h-[100dvh]">
       <AppHeader section="record" marketing />
       <main className="landing-paper">
-        <div className="landing-binding" aria-hidden="true">
-          {Array.from({ length: 120 }).map((_, index) => <span key={index} />)}
-        </div>
-
         <div className="landing-paper__content">
           <section className="landing-hero">
             <div>
               <p className="landing-kicker">Threadwise / a reading desk</p>
-              <h1>See what the story hides.</h1>
+              <ThreadTitle className="landing-thread-title" />
               <p className="landing-lede">
                 A reading desk for sources you do not trust yet. Bring a link, a PDF or a screenshot.
                 The desk separates the event from the framing, the claim from the evidence, and the
@@ -126,6 +123,7 @@ function LandingLab() {
               <p>It will not tell you what to conclude. It will show you where the evidence stops.</p>
             </div>
             <div className="landing-close__actions">
+              <span className="landing-tape" aria-hidden="true" />
               <p className="landing-kicker">Start here</p>
               <Link to="/analyst" className="landing-cta">
                 <span>Read a source</span><ArrowRight className="h-5 w-5" />
