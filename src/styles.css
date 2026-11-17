@@ -8442,3 +8442,230 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
   color: #17142A !important;
   -webkit-text-fill-color: #17142A !important;
 }
+
+/* Lab hero 3D: a real Three.js spool in a lens. */
+.hero3d {
+  position: relative;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 65% 70% at 72% 45%, rgba(196, 181, 253, 0.16), transparent 68%),
+    #1D174B;
+  color: #F4F0E6;
+}
+.hero3d::after {
+  content: "";
+  position: absolute;
+  z-index: 8;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 170px 170px;
+}
+.hero3d-nav {
+  position: relative;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 30px;
+}
+.hero3d-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  color: #F4F0E6 !important;
+}
+.hero3d-brand__dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 240, 230, 0.55);
+  position: relative;
+}
+.hero3d-brand__dot::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: #C8FF3D;
+}
+.hero3d-nav nav { display: none; gap: 24px; font-family: var(--font-mono); font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+.hero3d-nav nav a { color: rgba(244, 240, 230, 0.65) !important; }
+.hero3d-nav nav a:hover { color: #C8FF3D !important; }
+.hero3d-enter {
+  border-bottom: 1px solid rgba(244, 240, 230, 0.36);
+  padding-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #F4F0E6 !important;
+}
+.hero3d-enter:hover { color: #C8FF3D !important; border-color: #C8FF3D; }
+.hero3d-main {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding: 10px 30px 14px;
+}
+.hero3d-copy { max-width: 650px; }
+.hero3d-kicker {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(244, 240, 230, 0.58) !important;
+}
+.hero3d-copy h1 {
+  margin-top: 18px;
+  font-family: var(--font-display);
+  font-size: clamp(76px, 9.6vw, 138px);
+  font-weight: 500;
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  color: #F4F0E6 !important;
+}
+.hero3d-copy h1 em {
+  font-style: italic;
+  font-weight: 300;
+  color: #C8FF3D !important;
+}
+.hero3d-lede {
+  margin-top: 24px;
+  max-width: 44ch;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(244, 240, 230, 0.68) !important;
+}
+.hero3d-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 20px; margin-top: 24px; }
+.hero3d-cta {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  background: #F4F0E6;
+  padding: 0 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #17142A !important;
+}
+.hero3d-cta:hover { background: #C8FF3D; }
+.hero3d-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-bottom: 1px solid rgba(244, 240, 230, 0.38);
+  padding-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #F4F0E6 !important;
+}
+.hero3d-link:hover { color: #C8FF3D !important; border-color: #C8FF3D; }
+.hero3d-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 16px;
+  margin-top: 32px;
+  border-top: 1px solid rgba(244, 240, 230, 0.17);
+  padding-top: 11px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(244, 240, 230, 0.45) !important;
+}
+.hero3d-key span { color: inherit !important; }
+.hero3d-key b { color: #C8FF3D !important; font-weight: 500; }
+
+.hero3d-stage {
+  position: relative;
+  width: 100%;
+  height: min(68vh, 690px);
+  min-height: 440px;
+}
+.hero3d-canvas { position: absolute; inset: 0; }
+.hero3d-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+.hero3d-loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(244, 240, 230, 0.5) !important;
+}
+.hero3d-caption {
+  position: absolute;
+  left: 6%;
+  bottom: 2%;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(244, 240, 230, 0.4) !important;
+}
+.hero3d-foot {
+  position: relative;
+  z-index: 12;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid rgba(244, 240, 230, 0.18);
+  padding: 12px 30px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(244, 240, 230, 0.42) !important;
+}
+.hero3d-foot span { color: inherit !important; }
+.hero3d-foot__mark { color: #C8FF3D !important; font-size: 11px !important; }
+
+@media (min-width: 960px) {
+  .hero3d-nav { padding: 23px 36px; }
+  .hero3d-nav nav { display: flex; }
+  .hero3d-main { grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr); gap: 30px; padding: 8px 36px 10px; }
+  .hero3d-foot { padding-inline: 36px; }
+}
+@media (max-width: 959px) {
+  .hero3d-nav { padding: 17px; }
+  .hero3d-main { grid-template-columns: 1fr; padding: 24px 17px 8px; }
+  .hero3d-copy h1 { font-size: clamp(62px, 15vw, 100px); }
+  .hero3d-lede { font-size: 14px; margin-top: 18px; }
+  .hero3d-key { margin-top: 22px; }
+  .hero3d-stage { height: 420px; min-height: 0; margin-top: -14px; }
+  .hero3d-caption { left: 2%; }
+  .hero3d-foot { padding: 10px 17px; font-size: 6px; }
+}
+
+.hero3d .hero3d-cta,
+.hero3d .hero3d-cta :is(span, svg),
+.hero3d .hero3d-cta:hover,
+.hero3d .hero3d-cta:hover :is(span, svg) {
+  color: #17142A !important;
+  -webkit-text-fill-color: #17142A !important;
+}
