@@ -5506,3 +5506,220 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
   .home-close h2 { font-size: clamp(42px, 12vw, 64px); }
   .home-foot { padding-inline: 17px; }
 }
+
+/* Lab home: a five-panel reading manifesto. */
+.manifesto-lab {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+  background: #0A0A0A;
+}
+.manifesto-nav {
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 19px 28px 10px;
+  color: #fff;
+  mix-blend-mode: difference;
+}
+.manifesto-brand {
+  font-family: 'Dancing Script', 'Newsreader', cursive;
+  font-size: 27px;
+  line-height: 1;
+  color: #fff !important;
+}
+.manifesto-nav__label { display: none; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.7) !important; }
+.manifesto-nav nav { display: none; gap: 21px; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.08em; }
+.manifesto-nav nav a { color: rgba(255, 255, 255, 0.72) !important; }
+.manifesto-nav nav a:hover { color: #fff !important; }
+.manifesto-enter { border-bottom: 1px solid rgba(255, 255, 255, 0.5); padding-bottom: 3px; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.08em; color: #fff !important; }
+
+.manifesto-scroll {
+  height: 100dvh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+}
+.manifesto-scroll::-webkit-scrollbar { display: none; }
+.manifesto-panel {
+  --bg: #0A0A0A;
+  --ink: #F2ECDA;
+  --accent: #C8FF3D;
+  position: relative;
+  display: flex;
+  min-height: 100dvh;
+  align-items: center;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  padding: 88px 28px 54px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.manifesto-panel.tone-ink { --bg: #0A0A0A; --ink: #F2ECDA; --accent: #C8FF3D; }
+.manifesto-panel.tone-paper { --bg: #F1EBD0; --ink: #151515; --accent: #1B3B8F; }
+.manifesto-panel.tone-cobalt { --bg: #1B3B8F; --ink: #F2ECDA; --accent: #C8FF3D; }
+.manifesto-panel.tone-acid { --bg: #D8FF4F; --ink: #121212; --accent: #1B3B8F; }
+.manifesto-panel.tone-forest { --bg: #123B32; --ink: #F2ECDA; --accent: #C8FF3D; }
+.manifesto-panel__grid {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 1380px;
+  min-height: 72vh;
+  margin-inline: auto;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 26px;
+}
+.manifesto-panel__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  padding-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--ink);
+  opacity: 0.6;
+}
+.manifesto-panel__head p, .manifesto-panel__head span { color: inherit !important; }
+.manifesto-panel__copy { position: relative; z-index: 2; max-width: 1100px; }
+.manifesto-panel h1 {
+  max-width: 12ch;
+  font-family: var(--font-display);
+  font-size: clamp(70px, 9.3vw, 156px);
+  font-weight: 500;
+  line-height: 0.79;
+  letter-spacing: -0.065em;
+  color: var(--ink) !important;
+}
+.manifesto-panel h1 em { font-style: italic; font-weight: 300; color: var(--accent) !important; }
+.manifesto-panel__copy > p {
+  margin-top: 27px;
+  max-width: 43ch;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.68;
+  color: var(--ink);
+  opacity: 0.7;
+}
+.manifesto-scrollhint {
+  display: inline-block;
+  margin-top: 28px;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 35%, transparent);
+  padding-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink) !important;
+  opacity: 0.62;
+}
+.manifesto-ghost {
+  position: absolute;
+  z-index: 0;
+  right: -0.06em;
+  bottom: -0.18em;
+  font-family: var(--font-display);
+  font-size: clamp(300px, 48vw, 760px);
+  font-weight: 500;
+  line-height: 0.7;
+  letter-spacing: -0.08em;
+  color: var(--ink) !important;
+  opacity: 0.065;
+  pointer-events: none;
+}
+.manifesto-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 28px; }
+.manifesto-actions a {
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink) !important;
+}
+.manifesto-actions a:first-child { border: 1px solid var(--ink); padding: 12px 14px; background: var(--ink); color: var(--bg) !important; }
+.manifesto-actions a:first-child:hover { background: var(--accent); border-color: var(--accent); color: var(--bg) !important; }
+.manifesto-actions a:last-child:hover { color: var(--accent) !important; border-color: var(--accent); }
+
+.manifesto-index {
+  position: fixed;
+  z-index: 25;
+  right: 28px;
+  bottom: 23px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  color: #fff;
+  mix-blend-mode: difference;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.manifesto-index__count { display: flex; gap: 5px; align-items: baseline; }
+.manifesto-index__count span:first-child { font-size: 17px; }
+.manifesto-index__count span:last-child { opacity: 0.55; }
+.manifesto-index__lines { display: flex; gap: 3px; align-items: center; }
+.manifesto-index__lines span { display: block; width: 17px; height: 1px; background: rgba(255, 255, 255, 0.35); }
+.manifesto-index__lines span.is-active { width: 32px; background: #fff; }
+.manifesto-index__label { min-width: 60px; opacity: 0.7; }
+.manifesto-corner {
+  position: fixed;
+  z-index: 25;
+  left: 28px;
+  bottom: 24px;
+  color: #fff;
+  mix-blend-mode: difference;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+@media (min-width: 900px) {
+  .manifesto-nav { padding: 19px 36px 10px; }
+  .manifesto-nav__label { display: block; }
+  .manifesto-nav nav { display: flex; }
+  .manifesto-panel { padding: 104px 36px 70px; }
+  .manifesto-index { right: 36px; }
+  .manifesto-corner { left: 36px; }
+}
+@media (max-width: 899px) {
+  .manifesto-nav { padding: 14px 17px 9px; }
+  .manifesto-nav nav { display: none; }
+  .manifesto-panel { padding: 82px 17px 78px; }
+  .manifesto-panel__grid { min-height: 70vh; }
+  .manifesto-panel h1 { font-size: clamp(58px, 14vw, 92px); }
+  .manifesto-panel__copy > p { font-size: 14px; margin-top: 20px; }
+  .manifesto-scrollhint { margin-top: 20px; }
+  .manifesto-index { right: 17px; bottom: 16px; }
+  .manifesto-index__label { display: none; }
+  .manifesto-corner { left: 17px; bottom: 17px; font-size: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .manifesto-scroll { scroll-behavior: auto; }
+}
+
+.manifesto-panel .manifesto-actions a:first-child,
+.manifesto-panel .manifesto-actions a:first-child :is(span, svg) {
+  color: #0B2B24 !important;
+  -webkit-text-fill-color: #0B2B24 !important;
+}
+.manifesto-panel .manifesto-actions a:first-child:hover,
+.manifesto-panel .manifesto-actions a:first-child:hover :is(span, svg) {
+  color: #0B2B24 !important;
+  -webkit-text-fill-color: #0B2B24 !important;
+}
