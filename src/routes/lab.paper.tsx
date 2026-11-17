@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Check, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, Highlighter, Trash2, X } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 
 export const Route = createFileRoute("/lab/paper")({
@@ -91,6 +91,11 @@ function PaperLab() {
   const [read, setRead] = useState<Set<string>>(new Set(["the-event", "the-disagreement", "the-spin", "the-reality"]));
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const [note, setNote] = useState<{ phrase: string; left: number; top: number } | null>(null);
+  const sheetContentRef = useRef<HTMLDivElement>(null);
+  const manualHighlightRef = useRef<{ add: (range: Range) => void; size?: number } | null>(null);
+  const [manualCount, setManualCount] = useState(0);
+  const [manualSupported, setManualSupported] = useState(false);
+  const [selectionAction, setSelectionAction] = useState<{ left: number; top: number } | null>(null);
 
   const openNote = (phrase: string, target: HTMLElement) => {
     if (note?.phrase === phrase) {
@@ -121,6 +126,78 @@ function PaperLab() {
       document.removeEventListener("pointerdown", onPointerDown);
     };
   }, [note]);
+
+  useEffect(() => {
+    const HighlightCtor = (window as unknown as { Highlight?: new (...ranges: Range[]) => { add: (range: Range) => void; size?: number } }).Highlight;
+    const registry = (CSS as unknown as { highlights?: Map<string, unknown> }).highlights;
+    setManualSupported(Boolean(HighlightCtor && registry));
+    if (!HighlightCtor || !registry) return;
+    manualHighlightRef.current = new HighlightCtor();
+    registry.set("tw-manual", manualHighlightRef.current);
+    return () => {
+      registry.delete("tw-manual");
+      manualHighlightRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const readSelection = () => {
+      if (!manualSupported) return;
+      const selection = window.getSelection();
+      const root = sheetContentRef.current;
+      if (!selection || selection.rangeCount === 0 || selection.isCollapsed || !root) {
+        setSelectionAction(null);
+        return;
+      }
+      const range = selection.getRangeAt(0);
+      if (!root.contains(range.commonAncestorContainer)) {
+        setSelectionAction(null);
+        return;
+      }
+      const rect = range.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        setSelectionAction(null);
+        return;
+      }
+      setSelectionAction({
+        left: Math.max(16, Math.min(window.innerWidth - 132, rect.left + rect.width / 2 - 44)),
+        top: Math.max(70, rect.top - 42),
+      });
+    };
+    const hide = () => setSelectionAction(null);
+    document.addEventListener("mouseup", readSelection);
+    document.addEventListener("keyup", readSelection);
+    document.addEventListener("selectionchange", readSelection);
+    window.addEventListener("scroll", hide, { passive: true });
+    return () => {
+      document.removeEventListener("mouseup", readSelection);
+      document.removeEventListener("keyup", readSelection);
+      document.removeEventListener("selectionchange", readSelection);
+      window.removeEventListener("scroll", hide);
+    };
+  }, [manualSupported]);
+
+  const addManualHighlight = () => {
+    const selection = window.getSelection();
+    const root = sheetContentRef.current;
+    const highlight = manualHighlightRef.current;
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed || !root || !highlight) return;
+    const range = selection.getRangeAt(0);
+    if (!root.contains(range.commonAncestorContainer)) return;
+    highlight.add(range.cloneRange());
+    setManualCount((count) => count + 1);
+    selection.removeAllRanges();
+    setSelectionAction(null);
+  };
+
+  const clearManualHighlights = () => {
+    const HighlightCtor = (window as unknown as { Highlight?: new () => { add: (range: Range) => void } }).Highlight;
+    const registry = (CSS as unknown as { highlights?: Map<string, unknown> }).highlights;
+    if (!HighlightCtor || !registry) return;
+    manualHighlightRef.current = new HighlightCtor();
+    registry.set("tw-manual", manualHighlightRef.current);
+    setManualCount(0);
+  };
 
   const toggleRead = (id: string) => {
     setRead((current) => {
@@ -163,12 +240,21 @@ function PaperLab() {
           <div className="paper-spiral" aria-hidden="true">
             {Array.from({ length: 80 }).map((_, index) => <span key={index} />)}
           </div>
-          <div className="paper-sheet__content">
+          <div className="paper-sheet__content" ref={sheetContentRef}>
             <header className="paper-head">
               <p className="paper-kicker">The read · field note 001</p>
               <h1>Analysis: US intel on Iran — a dirty bomb plot?</h1>
               <p className="paper-draft">Draft — 17 Nov 2026</p>
-              <p className="paper-hint">Click a highlighted phrase for a margin note.</p>
+              <p className="paper-hint">Click a yellow phrase for a margin note. Select any text to highlight it yourself.</p>
+              <div className="paper-legend">
+                <span><i className="paper-legend__ai" /> Recommended</span>
+                <span><i className="paper-legend__manual" /> Yours{manualCount > 0 ? ` · ${manualCount}` : ""}</span>
+                {manualSupported && manualCount > 0 ? (
+                  <button type="button" onClick={clearManualHighlights}>
+                    <Trash2 className="h-2.5 w-2.5" /> Clear mine
+                  </button>
+                ) : null}
+              </div>
             </header>
 
             <section id="the-event">
@@ -271,6 +357,17 @@ function PaperLab() {
           </div>
         </article>
       </main>
+      {selectionAction && manualSupported ? (
+        <button
+          type="button"
+          className="paper-highlight-action"
+          style={{ left: selectionAction.left, top: selectionAction.top }}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={addManualHighlight}
+        >
+          <Highlighter className="h-3 w-3" /> Highlight
+        </button>
+      ) : null}
       {note ? (
         <aside className="paper-margin-note" style={{ left: note.left, top: note.top }} role="dialog" aria-label={`Margin note: ${note.phrase}`}>
           <span className="paper-margin-note__tape" aria-hidden="true" />
