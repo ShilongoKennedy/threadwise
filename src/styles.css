@@ -5100,3 +5100,127 @@ body .anatomy-action :is(span, svg) {
   .paper-spiral span::after { width: 22px; }
   .paper-sheet p, .paper-sheet li { font-size: 15.5px; }
 }
+
+/* Highlighted paper phrases become pinned margin notes, not modals. */
+.paper-hint {
+  margin-top: 8px;
+  font-family: var(--font-mono) !important;
+  font-size: 8px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(36, 27, 19, 0.42) !important;
+}
+.paper-highlight {
+  display: inline;
+  border: 0;
+  border-bottom: 1px dashed rgba(36, 27, 19, 0.32);
+  border-radius: 2px;
+  background: rgba(255, 225, 103, 0.72);
+  padding: 0 2px;
+  font: inherit;
+  line-height: inherit;
+  text-align: left;
+  color: #241B13 !important;
+  cursor: pointer;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-color 120ms ease;
+}
+.paper-highlight:hover { background: rgba(255, 211, 66, 0.9); }
+.paper-highlight.is-active { background: #FFD84D; border-bottom-style: solid; box-shadow: 0 0 0 2px rgba(179, 38, 30, 0.12); }
+.paper-copy .paper-highlight strong { color: inherit !important; }
+
+.paper-margin-note {
+  position: fixed;
+  z-index: 120;
+  width: 352px;
+  max-width: calc(100vw - 28px);
+  border: 1px solid rgba(123, 91, 43, 0.24);
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 25px, rgba(87, 72, 40, 0.09) 25px 26px),
+    #FFF3B9;
+  padding: 24px 20px 18px;
+  color: #2A2117 !important;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
+  transform: rotate(-0.7deg);
+  animation: paper-note-in 160ms ease-out;
+}
+@keyframes paper-note-in { from { opacity: 0; transform: translateY(6px) rotate(-0.7deg); } to { opacity: 1; transform: translateY(0) rotate(-0.7deg); } }
+.paper-margin-note__tape {
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  width: 84px;
+  height: 18px;
+  background: rgba(235, 223, 187, 0.72);
+  transform: translateX(-50%) rotate(1.5deg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.paper-margin-note__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.paper-margin-note__head p {
+  font-family: var(--font-mono) !important;
+  font-size: 8px !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #8B3D2E !important;
+}
+.paper-margin-note__head button {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid rgba(42, 33, 23, 0.2);
+  border-radius: 50%;
+  color: #2A2117 !important;
+}
+.paper-margin-note__head button:hover { background: rgba(42, 33, 23, 0.08); }
+.paper-margin-note h3 {
+  margin-top: 12px;
+  font-family: 'Dancing Script', 'Newsreader', cursive;
+  font-size: 29px;
+  line-height: 1;
+  color: #211810 !important;
+}
+.paper-margin-note p {
+  margin-top: 7px;
+  font-family: var(--font-serif);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #2A2117 !important;
+}
+.paper-margin-note__plain { font-size: 15.5px !important; }
+.paper-margin-note__label {
+  margin-top: 13px !important;
+  font-family: var(--font-mono) !important;
+  font-size: 8px !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #6B4F9E !important;
+}
+.paper-margin-note__label--watch { color: #A33B2E !important; }
+.paper-margin-note__foot {
+  margin-top: 15px !important;
+  border-top: 1px solid rgba(42, 33, 23, 0.16);
+  padding-top: 8px;
+  font-family: var(--font-mono) !important;
+  font-size: 7px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(42, 33, 23, 0.5) !important;
+}
+@media (max-width: 640px) {
+  .paper-margin-note {
+    left: 12px !important;
+    right: 12px !important;
+    top: auto !important;
+    bottom: 14px !important;
+    width: auto;
+    max-width: none;
+    max-height: 70dvh;
+    overflow-y: auto;
+    transform: none;
+  }
+  @keyframes paper-note-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+}
