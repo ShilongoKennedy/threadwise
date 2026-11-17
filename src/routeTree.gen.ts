@@ -39,6 +39,7 @@ import { Route as ApiExtractRouteImport } from './routes/api/extract'
 import { Route as ApiModelHealthRouteImport } from './routes/api/model-health'
 import { Route as ApiNewsBriefRouteImport } from './routes/api/news-brief'
 import { Route as ApiPaperNoteRouteImport } from './routes/api/paper-note'
+import { Route as ApiPaperRecommendationsRouteImport } from './routes/api/paper-recommendations'
 import { Route as ApiPracticeRouteImport } from './routes/api/practice'
 import { Route as ApiPublishReadRouteImport } from './routes/api/publish-read'
 import { Route as ApiQuestionGapRouteImport } from './routes/api/question-gap'
@@ -209,6 +210,11 @@ const ApiPaperNoteRoute = ApiPaperNoteRouteImport.update({
   path: '/api/paper-note',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPaperRecommendationsRoute = ApiPaperRecommendationsRouteImport.update({
+  id: '/api/paper-recommendations',
+  path: '/api/paper-recommendations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPracticeRoute = ApiPracticeRouteImport.update({
   id: '/api/practice',
   path: '/api/practice',
@@ -336,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/paper-note': typeof ApiPaperNoteRoute
+  '/api/paper-recommendations': typeof ApiPaperRecommendationsRoute
   '/api/practice': typeof ApiPracticeRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
@@ -387,6 +394,7 @@ export interface FileRoutesByTo {
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/paper-note': typeof ApiPaperNoteRoute
+  '/api/paper-recommendations': typeof ApiPaperRecommendationsRoute
   '/api/practice': typeof ApiPracticeRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
@@ -439,6 +447,7 @@ export interface FileRoutesById {
   '/api/model-health': typeof ApiModelHealthRoute
   '/api/news-brief': typeof ApiNewsBriefRoute
   '/api/paper-note': typeof ApiPaperNoteRoute
+  '/api/paper-recommendations': typeof ApiPaperRecommendationsRoute
   '/api/practice': typeof ApiPracticeRoute
   '/api/publish-read': typeof ApiPublishReadRoute
   '/api/question-gap': typeof ApiQuestionGapRoute
@@ -492,6 +501,7 @@ export interface FileRouteTypes {
     | '/api/model-health'
     | '/api/news-brief'
     | '/api/paper-note'
+    | '/api/paper-recommendations'
     | '/api/practice'
     | '/api/publish-read'
     | '/api/question-gap'
@@ -543,6 +553,7 @@ export interface FileRouteTypes {
     | '/api/model-health'
     | '/api/news-brief'
     | '/api/paper-note'
+    | '/api/paper-recommendations'
     | '/api/practice'
     | '/api/publish-read'
     | '/api/question-gap'
@@ -594,6 +605,7 @@ export interface FileRouteTypes {
     | '/api/model-health'
     | '/api/news-brief'
     | '/api/paper-note'
+    | '/api/paper-recommendations'
     | '/api/practice'
     | '/api/publish-read'
     | '/api/question-gap'
@@ -646,6 +658,7 @@ export interface RootRouteChildren {
   ApiModelHealthRoute: typeof ApiModelHealthRoute
   ApiNewsBriefRoute: typeof ApiNewsBriefRoute
   ApiPaperNoteRoute: typeof ApiPaperNoteRoute
+  ApiPaperRecommendationsRoute: typeof ApiPaperRecommendationsRoute
   ApiPracticeRoute: typeof ApiPracticeRoute
   ApiPublishReadRoute: typeof ApiPublishReadRoute
   ApiQuestionGapRoute: typeof ApiQuestionGapRoute
@@ -879,6 +892,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPaperNoteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/paper-recommendations': {
+      id: '/api/paper-recommendations'
+      path: '/api/paper-recommendations'
+      fullPath: '/api/paper-recommendations'
+      preLoaderRoute: typeof ApiPaperRecommendationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/practice': {
       id: '/api/practice'
       path: '/api/practice'
@@ -1046,6 +1066,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiModelHealthRoute: ApiModelHealthRoute,
   ApiNewsBriefRoute: ApiNewsBriefRoute,
   ApiPaperNoteRoute: ApiPaperNoteRoute,
+  ApiPaperRecommendationsRoute: ApiPaperRecommendationsRoute,
   ApiPracticeRoute: ApiPracticeRoute,
   ApiPublishReadRoute: ApiPublishReadRoute,
   ApiQuestionGapRoute: ApiQuestionGapRoute,
