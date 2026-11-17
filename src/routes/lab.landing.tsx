@@ -18,13 +18,13 @@ function HalftoneGlobe() {
     <svg viewBox="0 0 420 300" role="img" aria-label="Halftone globe showing Vienna, Tehran and Natanz">
       <defs>
         <pattern id="news-dots" width="5.4" height="5.4" patternUnits="userSpaceOnUse">
-          <circle cx="2.7" cy="2.7" r="1.45" fill="#191d23" />
+          <circle cx="2.7" cy="2.7" r="1.45" fill="#5B4A8E" />
         </pattern>
         <clipPath id="news-globe-clip">
           <circle cx="210" cy="148" r="103" />
         </clipPath>
       </defs>
-      <rect width="420" height="300" fill="#ece9df" />
+      <rect width="420" height="300" fill="#f1eee5" />
       <g clipPath="url(#news-globe-clip)">
         <rect x="100" y="40" width="220" height="220" fill="url(#news-dots)" />
         <g fill="none" stroke="#ece9df" strokeWidth="4">
@@ -36,13 +36,13 @@ function HalftoneGlobe() {
           <path d="M118 193 H302" />
         </g>
       </g>
-      <circle cx="210" cy="148" r="103" fill="none" stroke="#191d23" strokeWidth="2" />
-      <g fill="#191d23" stroke="#ece9df" strokeWidth="2">
+      <circle cx="210" cy="148" r="103" fill="none" stroke="#5B4A8E" strokeWidth="2" />
+      <g fill="#5B4A8E" stroke="#ece9df" strokeWidth="2">
         <circle cx="202" cy="102" r="5" />
         <circle cx="236" cy="139" r="5" />
         <circle cx="218" cy="172" r="5" />
       </g>
-      <g fill="#191d23" fontFamily="DM Mono, monospace" fontSize="8" letterSpacing="1">
+      <g fill="#5B4A8E" fontFamily="DM Mono, monospace" fontSize="8" letterSpacing="1">
         <text x="275" y="90">VIENNA</text>
         <text x="284" y="138">TEHRAN</text>
         <text x="260" y="190">NATANZ</text>
