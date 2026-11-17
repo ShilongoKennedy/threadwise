@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
 import { GeoGlobe } from "@/components/record/GeoGlobe";
-import { ThreadTitle } from "@/components/threadwise/ThreadTitle";
 
 export const Route = createFileRoute("/lab/landing")({
   head: () => ({
     meta: [
-      { title: "Landing, on paper — Threadwise lab" },
+      { title: "The index — Threadwise lab" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -16,144 +16,205 @@ export const Route = createFileRoute("/lab/landing")({
 
 const SAMPLE_TOKEN = "mn4qvf4bhu";
 
+const TOOLS = [
+  {
+    key: "analyst",
+    label: "The Analyst",
+    note: "Read a source",
+    title: "What is this source doing?",
+    body: "A link, a PDF, a screenshot. The read separates what happened from what the source wants you to think happened.",
+    rows: [
+      ["The move", "A confidential report is being used as a public signal before it is a public document."],
+      ["What it leaves out", "The report itself is not quoted. Its date is not established."],
+      ["Red team", "Argue with the read and see where the evidence pushes back."],
+    ],
+  },
+  {
+    key: "seminar",
+    label: "Seminar",
+    note: "Compare explanations",
+    title: "Two accounts, one crux.",
+    body: "The strongest version of each explanation, the mechanism that drives it, and the exact test that would separate them.",
+    rows: [
+      ["Theory A", "The timing was ordinary bureaucratic signalling."],
+      ["Theory B", "The timing was a deliberate message to the Board."],
+      ["The crux", "Whether the release was coordinated with a political decision."],
+    ],
+  },
+  {
+    key: "anatomy",
+    label: "The Anatomy",
+    note: "Where evidence stops",
+    title: "How a belief is built.",
+    body: "Trace a claim from observation to conclusion. Each rung gets a status: established, supported, contested, unsupported or unfalsifiable.",
+    rows: [
+      ["01 Observation", "The photograph exists and can be described."],
+      ["03 Interpretation", "The headwear is read as a deliberate symbol."],
+      ["04 Intention", "No document shows anyone chose it for that meaning."],
+    ],
+  },
+] as const;
+
 const LOOP = [
-  ["01", "Read the move", "A link, a PDF, a screenshot. The read separates what happened from what the source wants you to think happened."],
-  ["02", "Keep the questions", "File evidence for and against. When a question is one-sided, the record says so instead of pretending it is settled."],
-  ["03", "Predict and score", "Date a claim, come back when it resolves. The record keeps the Brier score, not only the hits."],
-  ["04", "Practise the gap", "A weekly drill targets the falsifier or steelman you are weakest at, then shows whether you are improving."],
+  ["01", "Read the move", "Separate what happened from the frame."],
+  ["02", "Keep the questions", "File evidence for and against."],
+  ["03", "Predict and score", "Date the claim. Check the calibration."],
+  ["04", "Practise the gap", "Drill the falsifier you avoid."],
 ] as const;
 
 const RECORD = [
-  ["01", "Question", "Does a confidential report to governments count as a finding against Iran at all?", "Filed · open", "lime"],
-  ["02", "Correction", "Removed an unsupported reporting date added beyond the move.", "Patched · 01", "red"],
-  ["03", "Watch", "Whether the Board puts Iran on the formal agenda at its next meeting.", "Vienna · pending", "ink"],
+  ["01", "Question", "Does a confidential report to governments count as a finding against Iran at all?", "Filed · open", "is-open"],
+  ["02", "Correction", "Removed an unsupported reporting date added beyond the move.", "Patched · 01", "is-patch"],
+  ["03", "Watch", "Whether the Board puts Iran on the formal agenda at its next meeting.", "Vienna · pending", "is-wait"],
 ] as const;
 
 function LandingLab() {
+  const [active, setActive] = useState<(typeof TOOLS)[number]["key"]>("analyst");
+  const tool = TOOLS.find((item) => item.key === active) ?? TOOLS[0];
+
   return (
-    <div className="landing-lab min-h-[100dvh]">
+    <div className="index-lab min-h-[100dvh]">
       <AppHeader section="home" marketing />
-      <main className="landing-paper">
-        <div className="landing-paper__content">
-          <section className="landing-hero">
-            <div>
-              <p className="landing-kicker">Threadwise / a reading desk</p>
-              <ThreadTitle className="landing-thread-title" />
-              <p className="landing-lede">
+
+      <main className="index-main">
+        <section className="index-hero">
+          <div className="index-hero__meta">
+            <span>Threadwise / reading desk</span>
+            <span>Vol. 01 · 2026</span>
+          </div>
+
+          <div className="index-hero__grid">
+            <div className="index-hero__copy">
+              <p className="index-kicker">Evidence first. Verdict later.</p>
+              <h1>See what the <em>story</em> hides.</h1>
+              <p className="index-lede">
                 A reading desk for sources you do not trust yet. Bring a link, a PDF or a screenshot.
-                The desk separates the event from the framing, the claim from the evidence, and the
-                evidence from the verdict.
+                Separate the event from the framing, the claim from the evidence, and the evidence
+                from the verdict.
               </p>
-              <div className="landing-actions">
-                <Link to="/read/$token" params={{ token: SAMPLE_TOKEN }} className="landing-button landing-button--dark">
+              <div className="index-actions">
+                <Link to="/read/$token" params={{ token: SAMPLE_TOKEN }} className="index-button index-button--light">
                   Open the IAEA read <ArrowUpRight className="h-4 w-4" />
                 </Link>
-                <Link to="/analyst" className="landing-button">
+                <Link to="/analyst" className="index-button">
                   Bring your own source <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
-              <div className="landing-proof" aria-label="What the desk does">
-                <span><b>01</b> Read a source</span>
-                <span><b>02</b> Compare explanations</span>
-                <span><b>03</b> See where evidence stops</span>
+              <div className="index-caption">
+                <span>No summaries.</span>
+                <span>No verdicts you didn’t ask for.</span>
+                <span>Free while in beta.</span>
               </div>
-              <p className="landing-micro">Free while in beta · sign in with Google</p>
             </div>
 
-            <figure className="landing-specimen">
-              <span className="landing-tape" aria-hidden="true" />
-              <div className="landing-globe">
-                <GeoGlobe theme="blueprint" layout="center" minimal mobileScale={0.9} />
+            <aside className="index-console">
+              <div className="index-console__top">
+                <p>Three instruments</p>
+                <span>01 / 03</span>
               </div>
-              <figcaption>
-                <span>The record / live globe</span>
-                <span>Vienna · Tehran · Natanz</span>
-              </figcaption>
-            </figure>
-          </section>
+              <div className="index-tabs" role="tablist" aria-label="Threadwise tools">
+                {TOOLS.map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={active === item.key}
+                    onClick={() => setActive(item.key)}
+                    className={active === item.key ? "is-active" : ""}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              <div className="index-preview" role="tabpanel">
+                <p className="index-preview__label">{tool.note}</p>
+                <h2>{tool.title}</h2>
+                <p className="index-preview__body">{tool.body}</p>
+                <div className="index-preview__rows">
+                  {tool.rows.map(([label, body]) => (
+                    <div key={label}>
+                      <span>{label}</span>
+                      <p>{body}</p>
+                    </div>
+                  ))}
+                </div>
+                <Link to={active === "analyst" ? "/analyst" : active === "seminar" ? "/seminar" : "/anatomy"} className="index-preview__link">
+                  Open {tool.label} <ArrowUpRight className="h-3 w-3" />
+                </Link>
+              </div>
+              <div className="index-console__globe">
+                <GeoGlobe theme="blueprint" layout="center" minimal mobileScale={0.8} />
+                <span>The record · Vienna / Tehran / Natanz</span>
+              </div>
+            </aside>
+          </div>
+        </section>
 
-          <section className="landing-method">
-            <div className="landing-section-head">
-              <p className="landing-kicker">The method / what happens after the read</p>
-              <h2>What happens after the read.</h2>
-              <p>
-                A read is the beginning. The questions, predictions and corrections are what make it
-                checkable later.
-              </p>
-            </div>
-            <ol className="landing-steps">
-              {LOOP.map(([number, title, body]) => (
-                <li key={number}>
-                  <span className="landing-step-number">{number}</span>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
-                </li>
-              ))}
-            </ol>
-          </section>
+        <section className="index-section index-method">
+          <div className="index-section__head">
+            <p className="index-kicker">02 / The method</p>
+            <h2>What happens after the read.</h2>
+            <p>A read is the beginning. The questions, predictions and corrections make it checkable later.</p>
+          </div>
+          <ol className="index-steps">
+            {LOOP.map(([number, title, body]) => (
+              <li key={number}>
+                <span>{number}</span>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
 
-          <section className="landing-record">
-            <div className="landing-section-head">
-              <p className="landing-kicker">The record / from the IAEA read</p>
+        <section className="index-section index-record">
+          <div className="index-record__head">
+            <div>
+              <p className="index-kicker">03 / The record</p>
               <h2>What the read leaves behind.</h2>
-              <p>
-                A chat window gives you an answer and forgets it. This leaves a record: the question
-                the read opened, the correction it needed, and what to watch next.
-              </p>
             </div>
-            <div className="landing-cards">
-              {RECORD.map(([number, label, text, meta, tone]) => (
-                <article key={number} className={`landing-card landing-card--${tone}`}>
-                  <span className="landing-tape" aria-hidden="true" />
-                  <div className="landing-card__top"><span>{number}</span><span>{label}</span></div>
-                  <p>{text}</p>
-                  <span className="landing-card__meta">{meta}</span>
-                </article>
-              ))}
-            </div>
-            <div className="landing-record__foot">
-              <span>From the IAEA read · not a live record</span>
-              <Link to="/digest">Open the record <ArrowUpRight className="h-3 w-3" /></Link>
-            </div>
-          </section>
+            <p>A chat window forgets. This keeps the question, the correction and the thing to watch.</p>
+          </div>
+          <div className="index-ledger">
+            {RECORD.map(([number, label, text, meta, state]) => (
+              <article key={number} className={`index-ledger__row ${state}`}>
+                <span className="index-ledger__number">{number}</span>
+                <span className="index-ledger__label">{label}</span>
+                <p>{text}</p>
+                <span className="index-ledger__meta">{meta}</span>
+              </article>
+            ))}
+          </div>
+          <div className="index-record__foot">
+            <span>From the IAEA read · not a live record</span>
+            <Link to="/digest">Open the record <ArrowRight className="h-3 w-3" /></Link>
+          </div>
+        </section>
 
-          <section className="landing-close">
+        <section className="index-close">
+          <p className="index-kicker">04 / The last page</p>
+          <div className="index-close__grid">
+            <h2>Read one<br /><em>article</em> properly.</h2>
             <div>
-              <p className="landing-kicker">The last page</p>
-              <h2>Read one article properly.</h2>
-              <p>
-                Ten minutes with a source you already distrust will teach you more than a month of
-                summaries. Start with the one you have open in another tab.
-              </p>
+              <p>Ten minutes with a source you already distrust will teach you more than a month of summaries. Start with the one you have open in another tab.</p>
               <p>It will not tell you what to conclude. It will show you where the evidence stops.</p>
+              <div className="index-actions">
+                <Link to="/analyst" className="index-button index-button--light">
+                  Read a source <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link to="/read/$token" params={{ token: SAMPLE_TOKEN }} className="index-button index-button--text">
+                  Open the IAEA read <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
             </div>
-            <div className="landing-close__actions">
-              <span className="landing-tape" aria-hidden="true" />
-              <p className="landing-kicker">Start here</p>
-              <Link to="/analyst" className="landing-cta">
-                <span>Read a source</span><ArrowRight className="h-5 w-5" />
-              </Link>
-              <Link to="/read/$token" params={{ token: SAMPLE_TOKEN }} className="landing-text-link">
-                Open the IAEA read <ArrowUpRight className="h-3.5 w-3.5" />
-              </Link>
-              <p className="landing-micro">Free while in beta<br />Sign in with Google</p>
-            </div>
-          </section>
+          </div>
+        </section>
 
-          <footer className="landing-foot">
-            <div>
-              <p className="landing-wordmark">threadwise</p>
-              <p>A reading desk for sources you do not trust yet.</p>
-            </div>
-            <div className="landing-foot__links">
-              <Link to="/analyst">The analyst</Link>
-              <Link to="/seminar">Seminar</Link>
-              <Link to="/anatomy">The anatomy</Link>
-              <Link to="/read/$token" params={{ token: SAMPLE_TOKEN }}>Sample read</Link>
-            </div>
-            <span className="landing-foot__note">Paper prototype · not the live homepage</span>
-          </footer>
-        </div>
+        <footer className="index-foot">
+          <span className="index-wordmark">threadwise</span>
+          <span>A reading desk for sources you do not trust yet.</span>
+          <span>Paper prototype · not the live homepage</span>
+        </footer>
       </main>
     </div>
   );
