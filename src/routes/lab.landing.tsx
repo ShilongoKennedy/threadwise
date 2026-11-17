@@ -52,6 +52,11 @@ function LandingLab() {
                   Bring your own source <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
+              <div className="landing-proof" aria-label="What the desk does">
+                <span><b>01</b> Read a source</span>
+                <span><b>02</b> Compare explanations</span>
+                <span><b>03</b> See where evidence stops</span>
+              </div>
               <p className="landing-micro">Free while in beta · sign in with Google</p>
             </div>
 

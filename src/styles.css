@@ -6441,3 +6441,136 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
 .landing-specimen { transition: transform 180ms ease, box-shadow 180ms ease; }
 .landing-specimen:hover { transform: rotate(0deg) translateY(-3px); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5) !important; }
 .landing-lab .landing-paper .landing-button.landing-button--dark :is(span, svg) { color: #171310 !important; }
+
+/* Experimental landing: cool paper, black ink, lilac and lime only. */
+.landing-lab {
+  --landing-paper: #F2F3EF;
+  --landing-card: #FBFCF8;
+  --landing-ink: #151A22;
+  --landing-muted: rgba(21, 26, 34, 0.58);
+  --landing-lilac: #6B5B95;
+}
+.landing-lab .landing-card {
+  background-image:
+    linear-gradient(to right, transparent 0 18px, rgba(107, 91, 149, 0.16) 18px 19px, transparent 19px),
+    repeating-linear-gradient(to bottom, transparent 0 25px, rgba(69, 83, 105, 0.08) 25px 26px),
+    linear-gradient(var(--landing-card), var(--landing-card)) !important;
+  border-color: rgba(21, 26, 34, 0.22) !important;
+}
+.landing-lab .landing-card :is(p, .landing-card__top, .landing-card__meta) {
+  color: var(--landing-ink) !important;
+  -webkit-text-fill-color: var(--landing-ink) !important;
+}
+.landing-lab .landing-card .landing-card__top,
+.landing-lab .landing-card .landing-card__meta,
+.landing-lab .landing-card--red .landing-card__top,
+.landing-lab .landing-card--red .landing-card__meta {
+  color: var(--landing-lilac) !important;
+  -webkit-text-fill-color: var(--landing-lilac) !important;
+}
+.landing-lab .landing-card .landing-tape,
+.landing-lab .landing-specimen .landing-tape,
+.landing-lab .landing-close__actions .landing-tape {
+  background: rgba(185, 176, 213, 0.62) !important;
+}
+.landing-lab .landing-specimen {
+  background: var(--landing-paper) !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+}
+.landing-lab .landing-specimen figcaption,
+.landing-lab .landing-specimen figcaption :is(span, p) {
+  color: rgba(21, 26, 34, 0.56) !important;
+  -webkit-text-fill-color: rgba(21, 26, 34, 0.56) !important;
+}
+.landing-lab .landing-close__actions {
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 25px, rgba(69, 83, 105, 0.08) 25px 26px),
+    #EEEDF4 !important;
+  border-color: rgba(21, 26, 34, 0.22) !important;
+  color: var(--landing-ink) !important;
+}
+.landing-lab .landing-close__actions::before {
+  background: rgba(107, 91, 149, 0.2) !important;
+}
+.landing-lab .landing-close__actions :is(p, span, a) {
+  color: var(--landing-ink) !important;
+  -webkit-text-fill-color: var(--landing-ink) !important;
+}
+.landing-lab .landing-close__actions .landing-kicker {
+  color: var(--landing-lilac) !important;
+  -webkit-text-fill-color: var(--landing-lilac) !important;
+}
+.landing-lab .landing-close__actions .landing-cta span {
+  color: #F4F5F1 !important;
+  -webkit-text-fill-color: #F4F5F1 !important;
+}
+.landing-lab .landing-close__actions .landing-micro {
+  color: rgba(21, 26, 34, 0.52) !important;
+  -webkit-text-fill-color: rgba(21, 26, 34, 0.52) !important;
+}
+.landing-lab .landing-paper .landing-button.landing-button--dark {
+  background: #F2F3EF !important;
+  border-color: #F2F3EF !important;
+  color: #151A22 !important;
+  -webkit-text-fill-color: #151A22 !important;
+}
+.landing-lab .landing-paper .landing-button.landing-button--dark :is(span, svg) {
+  color: #151A22 !important;
+  -webkit-text-fill-color: #151A22 !important;
+}
+.landing-lab .landing-paper :is(.landing-kicker, .landing-step-number) {
+  color: #C8FF3D !important;
+  -webkit-text-fill-color: #C8FF3D !important;
+}
+.landing-lab .landing-paper .landing-record__foot a,
+.landing-lab .landing-paper .landing-foot__links a {
+  color: #C4B5FD !important;
+  -webkit-text-fill-color: #C4B5FD !important;
+}
+
+/* A clearer hero: proof under the actions, then method. */
+.landing-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  padding-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+.landing-proof span { display: inline-flex; align-items: center; gap: 6px; color: inherit !important; }
+.landing-proof b {
+  font-weight: 500;
+  color: #C8FF3D !important;
+  -webkit-text-fill-color: #C8FF3D !important;
+}
+.landing-hero .landing-micro { margin-top: 9px; }
+
+/* Final cool-only landing pass: no warm ink, no red pen. */
+.landing-lab .landing-paper a:hover {
+  color: #C4B5FD !important;
+  -webkit-text-fill-color: #C4B5FD !important;
+}
+.landing-lab .landing-paper .landing-card .landing-card__top,
+.landing-lab .landing-paper .landing-card .landing-card__meta,
+.landing-lab .landing-paper .landing-card--red .landing-card__top,
+.landing-lab .landing-paper .landing-card--red .landing-card__meta {
+  color: #5D6270 !important;
+  -webkit-text-fill-color: #5D6270 !important;
+}
+.landing-lab .landing-paper .landing-close__actions .landing-cta {
+  background: #10141B !important;
+  border-color: #10141B !important;
+}
+.landing-lab .landing-paper .landing-close__actions .landing-cta:hover {
+  background: #5B4C85 !important;
+  border-color: #5B4C85 !important;
+}
+.landing-lab .landing-paper .landing-close__actions .landing-cta :is(span, svg) {
+  color: #F4F5F1 !important;
+  -webkit-text-fill-color: #F4F5F1 !important;
+}
