@@ -17,6 +17,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { BLUEPRINT_PALETTE, fieldColorAt } from "@/lib/threadwise/palette";
 import { bpButtonClass } from "@/components/threadwise/BlueprintUI";
+import { PaperAnnotations } from "@/components/threadwise/PaperAnnotations";
 const CloudSync = lazy(() => import("@/components/threadwise/CloudSync"));
 
 function NotFoundComponent() {
@@ -222,6 +223,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       {keepsOwnField ? <Outlet /> : <SiteBlueprint><Outlet /></SiteBlueprint>}
+      <PaperAnnotations />
       <Toaster />
       <ClientOnly fallback={null}><Suspense fallback={null}><CloudSync /></Suspense></ClientOnly>
     </QueryClientProvider>
