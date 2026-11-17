@@ -56,6 +56,7 @@ import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
 import { Route as LabHero3dRouteImport } from './routes/lab.hero3d'
 import { Route as LabLandingRouteImport } from './routes/lab.landing'
 import { Route as LabPaperRouteImport } from './routes/lab.paper'
+import { Route as LabReadingTestRouteImport } from './routes/lab.reading-test'
 import { Route as PracticeTokenRouteImport } from './routes/practice.$token'
 import { Route as QuestionIdRouteImport } from './routes/question.$id'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
@@ -297,6 +298,11 @@ const LabPaperRoute = LabPaperRouteImport.update({
   path: '/lab/paper',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabReadingTestRoute = LabReadingTestRouteImport.update({
+  id: '/lab/reading-test',
+  path: '/lab/reading-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PracticeTokenRoute = PracticeTokenRouteImport.update({
   id: '/practice/$token',
   path: '/practice/$token',
@@ -371,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/lab/hero3d': typeof LabHero3dRoute
   '/lab/landing': typeof LabLandingRoute
   '/lab/paper': typeof LabPaperRoute
+  '/lab/reading-test': typeof LabReadingTestRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -425,6 +432,7 @@ export interface FileRoutesByTo {
   '/lab/hero3d': typeof LabHero3dRoute
   '/lab/landing': typeof LabLandingRoute
   '/lab/paper': typeof LabPaperRoute
+  '/lab/reading-test': typeof LabReadingTestRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -480,6 +488,7 @@ export interface FileRoutesById {
   '/lab/hero3d': typeof LabHero3dRoute
   '/lab/landing': typeof LabLandingRoute
   '/lab/paper': typeof LabPaperRoute
+  '/lab/reading-test': typeof LabReadingTestRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -536,6 +545,7 @@ export interface FileRouteTypes {
     | '/lab/hero3d'
     | '/lab/landing'
     | '/lab/paper'
+    | '/lab/reading-test'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -590,6 +600,7 @@ export interface FileRouteTypes {
     | '/lab/hero3d'
     | '/lab/landing'
     | '/lab/paper'
+    | '/lab/reading-test'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -644,6 +655,7 @@ export interface FileRouteTypes {
     | '/lab/hero3d'
     | '/lab/landing'
     | '/lab/paper'
+    | '/lab/reading-test'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -699,6 +711,7 @@ export interface RootRouteChildren {
   LabHero3dRoute: typeof LabHero3dRoute
   LabLandingRoute: typeof LabLandingRoute
   LabPaperRoute: typeof LabPaperRoute
+  LabReadingTestRoute: typeof LabReadingTestRoute
   PracticeTokenRoute: typeof PracticeTokenRoute
   QuestionIdRoute: typeof QuestionIdRoute
   ReadTokenRoute: typeof ReadTokenRoute
@@ -1037,6 +1050,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LabPaperRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab/reading-test': {
+      id: '/lab/reading-test'
+      path: '/lab/reading-test'
+      fullPath: '/lab/reading-test'
+      preLoaderRoute: typeof LabReadingTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/practice/$token': {
       id: '/practice/$token'
       path: '/practice/$token'
@@ -1123,6 +1143,7 @@ const rootRouteChildren: RootRouteChildren = {
   LabHero3dRoute: LabHero3dRoute,
   LabLandingRoute: LabLandingRoute,
   LabPaperRoute: LabPaperRoute,
+  LabReadingTestRoute: LabReadingTestRoute,
   PracticeTokenRoute: PracticeTokenRoute,
   QuestionIdRoute: QuestionIdRoute,
   ReadTokenRoute: ReadTokenRoute,
