@@ -9,6 +9,7 @@ import { SeminarLoupe, LoupeSelectionButton, LookCloserButton, useLoupeSelection
 import { supabase } from "@/integrations/supabase/client";
 import { ReadingFocusToggle, ReadingMarker, ReadingProgress } from "@/components/threadwise/BlueprintUI";
 import { fieldColorAt } from "@/lib/threadwise/palette";
+import { SEMINAR_FORMS } from "@/lib/threadwise/read-forms";
 
 export const Route = createFileRoute("/seminar")({
   head: () => ({
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/seminar")({
       {
         name: "description",
         content:
-          "Put a quote or question on the table. Two steelmanned theories, one crux, and a provisional verdict only if you ask for it.",
+          "Put a quote or question on the table. One to three steelmanned readings, one crux, and a provisional verdict only if you ask for it.",
       },
     ],
   }),
@@ -44,14 +45,14 @@ type SavedSeminar = {
   context: string | null;
   question: string;
   seminar: Seminar & { lesson?: SeminarLesson };
-  stand: "A" | "B" | "undecided" | null;
+  stand: "A" | "B" | "C" | "undecided" | null;
   verdict_shown: boolean;
   created_at: string;
 };
 
 const SEMINAR_SECTIONS = [
   { id: "s-question", n: "01", label: "The question" },
-  { id: "s-readings", n: "02", label: "Two readings" },
+  { id: "s-readings", n: "02", label: "Readings" },
   { id: "s-crux", n: "03", label: "The crux" },
   { id: "s-verdict", n: "04", label: "The verdict" },
   { id: "s-lesson", n: "05", label: "The lesson" },
@@ -122,7 +123,7 @@ function SeminarPage() {
   };
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [stand, setStand] = useState<"A" | "B" | "undecided" | null>(null);
+  const [stand, setStand] = useState<"A" | "B" | "C" | "undecided" | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [verdictOpen, setVerdictOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -293,7 +294,7 @@ function SeminarPage() {
     }
   };
 
-  const choose = (next: "A" | "B" | "undecided") => {
+  const choose = (next: "A" | "B" | "C" | "undecided") => {
     setStand(next);
     setRevealed(true);
   };
@@ -384,7 +385,7 @@ function SeminarPage() {
             </p>
             <span className="h-3 w-px bg-white/20" />
             <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/86">
-              Two theories · one crux
+              One to three readings · one crux
             </p>
             <ReadingFocusToggle className="ml-auto" />
           </div>
@@ -394,7 +395,7 @@ function SeminarPage() {
           </h1>
           <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-white/92">
             Bring a quote or a question you cannot settle. The seminar builds the strongest
-            version of two rival explanations, then shows the exact point where they part.
+            version of each serious explanation, then shows the exact point where they part.
           </p>
 
           <form
@@ -549,16 +550,27 @@ function SeminarPage() {
             </div>
           </section>
 
-          <section id="s-readings" data-reading-section="s-readings" data-loupe-section="Two readings" data-seminar-tone="2" className="seminar-dark-ink reading-section mt-8">
+          <section id="s-readings" data-reading-section="s-readings" data-loupe-section="Readings" data-seminar-tone="2" className="seminar-dark-ink reading-section mt-8">
             <div className="flex items-end justify-between gap-4 pb-1">
-              <h2 className="font-display text-[32px] leading-none md:text-[40px]">Two readings of the same thing.</h2>
+              <div>
+                <p className="mb-1 font-mono text-[8px] uppercase tracking-[0.12em] text-white/58">
+                  {seminar.form ? SEMINAR_FORMS[seminar.form].label : SEMINAR_FORMS.duel.label} · {seminar.theories.length} {seminar.theories.length === 1 ? "reading" : "readings"}
+                </p>
+              <h2 className="font-display text-[32px] leading-none md:text-[40px]">
+                {seminar.form === "single"
+                  ? "One reading, under pressure."
+                  : seminar.form === "trilemma"
+                    ? "Three readings of the same thing."
+                    : "Two readings of the same thing."}
+              </h2>
+              </div>
               <div className="flex items-center gap-3">
                 <span className="hidden font-mono text-[8px] uppercase tracking-[0.12em] text-white/58 sm:inline">
                   steelmanned
                 </span>
                 <LookCloserButton
                   text={seminar.theories.map((theory) => `${theory.name}: ${theory.claim}`).join(" · ").slice(0, 680)}
-                  section="Two readings"
+                  section="Readings"
                   onLookCloser={openLoupe}
                 />
               </div>
@@ -571,7 +583,7 @@ function SeminarPage() {
               </span>
             </p>
 
-            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <div className={`mt-5 grid gap-4 ${seminar.theories.length === 3 ? "lg:grid-cols-3" : seminar.theories.length === 2 ? "lg:grid-cols-2" : ""}`}>
               {seminar.theories.map((theory, index) => (
                 <TheoryColumn key={index} theory={theory} index={index} onLookCloser={openLoupe} />
               ))}
@@ -587,26 +599,27 @@ function SeminarPage() {
                 </p>
               </div>
               <div className="pt-3">
-                <h2 className="max-w-[20ch] font-display text-[30px] leading-[1.02] md:text-[36px]">Which reading survives the evidence?</h2>
+                <h2 className="max-w-[20ch] font-display text-[30px] leading-[1.02] md:text-[36px]">
+                  {seminar.theories.length === 1
+                    ? "Does this reading survive the evidence?"
+                    : "Which reading survives the evidence?"}
+                </h2>
                 <p className="mt-2 max-w-[56ch] font-serif text-[14px] leading-relaxed text-white/84">
-                  This is not a vote on what is good. It is a bet on which causal account explains more
-                  of what happened.
+                  {seminar.theories.length === 1
+                    ? "This is not a vote on what is good. It is a test of whether the causal account explains more of what happened."
+                    : "This is not a vote on what is good. It is a bet on which causal account explains more of what happened."}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => choose("A")}
-                    className="bp-button bp-button--secondary bp-button--sm"
-                  >
-                    Theory A
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => choose("B")}
-                    className="bp-button bp-button--secondary bp-button--sm"
-                  >
-                    Theory B
-                  </button>
+                  {seminar.theories.map((theory, index) => (
+                    <button
+                      key={theory.key}
+                      type="button"
+                      onClick={() => choose(index === 0 ? "A" : index === 1 ? "B" : "C")}
+                      className="bp-button bp-button--secondary bp-button--sm"
+                    >
+                      Theory {theory.key}
+                    </button>
+                  ))}
                   <button
                     type="button"
                     onClick={() => choose("undecided")}
@@ -759,7 +772,7 @@ function SeminarPage() {
                       Take the deeper lesson.
                     </h2>
                     <p className="mt-2 max-w-[58ch] font-serif text-[14px] leading-[1.65] text-white/84">
-                      The terms, the background, both mechanisms, the crux as a test, the mistakes to
+                      The terms, the background, each mechanism, the crux as a test, the mistakes to
                       avoid, and a worked example — taught from the question you brought.
                     </p>
                   </div>
@@ -891,7 +904,7 @@ function TheoryColumn({
   index: number;
   onLookCloser: (target: LoupeTarget) => void;
 }) {
-  const letter = theory.key === "A" || theory.key === "B" ? theory.key : index === 0 ? "A" : "B";
+  const letter = theory.key === "A" || theory.key === "B" || theory.key === "C" ? theory.key : index === 0 ? "A" : index === 1 ? "B" : "C";
   const tint = "bg-transparent";
   return (
     <article

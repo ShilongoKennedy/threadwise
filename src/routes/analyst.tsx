@@ -6,6 +6,7 @@ import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
 import { BPField } from "@/components/threadwise/BlueprintUI";
 import { extractPdfText, extractTextFile } from "@/lib/threadwise/extract-document";
+import { READ_FORMS, type ReadBlock, type ReadForm } from "@/lib/threadwise/read-forms";
 
 export const Route = createFileRoute("/analyst")({
   head: () => ({
@@ -34,6 +35,10 @@ type Report = {
   mode?: "report" | "document" | "institution" | "signal";
   layers?: string[];
   sections?: { title: string; body: string }[];
+  form?: ReadForm;
+  form_reason?: string;
+  spine?: string;
+  blocks?: ReadBlock[];
   questions?: string[];
   basis?: string;
   sources: { title: string; url: string }[];
@@ -603,6 +608,88 @@ function Section({ n, title, children }: { n: string; title: string; children: R
   );
 }
 
+function BlockBody({ block }: { block: ReadBlock }) {
+  if (block.kind === "argument") return <p className="whitespace-pre-line">{block.body}</p>;
+  if (block.kind === "aside") {
+    return <p className="border-l border-[#1A1A1A]/25 pl-3 font-serif text-[14px] italic text-[#1A1A1A]/65">{block.body}</p>;
+  }
+  if (block.kind === "chronology") {
+    return (
+      <ol className="space-y-3">
+        {block.events.map((event, index) => (
+          <li key={`${event.when}-${index}`} className="grid gap-1 border-b border-[#1A1A1A]/10 pb-2 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
+            <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">{event.when}</span>
+            <span>{event.what}</span>
+          </li>
+        ))}
+      </ol>
+    );
+  }
+  if (block.kind === "document") {
+    return (
+      <div className="space-y-3">
+        <blockquote className="border-l-2 border-[#1A4BFF] pl-3 font-display text-[20px] leading-snug text-[#1A1A1A]">{block.quote}</blockquote>
+        <p className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.08em] text-[#1A1A1A]/55">{block.provenance}</p>
+        <p className="whitespace-pre-line">{block.reading}</p>
+      </div>
+    );
+  }
+  if (block.kind === "actors") {
+    return (
+      <ul className="space-y-3">
+        {block.actors.map((actor) => (
+          <li key={actor.name} className="border-l-2 border-[#1A1A1A] pl-3">
+            <p className="font-display text-[17px] leading-tight">{actor.name}</p>
+            <p className="mt-1 text-[14px] leading-snug"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">wants · </span>{actor.wants}</p>
+            <p className="mt-0.5 text-[14px] leading-snug text-[#1A1A1A]/65"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A1A1A]/45">constrained by · </span>{actor.constraint}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  if (block.kind === "contrast") {
+    return (
+      <div className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="border-t border-[#1A1A1A]/20 pt-2"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">{block.left_label}</p><p className="mt-1.5">{block.left_text}</p></div>
+          <div className="border-t border-[#1A1A1A]/20 pt-2"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">{block.right_label}</p><p className="mt-1.5">{block.right_text}</p></div>
+        </div>
+        <p className="border-l-2 border-[#1A4BFF] pl-3"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">the split · </span>{block.crux}</p>
+      </div>
+    );
+  }
+  if (block.kind === "figures") {
+    return (
+      <ul className="space-y-3">
+        {block.figures.map((figure) => (
+          <li key={`${figure.value}-${figure.label}`} className="border-b border-[#1A1A1A]/10 pb-2">
+            <p className="font-display text-[24px] leading-none">{figure.value} <span className="font-serif text-[14px] italic text-[#1A1A1A]/65">{figure.label}</span></p>
+            <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#1A1A1A]/45">{[figure.year, figure.source].filter(Boolean).join(" · ")}</p>
+            {figure.caveat ? <p className="mt-1 text-[13px] text-[#1A1A1A]/60">{figure.caveat}</p> : null}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  if (block.kind === "gap") {
+    return (
+      <div className="space-y-3">
+        <p>{block.body}</p>
+        <p className="border-l-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 text-[14px]"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#C1121F]">cannot say · </span>{block.cannot_say}</p>
+      </div>
+    );
+  }
+  if (block.kind === "question") {
+    return <div><p className="font-display text-[24px] leading-tight">{block.question}</p><p className="mt-2 text-[#1A1A1A]/70">{block.why}</p></div>;
+  }
+  return (
+    <div className="space-y-3">
+      <p className="border-l-2 border-[#C1121F] pl-3">{block.claim}</p>
+      <p className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 text-[15px]"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#C1121F]">would change it · </span>{block.would_change}</p>
+    </div>
+  );
+}
+
 type Turn = { role: "user" | "assistant"; content: string };
 
 function Read({ report, token, onAgain }: { report: Report; token: string | null; onAgain: () => void }) {
@@ -611,6 +698,24 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState<string | null>(null);
   const [watchState, setWatchState] = useState("idle");
+  const blocks = report.blocks ?? [];
+  const useBlocks = blocks.length > 0;
+  const form = report.form ? READ_FORMS[report.form] : null;
+  const contentTitles = useBlocks
+    ? blocks.map((block) => block.title)
+    : report.sections?.length
+      ? report.sections.map((section) => section.title ?? "Untitled")
+      : SECTIONS.map(([, title]) => title);
+  const indexTitles = useBlocks
+    ? [
+        ...contentTitles,
+        "Interrogate this read",
+        ...(report.sources.length > 0 ? ["What this rests on"] : []),
+      ]
+    : SECTIONS.map(([, title]) => title);
+  const blockCount = useBlocks ? blocks.length : report.sections?.length ?? 0;
+  const interrogateN = useBlocks ? String(blockCount + 1).padStart(2, "0") : after(report, 4);
+  const sourcesN = useBlocks ? String(blockCount + 2).padStart(2, "0") : after(report, 5);
 
   const ask = async (text: string) => {
     const prompt = text.trim();
@@ -641,7 +746,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
     <article>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#1A1A1A] pb-2">
         <span className="font-mono text-[9px] font-bold uppercase tracking-[0.26em]">
-          The read · confidence: {report.confidence}
+          {form ? form.label : "The read"} · confidence: {report.confidence}
           {report.basis ? <span className="text-[#1A1A1A]/50"> · {report.basis}</span> : null}
         </span>
         <div className="flex items-center gap-4">
@@ -666,23 +771,28 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         </div>
       </div>
 
-      <Index
-        titles={
-          report.sections?.length
-            ? report.sections.map((section) => section.title ?? "Untitled")
-            : SECTIONS.map(([, title]) => title)
-        }
-      />
+      {report.spine ? (
+        <div className="mb-5 max-w-3xl">
+          <p className="font-display text-[25px] italic leading-tight text-[#1A1A1A]">{report.spine}</p>
+          {form && report.form_reason ? (
+            <p className="mt-2 font-mono text-[9px] uppercase leading-relaxed tracking-[0.09em] text-[#1A1A1A]/45">
+              {form.label} · {report.form_reason}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      <Index titles={indexTitles} />
 
       <details className="bp-card mb-4 px-3 xl:hidden">
         <summary className="flex min-h-11 cursor-pointer items-center font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1A4BFF]">
           Contents
         </summary>
         <ul className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2">
-          {SECTIONS.map(([n, title]) => (
-            <li key={n}>
-              <a href={`#s-${n}`} className="flex gap-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/60">
-                <span className="text-[#1A4BFF]">{n}</span>
+          {indexTitles.map((title, index) => (
+            <li key={`${title}-${index}`}>
+              <a href={`#s-${String(index + 1).padStart(2, "0")}`} className="flex gap-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#1A1A1A]/60">
+                <span className="text-[#1A4BFF]">{String(index + 1).padStart(2, "0")}</span>
                 <span className="truncate">{title}</span>
               </a>
             </li>
@@ -690,7 +800,15 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         </ul>
       </details>
 
-      {(report.sections?.length ?? 0) > 0 ? (
+      {useBlocks ? (
+        <>
+          {blocks.map((block, index) => (
+            <Section key={`${block.kind}-${block.title}-${index}`} n={String(index + 1).padStart(2, "0")} title={block.title}>
+              <BlockBody block={block} />
+            </Section>
+          ))}
+        </>
+      ) : (report.sections?.length ?? 0) > 0 ? (
         <>
           {report.sections!.map((section, index) => (
             <Section key={section.title} n={String(index + 1).padStart(2, "0")} title={section.title}>
@@ -710,7 +828,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         </>
       )}
 
-      {(report.sections?.length ?? 0) === 0 && (
+      {!useBlocks && (report.sections?.length ?? 0) === 0 && (
         <>
       <Section n="03" title="Who gains, who pays">
         <ul className="space-y-3">
@@ -757,6 +875,8 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         </>
       )}
 
+      {!useBlocks ? (
+        <>
       <Section n={nextNumber(report)} title="What would prove this wrong">
         <p className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 text-[15px] leading-relaxed">
           {report.falsifier}
@@ -829,7 +949,10 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
         )}
       </Section>
 
-      <Section n={after(report, 4)} title="Interrogate this read">
+        </>
+      ) : null}
+
+      <Section n={interrogateN} title="Interrogate this read">
         <div className="space-y-3">
           {thread.map((turn, index) => (
             <div
@@ -892,7 +1015,7 @@ function Read({ report, token, onAgain }: { report: Report; token: string | null
       </Section>
 
       {report.sources.length > 0 && (
-        <Section n={after(report, 5)} title="What this rests on">
+        <Section n={sourcesN} title="What this rests on">
           <ul className="space-y-1.5">
             {report.sources.map((source) => (
               <li key={source.url}>

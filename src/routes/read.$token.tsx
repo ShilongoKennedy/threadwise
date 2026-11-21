@@ -3,6 +3,7 @@ import { AppHeader } from "@/components/threadwise/AppHeader";
 import { bpButtonClass, ReadingCallout, ReadingFocusToggle, ReadingProgress, ReadingSection } from "@/components/threadwise/BlueprintUI";
 import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { useEffect, useState } from "react";
+import type { ReadBlock } from "@/lib/threadwise/read-forms";
 
 export const Route = createFileRoute("/read/$token")({
   // Rendered on the server so a shared link previews properly and never flashes.
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/read/$token")({
       return { meta: [{ title: "A read — Threadwise" }, { name: "robots", content: "noindex" }] };
     }
     const move = loaderData.input.replace(/\s+/g, " ").trim().slice(0, 150);
-    const description = (loaderData.report as Report).falsifier.slice(0, 200);
+    const description = ((loaderData.report as Report).spine || (loaderData.report as Report).falsifier || "").slice(0, 200);
     return {
       meta: [
         { title: `${move} — The Analyst` },
@@ -78,6 +79,10 @@ type Report = {
   mode?: string;
   layers?: string[];
   sections?: { title: string; body: string }[];
+  form?: string;
+  form_reason?: string;
+  spine?: string;
+  blocks?: ReadBlock[];
   questions?: string[];
   sources: { title: string; url: string }[];
 };
@@ -95,6 +100,7 @@ function SharedRead() {
   const status = loaded ? "ready" : "missing";
   const blocks = report ? buildBlocks(report) : [];
   const sourceNumber = String(blocks.length + 1).padStart(2, "0");
+  const findingNote = report?.blocks?.find((block) => block.kind === "test")?.would_change ?? report?.falsifier ?? "";
   const title = input.trim().split("\n")[0]?.slice(0, 90) || "A read";
   const readingMinutes = report
     ? Math.max(3, Math.round(JSON.stringify(report).split(/\s+/).length / 220))
@@ -315,7 +321,7 @@ function SharedRead() {
 
             <Proposals report={report} token={token} />
 
-            <FileFinding token={token} note={report.falsifier} />
+            <FileFinding token={token} note={findingNote} />
 
             <OpenQuestions questions={report.questions ?? []} />
 
@@ -420,6 +426,8 @@ function ReadingSummary({ report, token }: { report: Report; token: string }) {
   const markKey = `threadwise-read-verify-${token}`;
   const confidence = report.confidence.toLowerCase();
   const confidenceLevel = confidence === "high" ? 3 : confidence === "medium" ? 2 : 1;
+  const test = report.blocks?.find((block) => block.kind === "test");
+  const evidence = test ? `${test.claim} Would change it: ${test.would_change}` : report.falsifier;
 
   useEffect(() => {
     setMarked(window.localStorage.getItem(markKey) === "1");
@@ -434,8 +442,8 @@ function ReadingSummary({ report, token }: { report: Report; token: string }) {
   return (
     <section className="read-summary" aria-label="Reading at a glance">
       <article className="read-summary__panel read-summary__panel--why">
-        <p className="read-summary__head"><span>01</span> Why now</p>
-        <p className="read-summary__copy">{report.why_now}</p>
+        <p className="read-summary__head"><span>01</span> {report.form ? "The form" : "Why now"}</p>
+        <p className="read-summary__copy">{report.form ? report.spine || report.form_reason : report.why_now}</p>
       </article>
       <article className="read-summary__panel read-summary__panel--confidence">
         <p className="read-summary__head"><span>02</span> Confidence</p>
@@ -452,7 +460,7 @@ function ReadingSummary({ report, token }: { report: Report; token: string }) {
       </article>
       <article className="read-summary__panel read-summary__panel--evidence">
         <p className="read-summary__head"><span>03</span> Evidence to check</p>
-        <p className="read-summary__copy">{report.falsifier}</p>
+        <p className="read-summary__copy">{evidence}</p>
         <button type="button" onClick={toggleMark} className={`read-summary__mark ${marked ? "is-marked" : ""}`}>
           <span aria-hidden="true">{marked ? "✓" : "+"}</span>
           {marked ? "Marked to verify" : "Keep this to verify"}
@@ -664,9 +672,86 @@ function Contents({ items, token }: { items: { n: string; title: string }[]; tok
   );
 }
 
+function PublicBlockBody({ block }: { block: ReadBlock }) {
+  if (block.kind === "argument") return <p className="whitespace-pre-line">{block.body}</p>;
+  if (block.kind === "aside") return <p className="border-l border-[#1A1A1A]/25 pl-3 italic text-[#1A1A1A]/65">{block.body}</p>;
+  if (block.kind === "chronology") {
+    return (
+      <ol className="space-y-3">
+        {block.events.map((event, index) => (
+          <li key={`${event.when}-${index}`} className="grid gap-1 border-b border-[#1A1A1A]/10 pb-2 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
+            <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">{event.when}</span>
+            <span>{event.what}</span>
+          </li>
+        ))}
+      </ol>
+    );
+  }
+  if (block.kind === "document") {
+    return (
+      <div className="space-y-3">
+        <blockquote className="border-l-2 border-[#1A4BFF] pl-3 font-display text-[20px] leading-snug">{block.quote}</blockquote>
+        <p className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.08em] text-[#1A1A1A]/55">{block.provenance}</p>
+        <p className="whitespace-pre-line">{block.reading}</p>
+      </div>
+    );
+  }
+  if (block.kind === "actors") {
+    return (
+      <ul className="space-y-3">
+        {block.actors.map((actor) => (
+          <li key={actor.name} className="border-l-2 border-[#1A1A1A] pl-3">
+            <p className="font-display text-[17px] leading-tight">{actor.name}</p>
+            <p className="mt-1 text-[14px] leading-snug"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">wants · </span>{actor.wants}</p>
+            <p className="mt-0.5 text-[14px] leading-snug text-[#1A1A1A]/65"><span className="font-mono text-[9px] uppercase tracking-[0.12em]">constrained by · </span>{actor.constraint}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  if (block.kind === "contrast") {
+    return (
+      <div className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="border-t border-[#1A1A1A]/20 pt-2"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">{block.left_label}</p><p className="mt-1.5">{block.left_text}</p></div>
+          <div className="border-t border-[#1A1A1A]/20 pt-2"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">{block.right_label}</p><p className="mt-1.5">{block.right_text}</p></div>
+        </div>
+        <p className="border-l-2 border-[#1A4BFF] pl-3"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#1A4BFF]">the split · </span>{block.crux}</p>
+      </div>
+    );
+  }
+  if (block.kind === "figures") {
+    return (
+      <ul className="space-y-3">
+        {block.figures.map((figure) => (
+          <li key={`${figure.value}-${figure.label}`} className="border-b border-[#1A1A1A]/10 pb-2">
+            <p className="font-display text-[24px] leading-none">{figure.value} <span className="font-serif text-[14px] italic text-[#1A1A1A]/65">{figure.label}</span></p>
+            <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#1A1A1A]/45">{[figure.year, figure.source].filter(Boolean).join(" · ")}</p>
+            {figure.caveat ? <p className="mt-1 text-[13px] text-[#1A1A1A]/60">{figure.caveat}</p> : null}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  if (block.kind === "gap") {
+    return <div className="space-y-3"><p>{block.body}</p><p className="border-l-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 text-[14px]"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#C1121F]">cannot say · </span>{block.cannot_say}</p></div>;
+  }
+  if (block.kind === "question") {
+    return <div><p className="font-display text-[24px] leading-tight">{block.question}</p><p className="mt-2 text-[#1A1A1A]/70">{block.why}</p></div>;
+  }
+  return <div className="space-y-3"><p className="border-l-2 border-[#C1121F] pl-3">{block.claim}</p><p className="border-2 border-[#C1121F] bg-[#C1121F]/5 px-3 py-2 text-[15px]"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#C1121F]">would change it · </span>{block.would_change}</p></div>;
+}
+
 /** The read's own sections when it has them, its narrative fields when it does not. */
 function buildBlocks(report: Report) {
   const blocks: { key: string; title: string; body: React.ReactNode }[] = [];
+
+  if (report.blocks?.length) {
+    report.blocks.forEach((block, index) => {
+      blocks.push({ key: `block-${index}`, title: block.title, body: <PublicBlockBody block={block} /> });
+    });
+    return blocks;
+  }
 
   if (report.sections?.length) {
     report.sections.forEach((section, index) => {

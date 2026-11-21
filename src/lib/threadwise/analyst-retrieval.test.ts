@@ -216,6 +216,46 @@ describe("claims and inquiry", () => {
     expect(report.claims).toEqual([]);
   });
 
+  it("accepts adaptive blocks and a chosen form", () => {
+    const report = analystSchema.parse({
+      form: "audit",
+      form_reason: "The record is disputed claim by claim.",
+      spine: "The central finding is asserted, not shown.",
+      blocks: [
+        { kind: "argument", title: "The missing exhibit", body: "The paragraph asserts a finding the document does not quote." },
+        { kind: "gap", title: "What the sentence cannot carry", body: "The record names no figure and no site.", cannot_say: "Whether the capability changed." },
+        { kind: "test", title: "The published annex", claim: "A published annex would settle the claim.", would_change: "A dated finding that contradicts the briefing." },
+      ],
+    });
+    expect(report.form).toBe("audit");
+    expect(report.blocks).toHaveLength(3);
+    expect(report.blocks[2]?.kind).toBe("test");
+  });
+
+  it("asks for a chosen form and distinct block jobs", () => {
+    const prompt = analystPrompt("A minister resigns before the budget.", "", "report", []);
+    expect(prompt).toContain("Do not begin with a report shape");
+    expect(prompt).toContain("exactly one test block");
+    expect(prompt).toContain("chronology");
+    expect(prompt).toContain("No two blocks may do the same job");
+    expect(prompt).not.toContain("Its sections are:");
+  });
+
+  it("patches adaptive block text", () => {
+    const draft = analystSchema.parse({
+      form: "brief",
+      blocks: [
+        { kind: "argument", title: "The claim", body: "The budget passed on Tuesday." },
+        { kind: "test", title: "The vote", claim: "The bill passed.", would_change: "A revised vote tally." },
+      ],
+    });
+    const result = applyReadPatches(draft, [
+      { section: "block 1", find: "The budget passed on Tuesday.", replace: "The record does not report a final vote.", reason: "Removed an unsupported fact." },
+    ]);
+    expect(result.revision.patched).toBe(1);
+    expect(JSON.stringify(result.draft.blocks)).toContain("The record does not report a final vote.");
+  });
+
   it("makes the inquiry the purpose of the prompt", () => {
     const prompt = analystPrompt("A court ruled.", "", "legal", [], {
       mode: "decide",

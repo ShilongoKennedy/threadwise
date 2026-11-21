@@ -5667,3 +5667,7 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
   .cosmic-intro .cosmic-section-copy > p:last-child { font-size: 14px; margin-top: 18px; }
   .cosmic-section-head--reverse .cosmic-object { order: 0; }
 }
+
+.theory-panel--c { --theory-accent: #C8FF3D; }
+.theory-panel--c .theory-letter-ring { color: #C8FF3D; }
+.seminar-dark-ink .theory-panel--c .theory-label { color: #C8FF3D !important; }

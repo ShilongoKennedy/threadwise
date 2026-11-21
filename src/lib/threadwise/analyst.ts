@@ -9,6 +9,7 @@ import { serverEnv } from "./env.server";
 import { XMLParser } from "fast-xml-parser";
 import { generateObject, generateText } from "ai";
 import { z } from "zod";
+import { READ_FORMS, READ_FORM_KEYS } from "./read-forms";
 import { extractJson, getModel } from "./ai/ai-providers.server";
 import { moneySentences } from "./figures";
 import type { CaseRead } from "./case-ledger";
@@ -39,10 +40,84 @@ const INQUIRY_BRIEF: Record<InquiryMode, string> = {
   teach: "learn the subject from first principles, so terms, common misreadings and transferable moves matter",
 };
 
+const blockBase = {
+  title: z.string().trim().min(1).max(80),
+};
+
+export const analystBlockSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("argument"), ...blockBase, body: z.string().trim().min(20).max(2600) }),
+  z.object({
+    kind: z.literal("chronology"),
+    ...blockBase,
+    events: z.array(z.object({ when: z.string().trim().min(1).max(80), what: z.string().trim().min(8).max(300) })).min(2).max(7),
+  }),
+  z.object({
+    kind: z.literal("document"),
+    ...blockBase,
+    quote: z.string().trim().min(10).max(900),
+    provenance: z.string().trim().min(10).max(900),
+    reading: z.string().trim().min(20).max(1400),
+  }),
+  z.object({
+    kind: z.literal("actors"),
+    ...blockBase,
+    actors: z.array(z.object({
+      name: z.string().trim().min(1).max(120),
+      wants: z.string().trim().min(8).max(400),
+      constraint: z.string().trim().min(8).max(400),
+    })).min(2).max(6),
+  }),
+  z.object({
+    kind: z.literal("contrast"),
+    ...blockBase,
+    left_label: z.string().trim().min(1).max(80),
+    left_text: z.string().trim().min(10).max(900),
+    right_label: z.string().trim().min(1).max(80),
+    right_text: z.string().trim().min(10).max(900),
+    crux: z.string().trim().min(10).max(700),
+  }),
+  z.object({
+    kind: z.literal("figures"),
+    ...blockBase,
+    figures: z.array(z.object({
+      value: z.string().trim().min(1).max(80),
+      label: z.string().trim().min(3).max(180),
+      year: z.string().trim().max(20).default(""),
+      source: z.string().trim().max(200).default(""),
+      caveat: z.string().trim().max(300).default(""),
+    })).min(1).max(6),
+  }),
+  z.object({
+    kind: z.literal("gap"),
+    ...blockBase,
+    body: z.string().trim().min(20).max(1600),
+    cannot_say: z.string().trim().min(5).max(500),
+  }),
+  z.object({
+    kind: z.literal("question"),
+    ...blockBase,
+    question: z.string().trim().min(10).max(300),
+    why: z.string().trim().min(10).max(600),
+  }),
+  z.object({
+    kind: z.literal("test"),
+    ...blockBase,
+    claim: z.string().trim().min(10).max(500),
+    would_change: z.string().trim().min(10).max(700),
+  }),
+  z.object({ kind: z.literal("aside"), ...blockBase, body: z.string().trim().min(10).max(1200) }),
+]);
+
+export type AnalystBlock = z.infer<typeof analystBlockSchema>;
+
 export const analystSchema = z.object({
   mode: z
     .enum(["report", "document", "institution", "signal", "discourse", "legal", "comparison"])
     .default("report"),
+  form: z.enum(READ_FORM_KEYS as [string, ...string[]]).default("brief"),
+  form_reason: z.string().trim().max(500).default(""),
+  spine: z.string().trim().max(800).default(""),
+  blocks: z.array(analystBlockSchema).max(8).default([]),
   layers: z.array(z.string().trim().max(40)).max(6).default([]),
   sections: z.array(sectionSchema).max(14).default([]),
   move: z.string().trim().max(4000).default(""),
@@ -173,17 +248,6 @@ const MODES = {
   },
 } as const;
 
-/** How much room each kind of read genuinely needs. */
-const DEPTH: Record<keyof typeof MODES, { short: [number, number]; long: [number, number] }> = {
-  legal: { short: [900, 1200], long: [1400, 1900] },
-  institution: { short: [850, 1150], long: [1300, 1800] },
-  document: { short: [800, 1100], long: [1200, 1700] },
-  report: { short: [700, 950], long: [1100, 1500] },
-  comparison: { short: [650, 900], long: [950, 1300] },
-  signal: { short: [450, 650], long: [650, 900] },
-  discourse: { short: [550, 750], long: [750, 1050] },
-};
-
 const LAYERS: Record<string, string> = {
   institution: `INSTITUTION LAYER — the named body is itself evidence. Cover, as its own section:
 - WHO PAYS: its budget and the largest contributors, with the actual figures and the year they refer to, drawn ONLY from the retrieved material. If you cannot find a figure, write "no current figure retrieved" — never estimate.
@@ -285,14 +349,15 @@ export function analystPrompt(
   layers: string[] = [],
   inquiry?: Inquiry,
 ) {
-  const shape = MODES[mode] ?? MODES.report;
-  const depth = DEPTH[mode] ?? DEPTH.report;
-  const words = input.length < 400 ? depth.short : depth.long;
+  void mode;
   const layerRules = layers.map((layer) => LAYERS[layer]).filter(Boolean).join("\n\n");
+  const formMenu = READ_FORM_KEYS.map(
+    (key) => `- ${key} (${READ_FORMS[key].label}): ${READ_FORMS[key].description}`,
+  ).join("\n");
   const inquiryBlock = inquiry
     ? `THE INQUIRY THIS READ SERVES:
 - The reader is trying to ${INQUIRY_BRIEF[inquiry.mode]}.
-${inquiry.changeMind?.trim() ? `- What would change their mind: ${inquiry.changeMind.trim().slice(0, 300)}\n` : ""}- Use this to decide what to emphasise and what the questions should ask. It is the purpose of the read, not a section to fill.
+${inquiry.changeMind?.trim() ? `- What would change their mind: ${inquiry.changeMind.trim().slice(0, 300)}\n` : ""}- Use this to decide what the piece notices and which questions it leaves open. It is the purpose of the read, not a block to fill.
 `
     : "";
   return `THE MOVE (as supplied by the reader):
@@ -307,50 +372,78 @@ SITUATION reporting describes the wider events the move sits inside; it is not o
 RETRIEVED MATERIAL (real sources; cite them where you rely on them):
 ${context || "(nothing retrieved — say so in the confidence field and stay strictly within what the move itself states)"}
 
-THIS IS READ AS: ${shape.label}.
-Its sections are: ${shape.sections}.
-Put those sections in "sections" as { "title", "body" } pairs, in that order, and set "mode" to "${mode}" and "layers" to ${JSON.stringify(layers)}.
-
 ${inquiryBlock}
 ${layerRules}
 
-FIGURES RULE:
-- Every number must come from the retrieved material and carry its year and source inline: "€344 million in 2014 (assessed to member states)".
-- Use the MOST RECENT figure available, even if it is years old. Stale and dated beats absent: "the most recent figure the record carries is X, from YYYY — no newer figure was retrieved".
-- Never estimate, never invent a figure, never recall one from training.
-- If no figure exists anywhere in the material, do not stop there: write that section analytically instead — what the funding structure is, how it is decided, and what that structure implies for the finding. A refusal is a last resort and may appear in ONE section only; the rest must reason from what is known, saying plainly what is not.
+## FIRST, CHOOSE A FORM
 
-Fields:
-- move: what was actually announced or argued, by whom, with what authority, in 2-4 plain sentences. No adjectives.
-- why_now: the logic of this timing. Do NOT restate what the "move" field already established; start from the purpose the decision serves. What problem does it solve for the actor this week? 3-5 sentences.
-- stakes: 2-5 actors. For each: what they gain and what they lose, concretely.
-- precedent: 1-3 real historical analogues. Name them, date them, state the parallel and exactly where it breaks. If you cannot date one, omit it.
-- second_order: what this changes downstream — institutions, appointments, policy lanes, elections. 3-5 sentences.
-- counter_reading: the strongest case that this is routine rather than a rupture. Argue it properly.
-- watch: 2-4 dated or conditioned signals that will show which reading is right.
-- falsifier: the one fact that would prove this whole read wrong.
-- claims: 4-8 load-bearing claims the read depends on. For each: text (one sentence), kind (fact|inference|value|prediction), confidence (high|medium|low), source (the outlet or document title from the material, or "move" if it restates the move, or "analysis" if it is your inference), falsifier (for predictions, the observation that would settle it; otherwise empty). These are the claims the reader should check.
-- questions: three sharp questions this specific read invites, in the reader's voice, each under 16 words. Not generic ("what happens next") — they must depend on a claim you just made and, where an inquiry is stated, serve that inquiry.
+Do not begin with a report shape. Begin with the evidentiary shape of this source. Choose exactly one form:
+
+${formMenu}
+
+Choose the form that makes the strongest reading possible, not the one that is easiest to fill. A quoted document is usually a document read. A sequence of events is a chronology. A decision with several actors is an actor map. A thin or single-point source is a brief. A disputed record is a claim audit. Two accounts are a comparison.
+
+If you cannot justify the form in one sentence, choose brief.
+
+## THEN, MAKE A PLAN
+
+Before writing prose, decide:
+
+- **spine** — the one sentence this piece is actually establishing. It must be specific to this source, not a theme like "power is complex".
+- **form_reason** — one sentence explaining why this evidentiary shape fits.
+- **block jobs** — 3 to 6 distinct jobs. No two blocks may do the same job. Each block must add something the previous blocks did not.
+
+Do not include a block because a report usually has one. Include it because this source needs it.
+
+## BLOCKS
+
+Write 3 to 6 blocks. Every read must include exactly one test block. Use only the block kinds that earn their place:
+
+- argument: title, body. A piece of prose with an actual claim.
+- chronology: title, events [{ when, what }]. 2–7 dated or ordered events.
+- document: title, quote, provenance, reading. A quoted passage, where it comes from, and what it can and cannot support.
+- actors: title, actors [{ name, wants, constraint }]. 2–6 actors, each with an incentive and a constraint.
+- contrast: title, left_label, left_text, right_label, right_text, crux. Two accounts or cases and the exact point where they part.
+- figures: title, figures [{ value, label, year, source, caveat }]. A figure with its provenance and what it does not prove.
+- gap: title, body, cannot_say. What the record cannot establish, stated precisely.
+- question: title, question, why. One open question and why it matters.
+- test: title, claim, would_change. The claim being tested and the observation that would settle it.
+- aside: title, body. A short margin note; use sparingly.
+
+BLOCK RULES
+- Titles must come from this source. Never use "The stakes", "Why now", "The counter-reading", "What to watch" as default labels. A title should be able to belong only to this piece.
+- No repeated job. Do not write a context block and then a second context block under a different name.
+- Do not pad to reach a familiar shape. Three strong blocks beat six obedient ones.
+- A test block is mandatory, but it is a test, not a conclusion.
+- A brief may be three blocks. A document read may be four. A comparison may be five. The evidence decides.
+- The piece should read as one argument, not a dashboard of independent fields.
+- Do not write a generic conclusion, summary, or "what this means" block. End on the strongest remaining thought.
+- Never invent a quote, date, event, figure, or source. If the material is silent, use a gap block and say exactly what is missing.
+- If a figure is not in the retrieved material, do not estimate it. Write the analytical point without the number, or name the absence in a gap block.
+
+## SUPPORTING MATERIAL
+
+After the blocks, return:
+
+- claims: 3–7 load-bearing claims the read depends on. For each: text (one sentence), kind (fact|inference|value|prediction), confidence (high|medium|low), source (outlet, document title, "move" if it restates the move, or "analysis" if it is your inference), falsifier (for predictions, the observation that would settle it; otherwise empty).
+- questions: 2–3 sharp questions in the reader's voice, each under 16 words, each depending on a specific claim in this read. Not generic ("what happens next").
 - confidence: "documented" if the facts are confirmed in the retrieved material, "inferred" if they rest on the move itself, "speculative" if they depend on unnamed sources.
+- form: one of ${READ_FORM_KEYS.map((key) => `"${key}"`).join(", ")}.
+- form_reason: one sentence, max 40 words.
+- spine: the central sentence, max 40 words.
+- blocks: the selected blocks, in reading order.
 
-Return ONLY a JSON object with EXACTLY these keys, all present:
+Return ONLY a JSON object with exactly these keys:
 {
-  "move": string,
-  "why_now": string,
-  "stakes": [{ "actor": string, "gains": string, "loses": string }],
-  "precedent": [{ "name": string, "when": string, "parallel": string, "breaks": string }],
-  "second_order": string,
-  "counter_reading": string,
-  "watch": [{ "signal": string, "when": string }],
-  "falsifier": string,
+  "form": "brief" | "document" | "chronology" | "actors" | "comparison" | "audit",
+  "form_reason": string,
+  "spine": string,
+  "blocks": [ { "kind": "argument" | "chronology" | "document" | "actors" | "contrast" | "figures" | "gap" | "question" | "test" | "aside", ...the fields for that kind } ],
   "claims": [{ "text": string, "kind": "fact" | "inference" | "value" | "prediction", "confidence": "high" | "medium" | "low", "source": string, "falsifier": string }],
   "questions": [string],
-  "mode": "report" | "document" | "institution" | "signal" | "discourse" | "legal" | "comparison",
-  "layers": [string],
-  "sections": [{ "title": string, "body": string }],
   "confidence": "documented" | "inferred" | "speculative"
 }
-No markdown, no commentary, no code fences.`;
+Do not return "sections", "move", "why_now", "stakes", "precedent", "second_order", "counter_reading", "watch", or "falsifier" fields. Use blocks instead. No markdown, no commentary, no code fences.`;
 }
 
 type WikiHit = { title: string; extract: string; url: string };
@@ -1108,6 +1201,57 @@ export function applyReadPatches(
   next.questions.forEach((_, index) => {
     add(`question ${index + 1}`, () => next.questions[index]!, (value) => { next.questions[index] = value; });
   });
+  add("form reason", () => next.form_reason, (value) => { next.form_reason = value; });
+  add("spine", () => next.spine, (value) => { next.spine = value; });
+  next.blocks.forEach((block, index) => {
+    const label = `block ${index + 1}: ${block.title}`;
+    add(`${label} title`, () => block.title, (value) => { block.title = value; });
+    if (block.kind === "argument" || block.kind === "aside") {
+      add(label, () => block.body, (value) => { block.body = value; });
+    }
+    if (block.kind === "chronology") {
+      block.events.forEach((event, eventIndex) => {
+        add(`${label} event ${eventIndex + 1} when`, () => event.when, (value) => { event.when = value; });
+        add(`${label} event ${eventIndex + 1}`, () => event.what, (value) => { event.what = value; });
+      });
+    }
+    if (block.kind === "document") {
+      add(`${label} quote`, () => block.quote, (value) => { block.quote = value; });
+      add(`${label} provenance`, () => block.provenance, (value) => { block.provenance = value; });
+      add(`${label} reading`, () => block.reading, (value) => { block.reading = value; });
+    }
+    if (block.kind === "actors") {
+      block.actors.forEach((actor) => {
+        add(`${label} ${actor.name}`, () => actor.name, (value) => { actor.name = value; });
+        add(`${label} ${actor.name} wants`, () => actor.wants, (value) => { actor.wants = value; });
+        add(`${label} ${actor.name} constraint`, () => actor.constraint, (value) => { actor.constraint = value; });
+      });
+    }
+    if (block.kind === "contrast") {
+      add(`${label} left`, () => block.left_text, (value) => { block.left_text = value; });
+      add(`${label} right`, () => block.right_text, (value) => { block.right_text = value; });
+      add(`${label} crux`, () => block.crux, (value) => { block.crux = value; });
+    }
+    if (block.kind === "figures") {
+      block.figures.forEach((figure) => {
+        add(`${label} ${figure.value}`, () => figure.value, (value) => { figure.value = value; });
+        add(`${label} ${figure.value} label`, () => figure.label, (value) => { figure.label = value; });
+        add(`${label} ${figure.value} caveat`, () => figure.caveat, (value) => { figure.caveat = value; });
+      });
+    }
+    if (block.kind === "gap") {
+      add(`${label} body`, () => block.body, (value) => { block.body = value; });
+      add(`${label} cannot say`, () => block.cannot_say, (value) => { block.cannot_say = value; });
+    }
+    if (block.kind === "question") {
+      add(`${label} question`, () => block.question, (value) => { block.question = value; });
+      add(`${label} why`, () => block.why, (value) => { block.why = value; });
+    }
+    if (block.kind === "test") {
+      add(`${label} claim`, () => block.claim, (value) => { block.claim = value; });
+      add(`${label} would change`, () => block.would_change, (value) => { block.would_change = value; });
+    }
+  });
   next.sections.forEach((section) => {
     add(`sections: ${section.title}`, () => section.body, (value) => { section.body = value; });
   });
@@ -1232,16 +1376,12 @@ async function reviewRead(
   if (!material) return null;
 
   const claims = JSON.stringify({
-    move: draft.move,
-    why_now: draft.why_now,
-    stakes: draft.stakes,
-    precedent: draft.precedent,
-    second_order: draft.second_order,
-    counter_reading: draft.counter_reading,
-    sections: draft.sections,
-    watch: draft.watch,
+    form: draft.form,
+    form_reason: draft.form_reason,
+    spine: draft.spine,
+    blocks: draft.blocks,
     claims: draft.claims,
-    falsifier: draft.falsifier,
+    questions: draft.questions,
   }).slice(0, 16_000);
 
   const prompt = `You are a fact-checking editor at Threadwise. A colleague wrote the read below from the retrieved material. Your job is narrow: find specific, checkable factual claims that the material CONTRADICTS, or that the read presents as coming from the material but the material does not contain. Do not review the analysis, judgments, predictions, motives or general historical context. Do not require the material to contain everything; it is a partial record.
@@ -1307,16 +1447,12 @@ async function reviseRead(
   if (!material) return null;
 
   const claims = JSON.stringify({
-    move: draft.move,
-    why_now: draft.why_now,
-    stakes: draft.stakes,
-    precedent: draft.precedent,
-    second_order: draft.second_order,
-    counter_reading: draft.counter_reading,
-    sections: draft.sections,
-    watch: draft.watch,
+    form: draft.form,
+    form_reason: draft.form_reason,
+    spine: draft.spine,
+    blocks: draft.blocks,
     claims: draft.claims,
-    falsifier: draft.falsifier,
+    questions: draft.questions,
   }).slice(0, 16_000);
 
   const prompt = `You are the writer. An editor flagged specific factual claims in your read as unsupported by the retrieved material. Patch only those claims. Do not rewrite the read and do not add new facts.
@@ -1500,6 +1636,7 @@ export async function analyseMove(input: string, intent?: Inquiry): Promise<Anal
   const prompt = analystPrompt(input, evidenceContext, decision.mode, decision.layers, intent);
 
   let parsedData: z.infer<typeof analystSchema> | null = null;
+  let fallbackData: z.infer<typeof analystSchema> | null = null;
   let writer = "";
   for (const candidate of writerCandidates()) {
     try {
@@ -1513,15 +1650,21 @@ export async function analyseMove(input: string, intent?: Inquiry): Promise<Anal
       });
       const attempt = analystSchema.safeParse(extractJson<unknown>(text));
       if (attempt.success) {
-        parsedData = attempt.data;
-        writer = candidate.label;
-        break;
+        const hasTest = attempt.data.blocks.some((block) => block.kind === "test");
+        if (attempt.data.blocks.length >= 3 && hasTest) {
+          parsedData = attempt.data;
+          writer = candidate.label;
+          break;
+        }
+        // Keep a usable draft, but try the next writer for a real adapted shape.
+        fallbackData = attempt.data;
       }
       console.error(`[analyst] unusable output from ${candidate.label}:`, text.slice(0, 400));
     } catch (error) {
       console.error(`[analyst] writer ${candidate.label} failed:`, error);
     }
   }
+  parsedData = parsedData ?? fallbackData;
   if (!parsedData) throw new Error("The analyst could not produce a usable read.");
 
   // A different model edits the draft against the material it was written from.

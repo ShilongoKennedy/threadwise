@@ -9,7 +9,7 @@ type Turn = { role: "user" | "assistant"; content: string };
 const SUGGESTIONS = [
   "Explain the crux again, more simply.",
   "Give me a second example.",
-  "Why do both theories predict the same thing?",
+  "Why do the positions predict the same thing?",
   "What evidence would change the verdict?",
 ];
 
