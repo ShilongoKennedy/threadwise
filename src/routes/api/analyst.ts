@@ -74,6 +74,11 @@ export const Route = createFileRoute("/api/analyst")({
           }
         }
 
+        const { READ_FORM_KEYS } = await import("@/lib/threadwise/read-forms");
+        const rawRecent = (body as { recentForms?: unknown })?.recentForms;
+        const recentForms = Array.isArray(rawRecent)
+          ? rawRecent.filter((value): value is string => typeof value === "string" && (READ_FORM_KEYS as readonly string[]).includes(value)).slice(0, 4)
+          : [];
         const text = typeof (body as { text?: unknown })?.text === "string" ? (body as { text: string }).text.trim() : "";
         if (text.length < 20) return json({ error: "Give the analyst at least a sentence to work with." }, 400);
         if (text.length > 4000) return json({ error: "That is longer than one move. Trim it to under 4,000 characters." }, 413);
@@ -99,7 +104,7 @@ export const Route = createFileRoute("/api/analyst")({
 
         try {
           const { analyseMove, saveRead } = await import("@/lib/threadwise/analyst");
-          const report = await analyseMove(text, intent);
+          const report = await analyseMove(text, intent, recentForms);
           const header = request.headers.get("authorization") ?? "";
           const jwt = header.startsWith("Bearer ") ? header.slice(7) : undefined;
           const token = await saveRead(text, report, jwt);

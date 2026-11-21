@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ReadingFocusToggle, ReadingMarker, ReadingProgress } from "@/components/threadwise/BlueprintUI";
 import { fieldColorAt } from "@/lib/threadwise/palette";
 import { SEMINAR_FORMS } from "@/lib/threadwise/read-forms";
+import { SEMINAR_FORM_KEY, readRecentForms, rememberForm } from "@/lib/threadwise/recent-forms";
 
 export const Route = createFileRoute("/seminar")({
   head: () => ({
@@ -274,11 +275,12 @@ function SeminarPage() {
       const response = await fetch("/api/seminar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, context }),
+        body: JSON.stringify({ text, context, recentForms: readRecentForms(SEMINAR_FORM_KEY, Object.keys(SEMINAR_FORMS)) }),
       });
       const body = (await response.json()) as { seminar?: Seminar; error?: string };
       if (!response.ok || !body.seminar) throw new Error(body.error ?? "The seminar could not be convened.");
       setSeminar(body.seminar);
+      rememberForm(SEMINAR_FORM_KEY, body.seminar.form, Object.keys(SEMINAR_FORMS));
       setStand(null);
       setRevealed(false);
       setVerdictOpen(false);
@@ -556,6 +558,7 @@ function SeminarPage() {
                 <p className="mb-1 font-mono text-[8px] uppercase tracking-[0.12em] text-white/58">
                   {seminar.form ? SEMINAR_FORMS[seminar.form].label : SEMINAR_FORMS.duel.label} · {seminar.theories.length} {seminar.theories.length === 1 ? "reading" : "readings"}
                 </p>
+                {seminar.form_reason ? <p className="mb-2 max-w-[42ch] font-serif text-[12px] italic leading-snug text-white/60">{seminar.form_reason}</p> : null}
               <h2 className="font-display text-[32px] leading-none md:text-[40px]">
                 {seminar.form === "single"
                   ? "One reading, under pressure."

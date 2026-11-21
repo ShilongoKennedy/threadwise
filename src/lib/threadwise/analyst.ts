@@ -348,12 +348,18 @@ export function analystPrompt(
   mode: keyof typeof MODES = "report",
   layers: string[] = [],
   inquiry?: Inquiry,
+  recentForms: string[] = [],
 ) {
   void mode;
   const layerRules = layers.map((layer) => LAYERS[layer]).filter(Boolean).join("\n\n");
   const formMenu = READ_FORM_KEYS.map(
     (key) => `- ${key} (${READ_FORMS[key].label}): ${READ_FORMS[key].description}`,
   ).join("\n");
+  const recentFormsBlock = recentForms.length
+    ? `RECENT SHAPES IN THIS DESK (most recent first): ${recentForms.join(", ")}.
+This is a warning against sameness, not a rule against repetition. Choose the shape this source actually needs. If you choose a form already in that list, form_reason must name what in this source makes the same shape necessary rather than convenient.
+`
+    : "";
   const inquiryBlock = inquiry
     ? `THE INQUIRY THIS READ SERVES:
 - The reader is trying to ${INQUIRY_BRIEF[inquiry.mode]}.
@@ -372,6 +378,7 @@ SITUATION reporting describes the wider events the move sits inside; it is not o
 RETRIEVED MATERIAL (real sources; cite them where you rely on them):
 ${context || "(nothing retrieved — say so in the confidence field and stay strictly within what the move itself states)"}
 
+${recentFormsBlock}
 ${inquiryBlock}
 ${layerRules}
 
@@ -1500,7 +1507,7 @@ Rules:
   }
 }
 
-export async function analyseMove(input: string, intent?: Inquiry): Promise<AnalystReport> {
+export async function analyseMove(input: string, intent?: Inquiry, recentForms: string[] = []): Promise<AnalystReport> {
   const startedAt = Date.now();
   // Classify and retrieve at the same time: they do not depend on each other.
   const [decision, base, candidates] = await Promise.all([
@@ -1633,7 +1640,7 @@ export async function analyseMove(input: string, intent?: Inquiry): Promise<Anal
     .filter(Boolean)
     .join("\n\n");
 
-  const prompt = analystPrompt(input, evidenceContext, decision.mode, decision.layers, intent);
+  const prompt = analystPrompt(input, evidenceContext, decision.mode, decision.layers, intent, recentForms);
 
   let parsedData: z.infer<typeof analystSchema> | null = null;
   let fallbackData: z.infer<typeof analystSchema> | null = null;

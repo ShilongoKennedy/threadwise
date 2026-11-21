@@ -24,6 +24,11 @@ export const Route = createFileRoute("/api/seminar")({
           return json({ error: "Send JSON with the quote or question." }, 400);
         }
 
+        const { SEMINAR_FORMS } = await import("@/lib/threadwise/read-forms");
+        const rawRecent = (body as { recentForms?: unknown })?.recentForms;
+        const recentForms = Array.isArray(rawRecent)
+          ? rawRecent.filter((value): value is string => typeof value === "string" && (Object.keys(SEMINAR_FORMS) as string[]).includes(value)).slice(0, 4)
+          : [];
         const text = typeof (body as { text?: unknown })?.text === "string" ? (body as { text: string }).text.trim() : "";
         const context = typeof (body as { context?: unknown })?.context === "string" ? (body as { context: string }).context.trim() : "";
         if (text.length < 20) return json({ error: "Give the seminar a quote or question worth arguing about." }, 400);
@@ -32,7 +37,7 @@ export const Route = createFileRoute("/api/seminar")({
 
         try {
           const { openSeminar } = await import("@/lib/threadwise/seminar");
-          const seminar = await openSeminar(text, context);
+          const seminar = await openSeminar(text, context, recentForms);
           return json({ ok: true, seminar }, 200);
         } catch (error) {
           console.error("[seminar] failed:", error);

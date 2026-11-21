@@ -6,7 +6,8 @@ import { PageBackdrop } from "@/components/threadwise/PageBackdrop";
 import { PageMasthead } from "@/components/threadwise/PageMasthead";
 import { BPField } from "@/components/threadwise/BlueprintUI";
 import { extractPdfText, extractTextFile } from "@/lib/threadwise/extract-document";
-import { READ_FORMS, type ReadBlock, type ReadForm } from "@/lib/threadwise/read-forms";
+import { READ_FORMS, READ_FORM_KEYS, type ReadBlock, type ReadForm } from "@/lib/threadwise/read-forms";
+import { ANALYST_FORM_KEY, readRecentForms, rememberForm } from "@/lib/threadwise/recent-forms";
 
 export const Route = createFileRoute("/analyst")({
   head: () => ({
@@ -266,6 +267,7 @@ function AnalystPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           text: move,
+          recentForms: readRecentForms(ANALYST_FORM_KEY, READ_FORM_KEYS),
           intent: {
             mode: intentMode,
             ...(changeMind.trim() ? { changeMind: changeMind.trim() } : {}),
@@ -275,6 +277,7 @@ function AnalystPage() {
       const body = (await response.json()) as { report?: Report; token?: string | null; error?: string };
       if (!response.ok || !body.report) throw new Error(body.error ?? "The analyst could not finish this read.");
       setReport(body.report);
+      if (body.report.form) rememberForm(ANALYST_FORM_KEY, body.report.form, READ_FORM_KEYS);
       setToken(body.token ?? null);
 
       // The read's own page is where red team, findings and publishing live.

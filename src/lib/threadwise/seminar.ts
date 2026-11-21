@@ -29,6 +29,7 @@ export const seminarFallbackSchema = z.object({
   question: z.string().trim().min(10).max(260),
   restatement: z.string().trim().min(40).max(700),
   form: z.enum(["duel", "trilemma", "single"]),
+  form_reason: z.string().trim().min(10).max(500),
   theories: z.array(baseTheorySchema).min(1).max(3),
   crux: z.string().trim().min(30).max(600),
   disagreement: z.enum(["empirical", "definitional", "scope", "mixed"]),
@@ -71,7 +72,7 @@ RULES
 - The crux is one question that actually separates the positions. Not "both have merits". For single, the crux is the one observation that would break the explanation.
 - settle is a specific observation, comparison or dataset that would move a reasonable reader.
 - The verdict is provisional and empirical only. Use "undecided" when the evidence does not separate the positions. State what would change it. Never make a moral verdict.
-- Return form as "duel", "trilemma" or "single" and make the number of theories match exactly.`;
+- Return form as "duel", "trilemma" or "single", a short form_reason, and make the number of theories match exactly.`;
 
 function deriveMechanismSteps(mechanism: string) {
   const sentences = mechanism
@@ -88,7 +89,12 @@ function deriveMechanismSteps(mechanism: string) {
   });
 }
 
-export async function openSeminar(text: string, context: string): Promise<Seminar> {
+export async function openSeminar(text: string, context: string, recentForms: string[] = []): Promise<Seminar> {
+  const recentFormsBlock = recentForms.length
+    ? `RECENT SHAPES IN THIS SEMINAR (most recent first): ${recentForms.join(", ")}.
+This is a warning against sameness, not a rule against repetition. Pick the shape the question actually needs. If you pick one already in that list, form_reason must name what about this question makes the same shape necessary rather than convenient.
+`
+    : "";
   const prompt = `THE QUOTE OR QUESTION:
 ${text.slice(0, 3000)}
 
@@ -96,7 +102,8 @@ ${context.trim() ? `CONTEXT PROVIDED BY THE READER:
 ${context.slice(0, 1000)}
 
 ` : ""}
-Open the seminar. Choose the form that fits: duel (2 theories), trilemma (3 theories), or single (1 theory). Return the positions, the crux, what would settle it, and a provisional empirical verdict.`;
+${recentFormsBlock}
+Open the seminar. Choose the form that fits: duel (2 theories), trilemma (3 theories), or single (1 theory). Explain the choice in form_reason. Return the positions, the crux, what would settle it, and a provisional empirical verdict.`;
   const request = (schema: typeof seminarSchema | typeof seminarFallbackSchema) =>
     generateObject({
       model: getModel("deepseek"),
