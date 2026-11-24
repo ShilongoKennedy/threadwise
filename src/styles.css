@@ -5893,3 +5893,91 @@ body {
   .seminar-archive__question { font-size: 16px; }
   .seminar-archive__foot { font-size: 16px; }
 }
+
+/* ============================================================
+   EXPENSIVE NOTEBOOK SURFACE
+   The reading page is now a bound paper block: cloth spine, fibre,
+   a visible page stack and an ink-blue margin rule.
+   ============================================================ */
+html[data-surface="paper"] .read-page .bp-page,
+html[data-surface="paper"] .seminar-reading-surface,
+html[data-surface="paper"] .anatomy-report {
+  background-color: #F2E8D5 !important;
+  background-image:
+    radial-gradient(ellipse at 14% 0%, rgba(255, 255, 255, 0.72), transparent 35%),
+    radial-gradient(ellipse at 84% 78%, rgba(142, 118, 80, 0.055), transparent 42%),
+    repeating-linear-gradient(to bottom, transparent 0 33px, rgba(48, 76, 96, 0.105) 33px 34px) !important;
+  border: 1px solid rgba(54, 44, 31, 0.22) !important;
+  border-radius: 2px !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    -1px 0 0 rgba(255, 255, 255, 0.38) inset,
+    7px 7px 0 -2px #DCD0BA,
+    14px 14px 0 -6px #C9BBA1,
+    0 30px 70px -22px rgba(0, 0, 0, 0.78),
+    0 8px 22px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* Cloth spine with stitched holes. */
+html[data-surface="paper"] .read-page .bp-page::before,
+html[data-surface="paper"] .seminar-reading-surface::before,
+html[data-surface="paper"] .anatomy-report::before {
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 58px !important;
+  background-color: #183238 !important;
+  background-image:
+    radial-gradient(circle at 28px 30px, rgba(241, 229, 207, 0.82) 2.4px, transparent 2.9px),
+    repeating-linear-gradient(to bottom, rgba(194, 212, 204, 0.24) 0 1px, transparent 1px 6px),
+    linear-gradient(90deg, #142A30 0%, #1D3B40 48%, #12272C 100%) !important;
+  background-size: 100% 58px, auto, auto !important;
+  background-repeat: repeat-y, repeat, no-repeat !important;
+  border-right: 1px solid rgba(4, 14, 17, 0.55) !important;
+  box-shadow: 6px 0 12px -8px rgba(0, 0, 0, 0.55) !important;
+  opacity: 1 !important;
+}
+
+/* A blue-ink crease where the cloth meets the page. */
+html[data-surface="paper"] .read-page .bp-page::after,
+html[data-surface="paper"] .seminar-reading-surface::after,
+html[data-surface="paper"] .anatomy-report::after {
+  left: 58px !important;
+  width: 1px !important;
+  background: rgba(46, 93, 119, 0.34) !important;
+}
+
+/* Paper fibres, not flat digital cream. */
+html[data-surface="paper"] .read-page .bp-page,
+html[data-surface="paper"] .seminar-reading-surface,
+html[data-surface="paper"] .anatomy-report {
+  background-blend-mode: multiply, normal, normal !important;
+}
+
+/* Analyst desk field: ink-blue ledger, not a star field. */
+.site-blueprint[data-page="analyst"] {
+  background-color: #0C1A21 !important;
+  background-image:
+    radial-gradient(ellipse at 22% -8%, rgba(92, 137, 148, 0.18), transparent 52%),
+    radial-gradient(ellipse at 88% 110%, rgba(28, 74, 82, 0.22), transparent 55%),
+    linear-gradient(135deg, #10242C 0%, #0B171D 58%, #081217 100%) !important;
+}
+
+.site-blueprint[data-page="analyst"]::before {
+  background-image:
+    /* inspection light */
+    radial-gradient(ellipse 70% 45% at 24% 0%, rgba(107, 151, 157, 0.16), transparent 65%),
+    /* ledger rules */
+    repeating-linear-gradient(to right, rgba(188, 212, 205, 0.045) 0 1px, transparent 1px 84px),
+    repeating-linear-gradient(to bottom, rgba(188, 212, 205, 0.028) 0 1px, transparent 1px 42px),
+    /* thread seam at the field edge */
+    repeating-linear-gradient(to bottom, rgba(200, 255, 61, 0.16) 0 2px, transparent 2px 18px) !important;
+  background-size: auto, auto, auto, 2px 18px !important;
+  background-position: 0 0, 0 0, 0 0, 30px 0 !important;
+  background-repeat: no-repeat, repeat, repeat, repeat-y !important;
+  opacity: 1 !important;
+}
+
+.site-blueprint[data-page="analyst"] .bp-page {
+  position: relative;
+}

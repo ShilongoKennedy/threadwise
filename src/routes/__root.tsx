@@ -150,7 +150,7 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 
-function SiteBlueprint({ children }: { children: ReactNode }) {
+function SiteBlueprint({ children, pathname }: { children: ReactNode; pathname: string }) {
   const fieldRef = useRef<HTMLDivElement>(null);
   const tone = BLUEPRINT_PALETTE[0];
   const darkInk = false;
@@ -196,6 +196,7 @@ function SiteBlueprint({ children }: { children: ReactNode }) {
     <div
       ref={fieldRef}
       className="site-blueprint scroll-field"
+      data-page={pathname.startsWith("/analyst") ? "analyst" : undefined}
       data-field-ink={darkInk ? "light" : "dark"}
       style={{
         "--site-bg": tone.hex,
@@ -222,7 +223,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      {keepsOwnField ? <Outlet /> : <SiteBlueprint><Outlet /></SiteBlueprint>}
+      {keepsOwnField ? <Outlet /> : <SiteBlueprint pathname={pathname}><Outlet /></SiteBlueprint>}
       <PaperAnnotations />
       <Toaster />
       <ClientOnly fallback={null}><Suspense fallback={null}><CloudSync /></Suspense></ClientOnly>
