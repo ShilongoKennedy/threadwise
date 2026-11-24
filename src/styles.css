@@ -6233,3 +6233,288 @@ html[data-surface="paper"] .anatomy-report {
   .seminar-entry__body { padding-left: 7px; }
   .seminar-entry__input { min-height: 145px; font-size: 20px; }
 }
+
+/* ============================================================
+   THREADWISE / THE LEDGER
+   A full paper field. Ink-blue type. Cobalt rules. No dark glass.
+   ============================================================ */
+:root {
+  --ledger-paper: #E9E1D0;
+  --ledger-page: #F6EFE2;
+  --ledger-ink: #18282D;
+  --ledger-muted: #627074;
+  --ledger-blue: #245C79;
+  --ledger-rule: rgba(36, 92, 121, 0.14);
+}
+
+html,
+body {
+  background: #E4DBC9 !important;
+  color: var(--ledger-ink) !important;
+}
+
+.site-blueprint,
+.seminar-color-page,
+.read-page {
+  background-color: var(--ledger-paper) !important;
+  background-image:
+    radial-gradient(ellipse at 10% -10%, rgba(255, 255, 255, 0.62), transparent 48%),
+    linear-gradient(135deg, #ECE4D3 0%, #E5DBC8 58%, #DDD2BD 100%) !important;
+  color: var(--ledger-ink) !important;
+}
+
+/* Ruled paper across the field, with a cobalt margin. */
+.site-blueprint::before,
+.seminar-color-page::before {
+  background-image:
+    radial-gradient(circle at 3.4% 24px, rgba(36, 92, 121, 0.24) 2.4px, transparent 2.9px),
+    repeating-linear-gradient(to bottom, transparent 0 31px, rgba(36, 92, 121, 0.075) 31px 32px),
+    linear-gradient(to right, transparent 0 7.8%, rgba(36, 92, 121, 0.26) 7.8% 7.9%, transparent 7.9%) !important;
+  background-size: 100% 68px, auto, auto !important;
+  background-position: 0 0, 0 0, 0 0 !important;
+  background-repeat: repeat-y, repeat, no-repeat !important;
+  opacity: 0.58 !important;
+}
+
+/* The Analyst gets a stricter ledger with a wider margin. */
+.site-blueprint[data-page="analyst"] {
+  background-color: #E7DECC !important;
+  background-image:
+    radial-gradient(ellipse at 20% -12%, rgba(255, 255, 255, 0.55), transparent 52%),
+    linear-gradient(135deg, #EBE3D2, #E0D5C0) !important;
+}
+.site-blueprint[data-page="analyst"]::before {
+  background-image:
+    radial-gradient(circle at 3.4% 24px, rgba(36, 92, 121, 0.24) 2.4px, transparent 2.9px),
+    repeating-linear-gradient(to right, rgba(36, 92, 121, 0.07) 0 1px, transparent 1px 84px),
+    repeating-linear-gradient(to bottom, rgba(36, 92, 121, 0.075) 0 1px, transparent 1px 32px),
+    linear-gradient(to right, transparent 0 9.4%, rgba(36, 92, 121, 0.3) 9.4% 9.5%, transparent 9.5%) !important;
+  background-size: 100% 68px, auto, auto, auto !important;
+  background-repeat: repeat-y, repeat, repeat, no-repeat !important;
+  opacity: 0.7 !important;
+}
+
+/* Ink everywhere on the paper field. */
+.site-blueprint :is(h1, h2, h3, h4, h5, h6, p, li, span, a, button, label, summary, small, dt, dd, blockquote, em, strong),
+.seminar-color-page :is(h1, h2, h3, h4, h5, h6, p, li, span, a, button, label, summary, small, dt, dd, blockquote, em, strong) {
+  color: var(--ledger-ink) !important;
+  -webkit-text-fill-color: var(--ledger-ink) !important;
+}
+.site-blueprint :is(h1, h2, h3, h4),
+.seminar-color-page :is(h1, h2, h3, h4) {
+  color: var(--ledger-ink) !important;
+}
+.site-blueprint a:hover,
+.seminar-color-page a:hover { color: var(--ledger-blue) !important; }
+
+/* Header becomes an ink masthead, not a dark glass bar. */
+.site-blueprint header.app-header .app-header__shell,
+.seminar-color-page header.app-header .app-header__shell,
+.seminar-header header > div {
+  background: rgba(233, 225, 208, 0.9) !important;
+  border-bottom: 1px solid rgba(36, 92, 121, 0.2) !important;
+  box-shadow: 0 8px 24px -22px rgba(24, 40, 45, 0.5) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+.site-blueprint header.app-header :is(a, button, span),
+.seminar-color-page header.app-header :is(a, button, span),
+.seminar-header header :is(a, button, span) {
+  color: var(--ledger-ink) !important;
+}
+.site-blueprint header.app-header a[aria-label="Threadwise — home"] svg,
+.site-blueprint header.app-header a[aria-label="Threadwise — home"] svg *,
+.seminar-color-page header.app-header a[aria-label="Threadwise — home"] svg,
+.seminar-color-page header.app-header a[aria-label="Threadwise — home"] svg *,
+.seminar-header header a[aria-label="Threadwise — home"] svg,
+.seminar-header header a[aria-label="Threadwise — home"] svg * {
+  filter: brightness(0) !important;
+}
+.site-blueprint header.app-header nav[aria-label="Primary"] [aria-current="page"],
+.seminar-color-page header.app-header nav[aria-label="Primary"] [aria-current="page"],
+.seminar-header nav[aria-label="Primary"] [aria-current="page"] {
+  color: var(--ledger-blue) !important;
+}
+.site-blueprint header.app-header nav[aria-label="Primary"] [aria-current="page"] > span,
+.seminar-color-page header.app-header nav[aria-label="Primary"] [aria-current="page"] > span,
+.seminar-header nav[aria-label="Primary"] [aria-current="page"] > span {
+  background-color: var(--ledger-blue) !important;
+}
+.site-blueprint header.app-header [role="menu"],
+.seminar-color-page header.app-header [role="menu"],
+.seminar-header header [role="menu"] {
+  background: var(--ledger-page) !important;
+  border: 1px solid rgba(36, 92, 121, 0.25) !important;
+}
+.site-blueprint header.app-header .app-header__folio,
+.seminar-color-page header.app-header .app-header__folio { color: var(--ledger-blue) !important; }
+
+/* App cards are paper slips with ink rules, not dark glass. */
+.site-blueprint .bp-card,
+.seminar-color-page .bp-card {
+  background: rgba(246, 239, 226, 0.86) !important;
+  border: 1px solid rgba(36, 92, 121, 0.22) !important;
+  box-shadow: 0 18px 40px -25px rgba(24, 40, 45, 0.55) !important;
+  color: var(--ledger-ink) !important;
+}
+.site-blueprint .bp-card__header,
+.site-blueprint .bp-card__footer,
+.seminar-color-page .bp-card__header,
+.seminar-color-page .bp-card__footer {
+  border-color: rgba(36, 92, 121, 0.2) !important;
+}
+.site-blueprint .bp-card__eyebrow,
+.site-blueprint .bp-field__label,
+.seminar-color-page .bp-card__eyebrow,
+.seminar-color-page .bp-field__label {
+  color: var(--ledger-blue) !important;
+}
+.site-blueprint .bp-card__title,
+.seminar-color-page .bp-card__title { color: var(--ledger-ink) !important; }
+
+/* Inputs are ink on bare paper. */
+.site-blueprint .bp-input,
+.seminar-color-page .bp-input,
+.site-blueprint :is(input, textarea, select):not(.bp-input),
+.seminar-color-page :is(input, textarea, select):not(.bp-input) {
+  background: transparent !important;
+  border-color: rgba(36, 92, 121, 0.28) !important;
+  color: var(--ledger-ink) !important;
+  -webkit-text-fill-color: var(--ledger-ink) !important;
+}
+.site-blueprint :is(input, textarea, select)::placeholder,
+.seminar-color-page :is(input, textarea, select)::placeholder {
+  color: rgba(24, 40, 45, 0.4) !important;
+}
+
+/* Buttons: stamped ink and quiet outline. */
+.site-blueprint .bp-button--primary,
+.seminar-color-page .bp-button--primary,
+.site-blueprint .bp-button--primary *,
+.seminar-color-page .bp-button--primary * {
+  background: var(--ledger-ink) !important;
+  border-color: var(--ledger-ink) !important;
+  color: var(--ledger-page) !important;
+  -webkit-text-fill-color: var(--ledger-page) !important;
+}
+.site-blueprint .bp-button--secondary,
+.seminar-color-page .bp-button--secondary,
+.site-blueprint .bp-button--ghost,
+.seminar-color-page .bp-button--ghost {
+  background: transparent !important;
+  border-color: rgba(36, 92, 121, 0.35) !important;
+  color: var(--ledger-ink) !important;
+}
+.site-blueprint .bp-button--secondary *,
+.seminar-color-page .bp-button--secondary *,
+.site-blueprint .bp-button--ghost *,
+.seminar-color-page .bp-button--ghost * { color: var(--ledger-ink) !important; }
+
+/* Seminar entry is already a paper sheet; make its surroundings ink. */
+.seminar-entry { color: var(--ledger-ink) !important; }
+.seminar-entry__meta,
+.seminar-entry__meta p { color: rgba(24, 40, 45, 0.58) !important; }
+.seminar-entry__meta p:first-child { color: var(--ledger-ink) !important; }
+.seminar-entry__copy h1 { color: var(--ledger-ink) !important; }
+.seminar-entry__deck { color: rgba(24, 40, 45, 0.74) !important; }
+.seminar-entry__points li { color: rgba(24, 40, 45, 0.7) !important; border-color: rgba(36, 92, 121, 0.16) !important; }
+.seminar-entry__points span { color: var(--ledger-blue) !important; }
+.seminar-entry__live { color: var(--ledger-blue) !important; }
+.seminar-entry__points { border-color: rgba(36, 92, 121, 0.2) !important; }
+
+/* Reading and archive pages are paper on paper. */
+html[data-surface="paper"] .seminar-reading-surface,
+html[data-surface="paper"] .read-page .bp-page,
+html[data-surface="paper"] .anatomy-report {
+  background-color: var(--ledger-page) !important;
+}
+html[data-surface="paper"] .read-page .bp-page::before,
+html[data-surface="paper"] .seminar-reading-surface::before,
+html[data-surface="paper"] .anatomy-report::before {
+  background-color: #245C79 !important;
+  background-image:
+    radial-gradient(circle at 28px 30px, rgba(246, 239, 226, 0.82) 2.4px, transparent 2.9px),
+    repeating-linear-gradient(to bottom, rgba(246, 239, 226, 0.16) 0 1px, transparent 1px 6px),
+    linear-gradient(90deg, #1E4C62 0%, #2B657F 48%, #183E52 100%) !important;
+}
+.seminar-archive__head h2,
+.seminar-archive__head p { color: var(--ledger-ink) !important; }
+.seminar-archive__eyebrow { color: var(--ledger-blue) !important; }
+.seminar-archive__count { color: rgba(24, 40, 45, 0.48) !important; }
+
+/* Remove the old neon from app accents on paper. */
+.site-blueprint,
+.seminar-color-page {
+  --accent-lime: #245C79;
+  --accent-lilac: #6F5A8E;
+  --site-accent: #245C79;
+}
+
+@media (max-width: 900px) {
+  .site-blueprint::before,
+  .seminar-color-page::before { opacity: 0.42 !important; }
+  .seminar-entry__copy h1 { color: var(--ledger-ink) !important; }
+}
+
+/* Header ink on the paper field. */
+body .site-blueprint header.app-header :is(
+  .app-header__link,
+  .app-header__link > span,
+  .app-header__signin,
+  .app-header__menu,
+  .app-header__index,
+  .app-header__index > span,
+  .app-header__current-label,
+  .app-header__cta,
+  .app-header__cta span
+),
+body .seminar-color-page header.app-header :is(
+  .app-header__link,
+  .app-header__link > span,
+  .app-header__signin,
+  .app-header__menu,
+  .app-header__index,
+  .app-header__index > span,
+  .app-header__current-label,
+  .app-header__cta,
+  .app-header__cta span
+),
+body .seminar-header header :is(a, button, span) {
+  color: #18282D !important;
+  -webkit-text-fill-color: #18282D !important;
+}
+body .site-blueprint header.app-header .app-header__link[aria-current="page"]::after,
+body .seminar-color-page header.app-header .app-header__link[aria-current="page"]::after,
+body .seminar-header nav[aria-label="Primary"] [aria-current="page"]::after {
+  background: #245C79 !important;
+}
+body .site-blueprint header.app-header :is(.app-header__cta svg, .app-header__index-knot),
+body .seminar-color-page header.app-header :is(.app-header__cta svg, .app-header__index-knot) {
+  color: #245C79 !important;
+  border-color: #245C79 !important;
+}
+body .site-blueprint header.app-header .app-header__index-knot::after,
+body .seminar-color-page header.app-header .app-header__index-knot::after {
+  background: #245C79 !important;
+}
+
+/* Mobile destinations belong to the paper field too. */
+nav[aria-label="Primary mobile destinations"] {
+  background: rgba(246, 239, 226, 0.96) !important;
+  border-color: rgba(36, 92, 121, 0.22) !important;
+  box-shadow: 0 -10px 30px -24px rgba(24, 40, 45, 0.65) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+nav[aria-label="Primary mobile destinations"] :is(a, span, svg, button) {
+  color: #18282D !important;
+  -webkit-text-fill-color: #18282D !important;
+}
+nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
+  background: rgba(36, 92, 121, 0.1) !important;
+  color: #245C79 !important;
+  -webkit-text-fill-color: #245C79 !important;
+}
+@media (max-width: 979px) {
+  .seminar-entry { padding-bottom: 108px; }
+}
