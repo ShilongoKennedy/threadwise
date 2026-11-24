@@ -480,43 +480,42 @@ function SeminarPage() {
       </section>
 
       {saved.length > 0 && (
-        <section data-seminar-tone="5" className="seminar-dark-ink bp-card mx-auto mt-8 w-full max-w-[1100px] px-5 py-6 md:px-7">
-          <div className="flex items-end justify-between gap-4 border-b border-white/15 pb-3">
-            <h2 className="font-display text-[26px] leading-none">The archive.</h2>
-            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-white/58">
-              {saved.length} saved
-            </span>
+        <section data-seminar-tone="5" className="seminar-archive mx-auto mt-10 w-full max-w-[1100px] px-5 md:px-8">
+          <div className="seminar-archive__head">
+            <div>
+              <p className="seminar-archive__eyebrow">Field index / only you</p>
+              <h2>The archive.</h2>
+            </div>
+            <p className="seminar-archive__count">{String(saved.length).padStart(2, "0")} entries kept</p>
           </div>
-          <ul>
-            {saved.map((item, index) => (
-              <li key={item.id} className="border-b border-white/12">
-                <button
-                  type="button"
-                  onClick={() => openSaved(item)}
-                  className="group grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-baseline gap-3 py-3 text-left"
-                >
-                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/52">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block truncate font-serif text-[14px] leading-snug text-white/94 group-hover:text-white">
-                      {item.question}
+
+          <div className="seminar-archive__sheet">
+            <div className="seminar-archive__rules" aria-hidden="true" />
+            <ol>
+              {saved.map((item, index) => (
+                <li key={item.id}>
+                  <button type="button" onClick={() => openSaved(item)} className="seminar-archive__entry">
+                    <span className="seminar-archive__number">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="seminar-archive__main">
+                      <span className="seminar-archive__question">{item.question}</span>
+                      <span className="seminar-archive__meta">
+                        {item.stand ? `stood with ${item.stand}` : "held the tension"}
+                        <span aria-hidden="true"> · </span>
+                        {new Date(item.created_at).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                        })}
+                      </span>
                     </span>
-                    <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-white/58">
-                      {item.stand ? `stood with ${item.stand}` : "held the tension"} ·{" "}
-                      {new Date(item.created_at).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                      })}
-                    </span>
-                  </span>
-                  <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white">
-                    reopen →
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
+                    <span className="seminar-archive__reopen">Reopen <span aria-hidden="true">↗</span></span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+            <p className="seminar-archive__foot">
+              Saved seminars are private. Reopen one to return to its question, readings and crux.
+            </p>
+          </div>
         </section>
       )}
 

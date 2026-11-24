@@ -5753,3 +5753,143 @@ body {
 .seminar-color-page {
   transition: background-color 500ms ease, color 500ms ease !important;
 }
+
+/* The Seminar archive is a notebook index page, not a dark utility list. */
+.seminar-archive { color: #F7F1E5; }
+.seminar-archive__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px 24px;
+  padding-bottom: 14px;
+}
+.seminar-archive__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(247, 241, 229, 0.58) !important;
+}
+.seminar-archive__head h2 {
+  margin-top: 5px;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4vw, 50px);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: #F7F1E5 !important;
+}
+.seminar-archive__count {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(247, 241, 229, 0.48) !important;
+}
+.seminar-archive__sheet {
+  position: relative;
+  overflow: hidden;
+  background-color: #F2EBDD;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.5), transparent 30%),
+    repeating-linear-gradient(to bottom, transparent 0 35px, rgba(36, 27, 19, 0.055) 35px 36px);
+  color: #241B13;
+  padding: 22px 26px 16px 76px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 24px 60px -30px rgba(0, 0, 0, 0.7),
+    0 5px 16px rgba(0, 0, 0, 0.2);
+}
+.seminar-archive__sheet::before {
+  content: "";
+  position: absolute;
+  left: 52px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(140, 61, 46, 0.32);
+}
+.seminar-archive__rules {
+  position: absolute;
+  left: 13px;
+  top: 32px;
+  bottom: 32px;
+  width: 22px;
+  background-image: radial-gradient(circle, rgba(36, 27, 19, 0.38) 2.2px, transparent 2.5px);
+  background-size: 22px 48px;
+  background-repeat: repeat-y;
+  opacity: 0.65;
+}
+.seminar-archive__sheet ol { position: relative; z-index: 1; }
+.seminar-archive__sheet li { border-bottom: 1px solid rgba(36, 27, 19, 0.16); }
+.seminar-archive__sheet li:last-of-type { border-bottom: 0; }
+.seminar-archive__entry {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 6px 12px;
+  padding: 15px 3px 15px 0;
+  text-align: left;
+  transition: background-color 140ms ease;
+}
+.seminar-archive__entry:hover { background: rgba(36, 27, 19, 0.045); }
+.seminar-archive__number {
+  grid-row: span 2;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: #8A5A00 !important;
+}
+.seminar-archive__main { min-width: 0; }
+.seminar-archive__question {
+  display: block;
+  max-width: 70ch;
+  font-family: var(--font-serif);
+  font-size: clamp(17px, 1.7vw, 21px);
+  line-height: 1.32;
+  color: #241B13 !important;
+}
+.seminar-archive__meta {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(36, 27, 19, 0.52) !important;
+}
+.seminar-archive__reopen {
+  align-self: center;
+  border-bottom: 1px solid rgba(36, 27, 19, 0.3);
+  padding-bottom: 3px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #241B13 !important;
+  white-space: nowrap;
+}
+.seminar-archive__entry:hover .seminar-archive__reopen { border-color: #241B13; }
+.seminar-archive__foot {
+  position: relative;
+  z-index: 1;
+  margin-top: 13px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(36, 27, 19, 0.18);
+  font-family: 'Dancing Script', 'Newsreader', cursive;
+  font-size: 18px;
+  line-height: 1.2;
+  color: #6A5B48 !important;
+  transform: rotate(-0.4deg);
+}
+@media (max-width: 640px) {
+  .seminar-archive__sheet { padding: 17px 15px 14px 51px; }
+  .seminar-archive__sheet::before { left: 36px; }
+  .seminar-archive__rules { left: 7px; width: 17px; background-size: 17px 44px; }
+  .seminar-archive__entry { grid-template-columns: 25px minmax(0, 1fr); gap: 5px 9px; padding-block: 13px; }
+  .seminar-archive__reopen { grid-column: 2; justify-self: start; margin-top: 2px; }
+  .seminar-archive__question { font-size: 16px; }
+  .seminar-archive__foot { font-size: 16px; }
+}
