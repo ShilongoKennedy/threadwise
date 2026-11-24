@@ -378,109 +378,104 @@ function SeminarPage() {
         <AppHeader section="seminar" />
       </div>
 
-      <section data-seminar-tone="0" className="relative overflow-hidden text-white">
+      <section data-seminar-tone="0" className="seminar-entry">
+        <div className="seminar-entry__inner">
+          <div className="seminar-entry__copy">
+            <div className="seminar-entry__meta">
+              <p>The seminar</p>
+              <span aria-hidden="true" />
+              <p>One to three readings · one crux</p>
+              <ReadingFocusToggle className="ml-auto" />
+            </div>
 
-        <div className="relative z-10 mx-auto w-full max-w-[1100px] px-5 pb-12 pt-12 md:px-8 md:pb-16 md:pt-16">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-white">
-              The seminar
+            <h1>Put it on the table.</h1>
+            <p className="seminar-entry__deck">
+              Bring a quote or a question you cannot settle. The seminar builds the strongest
+              version of each serious explanation, then shows the exact point where they part.
             </p>
-            <span className="h-3 w-px bg-white/20" />
-            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/86">
-              One to three readings · one crux
+
+            <ul className="seminar-entry__points">
+              <li><span>01</span>Every serious position is steelmanned.</li>
+              <li><span>02</span>One crux does the separating.</li>
+              <li><span>03</span>A dated test, not a moral verdict.</li>
+            </ul>
+
+            <p className="seminar-entry__live">
+              Before it argues, it checks recent reporting — and names when the record is silent.
             </p>
-            <ReadingFocusToggle className="ml-auto" />
           </div>
-
-          <h1 className="mt-3 max-w-[12ch] font-display text-[48px] leading-[0.92] tracking-[-0.03em] md:text-[76px]">
-            Put it on the table.
-          </h1>
-          <p className="mt-4 max-w-[52ch] font-serif text-[15px] leading-relaxed text-white/92">
-            Bring a quote or a question you cannot settle. The seminar builds the strongest
-            version of each serious explanation, then shows the exact point where they part.
-          </p>
 
           <form
             onSubmit={(event) => {
               event.preventDefault();
               void convene();
             }}
-            className="bp-card mt-8 text-white"
+            className="seminar-entry__sheet"
           >
-            <div className="bp-card__header">
+            <div className="seminar-entry__sheet-head">
               <div>
-                <p className="bp-card__eyebrow">The seminar</p>
-                <p className="bp-card__title">What are we putting on the table?</p>
+                <p className="seminar-entry__eyebrow">Entry / 01</p>
+                <p className="seminar-entry__title">What are we putting on the table?</p>
               </div>
-              <span className="bp-badge">No verdict unless asked</span>
+              <span className="seminar-entry__badge">No verdict unless asked</span>
             </div>
 
-            <div className="bp-card__body">
-              <label htmlFor="seminar-text" className="bp-field__label">
+            <div className="seminar-entry__body">
+              <label htmlFor="seminar-text" className="seminar-entry__label">
                 The quote or question
               </label>
               <textarea
                 id="seminar-text"
                 value={text}
                 onChange={(event) => setText(event.target.value)}
-                rows={5}
+                rows={6}
                 maxLength={3000}
                 placeholder="Paste the sentence you cannot stop thinking about…"
-                className="bp-input mt-2 min-h-[180px] resize-none font-display text-[21px] leading-[1.3] md:text-[26px]"
+                className="seminar-entry__input"
               />
-            </div>
 
-            <div className="bp-card__footer">
-              <div className="min-w-0 flex-1">
-                <label htmlFor="seminar-context" className="bp-field__label">
-                  Context, if it matters
-                </label>
-                <input
-                  id="seminar-context"
-                  value={context}
-                  onChange={(event) => setContext(event.target.value)}
-                  maxLength={1000}
-                  placeholder="Who said it, where, and what was being argued"
-                  className="bp-input mt-2"
-                />
+              <label htmlFor="seminar-context" className="seminar-entry__label">
+                Context, if it matters
+              </label>
+              <input
+                id="seminar-context"
+                value={context}
+                onChange={(event) => setContext(event.target.value)}
+                maxLength={1000}
+                placeholder="Who said it, where, and what was being argued"
+                className="seminar-entry__context"
+              />
+
+              {error && <p className="seminar-entry__error">{error}</p>}
+
+              <div className="seminar-entry__actions">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setText(SAMPLE);
+                    setContext("A podcast conversation about foreign aid and statecraft.");
+                  }}
+                  className="seminar-entry__sample"
+                >
+                  Use the foreign-aid quote
+                </button>
+                <span className="seminar-entry__count">{text.length}/3000</span>
+                <button
+                  type="submit"
+                  disabled={busy || text.trim().length < 20}
+                  className="seminar-entry__submit"
+                >
+                  {busy ? "Setting the room…" : "Convene the seminar"}
+                  {!busy && <ArrowRight className="h-3.5 w-3.5" />}
+                </button>
               </div>
-              <button
-                type="submit"
-                disabled={busy || text.trim().length < 20}
-                className="bp-button bp-button--primary w-full md:w-auto"
-              >
-                {busy ? "Setting the room…" : "Convene the seminar"}
-                {!busy && <ArrowRight className="h-3.5 w-3.5" />}
-              </button>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-2 px-5 pb-4">
-              <button
-                type="button"
-                onClick={() => {
-                  setText(SAMPLE);
-                  setContext("A podcast conversation about foreign aid and statecraft.");
-                }}
-                className="font-mono text-[9px] uppercase tracking-[0.12em] text-white underline underline-offset-4 transition-colors hover:text-white"
-              >
-                Use the foreign-aid quote
-              </button>
-              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-white/68">
-                {text.length}/3000 · no verdict unless asked
-              </span>
             </div>
           </form>
-
-          {error && (
-            <p className="mt-4 border-l-2 border-[#C1121F] pl-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#FF9D9D]">
-              {error}
-            </p>
-          )}
         </div>
       </section>
 
       {saved.length > 0 && (
-        <section data-seminar-tone="5" className="seminar-archive mx-auto mt-10 w-full max-w-[1100px] px-5 md:px-8">
+        <section data-seminar-tone="5" className="seminar-archive mx-auto mt-12 w-full max-w-[1180px] px-5 md:px-8">
           <div className="seminar-archive__head">
             <div>
               <p className="seminar-archive__eyebrow">Field index / only you</p>
@@ -520,7 +515,7 @@ function SeminarPage() {
       )}
 
       {seminar && (
-        <main ref={readingRef} className="seminar-reading-surface mx-auto w-full max-w-[1100px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
+        <main ref={readingRef} className="seminar-reading-surface mx-auto w-full max-w-[1180px] px-5 pb-28 pt-10 md:px-8 md:pt-14">
           <SeminarReadingNav />
           <section id="s-question" data-reading-section="s-question" data-loupe-section="The question underneath" data-seminar-tone="1" className="seminar-dark-ink reading-section grid gap-6 md:grid-cols-[minmax(0,1fr)_240px] md:gap-12">
             <div>
