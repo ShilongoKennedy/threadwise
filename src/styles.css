@@ -8747,3 +8747,65 @@ nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
 @media (max-width: 799px) {
   .room-nav { grid-template-columns: auto minmax(0, 1fr) !important; }
 }
+
+/* The authored door is part of the room's typography until it opens. */
+.room-door {
+  position: absolute;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 2px 9px 4px 11px;
+  border: 0;
+  border-left: 2px solid #8A5A00;
+  background: transparent;
+  text-align: left;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  cursor: pointer;
+  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.96), 0 0 2px rgba(255, 255, 255, 0.8);
+  transition: opacity 120ms ease;
+}
+.room-door:hover { background: rgba(255, 255, 255, 0.32); }
+.room-door__n { font-family: var(--font-mono); font-size: 8px; color: #8A5A00 !important; }
+.room-door__label { margin-top: 2px; font-family: var(--font-display); font-size: 22px; font-weight: 400; line-height: 1; color: #111 !important; }
+.room-door__line { display: block; width: 30px; height: 1px; margin-top: 7px; background: #8A5A00; }
+.room-door.is-open { border-left-color: #111; }
+.room-door.is-open .room-door__label { color: #8A5A00 !important; }
+
+.room-door-note {
+  position: fixed;
+  z-index: 18;
+  left: 50%;
+  bottom: 58px;
+  width: min(430px, calc(100vw - 34px));
+  transform: translateX(-50%);
+  background: rgba(242, 232, 213, 0.94);
+  border: 1px solid rgba(17, 17, 17, 0.4);
+  box-shadow: 6px 6px 0 rgba(17, 17, 17, 0.22);
+  padding: 15px 17px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.room-door-note p { font-family: var(--font-display); font-size: 25px; line-height: 1; color: #111 !important; }
+.room-door-note > span { display: block; margin-top: 7px; font-family: var(--font-serif); font-size: 12px; line-height: 1.45; color: rgba(17,17,17,0.65) !important; }
+.room-door-note a { display: inline-block; margin-top: 10px; border-bottom: 1px solid #111; padding-bottom: 3px; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.06em; color: #111 !important; }
+@media (max-width: 799px) {
+  .room-door { padding-left: 7px; }
+  .room-door__label { font-size: 17px; }
+  .room-door-note { left: 16px; right: 16px; width: auto; bottom: 48px; transform: none; }
+}
+
+.room-door-prompt {
+  border: 1px solid rgba(17,17,17,0.5);
+  padding: 5px 8px;
+  font-family: var(--font-mono);
+  font-size: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #111 !important;
+}
+.room-door-prompt:hover { background: #111; color: #F2E8D5 !important; }
+
+.room-door.is-hidden { opacity: 0 !important; pointer-events: none !important; }
