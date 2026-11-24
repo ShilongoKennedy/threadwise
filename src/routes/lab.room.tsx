@@ -52,6 +52,8 @@ function ReadingRoom() {
   const [selected, setSelected] = useState<Note | null>(null);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [engaged, setEngaged] = useState(false);
+  const focusRef = useRef<((note: Note) => void) | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -62,8 +64,11 @@ function ReadingRoom() {
     if (!stage) return;
 
     const view = { yaw: 0.2, pitch: -0.02, dragging: false, x: 0, y: 0 };
+    let tween: { fromYaw: number; toYaw: number; fromPitch: number; toPitch: number; start: number } | null = null;
     const onDown = (event: PointerEvent) => {
       if ((event.target as HTMLElement).closest("button, a")) return;
+      tween = null;
+      setEngaged(true);
       view.dragging = true;
       view.x = event.clientX;
       view.y = event.clientY;
@@ -80,6 +85,16 @@ function ReadingRoom() {
     const onUp = () => {
       view.dragging = false;
       stage.classList.remove("is-dragging");
+    };
+    focusRef.current = (note) => {
+      const [x, y, z] = note.point;
+      tween = {
+        fromYaw: view.yaw,
+        toYaw: Math.atan2(-x, -z),
+        fromPitch: view.pitch,
+        toPitch: Math.atan2(y, Math.hypot(x, z)),
+        start: performance.now(),
+      };
     };
     stage.addEventListener("pointerdown", onDown);
     window.addEventListener("pointermove", onMove);
@@ -144,6 +159,13 @@ function ReadingRoom() {
 
         const animate = () => {
           if (!alive || !renderer) return;
+          if (tween) {
+            const progress = Math.min(1, (performance.now() - tween.start) / 760);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            view.yaw = tween.fromYaw + (tween.toYaw - tween.fromYaw) * eased;
+            view.pitch = tween.fromPitch + (tween.toPitch - tween.fromPitch) * eased;
+            if (progress >= 1) tween = null;
+          }
           updateLabels();
           renderer.render(scene, camera);
           frame = window.requestAnimationFrame(animate);
@@ -172,8 +194,15 @@ function ReadingRoom() {
       window.removeEventListener("pointercancel", onUp);
       window.cancelAnimationFrame(frame);
       cleanup?.();
+      focusRef.current = null;
     };
   }, []);
+
+  const openNote = (note: Note) => {
+    setSelected(note);
+    setEngaged(true);
+    focusRef.current?.(note);
+  };
 
   return (
     <div className="room-lab">
@@ -201,8 +230,8 @@ function ReadingRoom() {
             key={note.id}
             type="button"
             ref={(node) => { labels.current[note.id] = node; }}
-            onClick={() => setSelected(note)}
-            className={`room-note room-note--${note.id}`}
+            onClick={() => openNote(note)}
+            className={`room-note room-note--${note.id} ${selected?.id === note.id ? "is-active" : ""}`}
             aria-label={`Open note: ${note.title}`}
           >
             <span className="room-note__n">{note.n}</span>
@@ -211,7 +240,7 @@ function ReadingRoom() {
           </button>
         ))}
 
-        <section className="room-intro">
+        <section className={`room-intro ${engaged ? "is-engaged" : ""}`}>
           <p className="room-kicker">A room for the sentence you cannot settle</p>
           <h1>The room is the reading.</h1>
           <p className="room-intro__body">Drag to look around. Open the notes placed in the room.</p>
@@ -219,7 +248,13 @@ function ReadingRoom() {
 
         <div className="room-hint">
           <span>Drag to look</span>
-          <span>Open a note</span>
+          <nav className="room-map" aria-label="Notes in the room">
+            {NOTES.map((note) => (
+              <button key={note.id} type="button" onClick={() => openNote(note)} className={selected?.id === note.id ? "is-active" : ""} aria-label={note.label}>
+                <span>{note.n}</span>
+              </button>
+            ))}
+          </nav>
           <span>Not a verdict / a place to look</span>
         </div>
 

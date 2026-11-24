@@ -8601,3 +8601,37 @@ nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
 }
 .room-caption__kicker { color: #D8B96A !important; -webkit-text-fill-color: #D8B96A !important; }
 .room-caption__kicker span { color: #F2E8D5 !important; -webkit-text-fill-color: #F2E8D5 !important; }
+
+/* Deeper room interaction: camera focus, active labels, compass. */
+.room-intro { transition: opacity 500ms ease, transform 500ms ease; }
+.room-intro.is-engaged { opacity: 0; transform: translateY(12px); pointer-events: none; }
+.room-note.is-active { background: #111 !important; border-left-color: #D8B96A !important; }
+.room-note.is-active :is(.room-note__n, .room-note__label) { color: #F2E8D5 !important; -webkit-text-fill-color: #F2E8D5 !important; }
+.room-note.is-active .room-note__line { background: #D8B96A; }
+.room-map {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 5px;
+  border-left: 1px solid rgba(17, 17, 17, 0.2);
+  border-right: 1px solid rgba(17, 17, 17, 0.2);
+}
+.room-map button {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border: 1px solid rgba(17, 17, 17, 0.28);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 6px;
+  color: rgba(17, 17, 17, 0.58) !important;
+}
+.room-map button:hover, .room-map button.is-active { background: #111; border-color: #111; color: #F2E8D5 !important; }
+.room-hint { align-items: center; }
+@media (max-width: 799px) {
+  .room-hint { display: flex !important; left: 16px; right: 16px; bottom: 46px; justify-content: space-between; max-width: none; }
+  .room-hint > span { display: none; }
+  .room-map { border: 0; padding: 0; gap: 5px; }
+  .room-map button { background: rgba(247, 241, 229, 0.82); }
+}
