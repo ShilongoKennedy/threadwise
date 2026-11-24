@@ -53,6 +53,7 @@ import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as ApiWeeklyReviewRouteImport } from './routes/api/weekly-review'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
+import { Route as LabAtmosphereRouteImport } from './routes/lab.atmosphere'
 import { Route as LabDeskRouteImport } from './routes/lab.desk'
 import { Route as LabFieldRouteImport } from './routes/lab.field'
 import { Route as LabHomeRouteImport } from './routes/lab.home'
@@ -282,6 +283,11 @@ const CaseSubjectRoute = CaseSubjectRouteImport.update({
   path: '/case/$subject',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabAtmosphereRoute = LabAtmosphereRouteImport.update({
+  id: '/lab/atmosphere',
+  path: '/lab/atmosphere',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabDeskRoute = LabDeskRouteImport.update({
   id: '/lab/desk',
   path: '/lab/desk',
@@ -368,6 +374,7 @@ export interface FileRoutesByFullPath {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
+  '/lab/atmosphere': typeof LabAtmosphereRoute
   '/lab/desk': typeof LabDeskRoute
   '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
@@ -422,6 +429,7 @@ export interface FileRoutesByTo {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
+  '/lab/atmosphere': typeof LabAtmosphereRoute
   '/lab/desk': typeof LabDeskRoute
   '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
@@ -477,6 +485,7 @@ export interface FileRoutesById {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
+  '/lab/atmosphere': typeof LabAtmosphereRoute
   '/lab/desk': typeof LabDeskRoute
   '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
@@ -533,6 +542,7 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
+    | '/lab/atmosphere'
     | '/lab/desk'
     | '/lab/field'
     | '/lab/home'
@@ -587,6 +597,7 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
+    | '/lab/atmosphere'
     | '/lab/desk'
     | '/lab/field'
     | '/lab/home'
@@ -641,6 +652,7 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
+    | '/lab/atmosphere'
     | '/lab/desk'
     | '/lab/field'
     | '/lab/home'
@@ -696,6 +708,7 @@ export interface RootRouteChildren {
   ApiWeeklyReviewRoute: typeof ApiWeeklyReviewRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CaseSubjectRoute: typeof CaseSubjectRoute
+  LabAtmosphereRoute: typeof LabAtmosphereRoute
   LabDeskRoute: typeof LabDeskRoute
   LabFieldRoute: typeof LabFieldRoute
   LabHomeRoute: typeof LabHomeRoute
@@ -1016,6 +1029,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CaseSubjectRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab/atmosphere': {
+      id: '/lab/atmosphere'
+      path: '/lab/atmosphere'
+      fullPath: '/lab/atmosphere'
+      preLoaderRoute: typeof LabAtmosphereRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab/desk': {
       id: '/lab/desk'
       path: '/lab/desk'
@@ -1120,6 +1140,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWeeklyReviewRoute: ApiWeeklyReviewRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CaseSubjectRoute: CaseSubjectRoute,
+  LabAtmosphereRoute: LabAtmosphereRoute,
   LabDeskRoute: LabDeskRoute,
   LabFieldRoute: LabFieldRoute,
   LabHomeRoute: LabHomeRoute,
