@@ -6518,3 +6518,95 @@ nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
 @media (max-width: 979px) {
   .seminar-entry { padding-bottom: 108px; }
 }
+
+/* Anatomy belongs to the ledger too: ink on paper, not white on a vanished field. */
+.anatomy-page { color: var(--ledger-ink) !important; }
+.anatomy-page :is(h1, h2, h3, h4, p, li, span, strong, em, small, button, label, summary, blockquote) {
+  color: var(--ledger-ink) !important;
+  -webkit-text-fill-color: var(--ledger-ink) !important;
+}
+.anatomy-kicker,
+.anatomy-mini__label,
+.anatomy-composer__bar p,
+.anatomy-section__kicker,
+.anatomy-rung__eyebrow,
+.anatomy-line-button,
+.anatomy-horizon span {
+  color: var(--ledger-blue) !important;
+  -webkit-text-fill-color: var(--ledger-blue) !important;
+}
+.anatomy-lede,
+.anatomy-mini__note,
+.anatomy-waiting,
+.anatomy-restatement,
+.anatomy-section__hint { color: var(--ledger-muted) !important; -webkit-text-fill-color: var(--ledger-muted) !important; }
+
+.anatomy-mini__rung { color: rgba(24, 40, 45, 0.76) !important; }
+.anatomy-mini__rung span { color: var(--ledger-blue) !important; }
+.anatomy-mini__rung i { background: rgba(36, 92, 121, 0.45); }
+.anatomy-mini__rung i.is-fading { background: #6F5A8E; opacity: 0.7; }
+.anatomy-mini__note { font-family: var(--font-serif); font-size: 13px; }
+
+.anatomy-composer {
+  background: rgba(246, 239, 226, 0.88) !important;
+  border: 1px solid rgba(36, 92, 121, 0.24) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 18px 38px -26px rgba(24, 40, 45, 0.55) !important;
+}
+.anatomy-composer__bar { border-bottom-color: rgba(36, 92, 121, 0.18) !important; }
+.anatomy-composer__bar button { color: var(--ledger-blue) !important; -webkit-text-fill-color: var(--ledger-blue) !important; }
+.anatomy-composer__bar button:hover { color: var(--ledger-ink) !important; }
+.anatomy-input {
+  background: transparent !important;
+  color: var(--ledger-ink) !important;
+  -webkit-text-fill-color: var(--ledger-ink) !important;
+  font-family: var(--font-serif) !important;
+  font-size: 17px !important;
+}
+.anatomy-input::placeholder { color: rgba(24, 40, 45, 0.38) !important; -webkit-text-fill-color: rgba(24, 40, 45, 0.38) !important; }
+.anatomy-composer__foot { border-top-color: rgba(36, 92, 121, 0.18) !important; }
+.anatomy-composer__foot > span { color: rgba(24, 40, 45, 0.48) !important; }
+.anatomy-action {
+  background: var(--ledger-ink) !important;
+  border-radius: 2px !important;
+  color: var(--ledger-page) !important;
+  -webkit-text-fill-color: var(--ledger-page) !important;
+}
+.anatomy-action * { color: var(--ledger-page) !important; -webkit-text-fill-color: var(--ledger-page) !important; }
+.anatomy-action:hover { background: var(--ledger-blue) !important; }
+.anatomy-action:disabled { opacity: 0.35; }
+.anatomy-error { color: #8C3D2E !important; }
+.anatomy-waiting { border-top-color: rgba(36, 92, 121, 0.2) !important; }
+.anatomy-waiting__mark { color: var(--ledger-blue) !important; }
+
+.anatomy-report { margin-top: 45px; }
+.anatomy-report__head { border-bottom-color: rgba(36, 92, 121, 0.22) !important; }
+.anatomy-report__head h2,
+.anatomy-section__head h3 { color: var(--ledger-ink) !important; -webkit-text-fill-color: var(--ledger-ink) !important; }
+.anatomy-reset { border-color: rgba(36, 92, 121, 0.3) !important; color: var(--ledger-ink) !important; border-radius: 2px !important; }
+.anatomy-reset:hover { border-color: var(--ledger-blue) !important; color: var(--ledger-blue) !important; }
+.anatomy-ladder::before { background: linear-gradient(to bottom, rgba(36, 92, 121, 0.55), rgba(111, 90, 142, 0.4), rgba(36, 92, 121, 0.12)) !important; }
+.anatomy-rung-wrap::before { background: var(--ledger-page) !important; border-color: rgba(36, 92, 121, 0.4) !important; }
+.anatomy-rung-wrap.status-established::before,
+.anatomy-rung-wrap.status-supported::before { border-color: var(--ledger-blue) !important; background: var(--ledger-blue) !important; }
+.anatomy-rung-wrap.status-contested::before { border-color: #6F5A8E !important; background: rgba(111, 90, 142, 0.35) !important; }
+.anatomy-rung { border-bottom-color: rgba(36, 92, 121, 0.16) !important; }
+.anatomy-rung:hover { background: rgba(36, 92, 121, 0.055) !important; border-color: rgba(36, 92, 121, 0.26) !important; }
+.anatomy-rung__number { color: rgba(24, 40, 45, 0.42) !important; }
+.anatomy-rung__label,
+.anatomy-rung__statement { color: var(--ledger-ink) !important; }
+.anatomy-rung__chevron { color: rgba(24, 40, 45, 0.45) !important; }
+.anatomy-status { border-color: rgba(36, 92, 121, 0.28) !important; color: var(--ledger-muted) !important; border-radius: 2px !important; }
+.anatomy-status.status-established,
+.anatomy-status.status-supported { border-color: rgba(36, 92, 121, 0.5) !important; color: var(--ledger-blue) !important; }
+.anatomy-status.status-contested { border-color: rgba(111, 90, 142, 0.5) !important; color: #6F5A8E !important; }
+.anatomy-rung__body { border-left-color: rgba(36, 92, 121, 0.22) !important; }
+.anatomy-rung__body p:not(.anatomy-rung__eyebrow) { color: rgba(24, 40, 45, 0.72) !important; }
+.anatomy-rung__actions { border-top-color: rgba(36, 92, 121, 0.16) !important; }
+.anatomy-rung__actions > p { color: rgba(24, 40, 45, 0.46) !important; }
+.anatomy-line-button { color: var(--ledger-blue) !important; }
+.anatomy-line-button:hover { color: var(--ledger-ink) !important; }
+.anatomy-my-line { color: #6F5A8E !important; }
+.anatomy-horizon::before { background: #6F5A8E !important; }
+.anatomy-horizon span { color: #6F5A8E !important; }
+.anatomy-ledger { border-color: rgba(36, 92, 121, 0.2) !important; }
