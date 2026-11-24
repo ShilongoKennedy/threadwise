@@ -136,7 +136,7 @@ function EvidenceField() {
               key={node.id}
               type="button"
               onClick={() => setSelected(node)}
-              className={`field-node ${node.kind ? `field-node--${node.kind}` : ""} ${selected?.id === node.id ? "is-selected" : ""}`}
+              className={`field-node field-node--${node.id} ${node.kind ? `field-node--${node.kind}` : ""} ${selected?.id === node.id ? "is-selected" : ""}`}
               style={{
                 left: `${(node.x / 1200) * 100}%`,
                 top: `${(node.y / 760) * 100}%`,

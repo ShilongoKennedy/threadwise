@@ -7271,3 +7271,171 @@ nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
   .field-controls { display: none; }
   .field-foot { position: relative; padding-inline: 17px; }
 }
+
+/* ============================================================
+   FIELD / COLOUR STUDY
+   A bright cut-paper evidence map. No dark field, no serif skin.
+   ============================================================ */
+.field-lab {
+  background-color: #BFD8FF !important;
+  background-image:
+    radial-gradient(ellipse 40% 45% at 18% 18%, rgba(255, 232, 138, 0.65), transparent 70%),
+    radial-gradient(ellipse 38% 48% at 82% 72%, rgba(184, 255, 221, 0.58), transparent 72%),
+    linear-gradient(to right, rgba(20, 40, 70, 0.085) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(20, 40, 70, 0.075) 1px, transparent 1px) !important;
+  background-size: auto, auto, 92px 92px, 92px 92px !important;
+  color: #101010 !important;
+}
+.field-lab::after { display: none !important; }
+.field-lab::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 60% 30%, rgba(255, 255, 255, 0.35), transparent 32%),
+    linear-gradient(120deg, transparent 0 48%, rgba(35, 71, 217, 0.045) 48% 48.3%, transparent 48.3%);
+}
+.field-nav {
+  border-bottom: 2px solid #101010 !important;
+  background: #BFD8FF;
+}
+.field-brand {
+  font-family: var(--font-sans) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #101010 !important;
+}
+.field-nav__case { color: #101010 !important; opacity: 0.6; }
+.field-nav__right span { color: #101010 !important; opacity: 0.58; }
+.field-nav__right a { color: #101010 !important; border-color: #101010 !important; }
+.field-stage { cursor: grab; }
+.field-lines path { stroke: #2347D9 !important; stroke-width: 1.8 !important; opacity: 0.75; }
+.field-lines g.is-active path { stroke: #101010 !important; stroke-width: 2.4 !important; }
+.field-lines circle { fill: #2347D9 !important; }
+.field-lines g.is-active circle { fill: #101010 !important; }
+
+.field-node {
+  background: #FFFFFF !important;
+  border: 2px solid #101010 !important;
+  box-shadow: 6px 6px 0 #101010 !important;
+  padding: 16px 17px 17px !important;
+  color: #101010 !important;
+  text-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.field-node:hover {
+  background: #FFFFFF !important;
+  box-shadow: 9px 9px 0 #101010 !important;
+}
+.field-node.is-selected {
+  background: #FFFFFF !important;
+  outline: 3px solid #101010;
+  outline-offset: 4px;
+  box-shadow: 9px 9px 0 #101010 !important;
+}
+.field-node--claim {
+  background: #FFF06A !important;
+}
+.field-node--document { background: #BDFFE1 !important; }
+.field-node--gap { background: #D8C7FF !important; }
+.field-node--actors { background: #FFFFFF !important; }
+.field-node--timing { background: #FFE6A1 !important; }
+.field-node--test { background: #2347D9 !important; }
+.field-node--record { background: #FFD2B8 !important; }
+.field-node__pin {
+  background: #101010 !important;
+  box-shadow: none !important;
+  width: 7px; height: 7px;
+  margin-bottom: 9px;
+}
+.field-node--test .field-node__pin { background: #FFF06A !important; }
+.field-node__meta {
+  color: rgba(16, 16, 16, 0.62) !important;
+  font-size: 8px !important;
+  font-weight: 700;
+}
+.field-node__meta b { color: #2347D9 !important; font-weight: 700; }
+.field-node__title {
+  margin-top: 7px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.045em !important;
+  color: #101010 !important;
+}
+.field-node__short {
+  margin-top: 9px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+  color: rgba(16, 16, 16, 0.65) !important;
+}
+.field-node--claim .field-node__title {
+  font-family: var(--font-sans) !important;
+  font-size: clamp(38px, 4.2vw, 62px) !important;
+  line-height: 0.92 !important;
+  letter-spacing: -0.065em !important;
+}
+.field-node--claim .field-node__short { font-size: 12px !important; color: rgba(16,16,16,.7) !important; }
+.field-node--gap .field-node__title { color: #101010 !important; }
+.field-node--test .field-node__title { color: #FFF06A !important; }
+.field-node--test .field-node__short { color: rgba(255, 240, 106, 0.75) !important; }
+.field-node--test .field-node__meta { color: rgba(255, 240, 106, 0.7) !important; }
+.field-node--test .field-node__meta b { color: #FFF06A !important; }
+.field-node--claim .field-node__pin { width: 10px; height: 10px; }
+
+.field-hint { color: rgba(16, 16, 16, 0.55) !important; }
+.field-controls { color: #101010 !important; }
+.field-controls button {
+  border: 2px solid #101010 !important;
+  border-radius: 0 !important;
+  color: #101010 !important;
+  background: #FFFFFF !important;
+  box-shadow: 3px 3px 0 #101010;
+}
+.field-sheet {
+  background: #FFF06A !important;
+  background-image: none !important;
+  border: 2px solid #101010 !important;
+  box-shadow: 9px 9px 0 #101010 !important;
+  border-radius: 0 !important;
+}
+.field-sheet__close { color: #101010 !important; }
+.field-sheet__kicker { color: #2347D9 !important; font-weight: 700; }
+.field-sheet__kicker span { color: #101010 !important; }
+.field-sheet h2 { font-family: var(--font-sans) !important; font-weight: 700 !important; letter-spacing: -0.05em; }
+.field-sheet__body { color: rgba(16, 16, 16, 0.78) !important; }
+.field-sheet__foot { border-top: 2px solid #101010 !important; color: rgba(16, 16, 16, 0.58) !important; }
+.field-foot {
+  background: #BFD8FF;
+  border-top: 2px solid #101010 !important;
+  color: rgba(16, 16, 16, 0.58) !important;
+}
+.field-foot span { color: inherit !important; }
+@media (max-width: 900px) {
+  .field-lab { background-color: #BFD8FF !important; }
+  .field-node { box-shadow: 4px 4px 0 #101010 !important; }
+  .field-node--claim { padding-top: 13px !important; }
+}
+
+/* Selection keeps each node's cut-paper colour; only the frame changes. */
+.field-node.is-selected { background-clip: border-box; }
+.field-node--claim:hover,
+.field-node--claim.is-selected { background: #FFF06A !important; }
+.field-node--document:hover,
+.field-node--document.is-selected { background: #BDFFE1 !important; }
+.field-node--gap:hover,
+.field-node--gap.is-selected { background: #D8C7FF !important; }
+.field-node--actors:hover,
+.field-node--actors.is-selected { background: #FFFFFF !important; }
+.field-node--timing:hover,
+.field-node--timing.is-selected { background: #FFE6A1 !important; }
+.field-node--test:hover,
+.field-node--test.is-selected { background: #2347D9 !important; }
+.field-node--record:hover,
+.field-node--record.is-selected { background: #FFD2B8 !important; }
