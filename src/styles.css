@@ -6610,3 +6610,6 @@ nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
 .anatomy-horizon::before { background: #6F5A8E !important; }
 .anatomy-horizon span { color: #6F5A8E !important; }
 .anatomy-ledger { border-color: rgba(36, 92, 121, 0.2) !important; }
+
+/* The old fixed dark scrim was still overlaying the paper field. */
+.bp-scrim { display: none !important; }
