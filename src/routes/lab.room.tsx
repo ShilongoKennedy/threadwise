@@ -220,7 +220,7 @@ function ReadingRoom() {
       <main
         ref={stageRef}
         className={`room-stage ${ready ? "is-ready" : ""}`}
-        style={failed ? { backgroundImage: "url('/lab/solitude-preview.webp')" } : undefined}
+        style={{ backgroundImage: "url('/lab/solitude-preview.webp')" }}
       >
         {!ready && !failed ? <div className="room-loading">entering the room</div> : null}
         {failed ? <div className="room-loading room-loading--failed">The room could not load in 3D.</div> : null}
