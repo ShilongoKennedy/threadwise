@@ -58,6 +58,7 @@ import { Route as LabDeskRouteImport } from './routes/lab.desk'
 import { Route as LabFieldRouteImport } from './routes/lab.field'
 import { Route as LabHomeRouteImport } from './routes/lab.home'
 import { Route as LabLoomRouteImport } from './routes/lab.loom'
+import { Route as LabSignalRouteImport } from './routes/lab.signal'
 import { Route as LabSortRouteImport } from './routes/lab.sort'
 import { Route as PracticeTokenRouteImport } from './routes/practice.$token'
 import { Route as QuestionIdRouteImport } from './routes/question.$id'
@@ -310,6 +311,11 @@ const LabLoomRoute = LabLoomRouteImport.update({
   path: '/lab/loom',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabSignalRoute = LabSignalRouteImport.update({
+  id: '/lab/signal',
+  path: '/lab/signal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabSortRoute = LabSortRouteImport.update({
   id: '/lab/sort',
   path: '/lab/sort',
@@ -391,6 +397,7 @@ export interface FileRoutesByFullPath {
   '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
   '/lab/loom': typeof LabLoomRoute
+  '/lab/signal': typeof LabSignalRoute
   '/lab/sort': typeof LabSortRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
@@ -448,6 +455,7 @@ export interface FileRoutesByTo {
   '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
   '/lab/loom': typeof LabLoomRoute
+  '/lab/signal': typeof LabSignalRoute
   '/lab/sort': typeof LabSortRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
@@ -506,6 +514,7 @@ export interface FileRoutesById {
   '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
   '/lab/loom': typeof LabLoomRoute
+  '/lab/signal': typeof LabSignalRoute
   '/lab/sort': typeof LabSortRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
@@ -565,6 +574,7 @@ export interface FileRouteTypes {
     | '/lab/field'
     | '/lab/home'
     | '/lab/loom'
+    | '/lab/signal'
     | '/lab/sort'
     | '/practice/$token'
     | '/question/$id'
@@ -622,6 +632,7 @@ export interface FileRouteTypes {
     | '/lab/field'
     | '/lab/home'
     | '/lab/loom'
+    | '/lab/signal'
     | '/lab/sort'
     | '/practice/$token'
     | '/question/$id'
@@ -679,6 +690,7 @@ export interface FileRouteTypes {
     | '/lab/field'
     | '/lab/home'
     | '/lab/loom'
+    | '/lab/signal'
     | '/lab/sort'
     | '/practice/$token'
     | '/question/$id'
@@ -737,6 +749,7 @@ export interface RootRouteChildren {
   LabFieldRoute: typeof LabFieldRoute
   LabHomeRoute: typeof LabHomeRoute
   LabLoomRoute: typeof LabLoomRoute
+  LabSignalRoute: typeof LabSignalRoute
   LabSortRoute: typeof LabSortRoute
   PracticeTokenRoute: typeof PracticeTokenRoute
   QuestionIdRoute: typeof QuestionIdRoute
@@ -1090,6 +1103,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LabLoomRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab/signal': {
+      id: '/lab/signal'
+      path: '/lab/signal'
+      fullPath: '/lab/signal'
+      preLoaderRoute: typeof LabSignalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab/sort': {
       id: '/lab/sort'
       path: '/lab/sort'
@@ -1185,6 +1205,7 @@ const rootRouteChildren: RootRouteChildren = {
   LabFieldRoute: LabFieldRoute,
   LabHomeRoute: LabHomeRoute,
   LabLoomRoute: LabLoomRoute,
+  LabSignalRoute: LabSignalRoute,
   LabSortRoute: LabSortRoute,
   PracticeTokenRoute: PracticeTokenRoute,
   QuestionIdRoute: QuestionIdRoute,

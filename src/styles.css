@@ -8163,3 +8163,226 @@ nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
   .sort-result__list b { grid-column: 2; }
   .sort-foot { padding-inline: 16px; }
 }
+
+/* ============================================================
+   LAB / SIGNAL
+   A live broadcast. Yellow field, black frame, moving wire.
+   ============================================================ */
+.signal-lab {
+  position: relative;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f1e500;
+  color: #0a0a0a;
+}
+.signal-lab::after {
+  content: "";
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+.signal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 2px solid #0a0a0a;
+  padding: 13px 27px 9px;
+}
+.signal-brand { font-family: var(--font-sans); font-size: 12px; font-weight: 800; letter-spacing: 0.09em; color: #0a0a0a !important; }
+.signal-nav__status { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(10,10,10,0.62) !important; }
+.signal-nav__status i { width: 6px; height: 6px; border-radius: 50%; background: #2b4bff; animation: signal-pulse 1.4s infinite; }
+@keyframes signal-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+.signal-nav__channel { display: none; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.09em; color: rgba(10,10,10,0.6) !important; }
+.signal-nav__enter { border-bottom: 1px solid #0a0a0a; padding-bottom: 3px; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.07em; color: #0a0a0a !important; }
+
+.signal-main {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  padding: 18px 7vw 62px;
+}
+.signal-stripe { position: absolute; z-index: 1; top: 0; bottom: 0; width: 16px; background: #2b4bff; }
+.signal-stripe--left { left: 0; }
+.signal-stripe--right { right: 0; }
+.signal-scan {
+  position: absolute;
+  z-index: 2;
+  left: 0; right: 0;
+  top: -2px;
+  height: 2px;
+  background: rgba(10, 10, 10, 0.18);
+  box-shadow: 0 0 24px rgba(10, 10, 10, 0.08);
+  animation: signal-scan 7s linear infinite;
+  pointer-events: none;
+}
+@keyframes signal-scan { from { transform: translateY(0); } to { transform: translateY(100vh); } }
+.signal-noise { position: absolute; z-index: 1; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgba(10,10,10,0.035) 0 1px, transparent 1px 4px); opacity: 0.6; }
+.signal-topline {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 7px 18px;
+  border-bottom: 1px solid rgba(10, 10, 10, 0.4);
+  padding-bottom: 7px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(10, 10, 10, 0.68) !important;
+}
+.signal-topline span { color: inherit !important; }
+.signal-now {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 1100px;
+}
+.signal-kind {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #2b4bff !important;
+}
+.signal-now h1 {
+  margin-top: 13px;
+  max-width: 17ch;
+  font-family: var(--font-sans);
+  font-size: clamp(58px, 8.5vw, 132px);
+  font-weight: 800;
+  line-height: 0.86;
+  letter-spacing: -0.07em;
+  color: #0a0a0a !important;
+}
+.signal-rule { width: 54px; height: 2px; margin-top: 25px; background: #0a0a0a; }
+.signal-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 25px; margin-top: 19px; }
+.signal-freeze {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 13px;
+  background: #0a0a0a;
+  padding: 0 14px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #f1e500 !important;
+}
+.signal-freeze:hover { background: #2b4bff; color: #fff !important; }
+.signal-freeze span { font-size: 8px; }
+.signal-dots { display: flex; gap: 5px; align-items: center; }
+.signal-dots span { display: block; width: 22px; height: 2px; background: rgba(10, 10, 10, 0.24); }
+.signal-dots span.is-current { background: #0a0a0a; }
+
+.signal-lower {
+  position: absolute;
+  z-index: 7;
+  left: 7vw;
+  right: 7vw;
+  bottom: 55px;
+  background: #0a0a0a;
+  color: #f4ead7;
+  box-shadow: 0 16px 34px -25px rgba(0, 0, 0, 0.7);
+  animation: signal-lower-in 200ms cubic-bezier(.2,.8,.2,1);
+}
+@keyframes signal-lower-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.signal-lower__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  border-bottom: 1px solid rgba(244, 234, 215, 0.24);
+  padding: 8px 13px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(244, 234, 215, 0.6) !important;
+}
+.signal-lower__head span { color: inherit !important; }
+.signal-lower__grid { display: grid; gap: 0; }
+.signal-lower__grid > div { border-bottom: 1px solid rgba(244, 234, 215, 0.16); padding: 10px 13px; }
+.signal-lower__grid > div:last-child { border-bottom: 0; }
+.signal-lower__grid p { font-family: var(--font-mono); font-size: 7px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #f1e500 !important; }
+.signal-lower__grid span { display: block; margin-top: 4px; max-width: 62ch; font-family: var(--font-serif); font-size: 14px; line-height: 1.4; color: rgba(244, 234, 215, 0.84) !important; }
+
+.signal-ticker {
+  position: absolute;
+  z-index: 8;
+  left: 0; right: 0; bottom: 0;
+  height: 38px;
+  overflow: hidden;
+  border-top: 1px solid #0a0a0a;
+  background: #0a0a0a;
+  color: #f1e500;
+}
+.signal-ticker > div {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  height: 100%;
+  animation: signal-marquee 46s linear infinite;
+}
+.signal-ticker span {
+  padding-right: 19px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+  color: #f1e500 !important;
+}
+@keyframes signal-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.signal-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 7px;
+  border-top: 2px solid #0a0a0a;
+  padding: 8px 27px 10px;
+  font-family: var(--font-mono);
+  font-size: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(10, 10, 10, 0.55) !important;
+}
+.signal-foot span { color: inherit !important; }
+
+@media (min-width: 800px) {
+  .signal-nav { padding: 15px 34px 9px; }
+  .signal-nav__channel { display: block; }
+  .signal-main { padding: 21px 8vw 64px; }
+  .signal-lower__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .signal-lower__grid > div { border-bottom: 0; border-right: 1px solid rgba(244, 234, 215, 0.16); }
+  .signal-lower__grid > div:last-child { border-right: 0; }
+  .signal-foot { padding-inline: 34px; }
+}
+@media (max-width: 799px) {
+  .signal-nav { flex-wrap: wrap; padding: 11px 16px 8px; gap: 9px; }
+  .signal-nav__channel { display: none; }
+  .signal-nav__status { margin-left: auto; }
+  .signal-nav__enter { order: 3; width: 100%; }
+  .signal-main { padding: 15px 26px 59px; }
+  .signal-now h1 { font-size: clamp(45px, 12.5vw, 74px); }
+  .signal-now { justify-content: flex-start; padding-top: 9vh; }
+  .signal-lower { left: 16px; right: 16px; bottom: 49px; max-height: 46dvh; overflow-y: auto; }
+  .signal-lower__grid span { font-size: 13px; }
+  .signal-ticker { height: 34px; }
+  .signal-foot { padding-inline: 16px; }
+}
