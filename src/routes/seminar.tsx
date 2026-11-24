@@ -552,6 +552,35 @@ function SeminarPage() {
             </div>
           </section>
 
+          <section data-loupe-section="Recent reporting" data-seminar-tone="1" className="seminar-dark-ink reading-section mt-6 border-t border-white/15 pt-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-white">
+                Recent reporting checked
+              </p>
+              <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-white/52">
+                retrieved now · not memory
+              </p>
+            </div>
+            {seminar.sources?.length ? (
+              <ul className="mt-2 space-y-1.5">
+                {seminar.sources.map((source) => (
+                  <li key={source.url} className="flex flex-col gap-0.5 border-b border-white/10 pb-1.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+                    <a href={source.url} target="_blank" rel="noreferrer" className="font-serif text-[13px] leading-snug text-white/88 underline decoration-white/20 underline-offset-4 hover:text-white">
+                      {source.title}
+                    </a>
+                    <span className="shrink-0 font-mono text-[8px] uppercase tracking-[0.08em] text-white/55">
+                      {source.outlet}{source.date ? ` · ${source.date.slice(0, 10)}` : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-2 max-w-[62ch] font-serif text-[13px] leading-relaxed text-white/72">
+                No current reporting was retrieved for this question. Treat the premise as unverified; the seminar should not fill that gap from memory.
+              </p>
+            )}
+          </section>
+
           <section id="s-readings" data-reading-section="s-readings" data-loupe-section="Readings" data-seminar-tone="2" className="seminar-dark-ink reading-section mt-8">
             <div className="flex items-end justify-between gap-4 pb-1">
               <div>

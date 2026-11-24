@@ -879,6 +879,49 @@ async function bingNews(
   }
 }
 
+export type RetrievedNews = {
+  title: string;
+  date: string;
+  outlet: string;
+  url: string;
+  snippet?: string;
+};
+
+/**
+ * Recent reporting for a seminar question. The Seminar used to reason only from
+ * the reader's words; this gives it dated material and lets it say when the
+ * premise is absent from the record.
+ */
+export async function retrieveNews(input: string, limit = 6): Promise<RetrievedNews[]> {
+  const entities = candidateEntities(input);
+  const terms = distinctiveTerms(input);
+  const edition = editionFor(input);
+  const queries = [
+    entities.slice(0, 2).join(" "),
+    terms.slice(0, 4).join(" "),
+    input.replace(/\s+/g, " ").trim().slice(0, 120),
+  ].filter((query) => query.trim().length > 2);
+
+  const results = await Promise.all([...new Set(queries)].map((query) => news(query, edition)));
+  const seen = new Set<string>();
+  const hits = results
+    .flat()
+    .filter((hit) => {
+      const key = hit.title.toLowerCase().replace(/\W+/g, " ").trim();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .map((hit) => ({
+      ...hit,
+      score: matchCount(hit.title, terms) * 10 + (hit.date ? 1 : 0),
+    }))
+    .sort((a, b) => b.score - a.score || b.date.localeCompare(a.date))
+    .slice(0, limit);
+
+  return hits.map(({ score: _score, ...hit }) => hit);
+}
+
 /** Strip the reader's navigation, accessibility chrome and image markup. */
 export function cleanArticle(text: string): string {
   const lines = text

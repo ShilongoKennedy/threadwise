@@ -5690,3 +5690,66 @@ html[data-surface="paper"] .seminar-reading-surface .theory-panel {
 .seminar-reading-surface .theory-panel {
   width: 100%;
 }
+
+/* ============================================================
+   NOTEBOOK FIELD
+   The whole site now sits on a dark cloth notebook cover:
+   woven texture, a stitched spine, no star field or wave artwork.
+   ============================================================ */
+html,
+body {
+  background: #101C22 !important;
+}
+
+.site-blueprint,
+.seminar-color-page {
+  background-color: #101C22 !important;
+  background-image:
+    radial-gradient(ellipse at 50% -10%, rgba(101, 137, 128, 0.14), transparent 58%),
+    linear-gradient(135deg, #14242B 0%, #0E191F 55%, #0A1419 100%) !important;
+}
+
+.site-blueprint::before,
+.seminar-color-page::before {
+  background-image:
+    /* two stitched spine lines */
+    repeating-linear-gradient(
+      to bottom,
+      rgba(190, 207, 198, 0.28) 0 2px,
+      transparent 2px 15px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(190, 207, 198, 0.18) 0 2px,
+      transparent 2px 15px
+    ),
+    /* fine woven cloth */
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 5px),
+    radial-gradient(ellipse at 18% 8%, rgba(109, 148, 135, 0.1), transparent 46%) !important;
+  background-size:
+    2px 15px,
+    2px 15px,
+    auto,
+    auto,
+    auto !important;
+  background-position:
+    24px 0,
+    31px 0,
+    0 0,
+    0 0,
+    0 0 !important;
+  background-repeat:
+    repeat-y,
+    repeat-y,
+    repeat,
+    repeat,
+    no-repeat !important;
+  opacity: 1 !important;
+}
+
+/* Keep the field still: this is a physical desk, not a scrolling artwork. */
+.site-blueprint,
+.seminar-color-page {
+  transition: background-color 500ms ease, color 500ms ease !important;
+}

@@ -1,6 +1,7 @@
 import { generateObject } from "ai";
 import { z } from "zod";
 import { getModel } from "@/lib/threadwise/ai/ai-providers.server";
+import { retrieveNews } from "@/lib/threadwise/analyst";
 
 const baseTheorySchema = z.object({
   key: z.enum(["A", "B", "C"]),
@@ -47,7 +48,8 @@ export const seminarSchema = seminarFallbackSchema.extend({
   theories: z.array(theorySchema).min(1).max(3),
 });
 
-export type Seminar = z.infer<typeof seminarSchema>;
+export type SeminarSource = { title: string; url: string; outlet: string; date: string };
+export type Seminar = z.infer<typeof seminarSchema> & { sources?: SeminarSource[] };
 export type SeminarTheory = z.infer<typeof theorySchema>;
 
 const SYSTEM = `You are The Seminar at Threadwise: a teacher of reasoning, not a pundit.
@@ -69,6 +71,7 @@ RULES
 - mechanism_steps must be the causal chain, not a table of contents: 3–5 observable moves from cause to outcome, each with a short label and one clarifying sentence.
 - Do not moralise. Do not say which side is ethically better. If the disagreement is partly normative, label it "mixed" and say that the values question is separate; do not settle it.
 - Do not invent facts. If the evidence is thin, say so in evidence and sources_needed.
+- The question may contain a premise that is not in the retrieved reporting. Do not adopt the premise. Test it. If the reporting does not name the alleged event, person or scandal, say that the record is silent on it rather than substituting a familiar story from memory.
 - The crux is one question that actually separates the positions. Not "both have merits". For single, the crux is the one observation that would break the explanation.
 - settle is a specific observation, comparison or dataset that would move a reasonable reader.
 - The verdict is provisional and empirical only. Use "undecided" when the evidence does not separate the positions. State what would change it. Never make a moral verdict.
@@ -95,6 +98,12 @@ export async function openSeminar(text: string, context: string, recentForms: st
 This is a warning against sameness, not a rule against repetition. Pick the shape the question actually needs. If you pick one already in that list, form_reason must name what about this question makes the same shape necessary rather than convenient.
 `
     : "";
+  const recentNews = await retrieveNews(text, 6);
+  const reportingBlock = recentNews.length
+    ? recentNews
+        .map((hit) => `[${hit.date || "undated"}] ${hit.outlet}: ${hit.title} (${hit.url})`)
+        .join("\n")
+    : "(no recent reporting was retrieved — treat the present claim as unverified and say so)";
   const prompt = `THE QUOTE OR QUESTION:
 ${text.slice(0, 3000)}
 
@@ -103,6 +112,11 @@ ${context.slice(0, 1000)}
 
 ` : ""}
 ${recentFormsBlock}
+RECENT REPORTING RETRIEVED (newer than your training; trust it over memory):
+${reportingBlock}
+
+If the question refers to something this reporting does not contain, make that absence explicit. Do not invent a CEO scandal, a filing, a date or a resignation to make the question fit a familiar story. The reader's question is a claim to test, not a fact to adopt.
+
 Open the seminar. Choose the form that fits: duel (2 theories), trilemma (3 theories), or single (1 theory). Explain the choice in form_reason. Return the positions, the crux, what would settle it, and a provisional empirical verdict.`;
   const request = (schema: typeof seminarSchema | typeof seminarFallbackSchema) =>
     generateObject({
@@ -140,5 +154,6 @@ Open the seminar. Choose the form that fits: duel (2 theories), trilemma (3 theo
     ...object,
     form: theories.length === 3 ? "trilemma" : theories.length === 1 ? "single" : "duel",
     theories,
+    sources: recentNews.map(({ title, url, outlet, date }) => ({ title, url, outlet, date })),
   };
 }
