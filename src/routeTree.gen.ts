@@ -54,6 +54,7 @@ import { Route as ApiWeeklyReviewRouteImport } from './routes/api/weekly-review'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
 import { Route as LabDeskRouteImport } from './routes/lab.desk'
+import { Route as LabFieldRouteImport } from './routes/lab.field'
 import { Route as LabHomeRouteImport } from './routes/lab.home'
 import { Route as PracticeTokenRouteImport } from './routes/practice.$token'
 import { Route as QuestionIdRouteImport } from './routes/question.$id'
@@ -286,6 +287,11 @@ const LabDeskRoute = LabDeskRouteImport.update({
   path: '/lab/desk',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabFieldRoute = LabFieldRouteImport.update({
+  id: '/lab/field',
+  path: '/lab/field',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabHomeRoute = LabHomeRouteImport.update({
   id: '/lab/home',
   path: '/lab/home',
@@ -363,6 +369,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/lab/desk': typeof LabDeskRoute
+  '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
@@ -416,6 +423,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/lab/desk': typeof LabDeskRoute
+  '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
@@ -470,6 +478,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
   '/lab/desk': typeof LabDeskRoute
+  '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
@@ -525,6 +534,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/case/$subject'
     | '/lab/desk'
+    | '/lab/field'
     | '/lab/home'
     | '/practice/$token'
     | '/question/$id'
@@ -578,6 +588,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/case/$subject'
     | '/lab/desk'
+    | '/lab/field'
     | '/lab/home'
     | '/practice/$token'
     | '/question/$id'
@@ -631,6 +642,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/case/$subject'
     | '/lab/desk'
+    | '/lab/field'
     | '/lab/home'
     | '/practice/$token'
     | '/question/$id'
@@ -685,6 +697,7 @@ export interface RootRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
   CaseSubjectRoute: typeof CaseSubjectRoute
   LabDeskRoute: typeof LabDeskRoute
+  LabFieldRoute: typeof LabFieldRoute
   LabHomeRoute: typeof LabHomeRoute
   PracticeTokenRoute: typeof PracticeTokenRoute
   QuestionIdRoute: typeof QuestionIdRoute
@@ -1010,6 +1023,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LabDeskRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab/field': {
+      id: '/lab/field'
+      path: '/lab/field'
+      fullPath: '/lab/field'
+      preLoaderRoute: typeof LabFieldRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab/home': {
       id: '/lab/home'
       path: '/lab/home'
@@ -1101,6 +1121,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackRoute: AuthCallbackRoute,
   CaseSubjectRoute: CaseSubjectRoute,
   LabDeskRoute: LabDeskRoute,
+  LabFieldRoute: LabFieldRoute,
   LabHomeRoute: LabHomeRoute,
   PracticeTokenRoute: PracticeTokenRoute,
   QuestionIdRoute: QuestionIdRoute,
