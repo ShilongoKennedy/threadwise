@@ -5671,3 +5671,22 @@ html[data-surface="paper"] .live-paper-note header p { color: #8B3D2E !important
 .theory-panel--c { --theory-accent: #C8FF3D; }
 .theory-panel--c .theory-letter-ring { color: #C8FF3D; }
 .seminar-dark-ink .theory-panel--c .theory-label { color: #C8FF3D !important; }
+
+/* Paper reading: the theory panels must use paper ink, not dark-surface white. */
+html[data-surface="paper"] .seminar-reading-surface .seminar-dark-ink,
+html[data-surface="paper"] .seminar-reading-surface .seminar-dark-ink :is(
+  h1, h2, h3, h4, h5, h6, p, li, span, strong, em, small, blockquote, label, summary, figcaption
+) {
+  color: #241B13 !important;
+  -webkit-text-fill-color: #241B13 !important;
+}
+
+html[data-surface="paper"] .seminar-reading-surface .theory-panel {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Theory panels read vertically; no six-column compression. */
+.seminar-reading-surface .theory-panel {
+  width: 100%;
+}

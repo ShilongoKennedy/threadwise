@@ -586,7 +586,7 @@ function SeminarPage() {
               </span>
             </p>
 
-            <div className={`mt-5 grid gap-4 ${seminar.theories.length === 3 ? "lg:grid-cols-3" : seminar.theories.length === 2 ? "lg:grid-cols-2" : ""}`}>
+            <div className="mt-5 grid gap-4">
               {seminar.theories.map((theory, index) => (
                 <TheoryColumn key={index} theory={theory} index={index} onLookCloser={openLoupe} />
               ))}
@@ -978,11 +978,6 @@ function TheoryColumn({
               >
                 <ReadingMarker variant="arrow" />
                 <span className="flex-1">{prediction}</span>
-                <LookCloserButton
-                  text={prediction}
-                  section={`Theory ${letter} · prediction`}
-                  onLookCloser={onLookCloser}
-                />
               </li>
             ))}
           </ul>
@@ -1000,11 +995,6 @@ function TheoryColumn({
               >
                 <ReadingMarker variant="check" />
                 <span className="flex-1">{item}</span>
-                <LookCloserButton
-                  text={item}
-                  section={`Theory ${letter} · evidence`}
-                  onLookCloser={onLookCloser}
-                />
               </li>
             ))}
           </ul>
