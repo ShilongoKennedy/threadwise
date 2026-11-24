@@ -53,13 +53,7 @@ import { Route as ApiThreadwiseRouteImport } from './routes/api/threadwise'
 import { Route as ApiWeeklyReviewRouteImport } from './routes/api/weekly-review'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CaseSubjectRouteImport } from './routes/case.$subject'
-import { Route as LabAtmosphereRouteImport } from './routes/lab.atmosphere'
-import { Route as LabDeskRouteImport } from './routes/lab.desk'
-import { Route as LabFieldRouteImport } from './routes/lab.field'
-import { Route as LabHomeRouteImport } from './routes/lab.home'
-import { Route as LabLoomRouteImport } from './routes/lab.loom'
-import { Route as LabSignalRouteImport } from './routes/lab.signal'
-import { Route as LabSortRouteImport } from './routes/lab.sort'
+import { Route as LabRoomRouteImport } from './routes/lab.room'
 import { Route as PracticeTokenRouteImport } from './routes/practice.$token'
 import { Route as QuestionIdRouteImport } from './routes/question.$id'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
@@ -286,39 +280,9 @@ const CaseSubjectRoute = CaseSubjectRouteImport.update({
   path: '/case/$subject',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LabAtmosphereRoute = LabAtmosphereRouteImport.update({
-  id: '/lab/atmosphere',
-  path: '/lab/atmosphere',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabDeskRoute = LabDeskRouteImport.update({
-  id: '/lab/desk',
-  path: '/lab/desk',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabFieldRoute = LabFieldRouteImport.update({
-  id: '/lab/field',
-  path: '/lab/field',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabHomeRoute = LabHomeRouteImport.update({
-  id: '/lab/home',
-  path: '/lab/home',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabLoomRoute = LabLoomRouteImport.update({
-  id: '/lab/loom',
-  path: '/lab/loom',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabSignalRoute = LabSignalRouteImport.update({
-  id: '/lab/signal',
-  path: '/lab/signal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabSortRoute = LabSortRouteImport.update({
-  id: '/lab/sort',
-  path: '/lab/sort',
+const LabRoomRoute = LabRoomRouteImport.update({
+  id: '/lab/room',
+  path: '/lab/room',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PracticeTokenRoute = PracticeTokenRouteImport.update({
@@ -392,13 +356,7 @@ export interface FileRoutesByFullPath {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
-  '/lab/atmosphere': typeof LabAtmosphereRoute
-  '/lab/desk': typeof LabDeskRoute
-  '/lab/field': typeof LabFieldRoute
-  '/lab/home': typeof LabHomeRoute
-  '/lab/loom': typeof LabLoomRoute
-  '/lab/signal': typeof LabSignalRoute
-  '/lab/sort': typeof LabSortRoute
+  '/lab/room': typeof LabRoomRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -450,13 +408,7 @@ export interface FileRoutesByTo {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
-  '/lab/atmosphere': typeof LabAtmosphereRoute
-  '/lab/desk': typeof LabDeskRoute
-  '/lab/field': typeof LabFieldRoute
-  '/lab/home': typeof LabHomeRoute
-  '/lab/loom': typeof LabLoomRoute
-  '/lab/signal': typeof LabSignalRoute
-  '/lab/sort': typeof LabSortRoute
+  '/lab/room': typeof LabRoomRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -509,13 +461,7 @@ export interface FileRoutesById {
   '/api/weekly-review': typeof ApiWeeklyReviewRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case/$subject': typeof CaseSubjectRoute
-  '/lab/atmosphere': typeof LabAtmosphereRoute
-  '/lab/desk': typeof LabDeskRoute
-  '/lab/field': typeof LabFieldRoute
-  '/lab/home': typeof LabHomeRoute
-  '/lab/loom': typeof LabLoomRoute
-  '/lab/signal': typeof LabSignalRoute
-  '/lab/sort': typeof LabSortRoute
+  '/lab/room': typeof LabRoomRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -569,13 +515,7 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
-    | '/lab/atmosphere'
-    | '/lab/desk'
-    | '/lab/field'
-    | '/lab/home'
-    | '/lab/loom'
-    | '/lab/signal'
-    | '/lab/sort'
+    | '/lab/room'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -627,13 +567,7 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
-    | '/lab/atmosphere'
-    | '/lab/desk'
-    | '/lab/field'
-    | '/lab/home'
-    | '/lab/loom'
-    | '/lab/signal'
-    | '/lab/sort'
+    | '/lab/room'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -685,13 +619,7 @@ export interface FileRouteTypes {
     | '/api/weekly-review'
     | '/auth/callback'
     | '/case/$subject'
-    | '/lab/atmosphere'
-    | '/lab/desk'
-    | '/lab/field'
-    | '/lab/home'
-    | '/lab/loom'
-    | '/lab/signal'
-    | '/lab/sort'
+    | '/lab/room'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -744,13 +672,7 @@ export interface RootRouteChildren {
   ApiWeeklyReviewRoute: typeof ApiWeeklyReviewRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CaseSubjectRoute: typeof CaseSubjectRoute
-  LabAtmosphereRoute: typeof LabAtmosphereRoute
-  LabDeskRoute: typeof LabDeskRoute
-  LabFieldRoute: typeof LabFieldRoute
-  LabHomeRoute: typeof LabHomeRoute
-  LabLoomRoute: typeof LabLoomRoute
-  LabSignalRoute: typeof LabSignalRoute
-  LabSortRoute: typeof LabSortRoute
+  LabRoomRoute: typeof LabRoomRoute
   PracticeTokenRoute: typeof PracticeTokenRoute
   QuestionIdRoute: typeof QuestionIdRoute
   ReadTokenRoute: typeof ReadTokenRoute
@@ -1068,53 +990,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CaseSubjectRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lab/atmosphere': {
-      id: '/lab/atmosphere'
-      path: '/lab/atmosphere'
-      fullPath: '/lab/atmosphere'
-      preLoaderRoute: typeof LabAtmosphereRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab/desk': {
-      id: '/lab/desk'
-      path: '/lab/desk'
-      fullPath: '/lab/desk'
-      preLoaderRoute: typeof LabDeskRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab/field': {
-      id: '/lab/field'
-      path: '/lab/field'
-      fullPath: '/lab/field'
-      preLoaderRoute: typeof LabFieldRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab/home': {
-      id: '/lab/home'
-      path: '/lab/home'
-      fullPath: '/lab/home'
-      preLoaderRoute: typeof LabHomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab/loom': {
-      id: '/lab/loom'
-      path: '/lab/loom'
-      fullPath: '/lab/loom'
-      preLoaderRoute: typeof LabLoomRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab/signal': {
-      id: '/lab/signal'
-      path: '/lab/signal'
-      fullPath: '/lab/signal'
-      preLoaderRoute: typeof LabSignalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab/sort': {
-      id: '/lab/sort'
-      path: '/lab/sort'
-      fullPath: '/lab/sort'
-      preLoaderRoute: typeof LabSortRouteImport
+    '/lab/room': {
+      id: '/lab/room'
+      path: '/lab/room'
+      fullPath: '/lab/room'
+      preLoaderRoute: typeof LabRoomRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/practice/$token': {
@@ -1200,13 +1080,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWeeklyReviewRoute: ApiWeeklyReviewRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CaseSubjectRoute: CaseSubjectRoute,
-  LabAtmosphereRoute: LabAtmosphereRoute,
-  LabDeskRoute: LabDeskRoute,
-  LabFieldRoute: LabFieldRoute,
-  LabHomeRoute: LabHomeRoute,
-  LabLoomRoute: LabLoomRoute,
-  LabSignalRoute: LabSignalRoute,
-  LabSortRoute: LabSortRoute,
+  LabRoomRoute: LabRoomRoute,
   PracticeTokenRoute: PracticeTokenRoute,
   QuestionIdRoute: QuestionIdRoute,
   ReadTokenRoute: ReadTokenRoute,
