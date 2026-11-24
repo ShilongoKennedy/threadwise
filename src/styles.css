@@ -8809,3 +8809,151 @@ nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
 .room-door-prompt:hover { background: #111; color: #F2E8D5 !important; }
 
 .room-door.is-hidden { opacity: 0 !important; pointer-events: none !important; }
+
+/* ============================================================
+   LAB / THE 6:04 BRIEFING
+   A three-move reading told as a sequence of full scenes.
+   ============================================================ */
+.brief-lab {
+  --brief-bg: #1f45d8;
+  --brief-ink: #f3ead7;
+  --brief-accent: #f2c94c;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--brief-bg);
+  color: var(--brief-ink);
+  transition: background-color 500ms ease, color 500ms ease;
+}
+.brief-lab[data-tone="marigold"] { --brief-bg: #f2c84b; --brief-ink: #101010; --brief-accent: #1f45d8; }
+.brief-lab[data-tone="mint"] { --brief-bg: #bfe8d1; --brief-ink: #101010; --brief-accent: #1f45d8; }
+.brief-lab[data-tone="ink"] { --brief-bg: #101010; --brief-ink: #f3ead7; --brief-accent: #f2c94c; }
+.brief-nav {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--brief-ink) 30%, transparent);
+  padding: 15px 28px 9px;
+}
+.brief-brand { font-family: var(--font-sans); font-size: 11px; font-weight: 800; letter-spacing: 0.11em; color: var(--brief-ink) !important; }
+.brief-nav__note { display: none; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.1em; color: color-mix(in srgb, var(--brief-ink) 52%, transparent) !important; }
+.brief-nav__skip { border-bottom: 1px solid color-mix(in srgb, var(--brief-ink) 45%, transparent); padding-bottom: 3px; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--brief-ink) !important; }
+.brief-stage {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  overflow: hidden;
+  padding: 34px 7vw 48px;
+  animation: brief-scene-in 500ms cubic-bezier(.2,.8,.2,1);
+}
+@keyframes brief-scene-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.brief-time {
+  position: absolute;
+  z-index: 0;
+  right: 2vw;
+  bottom: -0.15em;
+  font-family: var(--font-sans);
+  font-size: clamp(190px, 30vw, 460px);
+  font-weight: 800;
+  line-height: 0.7;
+  letter-spacing: -0.09em;
+  color: color-mix(in srgb, var(--brief-ink) 9%, transparent) !important;
+  pointer-events: none;
+}
+.brief-copy { position: relative; z-index: 2; max-width: 880px; }
+.brief-kicker { font-family: var(--font-mono); font-size: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--brief-accent) !important; }
+.brief-copy h1 {
+  margin-top: 16px;
+  max-width: 15ch;
+  font-family: var(--font-display);
+  font-size: clamp(44px, 6.6vw, 98px);
+  font-weight: 400;
+  line-height: 0.89;
+  letter-spacing: -0.06em;
+  color: var(--brief-ink) !important;
+}
+.brief-body {
+  margin-top: 24px;
+  max-width: 49ch;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--brief-ink) 72%, transparent) !important;
+}
+.brief-choices {
+  margin-top: 30px;
+  width: min(620px, 100%);
+  border-top: 1px solid color-mix(in srgb, var(--brief-ink) 34%, transparent);
+}
+.brief-choices button {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 36px minmax(0, 1fr) 22px;
+  align-items: baseline;
+  gap: 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--brief-ink) 27%, transparent);
+  padding: 14px 3px;
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: clamp(17px, 1.8vw, 22px);
+  color: var(--brief-ink) !important;
+  transition: padding 140ms ease, background-color 140ms ease;
+}
+.brief-choices button:hover { background: color-mix(in srgb, var(--brief-ink) 7%, transparent); padding-left: 10px; }
+.brief-choices button > span { font-family: var(--font-mono); font-size: 8px; color: var(--brief-accent) !important; }
+.brief-choices button b { font-family: var(--font-sans); font-size: 18px; font-weight: 400; color: var(--brief-accent) !important; }
+
+.brief-end { margin-top: 27px; max-width: 620px; border-top: 1px solid color-mix(in srgb, var(--brief-ink) 34%, transparent); padding-top: 16px; }
+.brief-closing { font-family: 'Dancing Script', 'Newsreader', cursive; font-size: 25px; line-height: 1.15; color: var(--brief-accent) !important; }
+.brief-end > p:nth-of-type(2) { margin-top: 12px; max-width: 55ch; font-family: var(--font-serif); font-size: 14px; line-height: 1.55; color: color-mix(in srgb, var(--brief-ink) 72%, transparent) !important; }
+.brief-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 18px; }
+.brief-actions a { border-bottom: 1px solid var(--brief-ink); padding-bottom: 3px; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--brief-ink) !important; }
+.brief-actions button { border: 1px solid color-mix(in srgb, var(--brief-ink) 45%, transparent); padding: 8px 10px; font-family: var(--font-mono); font-size: 7px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--brief-ink) !important; }
+
+.brief-progress { position: absolute; z-index: 3; right: 28px; bottom: 42px; display: flex; flex-direction: column; gap: 5px; }
+.brief-progress span { display: block; width: 36px; height: 2px; background: color-mix(in srgb, var(--brief-ink) 24%, transparent); }
+.brief-progress span.is-done { background: var(--brief-accent); }
+.brief-progress span.is-current { background: var(--brief-ink); width: 52px; }
+.brief-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 7px;
+  border-top: 1px solid color-mix(in srgb, var(--brief-ink) 27%, transparent);
+  padding: 8px 28px 10px;
+  font-family: var(--font-mono);
+  font-size: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--brief-ink) 45%, transparent) !important;
+}
+.brief-foot span { color: inherit !important; }
+
+@media (min-width: 800px) {
+  .brief-nav { padding: 17px 36px 9px; }
+  .brief-nav__note { display: block; }
+  .brief-stage { padding: 44px 9vw 58px; }
+  .brief-foot { padding-inline: 36px; }
+}
+@media (max-width: 799px) {
+  .brief-nav { flex-wrap: wrap; padding: 12px 16px 8px; gap: 9px; }
+  .brief-nav__note { display: none; }
+  .brief-nav__skip { order: 3; width: 100%; }
+  .brief-stage { align-items: flex-start; padding: 16vh 20px 40px; }
+  .brief-copy h1 { font-size: clamp(42px, 12vw, 68px); }
+  .brief-body { margin-top: 17px; font-size: 14px; max-width: 39ch; }
+  .brief-choices { margin-top: 23px; }
+  .brief-choices button { grid-template-columns: 27px minmax(0, 1fr) 18px; padding-block: 12px; font-size: 16px; }
+  .brief-time { right: -0.08em; bottom: 0.05em; font-size: 46vw; }
+  .brief-progress { right: 17px; bottom: 35px; }
+  .brief-progress span { width: 25px; }
+  .brief-progress span.is-current { width: 36px; }
+  .brief-foot { padding-inline: 16px; }
+  .brief-end { margin-top: 21px; }
+  .brief-closing { font-size: 21px; }
+}
