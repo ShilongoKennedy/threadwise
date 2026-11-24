@@ -53,6 +53,9 @@ function ReadingRoom() {
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
   const [engaged, setEngaged] = useState(false);
+  const [visited, setVisited] = useState<string[]>([]);
+  const [sound, setSound] = useState(false);
+  const audioRef = useRef<AudioContext | null>(null);
   const focusRef = useRef<((note: Note) => void) | null>(null);
 
   useEffect(() => {
@@ -198,11 +201,43 @@ function ReadingRoom() {
     };
   }, []);
 
+  const playTone = (frequency: number, duration = 0.12) => {
+    if (!sound) return;
+    try {
+      const context = audioRef.current ?? new AudioContext();
+      audioRef.current = context;
+      if (context.state === "suspended") void context.resume();
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.0001, context.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.055, context.currentTime + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + duration);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start();
+      oscillator.stop(context.currentTime + duration + 0.02);
+    } catch {
+      // Sound is an enhancement, never a requirement.
+    }
+  };
+
   const openNote = (note: Note) => {
     setSelected(note);
     setEngaged(true);
+    setVisited((current) => current.includes(note.id) ? current : [...current, note.id]);
     focusRef.current?.(note);
+    playTone(470 + Number(note.n) * 38);
   };
+
+  const resetRoom = () => {
+    setSelected(null);
+    setVisited([]);
+    setEngaged(false);
+  };
+
+  const complete = visited.length === NOTES.length;
 
   return (
     <div className="room-lab">
@@ -214,6 +249,9 @@ function ReadingRoom() {
           <Link to="/seminar">Seminar</Link>
           <Link to="/anatomy">Anatomy</Link>
         </nav>
+        <button type="button" className="room-sound" onClick={() => { setSound((value) => !value); playTone(620); }} aria-pressed={sound}>
+          {sound ? "Sound on" : "Sound off"}
+        </button>
         <Link to="/analyst" className="room-nav__enter">Enter the desk <span aria-hidden="true">↗</span></Link>
       </header>
 
@@ -222,6 +260,7 @@ function ReadingRoom() {
         className={`room-stage ${ready ? "is-ready" : ""}`}
         style={{ backgroundImage: "url('/lab/solitude-preview.webp')" }}
       >
+        <div className={`room-veil ${ready ? "is-ready" : ""}`} aria-hidden="true"><span>Entering the room</span></div>
         {!ready && !failed ? <div className="room-loading">entering the room</div> : null}
         {failed ? <div className="room-loading room-loading--failed">The room could not load in 3D.</div> : null}
 
@@ -250,7 +289,7 @@ function ReadingRoom() {
           <span>Drag to look</span>
           <nav className="room-map" aria-label="Notes in the room">
             {NOTES.map((note) => (
-              <button key={note.id} type="button" onClick={() => openNote(note)} className={selected?.id === note.id ? "is-active" : ""} aria-label={note.label}>
+              <button key={note.id} type="button" onClick={() => openNote(note)} className={`${selected?.id === note.id ? "is-active" : ""} ${visited.includes(note.id) ? "is-visited" : ""}`} aria-label={note.label}>
                 <span>{note.n}</span>
               </button>
             ))}
@@ -266,6 +305,16 @@ function ReadingRoom() {
             <p>{selected.body}</p>
             <div className="room-caption__foot"><span>{selected.source}</span><span>Threadwise / reading room</span></div>
           </aside>
+        ) : complete ? (
+          <section className="room-final">
+            <p className="room-final__kicker">The room is read / five notes</p>
+            <h2>The report exists.<br />The finding does not.</h2>
+            <p>What remains is not a verdict. It is a short reading of what the record can actually support.</p>
+            <div className="room-final__actions">
+              <Link to="/analyst">Put a source in the room <span aria-hidden="true">↗</span></Link>
+              <button type="button" onClick={resetRoom}>Look again</button>
+            </div>
+          </section>
         ) : null}
       </main>
 
