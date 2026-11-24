@@ -218,7 +218,7 @@ function SiteBlueprint({ children, pathname }: { children: ReactNode; pathname: 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const keepsOwnField = pathname === "/" || pathname.startsWith("/landing") || pathname.startsWith("/seminar") || pathname === "/lab/home" || pathname === "/lab/desk" || pathname === "/lab/field" || pathname === "/lab/atmosphere";
+  const keepsOwnField = pathname === "/" || pathname.startsWith("/landing") || pathname.startsWith("/seminar") || pathname === "/lab/home" || pathname === "/lab/desk" || pathname === "/lab/field" || pathname === "/lab/atmosphere" || pathname === "/lab/loom";
 
   return (
     <QueryClientProvider client={queryClient}>

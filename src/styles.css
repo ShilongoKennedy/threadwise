@@ -7664,3 +7664,343 @@ nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
 @media (max-width: 800px) {
   .aura-object { width: min(350px, 74vw) !important; }
 }
+
+/* ============================================================
+   LAB / THE LOOM
+   Cobalt cloth, marigold shuttle, pale warp. Reading as weaving.
+   ============================================================ */
+.loom-lab {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  overflow: hidden;
+  background: #1d3f78;
+  color: #f3ead7;
+}
+.loom-nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid rgba(243, 234, 215, 0.22);
+  padding: 17px 27px 10px;
+}
+.loom-brand {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #f3ead7 !important;
+}
+.loom-nav__note {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: rgba(243, 234, 215, 0.45) !important;
+}
+.loom-nav nav { display: none; gap: 20px; font-family: var(--font-sans); font-size: 10px; }
+.loom-nav nav a { color: rgba(243, 234, 215, 0.68) !important; }
+.loom-nav nav a:hover { color: #f3ead7 !important; }
+.loom-nav__enter {
+  border-bottom: 1px solid rgba(243, 234, 215, 0.42);
+  padding-bottom: 3px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #f3ead7 !important;
+}
+
+.loom-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  cursor: ew-resize;
+  touch-action: none;
+  background-color: #1d3f78;
+  background-image:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035), transparent 25%, transparent 78%, rgba(0, 0, 0, 0.12));
+}
+.loom-stage::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to bottom, rgba(243, 234, 215, 0.09) 0 1px, transparent 1px 34px);
+  opacity: 0.5;
+}
+.loom-stage.is-dragging { cursor: grabbing; }
+.loom-frame {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background: #102238;
+  box-shadow: inset 0 0 0 1px rgba(243, 234, 215, 0.12);
+}
+.loom-frame--left { left: 0; }
+.loom-frame--right { right: 0; }
+.loom-hem {
+  position: absolute;
+  z-index: 4;
+  left: 12px;
+  right: 12px;
+  height: 38px;
+  background-color: #d9a23e;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(16, 34, 56, 0.22) 0 4px, transparent 4px 9px),
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0 1px, transparent 1px 5px);
+  box-shadow: 0 2px 0 rgba(16, 34, 56, 0.35), 0 -2px 0 rgba(16, 34, 56, 0.35);
+}
+.loom-hem--top { top: 0; }
+.loom-hem--bottom { bottom: 0; background-color: #8fb59a; }
+.loom-warp {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 10px, rgba(243, 234, 215, 0.24) 10px 11px, transparent 11px 12px);
+  opacity: 0.9;
+}
+.loom-weft {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 57%;
+  height: 3px;
+  background: #d9a23e;
+  box-shadow: 0 0 0 1px rgba(217, 162, 62, 0.55);
+  transition: width 80ms linear;
+}
+.loom-thread {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: calc(57% + 5px);
+  height: 1px;
+  background: rgba(243, 234, 215, 0.5);
+  transition: width 80ms linear;
+}
+.loom-copy {
+  position: absolute;
+  z-index: 6;
+  top: 19%;
+  left: 7%;
+  width: min(680px, 66%);
+  padding-right: 15px;
+  will-change: clip-path;
+}
+.loom-kicker {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #d9a23e !important;
+}
+.loom-copy h1 {
+  margin-top: 18px;
+  font-family: var(--font-sans);
+  font-size: clamp(56px, 7.2vw, 108px);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.065em;
+  color: #f3ead7 !important;
+}
+.loom-body {
+  margin-top: 24px;
+  max-width: 47ch;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(243, 234, 215, 0.74) !important;
+}
+.loom-hand {
+  margin-top: 17px;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-style: italic;
+  color: #f3ead7 !important;
+}
+.loom-shuttle {
+  position: absolute;
+  z-index: 7;
+  top: 57%;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  transform: translate(-7px, -50%);
+  pointer-events: none;
+  transition: left 80ms linear;
+}
+.loom-shuttle__body {
+  display: block;
+  width: 66px;
+  height: 21px;
+  border: 2px solid #102238;
+  border-radius: 999px 3px 3px 999px;
+  background: #d9a23e;
+  box-shadow: 4px 4px 0 rgba(16, 34, 56, 0.45);
+}
+.loom-shuttle__handle {
+  display: block;
+  width: 21px;
+  height: 21px;
+  border: 2px solid #102238;
+  border-left: 0;
+  border-radius: 50%;
+  background: #f3ead7;
+}
+.loom-shuttle__label {
+  margin-left: 10px;
+  border-bottom: 1px solid rgba(243, 234, 215, 0.5);
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #f3ead7 !important;
+}
+.loom-reveal {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(243, 234, 215, 0.38);
+  pointer-events: none;
+  transition: left 80ms linear;
+}
+.loom-instruction {
+  position: absolute;
+  z-index: 8;
+  left: 28px;
+  bottom: 55px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 20px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: rgba(243, 234, 215, 0.55) !important;
+}
+.loom-instruction span { color: inherit !important; }
+.loom-complete {
+  position: absolute;
+  z-index: 9;
+  right: 29px;
+  bottom: 51px;
+  border: 1px solid rgba(243, 234, 215, 0.5);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #f3ead7 !important;
+}
+.loom-complete:hover { background: #d9a23e; border-color: #d9a23e; color: #102238 !important; }
+.loom-finished {
+  position: absolute;
+  z-index: 9;
+  right: 29px;
+  bottom: 48px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(243, 234, 215, 0.62) !important;
+}
+.loom-finished p { color: inherit !important; }
+.loom-finished a { border-bottom: 1px solid #d9a23e; padding-bottom: 3px; color: #f3ead7 !important; }
+.loom-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 7px;
+  border-top: 1px solid rgba(243, 234, 215, 0.18);
+  padding: 9px 27px 11px;
+  font-family: var(--font-mono);
+  font-size: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(243, 234, 215, 0.4) !important;
+}
+.loom-foot span { color: inherit !important; }
+
+@media (min-width: 900px) {
+  .loom-nav { padding: 19px 34px 10px; }
+  .loom-nav__note { display: block; }
+  .loom-nav nav { display: flex; }
+  .loom-foot { padding-inline: 34px; }
+}
+@media (max-width: 899px) {
+  .loom-lab { min-height: 100svh; }
+  .loom-nav { flex-wrap: wrap; padding: 13px 16px 9px; gap: 10px; }
+  .loom-nav__note { display: none; }
+  .loom-nav nav { order: 3; width: 100%; gap: 15px; }
+  .loom-nav__enter { font-size: 6px; }
+  .loom-copy { top: 17%; left: 8%; width: 78%; }
+  .loom-copy h1 { font-size: clamp(48px, 12.5vw, 72px); }
+  .loom-body { font-size: 14px; margin-top: 18px; }
+  .loom-hand { font-size: 17px; margin-top: 13px; }
+  .loom-shuttle__body { width: 48px; height: 18px; }
+  .loom-shuttle__handle { width: 18px; height: 18px; }
+  .loom-shuttle__label { display: none; }
+  .loom-instruction { left: 16px; bottom: 54px; font-size: 6px; }
+  .loom-complete { right: 16px; bottom: 50px; padding: 9px 11px; font-size: 6px; }
+  .loom-finished { left: 16px; right: 16px; bottom: 48px; font-size: 6px; }
+  .loom-foot { padding-inline: 16px; }
+}
+
+/* The headline stays whole; the shuttle reveals the evidence woven underneath. */
+.loom-copy { top: 15% !important; }
+.loom-copy h1 { font-size: clamp(54px, 6.4vw, 96px) !important; }
+.loom-body { max-width: 43ch !important; }
+.loom-reading {
+  position: absolute;
+  z-index: 6;
+  left: 7%;
+  top: 66%;
+  width: min(620px, 62%);
+  transition: clip-path 80ms linear;
+}
+.loom-reading__label {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #d9a23e !important;
+}
+.loom-reading__quote {
+  margin-top: 9px;
+  max-width: 35ch;
+  font-family: var(--font-serif);
+  font-size: clamp(17px, 1.8vw, 23px);
+  line-height: 1.32;
+  color: #f3ead7 !important;
+}
+.loom-reading__source {
+  margin-top: 8px;
+  font-family: var(--font-serif);
+  font-size: 12px;
+  font-style: italic;
+  color: rgba(243, 234, 215, 0.58) !important;
+}
+@media (max-width: 899px) {
+  .loom-copy { top: 13% !important; }
+  .loom-copy h1 { font-size: clamp(46px, 12vw, 68px) !important; }
+  .loom-reading { left: 8%; top: 61%; width: 78%; }
+  .loom-reading__quote { font-size: 17px; }
+}

@@ -57,6 +57,7 @@ import { Route as LabAtmosphereRouteImport } from './routes/lab.atmosphere'
 import { Route as LabDeskRouteImport } from './routes/lab.desk'
 import { Route as LabFieldRouteImport } from './routes/lab.field'
 import { Route as LabHomeRouteImport } from './routes/lab.home'
+import { Route as LabLoomRouteImport } from './routes/lab.loom'
 import { Route as PracticeTokenRouteImport } from './routes/practice.$token'
 import { Route as QuestionIdRouteImport } from './routes/question.$id'
 import { Route as ReadTokenRouteImport } from './routes/read.$token'
@@ -303,6 +304,11 @@ const LabHomeRoute = LabHomeRouteImport.update({
   path: '/lab/home',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabLoomRoute = LabLoomRouteImport.update({
+  id: '/lab/loom',
+  path: '/lab/loom',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PracticeTokenRoute = PracticeTokenRouteImport.update({
   id: '/practice/$token',
   path: '/practice/$token',
@@ -378,6 +384,7 @@ export interface FileRoutesByFullPath {
   '/lab/desk': typeof LabDeskRoute
   '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
+  '/lab/loom': typeof LabLoomRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -433,6 +440,7 @@ export interface FileRoutesByTo {
   '/lab/desk': typeof LabDeskRoute
   '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
+  '/lab/loom': typeof LabLoomRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -489,6 +497,7 @@ export interface FileRoutesById {
   '/lab/desk': typeof LabDeskRoute
   '/lab/field': typeof LabFieldRoute
   '/lab/home': typeof LabHomeRoute
+  '/lab/loom': typeof LabLoomRoute
   '/practice/$token': typeof PracticeTokenRoute
   '/question/$id': typeof QuestionIdRoute
   '/read/$token': typeof ReadTokenRoute
@@ -546,6 +555,7 @@ export interface FileRouteTypes {
     | '/lab/desk'
     | '/lab/field'
     | '/lab/home'
+    | '/lab/loom'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -601,6 +611,7 @@ export interface FileRouteTypes {
     | '/lab/desk'
     | '/lab/field'
     | '/lab/home'
+    | '/lab/loom'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -656,6 +667,7 @@ export interface FileRouteTypes {
     | '/lab/desk'
     | '/lab/field'
     | '/lab/home'
+    | '/lab/loom'
     | '/practice/$token'
     | '/question/$id'
     | '/read/$token'
@@ -712,6 +724,7 @@ export interface RootRouteChildren {
   LabDeskRoute: typeof LabDeskRoute
   LabFieldRoute: typeof LabFieldRoute
   LabHomeRoute: typeof LabHomeRoute
+  LabLoomRoute: typeof LabLoomRoute
   PracticeTokenRoute: typeof PracticeTokenRoute
   QuestionIdRoute: typeof QuestionIdRoute
   ReadTokenRoute: typeof ReadTokenRoute
@@ -1057,6 +1070,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LabHomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab/loom': {
+      id: '/lab/loom'
+      path: '/lab/loom'
+      fullPath: '/lab/loom'
+      preLoaderRoute: typeof LabLoomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/practice/$token': {
       id: '/practice/$token'
       path: '/practice/$token'
@@ -1144,6 +1164,7 @@ const rootRouteChildren: RootRouteChildren = {
   LabDeskRoute: LabDeskRoute,
   LabFieldRoute: LabFieldRoute,
   LabHomeRoute: LabHomeRoute,
+  LabLoomRoute: LabLoomRoute,
   PracticeTokenRoute: PracticeTokenRoute,
   QuestionIdRoute: QuestionIdRoute,
   ReadTokenRoute: ReadTokenRoute,
