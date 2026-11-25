@@ -9352,3 +9352,14 @@ nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
   .seam-end span { font-size: 12px; }
   .seam-foot { padding-inline: 16px; }
 }
+
+/* Anatomy owns its paper field so dark ink can never sit on a dark shell. */
+.anatomy-page {
+  position: relative;
+  min-height: 100dvh;
+  background: #f6efe2 !important;
+  color: #18282d !important;
+  isolation: isolate;
+}
+.anatomy-page > main { position: relative; z-index: 1; }
+.anatomy-report-wrap { scroll-margin-top: 96px; }

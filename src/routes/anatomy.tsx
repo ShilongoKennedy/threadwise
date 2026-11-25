@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   BrainCircuit,
@@ -47,6 +47,15 @@ function AnatomyPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<AnatomyReport | null>(null);
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!report) return;
+    const frame = requestAnimationFrame(() => {
+      reportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [report]);
 
   const examine = async () => {
     if (text.trim().length < 20 || busy) return;
@@ -118,7 +127,9 @@ function AnatomyPage() {
         </section>
 
         {report ? (
-          <AnatomyView report={report} onReset={() => { setReport(null); setText(""); }} />
+          <div ref={reportRef} className="anatomy-report-wrap">
+            <AnatomyView report={report} onReset={() => { setReport(null); setText(""); }} />
+          </div>
         ) : (
           <section className="anatomy-waiting">
             <p className="anatomy-waiting__mark">↓</p>
