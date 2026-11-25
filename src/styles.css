@@ -1013,9 +1013,10 @@ body::after {
 /* Hand-signed hero line. */
 .signature-headline {
   position: relative;
-  font-family: 'Dancing Script', 'Newsreader', cursive;
-  font-weight: 600;
-  letter-spacing: 0.005em;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.03em;
   font-feature-settings: "liga" 1, "kern" 1;
 }
 .signature-letter {
@@ -5168,9 +5169,11 @@ html[data-surface="paper"] .tw-loupe-trigger { display: none !important; }
 .live-paper-note header button:hover { background: rgba(42, 33, 23, 0.08); }
 .live-paper-note h3 {
   margin-top: 12px;
-  font-family: 'Dancing Script', 'Newsreader', cursive;
-  font-size: 29px;
-  line-height: 1;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
   color: #211810 !important;
 }
 .live-paper-note p {
@@ -5243,7 +5246,7 @@ html[data-surface="paper"] .tw-loupe-trigger { display: none !important; }
   .live-paper-tools { bottom: 74px; left: 12px; }
 }
 
-/* Handwritten paper titles, while body copy stays Newsreader. */
+/* Readable editorial titles. Handwriting belongs in the margins, not in headings. */
 html[data-surface="paper"] :is(.seminar-reading-surface, .read-page .bp-page, .anatomy-report) :is(
   h1,
   h2,
@@ -5252,10 +5255,10 @@ html[data-surface="paper"] :is(.seminar-reading-surface, .read-page .bp-page, .a
   .font-display,
   .read-summary__value
 ) {
-  font-family: 'Dancing Script', 'Newsreader', cursive !important;
-  font-weight: 600 !important;
-  letter-spacing: 0 !important;
-  line-height: 1.05 !important;
+  font-family: var(--font-display) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.02 !important;
 }
 html[data-surface="paper"] :is(.seminar-reading-surface, .read-page .bp-page, .anatomy-report) h1 {
   font-size: clamp(38px, 5vw, 64px) !important;
@@ -9362,4 +9365,108 @@ nav[aria-label="Primary mobile destinations"] [aria-current="page"] {
   isolation: isolate;
 }
 .anatomy-page > main { position: relative; z-index: 1; }
-.anatomy-report-wrap { scroll-margin-top: 96px; }
+.anatomy-report-wrap { scroll-margin-top: 156px; }
+
+/* ============================================================
+   THE LEDGER, REFINED
+   Readable titles. A notebook page with grain, stack and stamps.
+   ============================================================ */
+
+/* The room around the notebook is a worn desk, not flat cream. */
+.anatomy-page {
+  background-color: #ded2bd !important;
+  background-image:
+    radial-gradient(ellipse at 18% -10%, rgba(255, 252, 244, 0.68), transparent 52%),
+    radial-gradient(ellipse at 92% 42%, rgba(96, 74, 44, 0.13), transparent 36%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='0.08'/%3E%3C/svg%3E") !important;
+  background-size: auto, auto, 180px 180px !important;
+}
+.anatomy-page > main { padding-top: 38px; }
+
+/* Page grain on all paper artefacts. */
+html[data-surface="paper"] :is(.seminar-reading-surface, .read-page .bp-page, .anatomy-report, .site-blueprint, .seminar-color-page) {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.055'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 16% 4%, rgba(255, 255, 255, 0.7), transparent 30%),
+    radial-gradient(circle at 82% 72%, rgba(166, 142, 105, 0.06), transparent 34%),
+    repeating-linear-gradient(to bottom, transparent 0 33px, rgba(58, 82, 108, 0.12) 33px 34px) !important;
+  background-size: 170px 170px, auto, auto, auto !important;
+  background-blend-mode: multiply, normal, normal, normal;
+}
+
+/* The report sheet is stacked: page edge, binding shadow, deckled corner. */
+html[data-surface="paper"] :is(.seminar-reading-surface, .read-page .bp-page, .anatomy-report) {
+  border: 1px solid rgba(84, 65, 42, 0.16) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    2px 2px 0 #e7ddca,
+    5px 5px 0 #efe5d3,
+    8px 8px 0 #e2d6c1,
+    0 32px 84px -32px rgba(42, 31, 18, 0.8),
+    0 10px 26px rgba(42, 31, 18, 0.18) !important;
+}
+html[data-surface="paper"] .anatomy-report { overflow: visible !important; }
+
+/* A stamped case header, like an archive folder. */
+html[data-surface="paper"] .anatomy-report__head { position: relative; }
+html[data-surface="paper"] .anatomy-report__head::after {
+  content: "CASE ANATOMY / 01";
+  position: absolute;
+  top: -30px;
+  right: 0;
+  border: 1px solid rgba(36, 92, 121, 0.45);
+  padding: 5px 8px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #245C79 !important;
+  transform: rotate(-1.8deg);
+  opacity: 0.8;
+}
+html[data-surface="paper"] .anatomy-report__head h2 {
+  font-family: var(--font-display) !important;
+  font-weight: 500 !important;
+  font-size: clamp(38px, 4.4vw, 62px) !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.035em !important;
+  text-wrap: balance;
+}
+html[data-surface="paper"] .anatomy-report__head h2::after {
+  content: "";
+  display: block;
+  width: 84px;
+  height: 2px;
+  margin-top: 16px;
+  background: #245C79;
+}
+html[data-surface="paper"] .anatomy-restatement::first-letter {
+  float: left;
+  margin: 4px 8px 0 0;
+  font-family: var(--font-display);
+  font-size: 3.5em;
+  line-height: 0.72;
+  color: #245C79;
+}
+html[data-surface="paper"] .anatomy-restatement { margin-top: 18px; }
+
+/* Section headings stay clear and editorial. */
+html[data-surface="paper"] :is(.anatomy-section__head h3, .reading-section__title) {
+  font-family: var(--font-display) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.025em !important;
+}
+html[data-surface="paper"] .anatomy-section__head h3 { font-size: clamp(27px, 3vw, 38px) !important; }
+
+/* A narrow folio on the far edge, and an ink mark in the margin. */
+html[data-surface="paper"] .anatomy-report::after {
+  background: rgba(158, 58, 42, 0.34) !important;
+  box-shadow: 2px 0 0 rgba(255, 255, 255, 0.55) inset;
+}
+html[data-surface="paper"] .anatomy-report {
+  background-position: 0 0, 0 0, 0 0, 0 0;
+}
+
+@media (max-width: 760px) {
+  .anatomy-report-wrap { scroll-margin-top: 108px; }
+}
