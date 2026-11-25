@@ -11,6 +11,8 @@ import { ReadingFocusToggle, ReadingMarker, ReadingProgress } from "@/components
 import { fieldColorAt } from "@/lib/threadwise/palette";
 import { SEMINAR_FORMS } from "@/lib/threadwise/read-forms";
 import { SEMINAR_FORM_KEY, readRecentForms, rememberForm } from "@/lib/threadwise/recent-forms";
+import { AnalysisShelf } from "@/components/threadwise/AnalysisShelf";
+import { saveAnalysis, updateAnalysis, type SavedAnalysis } from "@/lib/threadwise/analysis-archive";
 
 export const Route = createFileRoute("/seminar")({
   head: () => ({
@@ -39,6 +41,15 @@ const TONES = [
     brandFilter: "brightness(0) invert(1)",
   },
 ];
+
+type SeminarPayload = {
+  text: string;
+  context: string;
+  seminar: Seminar & { lesson?: SeminarLesson };
+  lesson: SeminarLesson | null;
+  stand: "A" | "B" | "C" | "undecided" | null;
+  verdict_shown: boolean;
+};
 
 type SavedSeminar = {
   id: string;
@@ -131,6 +142,7 @@ function SeminarPage() {
   const [saved, setSaved] = useState<SavedSeminar[]>([]);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [localSavedId, setLocalSavedId] = useState<string | null>(null);
   const [lesson, setLesson] = useState<SeminarLesson | null>(null);
   const [lessonBusy, setLessonBusy] = useState(false);
   const [lessonError, setLessonError] = useState<string | null>(null);
@@ -262,7 +274,27 @@ function SeminarPage() {
     setRevealed(true);
     setVerdictOpen(item.verdict_shown);
     setSavedId(item.id);
+    setLocalSavedId(null);
     setSaveState("saved");
+    setError(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const openLocalSaved = (item: SavedAnalysis) => {
+    const payload = item.payload as SeminarPayload;
+    setText(payload.text);
+    setContext(payload.context);
+    setSeminar(payload.seminar);
+    setLesson(payload.lesson);
+    setLoupeTarget(null);
+    setLessonBusy(false);
+    setLessonError(null);
+    setStand(payload.stand);
+    setRevealed(true);
+    setVerdictOpen(payload.verdict_shown);
+    setSavedId(null);
+    setLocalSavedId(item.id);
+    setSaveState("idle");
     setError(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -281,6 +313,20 @@ function SeminarPage() {
       if (!response.ok || !body.seminar) throw new Error(body.error ?? "The seminar could not be convened.");
       setSeminar(body.seminar);
       rememberForm(SEMINAR_FORM_KEY, body.seminar.form, Object.keys(SEMINAR_FORMS));
+      const local = saveAnalysis({
+        kind: "seminar",
+        title: text.trim(),
+        subtitle: body.seminar.question,
+        payload: {
+          text: text.trim(),
+          context: context.trim(),
+          seminar: body.seminar,
+          lesson: null,
+          stand: null,
+          verdict_shown: false,
+        } satisfies SeminarPayload,
+      });
+      setLocalSavedId(local.id);
       setStand(null);
       setRevealed(false);
       setVerdictOpen(false);
@@ -310,6 +356,7 @@ function SeminarPage() {
     setRevealed(false);
     setVerdictOpen(false);
     setSavedId(null);
+    setLocalSavedId(null);
     setSaveState("idle");
     setLesson(null);
     setLessonBusy(false);
@@ -329,6 +376,18 @@ function SeminarPage() {
       const body = (await response.json()) as { lesson?: SeminarLesson; error?: string };
       if (!response.ok || !body.lesson) throw new Error(body.error ?? "The deeper lesson could not be built.");
       setLesson(body.lesson);
+      if (localSavedId) {
+        updateAnalysis(localSavedId, {
+          payload: {
+            text,
+            context,
+            seminar: { ...seminar, lesson: body.lesson },
+            lesson: body.lesson,
+            stand,
+            verdict_shown: verdictOpen,
+          } satisfies SeminarPayload,
+        });
+      }
       if (savedId && userId) {
         void supabase
           .from("analyst_seminars")
@@ -473,6 +532,10 @@ function SeminarPage() {
           </form>
         </div>
       </section>
+
+      <div className="mx-auto mt-10 w-full max-w-[1180px] px-5 md:px-8">
+        <AnalysisShelf kind="seminar" onOpen={openLocalSaved} label="Saved on this device" />
+      </div>
 
       {saved.length > 0 && (
         <section data-seminar-tone="5" className="seminar-archive mx-auto mt-12 w-full max-w-[1180px] px-5 md:px-8">

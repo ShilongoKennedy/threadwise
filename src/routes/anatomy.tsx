@@ -9,6 +9,8 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { AppHeader } from "@/components/threadwise/AppHeader";
+import { AnalysisShelf } from "@/components/threadwise/AnalysisShelf";
+import { saveAnalysis, type SavedAnalysis } from "@/lib/threadwise/analysis-archive";
 import type { AnatomyReport, AnatomyRung, AnatomyStatus } from "@/lib/threadwise/anatomy";
 
 export const Route = createFileRoute("/anatomy")({
@@ -57,6 +59,13 @@ function AnatomyPage() {
     return () => cancelAnimationFrame(frame);
   }, [report]);
 
+  const openSaved = (item: SavedAnalysis) => {
+    const payload = item.payload as { text: string; report: AnatomyReport };
+    setText(payload.text);
+    setReport(payload.report);
+    setError(null);
+  };
+
   const examine = async () => {
     if (text.trim().length < 20 || busy) return;
     setBusy(true);
@@ -71,6 +80,12 @@ function AnatomyPage() {
       const body = (await response.json()) as { report?: AnatomyReport; error?: string };
       if (!response.ok || !body.report) throw new Error(body.error ?? "The anatomy could not be drawn.");
       setReport(body.report);
+      saveAnalysis({
+        kind: "anatomy",
+        title: body.report.claim,
+        subtitle: body.report.claim_type,
+        payload: { text, report: body.report },
+      });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "The anatomy could not be drawn.");
     } finally {
@@ -125,6 +140,8 @@ function AnatomyPage() {
           </div>
           {error ? <p className="anatomy-error">{error}</p> : null}
         </section>
+
+        <AnalysisShelf kind="anatomy" onOpen={openSaved} />
 
         {report ? (
           <div ref={reportRef} className="anatomy-report-wrap">

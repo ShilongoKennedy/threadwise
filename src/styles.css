@@ -9470,3 +9470,124 @@ html[data-surface="paper"] .anatomy-report {
 @media (max-width: 760px) {
   .anatomy-report-wrap { scroll-margin-top: 108px; }
 }
+
+/* ============================================================
+   SAVED ANALYSES / ONE SHARED SHELF
+   Auto-kept reads, seminars and anatomies on this device.
+   ============================================================ */
+.analysis-shelf {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  margin-top: 34px;
+  border-top: 1px solid rgba(36, 92, 121, 0.28);
+  border-bottom: 1px solid rgba(36, 92, 121, 0.2);
+  padding: 12px 0 4px;
+  color: var(--ledger-ink, #18282d);
+}
+.analysis-shelf__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 9px;
+}
+.analysis-shelf__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ledger-blue, #245c79) !important;
+}
+.analysis-shelf__count {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(24, 40, 45, 0.5) !important;
+}
+.analysis-shelf ul { display: grid; }
+.analysis-shelf li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(36, 92, 121, 0.16);
+}
+.analysis-shelf li:last-child { border-bottom: 0; }
+.analysis-shelf__open {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px 18px;
+  padding: 13px 2px;
+  text-align: left;
+  color: var(--ledger-ink, #18282d) !important;
+}
+.analysis-shelf__open:hover .analysis-shelf__title { color: var(--ledger-blue, #245c79) !important; }
+.analysis-shelf__meta {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ledger-blue, #245c79) !important;
+}
+.analysis-shelf__title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ledger-ink, #18282d) !important;
+  transition: color 140ms ease;
+}
+.analysis-shelf__subtitle {
+  grid-column: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-serif);
+  font-size: 12px;
+  color: rgba(24, 40, 45, 0.58) !important;
+}
+.analysis-shelf__reopen {
+  grid-column: 2;
+  grid-row: 2 / span 2;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ledger-blue, #245c79) !important;
+}
+.analysis-shelf__reopen svg { width: 11px; height: 11px; }
+.analysis-shelf__delete {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(140, 61, 46, 0.24);
+  color: #8c3d2e !important;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+.analysis-shelf__delete:hover { background: rgba(140, 61, 46, 0.08); border-color: rgba(140, 61, 46, 0.55); }
+.analysis-shelf__delete svg { width: 12px; height: 12px; }
+
+@media (max-width: 640px) {
+  .analysis-shelf { margin-top: 24px; }
+  .analysis-shelf__title { font-size: 18px; }
+  .analysis-shelf__open { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+  .analysis-shelf__reopen { display: none; }
+  .analysis-shelf__subtitle { grid-column: 1; }
+}

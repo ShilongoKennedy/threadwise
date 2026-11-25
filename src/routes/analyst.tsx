@@ -8,6 +8,8 @@ import { BPField } from "@/components/threadwise/BlueprintUI";
 import { extractPdfText, extractTextFile } from "@/lib/threadwise/extract-document";
 import { READ_FORMS, READ_FORM_KEYS, type ReadBlock, type ReadForm } from "@/lib/threadwise/read-forms";
 import { ANALYST_FORM_KEY, readRecentForms, rememberForm } from "@/lib/threadwise/recent-forms";
+import { AnalysisShelf } from "@/components/threadwise/AnalysisShelf";
+import { saveAnalysis, type SavedAnalysis } from "@/lib/threadwise/analysis-archive";
 
 export const Route = createFileRoute("/analyst")({
   head: () => ({
@@ -22,6 +24,12 @@ export const Route = createFileRoute("/analyst")({
   }),
   component: AnalystPage,
 });
+
+type AnalystPayload = {
+  report: Report;
+  token: string | null;
+  input: string;
+};
 
 type Report = {
   move: string;
@@ -247,6 +255,18 @@ function AnalystPage() {
     };
   }, [report]);
 
+  const openSaved = (item: SavedAnalysis) => {
+    const payload = item.payload as AnalystPayload;
+    setInput(payload.input);
+    setReport(payload.report);
+    setToken(payload.token ?? null);
+    setReading(null);
+    setError(null);
+    setBusy(false);
+    setStage(0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const run = async (text: string) => {
     const move = text.trim();
     if (move.length < 20 || busy) return;
@@ -279,6 +299,12 @@ function AnalystPage() {
       setReport(body.report);
       if (body.report.form) rememberForm(ANALYST_FORM_KEY, body.report.form, READ_FORM_KEYS);
       setToken(body.token ?? null);
+      saveAnalysis({
+        kind: "analyst",
+        title: move,
+        subtitle: body.report.form ? READ_FORMS[body.report.form]?.label ?? "The read" : "The read",
+        payload: { report: body.report, token: body.token ?? null, input: move } satisfies AnalystPayload,
+      });
 
       // The read's own page is where red team, findings and publishing live.
       if (body.token) {
@@ -476,6 +502,10 @@ function AnalystPage() {
               <p className="mt-5 border-2 border-[#C1121F] bg-[#C1121F]/5 px-4 py-3 font-serif text-[14px] text-[#C1121F]">
                 {error}
               </p>
+            )}
+
+            {!busy && (
+              <AnalysisShelf kind="analyst" onOpen={openSaved} />
             )}
 
             {!busy && recent.length > 0 && (
